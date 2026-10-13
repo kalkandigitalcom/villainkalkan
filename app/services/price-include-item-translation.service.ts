@@ -18,10 +18,10 @@ import type { PriceIncludeItemTranslationRow } from "@/lib/i18n/translations.typ
  * doğrulama notuyla tutarlı).
  */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 export type PriceIncludeTranslationInput = {
@@ -66,7 +66,7 @@ export async function upsertPriceIncludeTranslation(
   if (!includeId) return { ok: false, error: "Geçersiz fiyata dahil öğe" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
   }
   const locale = input.locale;
 

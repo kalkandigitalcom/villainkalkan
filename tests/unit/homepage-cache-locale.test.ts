@@ -7,7 +7,7 @@
    servis edilemez — bu bir konfigürasyon değil, YAPISAL garantidir.
 
    Ayrıca: TTL ve tag DEĞİŞMEDİ (3600 / "faqs") → admin `replaceFaqs`
-   sonrası `revalidateFaqs()` üç locale cache'ini birden temizler.
+   sonrası `revalidateFaqs()` iki locale cache'ini birden temizler.
 
    `unstable_cache` mock'lanır; gerçek Next cache'i KULLANILMAZ.
 =============================================================== */
@@ -35,10 +35,10 @@ vi.mock("@/lib/i18n/get-faq-translations.server", () => ({
 }));
 
 describe("SSS cache — locale başına AYRI key", () => {
-  it("1) tr/en/de için ÜÇ AYRI cache örneği kurulur", async () => {
+  it("1) tr/en için İKİ AYRI cache örneği kurulur", async () => {
     await import("@/lib/cache.helpers");
     const faqCaches = cacheCalls.filter((c) => c.keyParts[0] === "faqs:get");
-    expect(faqCaches).toHaveLength(3);
+    expect(faqCaches).toHaveLength(2);
   });
 
   it("2) her cache key'i locale'i AÇIKÇA içerir", async () => {
@@ -47,7 +47,6 @@ describe("SSS cache — locale başına AYRI key", () => {
     expect(faqCaches.map((c) => c.keyParts)).toEqual([
       ["faqs:get", "tr"],
       ["faqs:get", "en"],
-      ["faqs:get", "de"],
     ]);
   });
 
@@ -71,6 +70,6 @@ describe("SSS cache — locale başına AYRI key", () => {
     const mod = await import("@/lib/cache.helpers");
     expect(typeof mod.getCachedFaqs).toBe("function");
     await expect(mod.getCachedFaqs()).resolves.toEqual([]);
-    await expect(mod.getCachedFaqs("de")).resolves.toEqual([]);
+    await expect(mod.getCachedFaqs("en")).resolves.toEqual([]);
   });
 });

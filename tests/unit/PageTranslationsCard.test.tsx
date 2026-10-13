@@ -99,17 +99,6 @@ const EN_ROW = {
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
-const DE_ROW = {
-  ...EN_ROW,
-  id: "t-de",
-  locale: "de",
-  title: "Ein unvergesslicher Urlaub in Kaş",
-  excerpt: "DE excerpt",
-  body: "DE body",
-  seo_title: "DE seo",
-  seo_description: "DE seo desc",
-};
-
 beforeEach(() => {
   vi.clearAllMocks();
   adminFetchMock.mockResolvedValue({
@@ -134,7 +123,7 @@ async function renderEdit() {
   );
 }
 
-const CARD_HEADING = "Çeviriler (EN / DE)";
+const CARD_HEADING = "Çeviriler (EN)";
 
 /** Kart görünür VE `loading` bitmiş (alanlar render edilmiş) olana
  *  kadar bekler — `findBy*` deterministiktir, `waitFor(heading)` kartın
@@ -165,7 +154,7 @@ describe("Phase 12C — multilingual_enabled kapısı", () => {
     await cardReady();
     expect(loadPageTranslationsMock).toHaveBeenCalledWith(PAGE_ID);
     expect(screen.getByText("English")).toBeTruthy();
-    expect(screen.getByText("Deutsch")).toBeTruthy();
+    expect(screen.queryByText("Deutsch")).toBeNull();
     /* TR referans salt okunur gösterilir */
     expect(screen.getByText("Türkçe (referans, salt okunur)")).toBeTruthy();
     expect(screen.getAllByText(PAGE_ROW.title).length).toBeGreaterThan(0);
@@ -176,7 +165,7 @@ describe("Phase 12C — kayıtlı çevirilerin yüklenmesi", () => {
   it("4) kayıtlı EN çevirisi forma gelir", async () => {
     loadPageTranslationsMock.mockResolvedValue({
       ok: true,
-      rows: [EN_ROW, DE_ROW],
+      rows: [EN_ROW],
     });
     await renderEdit();
     await cardReady();
@@ -198,23 +187,6 @@ describe("Phase 12C — kayıtlı çevirilerin yüklenmesi", () => {
       (screen.getByLabelText("English SEO açıklama") as HTMLTextAreaElement)
         .value
     ).toBe("EN seo desc");
-  });
-
-  it("5) DE sekmesine geçilince DE değerleri gösterilir", async () => {
-    loadPageTranslationsMock.mockResolvedValue({
-      ok: true,
-      rows: [EN_ROW, DE_ROW],
-    });
-    await renderEdit();
-    await cardReady();
-
-    fireEvent.click(screen.getByText("Deutsch"));
-    expect(
-      (screen.getByLabelText("Deutsch başlık") as HTMLInputElement).value
-    ).toBe(DE_ROW.title);
-    expect(
-      (screen.getByLabelText("Deutsch içerik") as HTMLTextAreaElement).value
-    ).toBe("DE body");
   });
 
   it("6) çeviri yoksa alanlar boş gelir", async () => {
@@ -282,31 +254,6 @@ describe("Phase 12C — kayıt", () => {
     await waitFor(() =>
       expect(notifySuccessMock).toHaveBeenCalledWith(
         "English çevirisi kaydedildi",
-        expect.anything()
-      )
-    );
-  });
-
-  it("9) DE kaydet → locale 'de' gider", async () => {
-    savePageTranslationMock.mockResolvedValue({ ok: true, row: { ...DE_ROW } });
-    await renderEdit();
-    await cardReady();
-
-    fireEvent.click(screen.getByText("Deutsch"));
-    fireEvent.change(screen.getByLabelText("Deutsch başlık"), {
-      target: { value: "Ein unvergesslicher Urlaub in Kaş" },
-    });
-    fireEvent.click(screen.getByText("Deutsch sürümünü kaydet"));
-
-    await waitFor(() => expect(savePageTranslationMock).toHaveBeenCalled());
-    expect(savePageTranslationMock.mock.calls[0][0]).toMatchObject({
-      pageId: PAGE_ID,
-      locale: "de",
-      title: "Ein unvergesslicher Urlaub in Kaş",
-    });
-    await waitFor(() =>
-      expect(notifySuccessMock).toHaveBeenCalledWith(
-        "Deutsch çevirisi kaydedildi",
         expect.anything()
       )
     );

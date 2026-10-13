@@ -134,7 +134,6 @@ export function buildLocaleAlternates(
   const languages: Record<Locale | "x-default", string> = {
     tr: basePath,
     en: withLocalePrefix(basePath, "en"),
-    de: withLocalePrefix(basePath, "de"),
     "x-default": basePath,
   };
 

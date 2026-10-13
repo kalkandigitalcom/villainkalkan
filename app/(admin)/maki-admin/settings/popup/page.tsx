@@ -68,7 +68,6 @@ type PopupTextState = {
 const EDIT_LOCALES: ReadonlyArray<{ code: EditLocale; label: string }> = [
   { code: "tr", label: "Türkçe" },
   { code: "en", label: "English" },
-  { code: "de", label: "Deutsch" },
 ];
 const emptyText = (): PopupTextState => ({
   title: "",
@@ -104,7 +103,6 @@ export default function SettingsPopupPage() {
   const [texts, setTexts] = useState<Record<EditLocale, PopupTextState>>(() => ({
     tr: emptyText(),
     en: emptyText(),
-    de: emptyText(),
   }));
   const [activeLocale, setActiveLocale] = useState<EditLocale>("tr");
   const [showButton, setShowButton] = useState(true);
@@ -158,7 +156,6 @@ export default function SettingsPopupPage() {
             buttonUrl: v.buttonUrl,
           },
           en: v.translations?.en ?? emptyText(),
-          de: v.translations?.de ?? emptyText(),
         });
         setShowButton(v.showButton);
         setScope(v.scope);
@@ -267,7 +264,6 @@ export default function SettingsPopupPage() {
     setTexts((prev) => ({
       tr: { ...prev.tr, stats: savedValues.stats },
       en: { ...prev.en, stats: savedValues.translations.en.stats },
-      de: { ...prev.de, stats: savedValues.translations.de.stats },
     }));
     setSaved(true);
     toast.success("Kaydedildi", { id: "settings-popup" });
@@ -348,7 +344,7 @@ export default function SettingsPopupPage() {
           </div>
           <p className="text-[12px] text-[var(--color-stone-500)] leading-relaxed">
             Vurgu metni, başlık, açıklama, alt bilgiler ve buton metni/URL&apos;i her dil için ayrı
-            girilir. English/Deutsch&apos;ta boş bırakılan alan Türkçe gösterilir. Görsel, durum,
+            girilir. English&apos;ta boş bırakılan alan Türkçe gösterilir. Görsel, durum,
             buton göster/gizle, gösterim alanı, tarih ve süre tüm dillerde ortaktır.
           </p>
         </div>

@@ -107,7 +107,7 @@ describe("H-02 — CMS sayfa detay (public slug)", () => {
     expect(page?.id).toBe("p1");
   });
 
-  it("pasif sayfa → null (TR inline 404 bloğu / EN-DE notFound() yolu)", async () => {
+  it("pasif sayfa → null (TR inline 404 bloğu / EN notFound() yolu)", async () => {
     expect(await getPageBySlug("gizli-sayfa")).toBeNull();
   });
 
@@ -140,7 +140,7 @@ describe("H-02 — metadata/JSON-LD taslak içerik sızdırmaz", () => {
   it("blog metadata: taslak → yalnız 'bulunamadı' başlığı + noindex (taslak başlığı YOK)", async () => {
     vi.doMock("@/lib/cache.helpers", () => ({ getCachedSettings: async () => null }));
     const { buildBlogDetailMetadata } = await import("@/app/components/blog/blog-metadata");
-    for (const locale of ["tr", "en", "de"] as const) {
+    for (const locale of ["tr", "en"] as const) {
       const md = await buildBlogDetailMetadata(Promise.resolve({ slug: "taslak-yazi" }), locale);
       expect(md.robots).toEqual({ index: false, follow: false });
       expect(JSON.stringify(md)).not.toContain("GİZLİ TASLAK");
@@ -150,7 +150,7 @@ describe("H-02 — metadata/JSON-LD taslak içerik sızdırmaz", () => {
   it("CMS metadata: pasif → yalnız 'bulunamadı' başlığı + noindex (pasif başlığı YOK)", async () => {
     vi.doMock("@/lib/cache.helpers", () => ({ getCachedSettings: async () => null }));
     const { buildCmsPageMetadata } = await import("@/app/components/cms/cms-page-metadata");
-    for (const locale of ["tr", "en", "de"] as const) {
+    for (const locale of ["tr", "en"] as const) {
       const md = await buildCmsPageMetadata("gizli-sayfa", locale);
       expect(md.robots).toEqual({ index: false, follow: false });
       expect(JSON.stringify(md)).not.toContain("GİZLİ PASİF");

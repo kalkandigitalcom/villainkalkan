@@ -26,7 +26,7 @@ import type {
         alanı). Çağıran fazladan bir alan geçirse bile o alan
         SQL'e HİÇ ULAŞMAZ. (DB şeması da yalnız bu 8 kolona sahip →
         çift kilit.)
-     3) `locale` tipi `SettingsTranslationLocale` ("en" | "de") —
+     3) `locale` tipi `SettingsTranslationLocale` ("en") —
         "tr" derleme zamanında reddedilir; runtime doğrulaması
         servis katmanında (`isSettingsTranslationLocale`), DB
         seviyesinde ise migration 083'ün CHECK constraint'i.

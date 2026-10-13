@@ -99,18 +99,18 @@ describe("upsertPaymentMethodTranslation", () => {
 
   it("2) boş/whitespace değer HATA DEĞİL — null yazılır (TR fallback)", async () => {
     upsertOneMock.mockResolvedValue({
-      data: { id: "t-1", payment_method_id: PM_ID, locale: "de", name: null },
+      data: { id: "t-1", payment_method_id: PM_ID, locale: "en", name: null },
       error: null,
     });
 
     const result = await upsertPaymentMethodTranslation({
       paymentMethodId: PM_ID,
-      locale: "de",
+      locale: "en",
       name: "   ",
     });
 
     expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "de", {
+    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "en", {
       name: null,
     });
   });
@@ -127,7 +127,7 @@ describe("upsertPaymentMethodTranslation", () => {
     });
   });
 
-  it.each(["tr", "fr", "", null, undefined])(
+  it.each(["tr", "de", "fr", "", null, undefined])(
     "4) yazılabilir olmayan locale (%s) reddedilir — DB'ye HİÇ gidilmez",
     async (locale) => {
       const result = await upsertPaymentMethodTranslation({
@@ -171,7 +171,7 @@ describe("getPaymentMethodTranslations", () => {
     expect(findAllForParentMock).toHaveBeenCalledWith("payment_method", PM_ID);
   });
 
-  it("8) yalnız en/de satırları döner (tr filtrelenir)", async () => {
+  it("8) yalnız en satırları döner (tr / eski de filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValue({
       data: [
         { locale: "tr", name: "Kredi Kartı" },
@@ -184,7 +184,7 @@ describe("getPaymentMethodTranslations", () => {
     const result = await getPaymentMethodTranslations(PM_ID);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.rows.map((r) => r.locale)).toEqual(["en", "de"]);
+    expect(result.rows.map((r) => r.locale)).toEqual(["en"]);
   });
 
   it("9) okuma hatası → { ok:false }", async () => {

@@ -1,8 +1,8 @@
 /* ===============================================================
    🛡️ PUBLIC VARSAYILAN DİL — ANA SAYFA GİRİŞ DAVRANIŞI
    ===============================================================
-   BUG: Admin'de "Çoklu Dil → Varsayılan Dil = Deutsch" seçilmesine ve
-   `settings.public_default_locale = "de"` olarak DB'ye yazılmasına
+   BUG: Admin'de "Çoklu Dil → Varsayılan Dil = English" seçilmesine ve
+   `settings.public_default_locale = "en"` olarak DB'ye yazılmasına
    rağmen public "/" her zaman Türkçe açılıyordu. Kök neden:
    `app/(public)/page.tsx` locale'i `"tr"` HARDCODED geçiyordu ve
    `getPublicDefaultLocale()` production'da HİÇ çağrılmıyordu.
@@ -10,8 +10,11 @@
    Bu dosya hem SAF kuralı (lib/i18n/public-home.ts) hem de iki
    sayfanın (`/` ve `/tr`) yönlendirme davranışını kilitler.
 
-   ⚠️ EN KRİTİK SENARYO (test 10/11): varsayılan DE iken dil
-   değiştiriciden TÜRKÇE seçmek kullanıcıyı tekrar DE'ye DÜŞÜRMEMELİ.
+   ⚠️ EN KRİTİK SENARYO: varsayılan EN iken dil değiştiriciden
+   TÜRKÇE seçmek kullanıcıyı tekrar EN'e DÜŞÜRMEMELİ.
+
+   DE desteği kaldırıldı: eski DB değeri `"de"` artık geçersiz →
+   fail-safe MOD A (TR, redirect YOK).
 =============================================================== */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -49,7 +52,7 @@ beforeEach(() => {
   getCachedSettingsMock.mockReset();
 });
 
-const ML_OFF_DE = { multilingual_enabled: false, public_default_locale: "de" };
+const ML_OFF_EN = { multilingual_enabled: false, public_default_locale: "en" };
 const ML_ON_TR = { multilingual_enabled: true, public_default_locale: "tr" };
 const ML_ON_DE = { multilingual_enabled: true, public_default_locale: "de" };
 const ML_ON_EN = { multilingual_enabled: true, public_default_locale: "en" };
@@ -68,9 +71,9 @@ async function renderTr() {
    SAF KURAL — lib/i18n/public-home.ts
 --------------------------------------------------------------- */
 describe("resolvePublicHome (saf kural)", () => {
-  it("MOD A: multilingual KAPALI → varsayılan 'de' olsa bile redirect YOK", async () => {
+  it("MOD A: multilingual KAPALI → varsayılan 'en' olsa bile redirect YOK", async () => {
     const { resolvePublicHome } = await import("@/lib/i18n/public-home");
-    expect(resolvePublicHome(ML_OFF_DE)).toEqual({
+    expect(resolvePublicHome(ML_OFF_EN)).toEqual({
       defaultLocale: "tr",
       redirectsFromRoot: false,
       trHomeHref: "/",
@@ -83,18 +86,22 @@ describe("resolvePublicHome (saf kural)", () => {
     expect(resolvePublicHome(ML_ON_TR).trHomeHref).toBe("/");
   });
 
-  it("MOD B: multilingual AÇIK + 'de' → redirect, TR ana sayfa /tr", async () => {
+  it("MOD B: multilingual AÇIK + 'en' → redirect, TR ana sayfa /tr", async () => {
     const { resolvePublicHome } = await import("@/lib/i18n/public-home");
-    expect(resolvePublicHome(ML_ON_DE)).toEqual({
-      defaultLocale: "de",
+    expect(resolvePublicHome(ML_ON_EN)).toEqual({
+      defaultLocale: "en",
       redirectsFromRoot: true,
       trHomeHref: "/tr",
     });
   });
 
-  it("MOD B: 'en' → defaultLocale 'en'", async () => {
+  it("DE artık desteklenmiyor: 'de' → MOD A (TR, redirect YOK)", async () => {
     const { resolvePublicHome } = await import("@/lib/i18n/public-home");
-    expect(resolvePublicHome(ML_ON_EN).defaultLocale).toBe("en");
+    expect(resolvePublicHome(ML_ON_DE)).toEqual({
+      defaultLocale: "tr",
+      redirectsFromRoot: false,
+      trHomeHref: "/",
+    });
   });
 
   it("FAIL-SAFE: geçersiz ('fr') / null / undefined → MOD A", async () => {
@@ -117,8 +124,8 @@ describe("resolvePublicHome (saf kural)", () => {
    "/" ROUTE'U — senaryo 1-6
 --------------------------------------------------------------- */
 describe('"/" giriş davranışı', () => {
-  it("1) multilingual=false + default=de → redirect YOK (TR render)", async () => {
-    getCachedSettingsMock.mockResolvedValue(ML_OFF_DE);
+  it("1) multilingual=false + default=en → redirect YOK (TR render)", async () => {
+    getCachedSettingsMock.mockResolvedValue(ML_OFF_EN);
     await renderRoot();
     expect(redirectMock).not.toHaveBeenCalled();
   });
@@ -129,15 +136,16 @@ describe('"/" giriş davranışı', () => {
     expect(redirectMock).not.toHaveBeenCalled();
   });
 
-  it("3) multilingual=true + default=de → /de", async () => {
+  it("3) multilingual=true + default=de (artık desteklenmiyor) → redirect YOK (TR)", async () => {
     getCachedSettingsMock.mockResolvedValue(ML_ON_DE);
-    await expect(renderRoot()).rejects.toThrow("NEXT_REDIRECT:/de");
-    expect(redirectMock).toHaveBeenCalledWith("/de");
+    await renderRoot();
+    expect(redirectMock).not.toHaveBeenCalled();
   });
 
   it("4) multilingual=true + default=en → /en", async () => {
     getCachedSettingsMock.mockResolvedValue(ML_ON_EN);
     await expect(renderRoot()).rejects.toThrow("NEXT_REDIRECT:/en");
+    expect(redirectMock).toHaveBeenCalledWith("/en");
   });
 
   it("5) settings okunamıyor → redirect YOK, sayfa ÇÖKMEZ", async () => {
@@ -157,8 +165,8 @@ describe('"/" giriş davranışı', () => {
    "/tr" ROUTE'U — tek kanonik TR ana sayfa garantisi
 --------------------------------------------------------------- */
 describe('"/tr" davranışı', () => {
-  it("MOD B (default=de) → /tr TR ana sayfayı RENDER eder, yönlenmez", async () => {
-    getCachedSettingsMock.mockResolvedValue(ML_ON_DE);
+  it("MOD B (default=en) → /tr TR ana sayfayı RENDER eder, yönlenmez", async () => {
+    getCachedSettingsMock.mockResolvedValue(ML_ON_EN);
     await expect(renderTr()).resolves.not.toThrow();
     expect(redirectMock).not.toHaveBeenCalled();
   });
@@ -169,7 +177,7 @@ describe('"/tr" davranışı', () => {
   });
 
   it("MOD A (multilingual kapalı) → /tr, '/'ye yönlenir", async () => {
-    getCachedSettingsMock.mockResolvedValue(ML_OFF_DE);
+    getCachedSettingsMock.mockResolvedValue(ML_OFF_EN);
     await expect(renderTr()).rejects.toThrow("NEXT_REDIRECT:/");
   });
 
@@ -180,32 +188,32 @@ describe('"/tr" davranışı', () => {
 });
 
 /* ---------------------------------------------------------------
-   7-8) /de ve /en DOĞRUDAN açıldığında BAŞKA YERE YÖNLENMEZ
+   7-8) /en DOĞRUDAN açıldığında BAŞKA YERE YÖNLENMEZ
    ---------------------------------------------------------------
-   Bu sayfaların page.tsx'lerine DOKUNULMADI; test o sözleşmeyi
-   kilitler (varsayılan dil ne olursa olsun kendi locale'lerinde
-   kalırlar; tek gate `requirePublicLocaleEnabled`).
+   Bu sayfanın page.tsx'ine DOKUNULMADI; test o sözleşmeyi kilitler
+   (varsayılan dil ne olursa olsun kendi locale'inde kalır; tek gate
+   `requirePublicLocaleEnabled`). `/de` route ağacı kaldırıldı.
 --------------------------------------------------------------- */
-describe("/de ve /en doğrudan erişim", () => {
-  it("7) multilingual AÇIK + varsayılan 'en' iken /de yönlenmez", async () => {
-    getCachedSettingsMock.mockResolvedValue(ML_ON_EN);
-    const mod = await import("@/app/(public)/de/page");
-    await expect(mod.default()).resolves.not.toThrow();
-    expect(redirectMock).not.toHaveBeenCalled();
-    expect(notFoundMock).not.toHaveBeenCalled();
-  });
-
-  it("8) multilingual AÇIK + varsayılan 'de' iken /en yönlenmez", async () => {
-    getCachedSettingsMock.mockResolvedValue(ML_ON_DE);
+describe("/en doğrudan erişim", () => {
+  it("7) multilingual AÇIK + varsayılan 'tr' iken /en yönlenmez", async () => {
+    getCachedSettingsMock.mockResolvedValue(ML_ON_TR);
     const mod = await import("@/app/(public)/en/page");
     await expect(mod.default()).resolves.not.toThrow();
     expect(redirectMock).not.toHaveBeenCalled();
     expect(notFoundMock).not.toHaveBeenCalled();
   });
 
-  it("multilingual KAPALI iken /de hâlâ 404 (mevcut gate DEĞİŞMEDİ)", async () => {
-    getCachedSettingsMock.mockResolvedValue(ML_OFF_DE);
-    const mod = await import("@/app/(public)/de/page");
+  it("8) multilingual AÇIK + varsayılan 'en' iken /en yönlenmez", async () => {
+    getCachedSettingsMock.mockResolvedValue(ML_ON_EN);
+    const mod = await import("@/app/(public)/en/page");
+    await expect(mod.default()).resolves.not.toThrow();
+    expect(redirectMock).not.toHaveBeenCalled();
+    expect(notFoundMock).not.toHaveBeenCalled();
+  });
+
+  it("multilingual KAPALI iken /en hâlâ 404 (mevcut gate DEĞİŞMEDİ)", async () => {
+    getCachedSettingsMock.mockResolvedValue(ML_OFF_EN);
+    const mod = await import("@/app/(public)/en/page");
     await expect(mod.default()).rejects.toThrow("NEXT_NOT_FOUND");
   });
 });

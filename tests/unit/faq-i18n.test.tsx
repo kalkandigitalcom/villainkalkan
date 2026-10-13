@@ -242,14 +242,14 @@ describe("faq-translation.service", () => {
 
   it("16) getFaqTranslations — locale başına TEK batch sorgu (N+1 YOK)", async () => {
     await getFaqTranslations(["f1", "f2", "f3"]);
-    expect(findManyForLocaleMock).toHaveBeenCalledTimes(2);
+    expect(findManyForLocaleMock).toHaveBeenCalledTimes(1);
     for (const call of findManyForLocaleMock.mock.calls) {
       expect(call[0]).toBe("faq");
       expect(call[1]).toEqual(["f1", "f2", "f3"]);
     }
     expect(
       findManyForLocaleMock.mock.calls.map((c) => c[2]).sort()
-    ).toEqual(["de", "en"]);
+    ).toEqual(["en"]);
   });
 
   it("17) id listesi boşsa HİÇ sorgu atılmaz", async () => {
@@ -258,7 +258,7 @@ describe("faq-translation.service", () => {
     expect(findManyForLocaleMock).not.toHaveBeenCalled();
   });
 
-  it("18) satırlar faq_id → { en, de } haritasına dönüşür", async () => {
+  it("18) satırlar faq_id → { en } haritasına dönüşür", async () => {
     findManyForLocaleMock.mockImplementation(
       (_e: string, _ids: string[], locale: string) =>
         Promise.resolve({
@@ -279,7 +279,6 @@ describe("faq-translation.service", () => {
     expect(res.map).toEqual({
       f1: {
         en: { question: "How?", answer: "Like this." },
-        de: { question: "Wie?", answer: "So." },
       },
     });
   });
@@ -307,14 +306,18 @@ describe("faq-translation.service", () => {
     });
   });
 
-  it("21) upsert — DE yazılır", async () => {
-    await upsertFaqTranslation({
+  it("21) upsert — DE artık desteklenmiyor, reddedilir", async () => {
+    const res = await upsertFaqTranslation({
       faqId: "f1",
       locale: "de",
       question: "Wie?",
       answer: "So.",
     });
-    expect(upsertOneMock.mock.calls[0][2]).toBe("de");
+    expect(res).toEqual({
+      ok: false,
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
+    });
+    expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
   it("22) BOŞ/whitespace alan → null (TR fallback), hata DEĞİL", async () => {
@@ -396,10 +399,10 @@ const PUBLIC_FAQS = [
 ];
 
 function mockFaqRows(
-  rows: Record<string, { en?: [string, string]; de?: [string, string] }>
+  rows: Record<string, { en?: [string, string] }>
 ) {
   findManyForLocaleMock.mockImplementation(
-    (_e: string, ids: string[], locale: "en" | "de") =>
+    (_e: string, ids: string[], locale: "en") =>
       Promise.resolve({
         data: ids
           .filter((id) => rows[id]?.[locale])
@@ -436,21 +439,9 @@ describe("applyFaqTranslations — public okuma", () => {
     });
   });
 
-  it("26c) DE → çeviri gösterilir", async () => {
-    mockFaqRows({ f1: { de: ["Wie?", "So."] } });
-    const out = await applyFaqTranslations(PUBLIC_FAQS, "de");
-    expect(out[0]).toEqual({ id: "f1", question: "Wie?", answer: "So." });
-  });
-
   it("26d) EN çevirisi YOK → TR fallback", async () => {
-    mockFaqRows({ f1: { de: ["Wie?", "So."] } });
+    mockFaqRows({ f2: { en: ["Other?", "Other."] } });
     const out = await applyFaqTranslations(PUBLIC_FAQS, "en");
-    expect(out[0]).toBe(PUBLIC_FAQS[0]);
-  });
-
-  it("26e) DE çevirisi YOK → TR fallback", async () => {
-    mockFaqRows({ f1: { en: ["How?", "Like this."] } });
-    const out = await applyFaqTranslations(PUBLIC_FAQS, "de");
     expect(out[0]).toBe(PUBLIC_FAQS[0]);
   });
 
@@ -546,14 +537,14 @@ describe("/maki-admin/faqs — çoklu dil", () => {
     expect(loadFaqTranslationsMock).toHaveBeenCalledWith(["f1", "f2"]);
   });
 
-  it("29) EN/DE alanları varsayılan KAPALI, 'Çeviriler' ile açılır", async () => {
+  it("29) EN alanları varsayılan KAPALI, 'Çeviriler' ile açılır", async () => {
     await mountPage();
     expect(screen.queryByLabelText("English Question")).not.toBeInTheDocument();
     fireEvent.click(screen.getAllByText("Çeviriler")[0]);
     expect(screen.getByLabelText("English Question")).toBeInTheDocument();
     expect(screen.getByLabelText("English Answer")).toBeInTheDocument();
-    expect(screen.getByLabelText("Deutsch Frage")).toBeInTheDocument();
-    expect(screen.getByLabelText("Deutsch Antwort")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Deutsch Frage")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Deutsch Antwort")).not.toBeInTheDocument();
   });
 
   it("30) mevcut çeviriler forma YÜKLENİR", async () => {
@@ -562,7 +553,6 @@ describe("/maki-admin/faqs — çoklu dil", () => {
       map: {
         f1: {
           en: { question: "How to book?", answer: "Like this." },
-          de: { question: "Wie buchen?", answer: "So." },
         },
       },
     });
@@ -571,7 +561,7 @@ describe("/maki-admin/faqs — çoklu dil", () => {
     expect(screen.getByLabelText("English Question")).toHaveValue(
       "How to book?"
     );
-    expect(screen.getByLabelText("Deutsch Antwort")).toHaveValue("So.");
+    expect(screen.getByLabelText("English Answer")).toHaveValue("Like this.");
   });
 
   it("31) KAYDET — canonical payload `id` TAŞIR (satır korunur)", async () => {
@@ -584,7 +574,7 @@ describe("/maki-admin/faqs — çoklu dil", () => {
     ]);
   });
 
-  it("32) KAYDET — girilen EN/DE çevirileri doğru faqId ile yazılır", async () => {
+  it("32) KAYDET — girilen EN çevirileri doğru faqId ile yazılır", async () => {
     await mountPage();
     fireEvent.click(screen.getAllByText("Çeviriler")[0]);
     fireEvent.change(screen.getByLabelText("English Question"), {

@@ -98,9 +98,9 @@ describe("A) TR dictionary değerleri, taşınmadan önceki hardcoded metinlerle
   });
 });
 
-describe("A2) EN/DE gerçekten ÇEVRİLMİŞ (TR ile aynı değil)", () => {
+describe("A2) EN gerçekten ÇEVRİLMİŞ (TR ile aynı değil)", () => {
   const tr = getDictionary("tr").home;
-  for (const locale of ["en", "de"] as const) {
+  for (const locale of ["en"] as const) {
     it(`${locale} — anahtar başlıklar TR'den farklı`, () => {
       const d = getDictionary(locale).home;
       expect(d.villas.title).not.toBe(tr.villas.title);
@@ -110,7 +110,7 @@ describe("A2) EN/DE gerçekten ÇEVRİLMİŞ (TR ile aynı değil)", () => {
     });
   }
 
-  it("3 dilde de `home` şeması EKSİKSİZ (aynı anahtar kümesi)", () => {
+  it("TR/EN `home` şeması EKSİKSİZ (aynı anahtar kümesi)", () => {
     const keys = (l: Locale) =>
       JSON.stringify(
         Object.entries(getDictionary(l).home).map(([k, v]) => [
@@ -119,7 +119,6 @@ describe("A2) EN/DE gerçekten ÇEVRİLMİŞ (TR ile aynı değil)", () => {
         ])
       );
     expect(keys("en")).toBe(keys("tr"));
-    expect(keys("de")).toBe(keys("tr"));
   });
 });
 
@@ -189,9 +188,9 @@ describe("B) resolveHeroContent — locale fallback", () => {
 
   it("9) EN — çeviri BOŞ string ise TR canonical'e düşer", () => {
     const r = resolveHeroContent(HERO_SETTINGS, {
-      locale: "de",
+      locale: "en",
       translations: {
-        de: {
+        en: {
           footer_copyright: null,
           default_meta_title: null,
           default_meta_description: null,
@@ -310,7 +309,7 @@ describe("C) applyFaqTranslations", () => {
     const { applyFaqTranslations } = await import(
       "@/lib/i18n/get-faq-translations.server"
     );
-    const out = await applyFaqTranslations(FAQS, "de");
+    const out = await applyFaqTranslations(FAQS, "en");
     expect(out).toBe(FAQS);
   });
 });
@@ -391,9 +390,8 @@ describe("F) bucketMonthLabel", () => {
     expect(bucketMonthLabel("2026-01-01", nameFor("tr"))).toBe("Ocak 2026");
   });
 
-  it("24) EN/DE — çevrilmiş ay adı, format AYNI", () => {
+  it("24) EN — çevrilmiş ay adı, format AYNI", () => {
     expect(bucketMonthLabel("2026-01-01", nameFor("en"))).toBe("January 2026");
-    expect(bucketMonthLabel("2026-03-01", nameFor("de"))).toBe("März 2026");
   });
 
   it("25) geçersiz girdi → boş string (davranış değişmedi)", () => {
@@ -425,9 +423,9 @@ describe("G) JSON-LD locale", () => {
 
   it("28) buildFaqJsonLd — locale opsiyonel, mainEntity DEĞİŞMEZ", () => {
     const withoutLocale = buildFaqJsonLd(FAQS) as Record<string, unknown>;
-    const withLocale = buildFaqJsonLd(FAQS, "de") as Record<string, unknown>;
+    const withLocale = buildFaqJsonLd(FAQS, "en") as Record<string, unknown>;
     expect(withoutLocale).not.toHaveProperty("inLanguage");
-    expect(withLocale.inLanguage).toBe("de");
+    expect(withLocale.inLanguage).toBe("en");
     expect(JSON.stringify(withLocale.mainEntity)).toBe(
       JSON.stringify(withoutLocale.mainEntity)
     );
@@ -464,16 +462,15 @@ describe("H) buildHomeMetadata", () => {
     });
   });
 
-  it("29) canonical — TR '/', EN '/en', DE '/de'", async () => {
+  it("29) canonical — TR '/', EN '/en'", async () => {
     const { buildHomeMetadata } = await import(
       "@/app/components/home/home-metadata"
     );
     expect((await buildHomeMetadata("tr")).alternates?.canonical).toBe("/");
     expect((await buildHomeMetadata("en")).alternates?.canonical).toBe("/en");
-    expect((await buildHomeMetadata("de")).alternates?.canonical).toBe("/de");
   });
 
-  it("30) hreflang — tr/en/de/x-default üçünde de AYNI küme", async () => {
+  it("30) hreflang — tr/en/x-default her locale'de AYNI küme (DE YOK)", async () => {
     const { buildHomeMetadata } = await import(
       "@/app/components/home/home-metadata"
     );
@@ -483,7 +480,6 @@ describe("H) buildHomeMetadata", () => {
       expect(langs).toEqual({
         tr: "/",
         en: "/en",
-        de: "/de",
         "x-default": "/",
       });
     }
@@ -499,12 +495,11 @@ describe("H) buildHomeMetadata", () => {
     expect(en.openGraph?.title).toBe("EN Title");
   });
 
-  it("32) TR + DE (çeviri yok) → canonical TR metin", async () => {
+  it("32) TR → canonical TR metin", async () => {
     const { buildHomeMetadata } = await import(
       "@/app/components/home/home-metadata"
     );
     expect((await buildHomeMetadata("tr")).title).toBe("TR Başlık");
-    expect((await buildHomeMetadata("de")).title).toBe("TR Başlık");
   });
 
   it("33) settings okunamazsa root layout ile AYNI TR fallback", async () => {

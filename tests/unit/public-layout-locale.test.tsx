@@ -63,7 +63,6 @@ function stripComments(src: string): string {
 const PATHS: Record<Locale, string> = {
   tr: "/",
   en: "/en",
-  de: "/de",
 };
 
 beforeEach(() => {
@@ -110,17 +109,6 @@ describe("1) BottomNav — locale", () => {
     expect(screen.getByText(d.footer.phone)).toBeInTheDocument();
     expect(screen.queryByText("Öneri Al")).not.toBeInTheDocument();
     /* 🔄 Çevrilmiş "Öneri Al" de artık alt barda YOK. */
-    expect(
-      screen.queryByText(d.layout.bottomNav.offer)
-    ).not.toBeInTheDocument();
-  });
-
-  it("1c) DE — çevrilmiş metinler", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villalar");
-    render(<BottomNav {...props} />);
-    const d = getDictionary("de");
-    expect(screen.getByText(d.header.home)).toBeInTheDocument();
-    expect(screen.queryByText("Anasayfa")).not.toBeInTheDocument();
     expect(
       screen.queryByText(d.layout.bottomNav.offer)
     ).not.toBeInTheDocument();
@@ -204,8 +192,8 @@ describe("1) BottomNav — locale", () => {
      BAĞIMSIZ" kuralı, EN/DE'de alt menüye dokunan kullanıcıyı
      prefix'siz TR route'una düşürüyordu. Test SİLİNMEDİ: TR
      beklentisi AYNEN korunur, EN/DE doğru davranışa çevrildi. */
-  it("1f) 🔒 HREF'LER aktif locale'i taşır (TR canonical, EN/DE prefix'li)", () => {
-    for (const p of ["/", "/en", "/de"]) {
+  it("1f) 🔒 HREF'LER aktif locale'i taşır (TR canonical, EN prefix'li)", () => {
+    for (const p of ["/", "/en"]) {
       usePathnameMock.mockReturnValue(p);
       const locale = p === "/" ? "tr" : (p.slice(1) as Locale);
       const prefix = locale === "tr" ? "" : `/${locale}`;
@@ -240,8 +228,8 @@ describe("2) SearchBottomSheet — locale", () => {
     ).toBeInTheDocument();
   });
 
-  it("2b) EN/DE — çevrilmiş metinler", () => {
-    for (const locale of ["en", "de"] as const) {
+  it("2b) EN — çevrilmiş metinler", () => {
+    for (const locale of ["en"] as const) {
       const d = getDictionary(locale).layout.search;
       const { unmount } = render(
         <SearchBottomSheet open onClose={() => {}} locale={locale} />
@@ -268,8 +256,8 @@ describe("3) VillaSearchBox — locale", () => {
     expect(screen.getByPlaceholderText("Villa ara...")).toBeInTheDocument();
   });
 
-  it("3b) EN/DE — varsayılan placeholder çevrilir", () => {
-    for (const locale of ["en", "de"] as const) {
+  it("3b) EN — varsayılan placeholder çevrilir", () => {
+    for (const locale of ["en"] as const) {
       const { unmount } = render(<VillaSearchBox locale={locale} />);
       expect(
         screen.getByPlaceholderText(getDictionary(locale).layout.search.placeholder)
@@ -292,7 +280,7 @@ describe("3) VillaSearchBox — locale", () => {
   });
 
   it("3e) sheet variant boş durum — EN/DE çevrilir", () => {
-    for (const locale of ["en", "de"] as const) {
+    for (const locale of ["en"] as const) {
       const d = getDictionary(locale).layout.search;
       const { unmount } = render(
         <VillaSearchBox variant="sheet" locale={locale} />
@@ -323,8 +311,8 @@ describe("4) CookieConsent — locale", () => {
     expect(screen.getByText("Kabul Et")).toBeInTheDocument();
   });
 
-  it("4b) EN/DE — çevrilmiş metinler", async () => {
-    for (const locale of ["en", "de"] as const) {
+  it("4b) EN — çevrilmiş metinler", async () => {
+    for (const locale of ["en"] as const) {
       usePathnameMock.mockReturnValue(PATHS[locale]);
       const d = getDictionary(locale).layout.cookie;
       const { unmount } = render(<CookieConsent />);
@@ -368,8 +356,8 @@ describe("5) ScrollToTopButton — locale", () => {
     expect(screen.getByLabelText("Sayfanın başına dön")).toBeInTheDocument();
   });
 
-  it("5b) EN/DE — çevrilmiş metinler", () => {
-    for (const locale of ["en", "de"] as const) {
+  it("5b) EN — çevrilmiş metinler", () => {
+    for (const locale of ["en"] as const) {
       usePathnameMock.mockReturnValue(PATHS[locale]);
       const d = getDictionary(locale).layout.scrollTop;
       const { unmount } = render(<ScrollToTopButton />);
@@ -401,8 +389,8 @@ describe("6) FloatingSocialClient — locale", () => {
     );
   });
 
-  it("6b) EN/DE — çevrilmiş aria/title", () => {
-    for (const locale of ["en", "de"] as const) {
+  it("6b) EN — çevrilmiş aria/title", () => {
+    for (const locale of ["en"] as const) {
       usePathnameMock.mockReturnValue(PATHS[locale]);
       const d = getDictionary(locale).layout.floatingSocial;
       const { unmount } = render(<FloatingSocialClient {...props} />);
@@ -417,9 +405,9 @@ describe("6) FloatingSocialClient — locale", () => {
   });
 
   it("6c) 🔒 HREF'LER locale'den BAĞIMSIZ (link hedefleri değişmedi)", () => {
-    usePathnameMock.mockReturnValue("/de");
+    usePathnameMock.mockReturnValue("/en");
     render(<FloatingSocialClient {...props} />);
-    const d = getDictionary("de").layout.floatingSocial;
+    const d = getDictionary("en").layout.floatingSocial;
     expect(screen.getByLabelText(d.call)).toHaveAttribute("href", props.phoneHref);
     expect(screen.getByLabelText(d.whatsapp)).toHaveAttribute(
       "href",
@@ -455,15 +443,15 @@ describe("7) dictionary + kaynak kilidi", () => {
       typeof v === "object" && v ? leaves(v, `${pre}${k}.`) : [`${pre}${k}`]
     );
 
-  it("7a) tr/en/de leaf kümeleri BİREBİR aynı", () => {
+  it("7a) tr/en leaf kümeleri BİREBİR aynı", () => {
+    expect(SUPPORTED_LOCALES).toEqual(["tr", "en"]);
     const sets = SUPPORTED_LOCALES.map((l) =>
       JSON.stringify(leaves(getDictionary(l)).sort())
     );
     expect(sets[1]).toBe(sets[0]);
-    expect(sets[2]).toBe(sets[0]);
   });
 
-  it("7b) layout.* key'leri üç dilde de DOLU", () => {
+  it("7b) layout.* key'leri her dilde DOLU", () => {
     for (const locale of SUPPORTED_LOCALES) {
       for (const key of leaves(getDictionary(locale).layout)) {
         const value = key

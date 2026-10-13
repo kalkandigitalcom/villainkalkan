@@ -118,7 +118,6 @@ function languageAlternates(trPath: string): Record<string, string> {
   return {
     tr: url(languages.tr),
     en: url(languages.en),
-    de: url(languages.de),
     "x-default": url(languages["x-default"]),
   };
 }

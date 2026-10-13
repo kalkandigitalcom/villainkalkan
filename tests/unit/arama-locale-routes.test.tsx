@@ -1,13 +1,13 @@
 /* ===============================================================
-   🛡️ PHASE 13 — /arama · /en/arama · /de/arama ÇOKLU DİL TESTLERİ
+   🛡️ PHASE 13 — /arama · /en/arama ÇOKLU DİL TESTLERİ (DE kaldırıldı)
    ===============================================================
    Kapsam:
-     A) Üç route da AYNI `AramaPageBody`'yi DOĞRU locale ile render
-        eder (üç kopya YOK); EN/DE gate davranışı korunur
-     B) `search` dictionary namespace bütünlüğü (TR/EN/DE)
+     A) İki route da AYNI `AramaPageBody`'yi DOĞRU locale ile render
+        eder (kopya YOK); EN gate davranışı korunur
+     B) `search` dictionary namespace bütünlüğü (TR/EN)
      C) TR BYTE-IDENTITY — değerler Phase 13 öncesi hardcoded
         metinlerle birebir; `PUBLIC_SORT_LABELS` ile lockstep
-     D) basePath türetimi (/arama · /en/arama · /de/arama)
+     D) basePath türetimi (/arama · /en/arama)
      E) FilterSidebar locale davranışı — buildHref + resetFilters
      F) SOURCE-LOCK — hardcoded TR kalmadı, URL kontratı korundu
 
@@ -22,7 +22,6 @@ import path from "node:path";
 
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
 import { PUBLIC_SORT_LABELS } from "@/lib/pagination";
 import { resolveTaxonomyName } from "@/lib/i18n/taxonomy-name.helper";
@@ -174,9 +173,8 @@ beforeEach(() => {
 /* ===============================================================
    A) ROUTE DAVRANIŞI
    =============================================================== */
-const LOCALE_ROUTES: Array<[string, "en" | "de"]> = [
+const LOCALE_ROUTES: Array<[string, "en"]> = [
   ["@/app/(public)/en/arama/page", "en"],
-  ["@/app/(public)/de/arama/page", "de"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -230,16 +228,21 @@ describe("app/(public)/arama/page.tsx — TR", () => {
     const mod = await import("@/app/(public)/arama/page");
     expect(mod.dynamic).toBe("force-dynamic");
   });
+
+  it("6b) DE desteği kaldırıldı — /de/arama route dosyası YOK", () => {
+    expect(
+      fs.existsSync(path.join(process.cwd(), "app/(public)/de/arama/page.tsx"))
+    ).toBe(false);
+  });
 });
 
 /* ===============================================================
    B) DICTIONARY BÜTÜNLÜĞÜ
    =============================================================== */
 describe("Phase 13 — `search` namespace bütünlüğü", () => {
-  it("7) TR/EN/DE'de AYNI key ağacı", () => {
+  it("7) TR/EN'de AYNI key ağacı", () => {
     const trPaths = leafPaths(tr.search).sort();
     expect(leafPaths(en.search).sort()).toEqual(trPaths);
-    expect(leafPaths(de.search).sort()).toEqual(trPaths);
     expect(trPaths.length).toBeGreaterThan(50);
   });
 
@@ -247,7 +250,6 @@ describe("Phase 13 — `search` namespace bütünlüğü", () => {
     for (const [name, d] of [
       ["tr", tr],
       ["en", en],
-      ["de", de],
     ] as const) {
       for (const v of leafValues(d.search)) {
         expect(typeof v, name).toBe("string");
@@ -262,14 +264,8 @@ describe("Phase 13 — `search` namespace bütünlüğü", () => {
     }
   });
 
-  it("10) DE'de Türkçeye ÖZGÜ karakter yok (ö/ü Almancada geçerli)", () => {
-    for (const v of leafValues(de.search)) {
-      expect(/[çÇğĞıİşŞ]/.test(v), v).toBe(false);
-    }
-  });
-
-  it("11) parametreli şablonlar üç dilde de placeholder'ı KORUYOR", () => {
-    for (const d of [tr, en, de]) {
+  it("11) parametreli şablonlar TR/EN'de placeholder'ı KORUYOR", () => {
+    for (const d of [tr, en]) {
       expect(d.search.pillRegions).toContain("{n}");
       expect(d.search.pillTypes).toContain("{n}");
       expect(d.search.pillGuests).toContain("{n}");
@@ -360,10 +356,9 @@ describe("Phase 13 — TR byte-identity", () => {
    D) BASEPATH TÜRETİMİ
    =============================================================== */
 describe("Phase 13 — basePath", () => {
-  it("15) mevcut `buildLocaleAlternates` ile /arama · /en/arama · /de/arama", () => {
+  it("15) mevcut `buildLocaleAlternates` ile /arama · /en/arama", () => {
     expect(buildLocaleAlternates("/arama", "tr").canonical).toBe("/arama");
     expect(buildLocaleAlternates("/arama", "en").canonical).toBe("/en/arama");
-    expect(buildLocaleAlternates("/arama", "de").canonical).toBe("/de/arama");
   });
 
   it("16) gövde basePath'i buildLocaleAlternates'ten türetiyor", () => {
@@ -406,7 +401,7 @@ describe("Phase 13 — FilterSidebar locale", () => {
   }
 
   function renderSidebar(
-    locale: "tr" | "en" | "de",
+    locale: "tr" | "en",
     basePath: string,
     initial = INITIAL
   ) {
@@ -441,26 +436,11 @@ describe("Phase 13 — FilterSidebar locale", () => {
     expect(screen.queryAllByText("Filtrele ve Tarih Seç")).toHaveLength(0);
   });
 
-  it("19) DE: panel metinleri Almanca", () => {
-    renderSidebar("de", "/de/arama");
-    expect(
-      screen.getAllByText(de.search.filters.title).length
-    ).toBeGreaterThan(0);
-    expect(screen.queryAllByText("Filtrele ve Tarih Seç")).toHaveLength(0);
-  });
-
   it("20) EN buildHref → /en/arama (query kontratı korunur)", async () => {
     renderSidebar("en", "/en/arama", { ...INITIAL, guests: 4 });
     clickPanelButton(en.search.filters.apply);
     await waitFor(() => expect(pushMock).toHaveBeenCalled());
     expect(pushMock.mock.calls[0][0]).toBe("/en/arama?guests=4");
-  });
-
-  it("21) DE buildHref → /de/arama", async () => {
-    renderSidebar("de", "/de/arama", { ...INITIAL, guests: 4 });
-    clickPanelButton(de.search.filters.apply);
-    await waitFor(() => expect(pushMock).toHaveBeenCalled());
-    expect(pushMock.mock.calls[0][0]).toBe("/de/arama?guests=4");
   });
 
   it("22) TR buildHref → /arama (BYTE-IDENTICAL eski davranış)", async () => {
@@ -508,11 +488,11 @@ describe("Phase 13 — FilterSidebar locale", () => {
     expect(pushMock).not.toHaveBeenCalled();
   });
 
-  it("26) takvim locale'leri (tr/en/de) register edildi", () => {
+  it("26) takvim locale'leri (tr/en) register edildi; de YOK", () => {
     const src = stripComments(readSrc(SIDEBAR_SRC));
     expect(src).toContain('registerLocale("tr", tr)');
     expect(src).toContain('registerLocale("en", enUS)');
-    expect(src).toContain('registerLocale("de", de)');
+    expect(src).not.toContain('registerLocale("de"');
     /* DatePicker locale'i artık prop'tan gelir. */
     expect(src).toContain("locale={locale}");
     expect(src).not.toContain('locale="tr"');
@@ -534,21 +514,16 @@ describe("Villa tipi adı locale-aware", () => {
     guests: 1,
   };
 
-  it("32) resolveTaxonomyName: TR canonical · EN/DE çeviri · eksikte TR fallback", () => {
+  it("32) resolveTaxonomyName: TR canonical · EN çeviri · eksikte TR fallback", () => {
     const canonical = "Müstakil Villa";
-    const byLocale = { en: "Detached Villa", de: "Freistehende Villa" };
+    const byLocale = { en: "Detached Villa" };
 
     expect(resolveTaxonomyName(canonical, byLocale, "tr")).toBe(canonical);
     expect(resolveTaxonomyName(canonical, byLocale, "en")).toBe(
       "Detached Villa"
     );
-    expect(resolveTaxonomyName(canonical, byLocale, "de")).toBe(
-      "Freistehende Villa"
-    );
-    /* DE çevirisi yoksa → canonical TR */
-    expect(resolveTaxonomyName(canonical, { en: "Detached Villa" }, "de")).toBe(
-      canonical
-    );
+    /* EN çevirisi yoksa → canonical TR */
+    expect(resolveTaxonomyName(canonical, {}, "en")).toBe(canonical);
     /* Boş/whitespace çeviri → canonical TR */
     expect(resolveTaxonomyName(canonical, { en: "   " }, "en")).toBe(canonical);
     /* TR'de harita dolu olsa bile ASLA çevrilmez */
@@ -558,7 +533,6 @@ describe("Villa tipi adı locale-aware", () => {
   it.each([
     ["tr", "Müstakil Villa"],
     ["en", "Detached Villa"],
-    ["de", "Freistehende Villa"],
   ] as const)(
     "33) FilterSidebar /%s → çözülmüş tip adını gösterir",
     (loc, expected) => {
@@ -575,7 +549,7 @@ describe("Villa tipi adı locale-aware", () => {
       );
       /* 🛡️ "Villa Tipi" bölümü artık seçim yokken KAPALI başlıyor
          (accordion). Assertion DEĞİŞMEDİ — yalnız bölüm açılıyor. */
-      clickPanelButtonGlobal({ tr, en, de }[loc].search.filters.typeLabel);
+      clickPanelButtonGlobal({ tr, en }[loc].search.filters.typeLabel);
       expect(screen.getAllByText(expected).length).toBeGreaterThan(0);
     }
   );

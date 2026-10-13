@@ -29,7 +29,7 @@ import {
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
 
-const LOCALES: Locale[] = ["tr", "en", "de"];
+const LOCALES: Locale[] = ["tr", "en"];
 
 describe("getBedTypeLabel", () => {
   it.each(BED_TYPES.map((t) => [t] as const))(
@@ -48,15 +48,6 @@ describe("getBedTypeLabel", () => {
     expect(getBedTypeLabel("sofa", "en")).toBe("Sofa Bed");
   });
 
-  it("DE beklenen sabit değerler", () => {
-    expect(getBedTypeLabel("double", "de")).toBe("Doppelbett");
-    expect(getBedTypeLabel("single", "de")).toBe("Einzelbett");
-    expect(getBedTypeLabel("queen", "de")).toBe("Queensize-Bett");
-    expect(getBedTypeLabel("king", "de")).toBe("Kingsize-Bett");
-    expect(getBedTypeLabel("bunk", "de")).toBe("Etagenbett");
-    expect(getBedTypeLabel("sofa", "de")).toBe("Schlafsofa");
-  });
-
   it.each(LOCALES)("locale=%s için 6 yatak tipinin TAMAMI dolu", (locale) => {
     for (const type of BED_TYPES) {
       expect(getBedTypeLabel(type, locale)).toBeTruthy();
@@ -72,13 +63,10 @@ describe("getBathroomTypeLabel", () => {
     }
   );
 
-  it("EN/DE beklenen sabit değerler", () => {
+  it("EN beklenen sabit değerler", () => {
     expect(getBathroomTypeLabel("full", "en")).toBe("Full Bathroom");
     expect(getBathroomTypeLabel("shower_wc", "en")).toBe("Shower + WC");
     expect(getBathroomTypeLabel("wc", "en")).toBe("WC");
-    expect(getBathroomTypeLabel("full", "de")).toBe("Vollbad");
-    expect(getBathroomTypeLabel("shower_wc", "de")).toBe("Dusche + WC");
-    expect(getBathroomTypeLabel("wc", "de")).toBe("WC");
   });
 
   it.each(LOCALES)("locale=%s için 3 banyo tipinin TAMAMI dolu", (locale) => {
@@ -141,25 +129,15 @@ describe("getBedroomNameLabel / getBathroomNameLabel", () => {
     expect(getBedroomNameLabel("Yatak Odası", "en")).toBe("Bedroom");
   });
 
-  it("DE canonical oda adları", () => {
-    expect(getBedroomNameLabel("Ana Yatak Odası", "de")).toBe(
-      "Hauptschlafzimmer"
-    );
-    expect(getBedroomNameLabel("Çocuk Odası", "de")).toBe("Kinderzimmer");
-    expect(getBedroomNameLabel("Misafir Odası", "de")).toBe("Gästezimmer");
-  });
-
-  it("numaralı oda adı şablondan üretilir (EN/DE)", () => {
+  it("numaralı oda adı şablondan üretilir (EN)", () => {
     expect(getBedroomNameLabel("1. Yatak Odası", "en")).toBe("Bedroom 1");
     expect(getBedroomNameLabel("3. Yatak Odası", "en")).toBe("Bedroom 3");
-    expect(getBedroomNameLabel("2. Yatak Odası", "de")).toBe("Schlafzimmer 2");
     /* Sözlükte olmayan 12. gibi bir numara da çalışır. */
     expect(getBedroomNameLabel("12. Yatak Odası", "en")).toBe("Bedroom 12");
   });
 
-  it("numaralı banyo adı şablondan üretilir (EN/DE)", () => {
+  it("numaralı banyo adı şablondan üretilir (EN)", () => {
     expect(getBathroomNameLabel("1. Banyo", "en")).toBe("Bathroom 1");
-    expect(getBathroomNameLabel("2. Banyo", "de")).toBe("Badezimmer 2");
     expect(getBathroomNameLabel("Banyo", "en")).toBe("Bathroom");
   });
 
@@ -198,12 +176,9 @@ describe("getBedroomNameLabel / getBathroomNameLabel", () => {
     expect(getBedroomNameLabel("1. Bilinmeyen", "en")).toBe("1. Bilinmeyen");
   });
 
-  it("dictionary roomNameLabels üç locale'de de aynı key kümesine sahip", () => {
+  it("dictionary roomNameLabels TR/EN'de aynı key kümesine sahip", () => {
     const trKeys = Object.keys(getDictionary("tr").roomNameLabels).sort();
     expect(Object.keys(getDictionary("en").roomNameLabels).sort()).toEqual(
-      trKeys
-    );
-    expect(Object.keys(getDictionary("de").roomNameLabels).sort()).toEqual(
       trKeys
     );
     expect(trKeys.length).toBeGreaterThan(0);

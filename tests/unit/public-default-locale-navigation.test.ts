@@ -1,7 +1,7 @@
 /* ===============================================================
    🛡️ VARSAYILAN DİL — TR HEDEFLERİ (DÖNGÜ KORUMASI) + SEO
    ===============================================================
-   EN KRİTİK KURAL: varsayılan dil EN/DE iken `/` bir YÖNLENDİRİCİDİR.
+   EN KRİTİK KURAL: varsayılan dil EN iken `/` bir YÖNLENDİRİCİDİR.
    Eğer dil değiştiricinin "TR" hedefi veya logo/ana-sayfa linkleri
    `/` kalsaydı, TÜRKÇE seçen kullanıcı ANINDA varsayılan dile geri
    düşerdi. Bu dosya TR hedeflerinin `/tr`'ye gittiğini ve
@@ -19,68 +19,69 @@ import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
 import { DEFAULT_LOCALE, localeFromPathname } from "@/lib/i18n/config";
 import { localeHref } from "@/lib/i18n/locale-href";
 
-const ML_ON_DE = { multilingual_enabled: true, public_default_locale: "de" };
+const ML_ON_EN = { multilingual_enabled: true, public_default_locale: "en" };
+/* DE desteği kaldırıldı — "de" artık geçerli bir varsayılan dil DEĞİL. */
+const ML_ON_DE_LEGACY = { multilingual_enabled: true, public_default_locale: "de" };
 const ML_ON_TR = { multilingual_enabled: true, public_default_locale: "tr" };
-const ML_OFF = { multilingual_enabled: false, public_default_locale: "de" };
+const ML_OFF = { multilingual_enabled: false, public_default_locale: "en" };
 
-const TR_HOME_B = resolvePublicHome(ML_ON_DE).trHomeHref; // "/tr"
+const TR_HOME_B = resolvePublicHome(ML_ON_EN).trHomeHref; // "/tr"
 const TR_HOME_A = resolvePublicHome(ML_ON_TR).trHomeHref; // "/"
 
 /* Header / Footer / BottomNav'ın ana sayfa linki için kullandığı
    TÜRETME — üç component'te de BİREBİR aynı ifade. */
-function homeHrefFor(locale: "tr" | "en" | "de", trHomeHref: string) {
+function homeHrefFor(locale: "tr" | "en", trHomeHref: string) {
   return locale === DEFAULT_LOCALE ? trHomeHref : localeHref("/", locale);
 }
 
 describe("10) Dil değiştirici — TÜRKÇE seçimi varsayılan dile GERİ DÜŞÜRMEZ", () => {
-  it("MOD B: /de ana sayfasında TR hedefi '/tr' (yönlendirilen '/' DEĞİL)", () => {
-    const t = getLocaleSwitchTargets("/de", "", TR_HOME_B);
+  it("MOD B: /en ana sayfasında TR hedefi '/tr' (yönlendirilen '/' DEĞİL)", () => {
+    const t = getLocaleSwitchTargets("/en", "", TR_HOME_B);
     expect(t.tr).toBe("/tr");
     expect(t.en).toBe("/en");
-    expect(t.de).toBe("/de");
+    expect("de" in t).toBe(false);
   });
 
-  it("MOD B: /tr üzerindeyken hedefler doğru (TR kendisi, EN/DE kökleri)", () => {
+  it("MOD B: /tr üzerindeyken hedefler doğru (TR kendisi, EN kökü)", () => {
     const t = getLocaleSwitchTargets("/tr", "", TR_HOME_B);
     expect(t.tr).toBe("/tr");
     expect(t.en).toBe("/en");
-    expect(t.de).toBe("/de");
   });
 
   it("MOD A: TR hedefi '/' — BYTE-IDENTICAL (bugünkü davranış)", () => {
-    expect(getLocaleSwitchTargets("/de", "", TR_HOME_A)).toEqual(
-      getLocaleSwitchTargets("/de", "")
+    expect(getLocaleSwitchTargets("/en", "", TR_HOME_A)).toEqual(
+      getLocaleSwitchTargets("/en", "")
     );
-    expect(getLocaleSwitchTargets("/de", "", TR_HOME_A).tr).toBe("/");
+    expect(getLocaleSwitchTargets("/en", "", TR_HOME_A).tr).toBe("/");
   });
 
   it("trHomePath hiç verilmezse eski davranış AYNEN korunur", () => {
-    expect(getLocaleSwitchTargets("/de").tr).toBe("/");
+    expect(getLocaleSwitchTargets("/en").tr).toBe("/");
     expect(getLocaleSwitchTargets("/en/iletisim").tr).toBe("/iletisim");
   });
 });
 
 describe("9) İç TR route'ları ETKİLENMEZ (prefix'siz mimari korunur)", () => {
   it("MOD B'de bile /kiralik-villalar, /arama, /iletisim TR hedefleri prefix'siz", () => {
-    expect(getLocaleSwitchTargets("/de/kiralik-villalar", "", TR_HOME_B).tr).toBe(
+    expect(getLocaleSwitchTargets("/en/kiralik-villalar", "", TR_HOME_B).tr).toBe(
       "/kiralik-villalar"
     );
-    expect(getLocaleSwitchTargets("/de/arama", "", TR_HOME_B).tr).toBe("/arama");
-    expect(getLocaleSwitchTargets("/de/iletisim", "", TR_HOME_B).tr).toBe(
+    expect(getLocaleSwitchTargets("/en/arama", "", TR_HOME_B).tr).toBe("/arama");
+    expect(getLocaleSwitchTargets("/en/iletisim", "", TR_HOME_B).tr).toBe(
       "/iletisim"
     );
   });
 
   it("query string MOD B'de de AYNEN taşınır", () => {
     expect(
-      getLocaleSwitchTargets("/de/arama", "villa-turleri=x&flexible=3", TR_HOME_B).tr
+      getLocaleSwitchTargets("/en/arama", "villa-turleri=x&flexible=3", TR_HOME_B).tr
     ).toBe("/arama?villa-turleri=x&flexible=3");
   });
 
   it("localeHref DEĞİŞMEDİ — iç TR path'leri prefix ALMAZ", () => {
     expect(localeHref("/kiralik-villalar", "tr")).toBe("/kiralik-villalar");
     expect(localeHref("/arama?a=1", "tr")).toBe("/arama?a=1");
-    expect(localeHref("/kiralik-villalar", "de")).toBe("/de/kiralik-villalar");
+    expect(localeHref("/kiralik-villalar", "en")).toBe("/en/kiralik-villalar");
   });
 });
 
@@ -89,15 +90,13 @@ describe("Logo / ana sayfa linki (Header · Footer · BottomNav)", () => {
     expect(homeHrefFor("tr", TR_HOME_B)).toBe("/tr");
   });
 
-  it("MOD B + EN/DE locale → mevcut localeHref davranışı AYNEN", () => {
+  it("MOD B + EN locale → mevcut localeHref davranışı AYNEN", () => {
     expect(homeHrefFor("en", TR_HOME_B)).toBe("/en");
-    expect(homeHrefFor("de", TR_HOME_B)).toBe("/de");
   });
 
   it("MOD A → her locale için BYTE-IDENTICAL eski çıktı", () => {
     expect(homeHrefFor("tr", TR_HOME_A)).toBe(localeHref("/", "tr"));
     expect(homeHrefFor("en", TR_HOME_A)).toBe(localeHref("/", "en"));
-    expect(homeHrefFor("de", TR_HOME_A)).toBe(localeHref("/", "de"));
   });
 
   it("multilingual kapalı → '/' (bugünkü production)", () => {
@@ -110,15 +109,18 @@ describe("/tr locale tespiti — Header/Footer/TopBar TR render eder", () => {
     expect(localeFromPathname("/tr")).toBe("tr");
   });
 
-  it("/tr, /en veya /de olarak YANLIŞ tespit EDİLMEZ", () => {
+  it("/tr, /en olarak YANLIŞ tespit EDİLMEZ", () => {
     expect(localeFromPathname("/tr")).not.toBe("en");
-    expect(localeFromPathname("/tr")).not.toBe("de");
+  });
+
+  it("DE desteği kaldırıldı — '/de' artık TR'ye düşer", () => {
+    expect(localeFromPathname("/de")).toBe("tr");
   });
 });
 
 describe("12) SEO — hiçbir hreflang hedefi redirect'e düşmez", () => {
   /* home-metadata.ts'teki ana-sayfaya-özel düzeltmenin AYNI ifadesi. */
-  function homeAlternates(settings: unknown, locale: "tr" | "en" | "de") {
+  function homeAlternates(settings: unknown, locale: "tr" | "en") {
     const { canonical, languages } = buildLocaleAlternates("/", locale);
     const home = resolvePublicHome(settings as never);
     if (!home.redirectsFromRoot) return { canonical, languages };
@@ -130,23 +132,23 @@ describe("12) SEO — hiçbir hreflang hedefi redirect'e düşmez", () => {
     return { canonical: l[locale], languages: l };
   }
 
-  it("MOD B: tr → /tr, x-default → /de, canonical'lar doğru", () => {
-    const de = homeAlternates(ML_ON_DE, "de");
-    expect(de.languages.tr).toBe("/tr");
-    expect(de.languages["x-default"]).toBe("/de");
-    expect(de.canonical).toBe("/de");
+  it("MOD B: tr → /tr, x-default → /en, canonical'lar doğru", () => {
+    const en = homeAlternates(ML_ON_EN, "en");
+    expect(en.languages.tr).toBe("/tr");
+    expect(en.languages["x-default"]).toBe("/en");
+    expect(en.canonical).toBe("/en");
 
-    const tr = homeAlternates(ML_ON_DE, "tr");
+    const tr = homeAlternates(ML_ON_EN, "tr");
     expect(tr.canonical).toBe("/tr");
   });
 
   it("MOD B: hiçbir hreflang değeri '/' (yönlendirici) DEĞİL", () => {
-    const { languages } = homeAlternates(ML_ON_DE, "de");
+    const { languages } = homeAlternates(ML_ON_EN, "en");
     expect(Object.values(languages)).not.toContain("/");
   });
 
   it("MOD A: çıktı buildLocaleAlternates ile BYTE-IDENTICAL", () => {
-    for (const loc of ["tr", "en", "de"] as const) {
+    for (const loc of ["tr", "en"] as const) {
       expect(homeAlternates(ML_ON_TR, loc)).toEqual(
         buildLocaleAlternates("/", loc)
       );
@@ -165,11 +167,15 @@ describe("12) SEO — hiçbir hreflang hedefi redirect'e düşmez", () => {
 
 describe("Sitemap ana sayfa girdisi", () => {
   it("MOD B → indexlenebilir TR ana sayfa '/tr'", () => {
-    expect(resolvePublicHome(ML_ON_DE).trHomeHref).toBe("/tr");
+    expect(resolvePublicHome(ML_ON_EN).trHomeHref).toBe("/tr");
   });
 
   it("MOD A → '/' (priority 1.0 girdisi DEĞİŞMEZ)", () => {
     expect(resolvePublicHome(ML_ON_TR).trHomeHref).toBe("/");
     expect(resolvePublicHome(ML_OFF).trHomeHref).toBe("/");
+  });
+
+  it("DE desteği kaldırıldı — public_default_locale 'de' MOD B'yi TETİKLEMEZ", () => {
+    expect(resolvePublicHome(ML_ON_DE_LEGACY).trHomeHref).toBe("/");
   });
 });

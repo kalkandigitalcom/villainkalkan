@@ -1,5 +1,5 @@
 /* ===============================================================
-   🛡️ PHASE 12D — /p/[slug] · /en/p/[slug] · /de/p/[slug] TESTLERİ
+   🛡️ PHASE 12D — /p/[slug] · /en/p/[slug] TESTLERİ
    ===============================================================
    Kapsam:
      A) Üç route da AYNI `CmsPageBody`'yi render eder ve DOĞRU
@@ -115,15 +115,6 @@ const EN_ROW = {
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
-const DE_ROW = {
-  ...EN_ROW,
-  id: "t-de",
-  locale: "de",
-  title: "Ein unvergesslicher Urlaub in Kaş",
-  excerpt: "DE Auszug",
-  body: "DE Inhalt Absatz",
-};
-
 beforeEach(() => {
   vi.clearAllMocks();
   requirePublicLocaleEnabledMock.mockResolvedValue(undefined);
@@ -139,9 +130,8 @@ const params = Promise.resolve({ slug: SLUG });
 /* ===============================================================
    A + B) ROUTE DAVRANIŞI
    =============================================================== */
-const LOCALE_ROUTES: Array<[string, "en" | "de", typeof EN_ROW]> = [
+const LOCALE_ROUTES: Array<[string, "en", typeof EN_ROW]> = [
   ["@/app/(public)/en/p/[slug]/page", "en", EN_ROW],
-  ["@/app/(public)/de/p/[slug]/page", "de", DE_ROW],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale, row) => {
@@ -265,16 +255,6 @@ describe("CmsPageBody — gerçek render (çeviri metinleri)", () => {
     /* TR içerik SAYFADA YOK */
     expect(screen.queryAllByText(TR_PAGE.title)).toHaveLength(0);
     expect(screen.queryAllByText(TR_PAGE.body)).toHaveLength(0);
-  });
-
-  it("12) DE: Almanca başlık/excerpt/gövde render edilir", async () => {
-    getTranslationMock.mockResolvedValue(DE_ROW);
-    await renderRoute("@/app/(public)/de/p/[slug]/page");
-
-    expect(screen.getByRole("heading", { name: DE_ROW.title })).toBeTruthy();
-    expect(screen.getByText(DE_ROW.excerpt)).toBeTruthy();
-    expect(screen.getByText(DE_ROW.body)).toBeTruthy();
-    expect(screen.queryAllByText(TR_PAGE.title)).toHaveLength(0);
   });
 
   it("13) EN çevirisi YOKSA sayfa TR içerikle render edilir (fallback)", async () => {

@@ -5,7 +5,7 @@
 
    Bu dosya GERÇEK (mock'lanmamış) `DISTANCE_OPTIONS`
    (lib/distance.helper.ts) ve GERÇEK dictionary'leri
-   (lib/i18n/dictionaries/{tr,en,de}.ts, lib/i18n/get-dictionary.ts)
+   (lib/i18n/dictionaries/{tr,en}.ts, lib/i18n/get-dictionary.ts)
    kullanır — helper'ın saf/deterministik davranışı gerçek veriyle
    doğrulanıyor (mock'lu bir "sahte" çeviri katmanıyla değil).
 
@@ -27,25 +27,19 @@ import type { Locale } from "@/lib/i18n/config";
    Testin KENDİSİ bu sabit beklenen değerlerle karşılaştırır —
    yalnız "boş değil" gibi zayıf bir kontrol değil, spesifik çeviri
    kararları da regresyona karşı korunuyor. */
-const EXPECTED: Record<string, { en: string; de: string }> = {
-  Restoran: { en: "Restaurant", de: "Restaurant" },
-  Market: { en: "Market", de: "Markt" },
-  Plaj: { en: "Beach", de: "Strand" },
-  Deniz: { en: "Sea", de: "Meer" },
-  "Şehir Merkezi": { en: "City Center", de: "Stadtzentrum" },
-  "Havaalanı (Antalya)": {
-    en: "Airport (Antalya)",
-    de: "Flughafen (Antalya)",
-  },
-  "Havaalanı (Dalaman)": {
-    en: "Airport (Dalaman)",
-    de: "Flughafen (Dalaman)",
-  },
-  "Otobüs Terminali": { en: "Bus Station", de: "Busbahnhof" },
-  "Sağlık Merkezi": { en: "Health Center", de: "Gesundheitszentrum" },
-  Eczane: { en: "Pharmacy", de: "Apotheke" },
-  "Benzin İstasyonu": { en: "Gas Station", de: "Tankstelle" },
-  Okul: { en: "School", de: "Schule" },
+const EXPECTED: Record<string, { en: string }> = {
+  Restoran: { en: "Restaurant" },
+  Market: { en: "Market" },
+  Plaj: { en: "Beach" },
+  Deniz: { en: "Sea" },
+  "Şehir Merkezi": { en: "City Center" },
+  "Havaalanı (Antalya)": { en: "Airport (Antalya)" },
+  "Havaalanı (Dalaman)": { en: "Airport (Dalaman)" },
+  "Otobüs Terminali": { en: "Bus Station" },
+  "Sağlık Merkezi": { en: "Health Center" },
+  Eczane: { en: "Pharmacy" },
+  "Benzin İstasyonu": { en: "Gas Station" },
+  Okul: { en: "School" },
 };
 
 describe("getTranslatedDistanceLabel — canonical title → locale çözümü", () => {
@@ -61,15 +55,14 @@ describe("getTranslatedDistanceLabel — canonical title → locale çözümü",
   );
 
   it.each(Object.entries(EXPECTED))(
-    "%s → EN/DE beklenen sabit çeviriyle eşleşir",
+    "%s → EN beklenen sabit çeviriyle eşleşir",
     (title, expected) => {
       expect(getTranslatedDistanceLabel(title, "en")).toBe(expected.en);
-      expect(getTranslatedDistanceLabel(title, "de")).toBe(expected.de);
     }
   );
 
-  it("dictionary'deki 12 canonical title'ın TAMAMININ karşılığı var (tr/en/de)", () => {
-    for (const locale of ["tr", "en", "de"] as Locale[]) {
+  it("dictionary'deki 12 canonical title'ın TAMAMININ karşılığı var (tr/en)", () => {
+    for (const locale of ["tr", "en"] as Locale[]) {
       const dict = getDictionary(locale);
       expect(Object.keys(dict.distanceLabels).sort()).toEqual(
         [...DISTANCE_OPTIONS].sort()
@@ -84,7 +77,7 @@ describe("getTranslatedDistanceLabel — canonical title → locale çözümü",
 });
 
 describe("getTranslatedDistanceLabel — legacy/custom title fallback", () => {
-  it.each(["tr", "en", "de"] as Locale[])(
+  it.each(["tr", "en"] as Locale[])(
     "canonical OLMAYAN title locale=%s için DEĞİŞMEDEN döner",
     (locale) => {
       expect(getTranslatedDistanceLabel("Özel Mesafe", locale)).toBe(

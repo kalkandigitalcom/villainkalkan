@@ -30,24 +30,12 @@ import Footer from "@/app/components/layout/Footer";
 
 const TR_COPYRIGHT = "© {year} {site_name} · Tüm hakları saklıdır.";
 const EN_COPYRIGHT = "© {year} {site_name} · All rights reserved.";
-const DE_COPYRIGHT = "© {year} {site_name} · Alle Rechte vorbehalten.";
 
 const TRANSLATIONS: SettingsTranslationsByLocale = {
   en: {
     footer_copyright: EN_COPYRIGHT,
     default_meta_title: "Luxury Villa Rentals",
     default_meta_description: "Handpicked villas on the Mediterranean coast.",
-    hero_title: null,
-    hero_subtitle: null,
-    hero_badge_text: null,
-    hero_primary_cta_text: null,
-    hero_secondary_cta_text: null,
-    business_hours: null,
-  },
-  de: {
-    footer_copyright: DE_COPYRIGHT,
-    default_meta_title: "Luxus-Villen mieten",
-    default_meta_description: "Ausgewählte Villen an der Mittelmeerküste.",
     hero_title: null,
     hero_subtitle: null,
     hero_badge_text: null,
@@ -91,12 +79,6 @@ describe("resolveSettingsText — §6 fallback zinciri", () => {
     ).toBe(EN_COPYRIGHT);
   });
 
-  it("5) locale 'de' + çeviri var → çeviri", () => {
-    expect(
-      resolveSettingsText(TR_COPYRIGHT, TRANSLATIONS, "de", "footer_copyright")
-    ).toBe(DE_COPYRIGHT);
-  });
-
   it("6) locale 'en' + çeviri YOK (translations null) → TR canonical", () => {
     expect(
       resolveSettingsText(TR_COPYRIGHT, null, "en", "footer_copyright")
@@ -106,11 +88,11 @@ describe("resolveSettingsText — §6 fallback zinciri", () => {
     ).toBe(TR_COPYRIGHT);
   });
 
-  it("7) locale 'en' + o dil hiç yok ({ de: … }) → TR canonical", () => {
+  it("7) locale 'en' + o dil hiç yok ({}) → TR canonical", () => {
     expect(
       resolveSettingsText(
         TR_COPYRIGHT,
-        { de: TRANSLATIONS.de },
+        {},
         "en",
         "footer_copyright"
       )
@@ -227,7 +209,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("13) DE — çeviri kullanılır", () => {
+  it("13) '/de' artık desteklenmiyor → TR canonical metin (EN sızmaz)", () => {
     usePathnameMock.mockReturnValue("/de");
     render(
       <Footer
@@ -236,8 +218,11 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
       />
     );
     expect(
-      screen.getByText("© 2026 Tatilin Yeri · Alle Rechte vorbehalten.")
+      screen.getByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır.")
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText("© 2026 Tatilin Yeri · All rights reserved.")
+    ).not.toBeInTheDocument();
   });
 
   it("14) EN + çeviri YOK → TR canonical metin gösterilir", () => {

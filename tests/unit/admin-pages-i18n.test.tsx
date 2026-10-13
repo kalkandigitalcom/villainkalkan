@@ -2,7 +2,7 @@
    🛡️ PHASE 12 — MAKI ADMIN / PAGES I18N TESTLERİ (Seçenek A)
    ===============================================================
    KAPSAM:
-     1) `admin` namespace'inin TR/EN/DE bütünlüğü (aynı key ağacı,
+     1) `admin` namespace'inin TR/EN bütünlüğü (aynı key ağacı,
         boş değer yok)
      2) TR BYTE-IDENTITY — dictionary değerleri Phase 12 ÖNCESİNDEKİ
         hardcoded metinlerin BİREBİR kopyası mı? (U+2026 "…",
@@ -13,7 +13,7 @@
      4) Render — list / new / [id] ekranlarındaki metinler
         dictionary'den geliyor mu?
      5) `formatDictionaryString` — `{url}` / `{hint}` parametreli
-        4 key doğru yerleşiyor mu? (TR/EN/DE)
+        4 key doğru yerleşiyor mu? (TR/EN)
 
    BU FAZDA admin'de locale KAYNAĞI YOK: call-site'lar bilinçli
    olarak `DEFAULT_LOCALE` kullanır, bu yüzden render testleri TR
@@ -27,7 +27,6 @@ import path from "node:path";
 
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import { DEFAULT_LOCALE } from "@/lib/i18n/config";
@@ -198,25 +197,21 @@ beforeEach(() => {
    1) DICTIONARY BÜTÜNLÜĞÜ
    =============================================================== */
 describe("Phase 12 — admin namespace bütünlüğü", () => {
-  it("TR/EN/DE'de `admin` namespace'i mevcut", () => {
+  it("TR/EN'de `admin` namespace'i mevcut", () => {
     expect(tr.admin).toBeTruthy();
     expect(en.admin).toBeTruthy();
-    expect(de.admin).toBeTruthy();
   });
 
-  it("üç dilde AYNI key ağacı (leaf path'leri birebir eşit)", () => {
+  it("TR/EN'de AYNI key ağacı (leaf path'leri birebir eşit)", () => {
     const trPaths = leafPaths(tr.admin).sort();
     const enPaths = leafPaths(en.admin).sort();
-    const dePaths = leafPaths(de.admin).sort();
     expect(enPaths).toEqual(trPaths);
-    expect(dePaths).toEqual(trPaths);
   });
 
   it("hiçbir dilde boş/whitespace değer yok", () => {
     for (const [name, dict] of [
       ["tr", tr],
       ["en", en],
-      ["de", de],
     ] as const) {
       const values = leafValues(dict.admin);
       expect(values.length).toBeGreaterThan(80);
@@ -445,12 +440,10 @@ describe("Phase 12 — TR byte-identity", () => {
 });
 
 /* ===============================================================
-   3) EN / DE TAMLIĞI
+   3) EN TAMLIĞI
    =============================================================== */
-describe("Phase 12 — EN/DE çeviri kalitesi", () => {
-  /* Türkçeye ÖZGÜ karakterler (ö/ü Almancada da var → EN ve DE için
-     ayrı sınıflar). */
-  const TR_ONLY = /[çÇğĞıİşŞ]/;
+describe("Phase 12 — EN çeviri kalitesi", () => {
+  /* Türkçe karakterler EN değerlerinde bulunmamalı. */
   const TR_EN = /[çÇğĞıİöÖşŞüÜ]/;
 
   it("EN değerlerinde Türkçe karakter yok", () => {
@@ -459,14 +452,8 @@ describe("Phase 12 — EN/DE çeviri kalitesi", () => {
     }
   });
 
-  it("DE değerlerinde Türkçeye özgü karakter yok", () => {
-    for (const v of leafValues(de.admin)) {
-      expect(TR_ONLY.test(v), `DE: "${v}"`).toBe(false);
-    }
-  });
-
-  it("EN/DE, TR'nin kopyası değil (dilden bağımsız terimler hariç)", () => {
-    /* Üç dilde de aynı kalması BEKLENEN, dilden bağımsız terimler. */
+  it("EN, TR'nin kopyası değil (dilden bağımsız terimler hariç)", () => {
+    /* Her dilde aynı kalması BEKLENEN, dilden bağımsız terimler. */
     const LANGUAGE_NEUTRAL = new Set([
       "pages.form.fieldSlug",
       "pages.form.seoHeading",
@@ -488,8 +475,8 @@ describe("Phase 12 — EN/DE çeviri kalitesi", () => {
     expect(differing).toBeGreaterThan(paths.length - 8);
   });
 
-  it("parametreli şablonlar EN/DE'de de placeholder'ı KORUYOR", () => {
-    for (const d of [en, de]) {
+  it("parametreli şablonlar EN'de de placeholder'ı KORUYOR", () => {
+    for (const d of [en]) {
       expect(d.admin.common.hintPrefix).toContain("{hint}");
       expect(d.admin.pages.form.slugChangedWarning).toContain("{url}");
       expect(d.admin.pages.publish.hint).toContain("{url}");
@@ -771,11 +758,11 @@ describe("Phase 12 — Sayfa düzenle render", () => {
 });
 
 /* ===============================================================
-   8) formatDictionaryString — üç dil
+   8) formatDictionaryString — TR/EN
    =============================================================== */
 describe("Phase 12 — formatDictionaryString parametreleri", () => {
-  it("{url} üç dilde de doğru yerleşir", () => {
-    for (const d of [tr, en, de]) {
+  it("{url} TR/EN'de doğru yerleşir", () => {
+    for (const d of [tr, en]) {
       const out = formatDictionaryString(d.admin.pages.publish.hint, {
         url: "/p/test",
       });
@@ -784,8 +771,8 @@ describe("Phase 12 — formatDictionaryString parametreleri", () => {
     }
   });
 
-  it("{hint} üç dilde de doğru yerleşir", () => {
-    for (const d of [tr, en, de]) {
+  it("{hint} TR/EN'de doğru yerleşir", () => {
+    for (const d of [tr, en]) {
       const out = formatDictionaryString(d.admin.common.hintPrefix, {
         hint: "eksik kolon",
       });

@@ -57,7 +57,7 @@ describe("upsertPriceIncludeTranslation", () => {
     );
   });
 
-  it("DE upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("DE upsert — DE desteği kaldırıldı, reddedilir ve repository çağrılmaz", async () => {
     const { upsertPriceIncludeTranslation } = await import(
       "@/app/services/price-include-item-translation.service"
     );
@@ -68,13 +68,8 @@ describe("upsertPriceIncludeTranslation", () => {
       title: "Test Inklusive",
     });
 
-    expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith(
-      "price_include_item",
-      "include-uuid-1",
-      "de",
-      { title: "Test Inklusive" }
-    );
+    expect(result.ok).toBe(false);
+    expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
   it("mevcut EN çeviriyi günceller", async () => {
@@ -170,7 +165,7 @@ describe("upsertPriceIncludeTranslation", () => {
 });
 
 describe("getPriceIncludeTranslations", () => {
-  it("yalnız en/de satırlarını döner (tr varsa filtrelenir)", async () => {
+  it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
         { ...VALID_ROW, locale: "tr" },
@@ -188,7 +183,7 @@ describe("getPriceIncludeTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["de", "en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
     }
   });
 

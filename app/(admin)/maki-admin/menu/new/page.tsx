@@ -56,7 +56,6 @@ export default function NewMenu() {
      türlerde de geçerlidir — bu alan menünün GÖRÜNEN ETİKETİDİR,
      kaynak kaydın kendi çevirisini değiştirmez. */
   const [nameEn, setNameEn] = useState("");
-  const [nameDe, setNameDe] = useState("");
 
   // option lists
   const [pageOptions, setPageOptions] = useState<
@@ -253,9 +252,8 @@ export default function NewMenu() {
        (state'te değer kalabilir) istek ATILMAZ; servis tarafında da
        aynı kural parent ön-kontrolüyle ayrıca uygulanır. */
     if (newMenuId && sourceType === "manual") {
-      const pending: Array<{ locale: "en" | "de"; name: string }> = [];
+      const pending: Array<{ locale: "en"; name: string }> = [];
       if (nameEn.trim()) pending.push({ locale: "en", name: nameEn });
-      if (nameDe.trim()) pending.push({ locale: "de", name: nameDe });
 
       for (const t of pending) {
         const tr = await saveMenuTranslationAction({
@@ -351,7 +349,6 @@ export default function NewMenu() {
                        temizlenir (yalnız manual'de anlamlı). */
                     if (card.value !== "manual") {
                       setNameEn("");
-                      setNameDe("");
                     }
                   }}
                   className={
@@ -476,20 +473,6 @@ export default function NewMenu() {
               maxLength={MENU_TRANSLATION_MAX_LEN}
               value={nameEn}
               onChange={(e) => setNameEn(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[12px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-500)] block">
-              {MENU_LOCALE_LABELS.de}
-            </label>
-            <input
-              aria-label={MENU_LOCALE_LABELS.de}
-              placeholder="Örn: Mietvillen"
-              className="input"
-              maxLength={MENU_TRANSLATION_MAX_LEN}
-              value={nameDe}
-              onChange={(e) => setNameDe(e.target.value)}
             />
             <p className="text-xs text-[var(--color-stone-400)]">
               Boş bırakılan dilde Türkçe menü adı gösterilir. Bağlantı

@@ -1,7 +1,7 @@
 /* ===============================================================
    🛡️ PHASE 12D — PUBLIC OKUMA ZİNCİRİ: UÇTAN UCA WIRING TESTİ
    ===============================================================
-   AMAÇ: `/en/p/[slug]` ve `/de/p/[slug]` sayfalarının GERÇEKTEN
+   AMAÇ: `/en/p/[slug]` sayfasının GERÇEKTEN
    `page_translations` tablosundan okuduğunu, yalnız EN ALT katmanı
    (`dbNative`) mock'layarak kanıtlamak. Bu testte GERÇEK kod çalışır:
 
@@ -93,16 +93,6 @@ describe("Phase 12D — public okuma zinciri", () => {
     expect(r.title).toBe(EN_DB_ROW.title);
     expect(r.body).toBe(EN_DB_ROW.body);
     expect(r.seoTitle).toBe(EN_DB_ROW.seo_title);
-  });
-
-  it("DE: aynı tablo, locale='de'", async () => {
-    dbRow = { ...EN_DB_ROW, locale: "de", title: "Ein unvergesslicher Urlaub" };
-    const { resolvePageContent } = await helper();
-    const r = await resolvePageContent(TR_PAGE, "de");
-
-    expect(fromMock).toHaveBeenCalledWith("page_translations");
-    expect(eqMock).toHaveBeenCalledWith("locale", "de");
-    expect(r.title).toBe("Ein unvergesslicher Urlaub");
   });
 
   it("TR: DB'ye HİÇ GİDİLMEZ", async () => {

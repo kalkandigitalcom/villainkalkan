@@ -13,7 +13,7 @@
    `await Component(props)` ile çözülüp `render()`'a verilir.
 
    KAPSAM:
-     1) TR / EN / DE locale render
+     1) TR / EN locale render
      2) Bölüm başlığı dictionary'den (locale-aware)
      3) Bölge adı CANONICAL kalır (villa_location çevirisi YOK)
      4) Badge çevirisi (villa) + fallback
@@ -120,7 +120,7 @@ beforeEach(() => {
 });
 
 async function renderSection(
-  locale?: "tr" | "en" | "de",
+  locale?: "tr" | "en",
   props?: { villaId?: string; locationId?: string | null }
 ) {
   const element = await SimilarVillasSection({
@@ -135,7 +135,7 @@ async function renderSection(
    1) BAŞLIK — locale-aware
    =============================================================== */
 describe("SimilarVillasSection — bölüm başlığı", () => {
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "%s: başlık dictionary'den gelir (hardcoded TR metin YOK)",
     async (locale) => {
       await renderSection(locale);
@@ -155,11 +155,10 @@ describe("SimilarVillasSection — bölüm başlığı", () => {
     ).toBeInTheDocument();
   });
 
-  it("EN ve DE başlıkları birbirinden ve TR'den FARKLI", async () => {
+  it("EN başlığı TR'den FARKLI", async () => {
     const tr = getDictionary("tr").villa.similarVillasTitle;
     const en = getDictionary("en").villa.similarVillasTitle;
-    const de = getDictionary("de").villa.similarVillasTitle;
-    expect(new Set([tr, en, de]).size).toBe(3);
+    expect(new Set([tr, en]).size).toBe(2);
   });
 });
 
@@ -177,12 +176,6 @@ describe("SimilarVillasSection — VillaCard'a locale aktarımı", () => {
     const { container } = await renderSection("en");
     const link = container.querySelector('a[href*="kiralik-villa"]');
     expect(link).toHaveAttribute("href", "/en/kiralik-villa/villa-in-love");
-  });
-
-  it("DE: detay linki /de ile prefix'lenir", async () => {
-    const { container } = await renderSection("de");
-    const link = container.querySelector('a[href*="kiralik-villa"]');
-    expect(link).toHaveAttribute("href", "/de/kiralik-villa/villa-in-love");
   });
 
   it("locale VillaCard'ın METİNLERİNE de geçer (kartta TR hardcoded metin kalmaz)", async () => {
@@ -218,7 +211,7 @@ describe("SimilarVillasSection — VillaCard'a locale aktarımı", () => {
    3) VİLLA ADI ÇEVRİLMEZ (canonical)
    =============================================================== */
 describe("SimilarVillasSection — villa adı canonical", () => {
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "%s: villa adı her locale'de AYNI (özel isim → çevrilmez)",
     async (locale) => {
       /* villa çeviri satırı DOLU gelse bile ad çevrilmemeli. */
@@ -255,11 +248,11 @@ describe("SimilarVillasSection — villa adı canonical", () => {
    4) BÖLGE ADI (canonical) + BADGE ÇEVİRİSİ
    ===============================================================
    🛡️ PHASE 10I — Bölge adları ÖZEL İSİMDİR (Kalkan, Kaş, Fethiye,
-   Çavdır …); EN/DE karşılıkları yoktur ve çevrilmez. Aşağıdaki ilk iki
+   Çavdır …); EN karşılıkları yoktur ve çevrilmez. Aşağıdaki ilk iki
    test, eski "lokasyon çevirisi" davranışının TERSİNİ kilitler.
    =============================================================== */
 describe("SimilarVillasSection — bölge adı canonical, badge çevrilir", () => {
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "%s: bölge adı canonical kalır — villa_location için sorgu HİÇ atılmaz",
     async (locale) => {
       await renderSection(locale);

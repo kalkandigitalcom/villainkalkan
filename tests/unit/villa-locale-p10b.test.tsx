@@ -95,14 +95,9 @@ describe("formatDateForLocale — Phase 10B", () => {
     expect(formatDateForLocale("2026-01-05", "en")).toBe("5 Jan 2026");
   });
 
-  it("locale='de' → Almanca ay kısaltması (Mär/Mai/Okt/Dez TR/EN'den FARKLI)", () => {
-    expect(formatDateForLocale("2026-10-01", "de")).toBe("1 Okt 2026");
-    expect(formatDateForLocale("2026-03-11", "de")).toBe("11 Mär 2026");
-  });
-
   it("boş/null/undefined değer → '—' (formatDateTr ile aynı fallback, TÜM locale'lerde)", () => {
     expect(formatDateForLocale(null, "en")).toBe("—");
-    expect(formatDateForLocale(undefined, "de")).toBe("—");
+    expect(formatDateForLocale(undefined, "tr")).toBe("—");
     expect(formatDateForLocale("", "tr")).toBe("—");
   });
 });
@@ -140,17 +135,6 @@ describe("PriceList — Phase 10B locale (component visibility + TR default)", (
     render(<PriceList prices={OCTOBER_PRICE} locale="en" />);
     expect(screen.getByText(/1 Oct 2026/)).toBeInTheDocument();
     expect(screen.getAllByText("Nightly").length).toBeGreaterThan(0);
-  });
-
-  it("locale='de': boş prices → 'Keine Preisinformationen'; tarih 'Okt' ay kısaltmasıyla, caption 'Pro Nacht'", () => {
-    render(<PriceList prices={[]} locale="de" />);
-    expect(
-      screen.getByText("Keine Preisinformationen")
-    ).toBeInTheDocument();
-
-    render(<PriceList prices={OCTOBER_PRICE} locale="de" />);
-    expect(screen.getByText(/1 Okt 2026/)).toBeInTheDocument();
-    expect(screen.getAllByText("Pro Nacht").length).toBeGreaterThan(0);
   });
 
   it("Bilgi butonu aria-label'ı locale'e göre değişir (minStay+deposit verilince görünür)", () => {
@@ -194,14 +178,6 @@ describe("AvailabilityInlineCalendar — Phase 10B locale (component visibility 
     );
   });
 
-  it("locale='de': 'Vorheriger Monat'/'Nächster Monat'", async () => {
-    render(<AvailabilityInlineCalendar villaId="v1" prices={[]} locale="de" />);
-    expect(screen.getByLabelText("Vorheriger Monat")).toBeInTheDocument();
-    expect(screen.getByLabelText("Nächster Monat")).toBeInTheDocument();
-    await waitFor(() =>
-      expect(fetchAndExpandVillaAvailabilityMock).toHaveBeenCalledWith("v1")
-    );
-  });
 });
 
 /* ===============================================================
@@ -273,27 +249,7 @@ describe("BookingCalendar — Phase 10B locale (component visibility + TR defaul
     expect(screen.getByLabelText("Next month")).toBeInTheDocument();
   });
 
-  it("locale='de': legend 'Bestätigt'/'Ausstehend'/'Verfügbar' + DE nav etiketleri", async () => {
-    const engine = await setupEngine();
-    render(
-      <BookingCalendar
-        engine={engine.current}
-        currentMonth={new Date(2026, 9, 1)}
-        onCurrentMonthChange={() => {}}
-        locale="de"
-      />
-    );
-    expect(screen.getByText("Bestätigt")).toBeInTheDocument();
-    expect(screen.getByText("Ausstehend")).toBeInTheDocument();
-    expect(screen.getByText("Verfügbar")).toBeInTheDocument();
-    /* Dış "Heute" butonu kaldırıldı; DE locale kontratı nav
-       aria-label'ları üzerinden (aynı sözlük) doğrulanır. */
-    expect(screen.queryByText("Heute")).toBeNull();
-    expect(screen.getByLabelText("Vorheriger Monat")).toBeInTheDocument();
-    expect(screen.getByLabelText("Nächster Monat")).toBeInTheDocument();
-  });
-
-  it("date-fns locale seçimi GERÇEKTEN değişiyor: TR/EN/DE hafta günü header'ları birbirinden FARKLI diziler üretir", async () => {
+  it("date-fns locale seçimi GERÇEKTEN değişiyor: TR/EN hafta günü header'ları birbirinden FARKLI diziler üretir", async () => {
     const engineTr = await setupEngine();
     const { container: containerTr } = render(
       <BookingCalendar
@@ -311,31 +267,19 @@ describe("BookingCalendar — Phase 10B locale (component visibility + TR defaul
         locale="en"
       />
     );
-    const engineDe = await setupEngine();
-    const { container: containerDe } = render(
-      <BookingCalendar
-        engine={engineDe.current}
-        currentMonth={new Date(2026, 9, 1)}
-        onCurrentMonthChange={() => {}}
-        locale="de"
-      />
-    );
 
     const trHeaders = headCellTexts(containerTr);
     const enHeaders = headCellTexts(containerEn);
-    const deHeaders = headCellTexts(containerDe);
 
     expect(trHeaders.length).toBe(7);
     expect(enHeaders.length).toBe(7);
-    expect(deHeaders.length).toBe(7);
-    /* `dateFnsLocale` ternary'sinin (tr/enUS/de) GERÇEKTEN DayPicker'a
-       geçtiğinin kanıtı — üç dizi birbirinden FARKLI (React-day-picker
+    /* `dateFnsLocale` ternary'sinin (tr/enUS) GERÇEKTEN DayPicker'a
+       geçtiğinin kanıtı — iki dizi birbirinden FARKLI (React-day-picker
        her locale için kendi haftaGünü formatını üretir). Tam string
        eşleşmesi date-fns sürüm/format token'ına kırılgan olacağı için
        BİLEREK hardcode edilmedi; yalnız "locale gerçekten prop'a göre
        değişiyor" doğrulanıyor. */
     expect(trHeaders).not.toEqual(enHeaders);
-    expect(enHeaders).not.toEqual(deHeaders);
   });
 });
 
@@ -370,20 +314,6 @@ describe("BookingMinStayWarning — Phase 10B locale (TR default + EN/DE)", () =
     expect(container.textContent).toContain("Selected: 2 nights");
   });
 
-  it("locale='de': 'Mindestaufenthalt' + 'Ausgewählt: 2 Nächte'", () => {
-    const { container } = render(
-      <BookingMinStayWarning
-        minStayThreshold={3}
-        selectedNights={2}
-        locale="de"
-      />
-    );
-    expect(screen.getByText("Mindestaufenthalt")).toBeInTheDocument();
-    expect(container.textContent).toContain(
-      "Der Mindestaufenthalt für diese Villa beträgt"
-    );
-    expect(container.textContent).toContain("Ausgewählt: 2 Nächte");
-  });
 });
 
 /* ===============================================================
@@ -450,26 +380,6 @@ describe("BookingSummary — Phase 10B locale (TR default + EN/DE, yeni shortSta
     ).toBeInTheDocument();
   });
 
-  it("locale='de': 'Kurzaufenthaltsgebühr' / 'Gesamtbetrag' / 'Bei Anreise fällig' / 'Kaution'", () => {
-    const result = buildResult();
-    render(
-      <BookingSummary
-        result={result}
-        prepayment={300}
-        prepaymentRate={30}
-        convertedDeposit={1000}
-        deposit={1000}
-        locale="de"
-      />
-    );
-    expect(screen.getByText("Kurzaufenthaltsgebühr")).toBeInTheDocument();
-    expect(screen.getByText("Gesamtbetrag")).toBeInTheDocument();
-    expect(screen.getByText("Bei Anreise fällig")).toBeInTheDocument();
-    expect(screen.getByText("Kaution")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Unterkunftsbetrag \(3 Nächte\)/)
-    ).toBeInTheDocument();
-  });
 });
 
 /* ===============================================================
@@ -520,26 +430,6 @@ describe("useBookingEngine — Phase 10B locale (reservationError metinleri)", (
 
     expect(result.current.reservationError).toBe(
       "Please select your dates."
-    );
-  });
-
-  it("locale='de': 'Bitte wählen Sie ein Datum.'", async () => {
-    const { result } = renderHook(() =>
-      useBookingEngine({
-        villaSlug: "test-villa",
-        villaId: "v1",
-        prices: PRICES,
-        locale: "de",
-      })
-    );
-    await waitFor(() => expect(result.current.selectedNights).toBe(0));
-
-    act(() => {
-      result.current.handleReservation();
-    });
-
-    expect(result.current.reservationError).toBe(
-      "Bitte wählen Sie ein Datum."
     );
   });
 
@@ -644,33 +534,4 @@ describe("useBookingEngine — Phase 10B handleReservation navigation URL '&loca
     );
   });
 
-  it("locale='de': URL'e '&locale=de' EKLENİR", async () => {
-    const { result } = renderHook(() =>
-      useBookingEngine({
-        villaSlug: "test-villa",
-        villaId: "v1",
-        prices: [
-          { start_date: "2026-01-01", end_date: "2026-12-31", price: 1000, currency: "TRY" },
-        ],
-        initialStart: "2026-10-05",
-        initialEnd: "2026-10-08",
-        locale: "de",
-      })
-    );
-    await waitFor(() => expect(result.current.selectedNights).toBe(3));
-    /* Başlangıç aralığı müsaitliği doğrulanana kadar rezervasyona
-       geçilmez (useBookingEngine başlangıç aralığı doğrulaması). */
-    await waitFor(() => expect(result.current.availabilityPending).toBe(false));
-
-    act(() => {
-      result.current.handleReservation();
-    });
-
-    /* `&locale=de` EKLENİR (bu testin ASIL iddiası — korundu). */
-    expect(window.location.href).toContain("&locale=de");
-    /* Hedef artık DE route'u (locale kaybı düzeltmesi). */
-    expect(window.location.href).toBe(
-      "/de/rezervasyon/test-villa?start=2026-10-05&end=2026-10-08&adults=2&children=0&poolHeating=0&locale=de"
-    );
-  });
 });

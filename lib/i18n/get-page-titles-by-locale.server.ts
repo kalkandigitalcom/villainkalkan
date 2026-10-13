@@ -51,7 +51,7 @@ import type {
    HİÇ girmez — sayfa linki canonical kalır.
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en", "de"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
 
 /**
  * Verilen `pages.id` listesi için `{ pageId: { en?, de? } }` haritası.

@@ -56,7 +56,7 @@ describe("upsertTypeTranslation", () => {
     );
   });
 
-  it("DE upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("locale 'de' artık reddedilir (DE desteği kaldırıldı) — repository çağrılmaz", async () => {
     const { upsertTypeTranslation } = await import(
       "@/app/services/villa-type-translation.service"
     );
@@ -67,13 +67,11 @@ describe("upsertTypeTranslation", () => {
       name: "Test Typ",
     });
 
-    expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith(
-      "villa_type",
-      "type-uuid-1",
-      "de",
-      { name: "Test Typ" }
-    );
+    expect(result).toEqual({
+      ok: false,
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
+    });
+    expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
   it("mevcut EN çeviriyi günceller", async () => {
@@ -169,7 +167,7 @@ describe("upsertTypeTranslation", () => {
 });
 
 describe("getTypeTranslations", () => {
-  it("yalnız en/de satırlarını döner (tr varsa filtrelenir)", async () => {
+  it("yalnız en satırlarını döner (tr / eski de satırları filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
         { ...VALID_ROW, locale: "tr" },
@@ -187,7 +185,7 @@ describe("getTypeTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["de", "en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
     }
   });
 

@@ -21,10 +21,10 @@ import type { PaymentMethodTranslationRow } from "@/lib/i18n/translations.types"
    değeri DEĞİŞTİRMEZ.
    =============================================================== */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 export type PaymentMethodTranslationInput = {
@@ -74,7 +74,7 @@ export async function upsertPaymentMethodTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir",
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
     };
   }
   const locale = input.locale;

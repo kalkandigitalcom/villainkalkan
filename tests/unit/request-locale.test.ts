@@ -65,14 +65,6 @@ describe("request-locale store", () => {
     expect(getRequestLocale()).toBe("en");
   });
 
-  it("setRequestLocale('de') sonrası aynı request içinde getRequestLocale() 'de' döner", async () => {
-    const { setRequestLocale, getRequestLocale } = await import(
-      "@/lib/i18n/request-locale.server"
-    );
-    setRequestLocale("de");
-    expect(getRequestLocale()).toBe("de");
-  });
-
   it("farklı 'request'ler (resetModules ile izole edilmiş modül instance'ları) birbirine SIZINTI yapmaz", async () => {
     const requestA = await import("@/lib/i18n/request-locale.server");
     requestA.setRequestLocale("en");

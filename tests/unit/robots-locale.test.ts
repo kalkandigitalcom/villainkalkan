@@ -53,7 +53,7 @@ async function runRobots() {
   return mod.default();
 }
 
-describe("robots() — Phase 7E EN/DE locale davranışı", () => {
+describe("robots() — Phase 7E EN locale davranışı", () => {
   /* --- 8) TR disallow politikası AYNEN korunuyor + locale eşitleme ---
      🛡️ PUBLIC LOCALE PARİTESİ: `/arama` TR'de kapalıyken `/en/arama` ve
      `/de/arama` açık kalıyordu (faceted search asimetrisi). Artık TR
@@ -82,19 +82,20 @@ describe("robots() — Phase 7E EN/DE locale davranışı", () => {
     expect(list.slice(0, TR_DISALLOW.length)).toEqual(TR_DISALLOW);
   });
 
-  it("8a) locale-routed TR path'lerinin /en ve /de varyantları da disallow", async () => {
+  it("8a) locale-routed TR path'lerinin /en varyantları da disallow (/de YOK)", async () => {
     const result = await runRobots();
     const rule = result.rules as { disallow?: string | string[] } | Array<{ disallow?: string | string[] }>;
     const ruleObj = Array.isArray(rule) ? rule[0] : rule;
     const list = ruleObj.disallow as string[];
     for (const p of LOCALE_ROUTED) {
       expect(list).toContain(`/en${p}`);
-      expect(list).toContain(`/de${p}`);
+      /* DE desteği kaldırıldı — /de varyantı ÜRETİLMEZ. */
+      expect(list).not.toContain(`/de${p}`);
     }
     /* Faceted search — auditte bulunan asimetri. */
     expect(list).toContain("/arama");
     expect(list).toContain("/en/arama");
-    expect(list).toContain("/de/arama");
+    expect(list).not.toContain("/de/arama");
   });
 
   it("8c) `/maki-admin` ve `/api` için locale prefix ÜRETİLMEZ", async () => {
@@ -102,7 +103,7 @@ describe("robots() — Phase 7E EN/DE locale davranışı", () => {
     const rule = result.rules as { disallow?: string | string[] } | Array<{ disallow?: string | string[] }>;
     const ruleObj = Array.isArray(rule) ? rule[0] : rule;
     const list = ruleObj.disallow as string[];
-    for (const bad of ["/en/maki-admin", "/de/maki-admin", "/en/api", "/de/api"]) {
+    for (const bad of ["/en/maki-admin", "/en/api"]) {
       expect(list).not.toContain(bad);
     }
   });
@@ -115,7 +116,6 @@ describe("robots() — Phase 7E EN/DE locale davranışı", () => {
     for (const allowed of [
       "/kiralik-villalar",
       "/en/kiralik-villalar",
-      "/de/kiralik-villalar",
       "/kiralik-villa/",
       "/en/kiralik-villa/",
       "/p/",
@@ -131,8 +131,8 @@ describe("robots() — Phase 7E EN/DE locale davranışı", () => {
     ]) {
       expect(list).not.toContain(allowed);
     }
-    /* Toplam: 7 TR + 5 locale-routed × 2 locale = 17 */
-    expect(list).toHaveLength(TR_DISALLOW.length + LOCALE_ROUTED.length * 2);
+    /* Toplam: 7 TR + 5 locale-routed × 1 locale (en) = 12 */
+    expect(list).toHaveLength(TR_DISALLOW.length + LOCALE_ROUTED.length);
   });
 
   it("8b) allow hâlâ kök '/' (villa detay/listeleme/CMS sayfaları crawl'a AÇIK, Phase 7E BUNA DOKUNMADI)", async () => {
@@ -144,7 +144,7 @@ describe("robots() — Phase 7E EN/DE locale davranışı", () => {
 
   /* --- 9) EN/DE kök prefix'i TOPTAN engellenmiyor (yalnız TR ile AYNI
      path'ler) — `/en` veya `/de` tek başına listede OLMAMALI. --- */
-  it("9) '/en' | '/de' kökleri TOPTAN disallow DEĞİL (yalnız TR politikasının eşleniği)", async () => {
+  it("9) '/en' kökü TOPTAN disallow DEĞİL (yalnız TR politikasının eşleniği)", async () => {
     const result = await runRobots();
     const rule = result.rules as { disallow?: string | string[] } | Array<{ disallow?: string | string[] }>;
     const ruleObj = Array.isArray(rule) ? rule[0] : rule;
@@ -153,12 +153,12 @@ describe("robots() — Phase 7E EN/DE locale davranışı", () => {
       : ruleObj.disallow
         ? [ruleObj.disallow]
         : [];
-    for (const bad of ["/en", "/de", "/en/", "/de/"]) {
+    for (const bad of ["/en", "/en/"]) {
       expect(disallowList).not.toContain(bad);
     }
-    /* Her `/en|de/...` girdisinin TR eşleniği listede OLMALI. */
+    /* Her `/en/...` girdisinin TR eşleniği listede OLMALI. */
     for (const entry of disallowList) {
-      const m = /^\/(en|de)(\/.*)$/.exec(entry);
+      const m = /^\/(en)(\/.*)$/.exec(entry);
       if (m) expect(disallowList).toContain(m[2]);
     }
   });

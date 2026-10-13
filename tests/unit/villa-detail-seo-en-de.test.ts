@@ -1,10 +1,9 @@
 /* ===============================================================
-   🛡️ PHASE 7C / 8C — EN/DE VILLA DETAIL generateMetadata:
+   🛡️ PHASE 7C / 8C — EN VILLA DETAIL (DE desteği kaldırıldı) generateMetadata:
    CANONICAL + HREFLANG (7C) + SEO_DESCRIPTION (8C)
    ===============================================================
    Hedef:
      app/(public)/en/kiralik-villa/[slug]/page.tsx > generateMetadata
-     app/(public)/de/kiralik-villa/[slug]/page.tsx > generateMetadata
 
    Mock seviyesi Phase 6B/locale-routes.test.tsx ile AYNI desen:
    `@/lib/i18n/public-locale-gate.server`, `@/app/services/villa.service`,
@@ -92,18 +91,13 @@ const BASE_VILLA = {
 
 const ROUTES: Array<{
   modulePath: string;
-  locale: "en" | "de";
+  locale: "en";
   notFoundTitle: string;
 }> = [
   {
     modulePath: "@/app/(public)/en/kiralik-villa/[slug]/page",
     locale: "en",
     notFoundTitle: "Villa not found",
-  },
-  {
-    modulePath: "@/app/(public)/de/kiralik-villa/[slug]/page",
-    locale: "de",
-    notFoundTitle: "Villa nicht gefunden",
   },
 ];
 
@@ -115,7 +109,7 @@ async function callGenerateMetadata(modulePath: string, slug = "villa-in-love") 
 describe.each(ROUTES)(
   "$modulePath generateMetadata — Phase 7C canonical/hreflang",
   ({ modulePath, locale, notFoundTitle }) => {
-    /* --- 2/3) EN/DE locale canonical --- */
+    /* --- 2/3) EN locale canonical --- */
     it(`canonical '/${locale}/kiralik-villa/{slug}' formatındadır`, async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
       getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
@@ -127,7 +121,7 @@ describe.each(ROUTES)(
     });
 
     /* --- 4) multilingual_enabled=true iken dört hreflang key'i --- */
-    it("multilingual_enabled=true iken languages tr/en/de/x-default TAMAMI mevcut", async () => {
+    it("multilingual_enabled=true iken languages tr/en/x-default TAMAMI mevcut (de YOK)", async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
       getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
@@ -137,7 +131,7 @@ describe.each(ROUTES)(
         | undefined;
       expect(languages?.tr).toBe("/kiralik-villa/villa-in-love");
       expect(languages?.en).toBe("/en/kiralik-villa/villa-in-love");
-      expect(languages?.de).toBe("/de/kiralik-villa/villa-in-love");
+      expect(languages).not.toHaveProperty("de");
       expect(languages?.["x-default"]).toBe("/kiralik-villa/villa-in-love");
     });
 
@@ -153,7 +147,7 @@ describe.each(ROUTES)(
       expect(languages?.["x-default"]).toBe("/kiralik-villa/villa-in-love");
     });
 
-    /* --- 6) multilingual_enabled=false iken EN/DE hreflang'ların
+    /* --- 6) multilingual_enabled=false iken EN hreflang'ların
        YANLIŞLIKLA 404 URL olarak üretilmemesi --- */
     it("multilingual_enabled=false iken `languages` key'i HİÇ YOK", async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });

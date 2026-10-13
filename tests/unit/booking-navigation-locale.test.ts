@@ -5,10 +5,10 @@
      Villa detay sayfasındaki "Rezervasyon Yap" butonu
      (`useBookingEngine > handleReservation`) hedefi PREFIX'SİZ
      üretiyordu: `/rezervasyon/<slug>?...`. Bu kod yazıldığında
-     `/en|/de/rezervasyon/[slug]` route'ları `LocaleRouteComingSoon`
+     `/en/rezervasyon/[slug]` route'ları `LocaleRouteComingSoon`
      placeholder'ıydı ve locale yalnız `&locale=` query param'ı ile
      taşınıyordu — ancak `/rezervasyon/[slug]/page.tsx` o param'ı HİÇ
-     okumuyor. Sonuç: `/de/...` üzerindeki kullanıcı TR route'una
+     okumuyor. Sonuç: `/en/...` üzerindeki kullanıcı TR route'una
      düşüyor → `localeFromPathname` "tr" → dil TR'ye dönüyordu.
 
    DÜZELTME: hedef, projenin MEVCUT merkezi helper'ı `localeHref` ile
@@ -75,7 +75,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-async function reserveWith(locale?: "tr" | "en" | "de") {
+async function reserveWith(locale?: "tr" | "en") {
   const { result } = renderHook(() =>
     useBookingEngine({
       villaSlug: "deniz-villa",
@@ -114,14 +114,9 @@ describe("1-3) Rezervasyon hedefi aktif locale prefix'ini TAŞIR", () => {
     expect(url).not.toContain("locale=");
   });
 
-  it("2) EN → /en/rezervasyon/...", async () => {
+  it("2) EN → /en/rezervasyon/... (bildirilen hata senaryosu)", async () => {
     const url = await reserveWith("en");
     expect(url.startsWith("/en/rezervasyon/deniz-villa?")).toBe(true);
-  });
-
-  it("3) DE → /de/rezervasyon/... (bildirilen hata senaryosu)", async () => {
-    const url = await reserveWith("de");
-    expect(url.startsWith("/de/rezervasyon/deniz-villa?")).toBe(true);
     /* REGRESYON: prefix'siz TR route'una ASLA düşmemeli. */
     expect(url.startsWith("/rezervasyon/")).toBe(false);
   });
@@ -129,7 +124,7 @@ describe("1-3) Rezervasyon hedefi aktif locale prefix'ini TAŞIR", () => {
 
 describe("4) Query sözleşmesi AYNEN korunur", () => {
   it("4a) start/end/adults/children/poolHeating parametreleri değişmedi", async () => {
-    const url = await reserveWith("de");
+    const url = await reserveWith("en");
     const qs = url.slice(url.indexOf("?"));
     expect(qs).toContain(`start=${START}`);
     expect(qs).toContain(`end=${END}`);
@@ -138,10 +133,10 @@ describe("4) Query sözleşmesi AYNEN korunur", () => {
     expect(qs).toContain("poolHeating=");
   });
 
-  it("4b) TR ile EN/DE arasındaki TEK fark path prefix'i (+ mevcut &locale=)", async () => {
+  it("4b) TR ile EN arasındaki TEK fark path prefix'i (+ mevcut &locale=)", async () => {
     const tr = await reserveWith("tr");
-    const de = await reserveWith("de");
-    expect(de).toBe(`/de${tr}&locale=de`);
+    const en = await reserveWith("en");
+    expect(en).toBe(`/en${tr}&locale=en`);
   });
 });
 
@@ -158,7 +153,7 @@ describe("5) Hedef, gidilen locale'de ÇÖZÜLEBİLİR bir route", () => {
 
 describe("6) Merkezi helper kullanılıyor — ikinci bir prefix mantığı YOK", () => {
   it("6a) çıktı localeHref sözleşmesiyle BİREBİR uyumlu", async () => {
-    for (const loc of ["tr", "en", "de"] as const) {
+    for (const loc of ["tr", "en"] as const) {
       const url = await reserveWith(loc);
       /* Aynı girdi için helper ne üretirse o: prefix mantığı tek yerde. */
       expect(url).toBe(localeHref(url, loc));
@@ -185,7 +180,7 @@ describe("7) Mevcut davranışlar KORUNDU (regresyon)", () => {
         prices: PRICES,
         cleaning_fee: 0,
         cleaning_currency: "TRY",
-        locale: "de",
+        locale: "en",
       })
     );
     await act(async () => {

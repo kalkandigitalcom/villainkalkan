@@ -10,7 +10,7 @@
 
    TEK FARK — İKİ ALAN AYNI ANDA: villa tipi panelinde EN/DE pill-tab
    ile TEK input gösterilir; menüde talep edilen yerleşim iki alanı da
-   aynı anda gösterir (Menü Adı / English / Deutsch). Her ikisi de tek
+   aynı anda gösterir (Menü Adı / English). Her ikisi de tek
    "Kaydet" ile yazılır.
 
    ⚠️ Boş bırakılabilir: boş/whitespace değer çeviriyi TEMİZLER ve
@@ -31,11 +31,10 @@ import {
    Yeni bir cache/invalidation mekanizması İCAT EDİLMEDİ. */
 import { revalidateMenu } from "@/app/services/revalidate.actions";
 
-type WritableLocale = "en" | "de";
+type WritableLocale = "en";
 
 export const MENU_LOCALE_LABELS: Record<WritableLocale, string> = {
   en: "English",
-  de: "Deutsch",
 };
 
 /** Panel + "Menü ekle" formu AYNI sınırı kullanır (DB kolonu `text`;
@@ -53,7 +52,6 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
 
   const [forms, setForms] = useState<Record<WritableLocale, string>>({
     en: "",
-    de: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -78,7 +76,7 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en" && row.locale !== "de") continue;
+          if (row.locale !== "en") continue;
           next[row.locale] = row.name ?? "";
         }
         return next;
@@ -97,7 +95,7 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
     try {
       /* İki locale AYRI upsert (UNIQUE(menu_id, locale)); sıralı —
          tek bir hata bile kullanıcıya bildirilir. */
-      for (const locale of ["en", "de"] as WritableLocale[]) {
+      for (const locale of ["en"] as WritableLocale[]) {
         const result = await saveMenuTranslationAction({
           menuId,
           locale,

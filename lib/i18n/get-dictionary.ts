@@ -22,9 +22,8 @@ import { resolveLocale, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries/types";
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 
-const DICTIONARIES: Record<Locale, Dictionary> = { tr, en, de };
+const DICTIONARIES: Record<Locale, Dictionary> = { tr, en };
 
 export function getDictionary(explicitLocale?: string | null): Dictionary {
   return DICTIONARIES[resolveLocale(explicitLocale)];

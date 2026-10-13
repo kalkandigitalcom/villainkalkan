@@ -6,9 +6,9 @@
      • İşaretlenmeden gönderim yapılamaz (buton + defansif guard).
      • İşaretliyse MEVCUT rezervasyon akışı aynen çalışır.
      • Üç link aktif locale'i taşır (`localeHref`):
-         tr → /p/...      en → /en/p/...      de → /de/p/...
+         tr → /p/...      en → /en/p/...
      • Linke tıklamak checkbox'ı toggle ETMEZ.
-     • Metin sözlükten gelir (EN/DE'de Türkçe sızıntısı YOK).
+     • Metin sözlükten gelir (EN'de Türkçe sızıntısı YOK).
 =============================================================== */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
@@ -41,7 +41,7 @@ vi.mock("@/lib/storage.helpers", () => ({
 
 import ReservationForm from "@/app/components/reservation/ReservationForm";
 
-const LOCALES: Locale[] = ["tr", "en", "de"];
+const LOCALES: Locale[] = ["tr", "en"];
 
 const SLUGS = {
   cancellation: "/p/rezervasyon-ve-iptal-kosullari",
@@ -285,8 +285,8 @@ describe("6-7-8) Link hedefleri aktif locale'i TAŞIR", () => {
     ]);
   });
 
-  it("7b) EN → /en/p/..., 8b) DE → /de/p/...", async () => {
-    for (const loc of ["en", "de"] as const) {
+  it("7b) EN → /en/p/...", async () => {
+    for (const loc of ["en"] as const) {
       renderForm(loc);
       await waitFor(() => expect(terms()).toBeTruthy());
       const label = document.querySelector(

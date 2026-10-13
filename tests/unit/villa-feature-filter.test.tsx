@@ -11,7 +11,7 @@
      E) ⚠️ KESİŞİM BOŞ → 0 SONUÇ (asla "tüm villalar")
      F) URL kontratı — `ozellikler` sayfalama/sıralama ve FilterSidebar
         "Filtrele" akışında KAYBOLMAZ; refresh'te korunur
-     G) i18n — TR/EN/DE sözlük anahtarları + `loadHeroFeatures`
+     G) i18n — TR/EN sözlük anahtarları + `loadHeroFeatures`
      H) `buildHeroSearchParams` çıktısı
 
    ⚠️ Mevcut hiçbir test dosyası değiştirilmedi; bu dosya EK bir ağ örer.
@@ -164,7 +164,7 @@ const ALL_VILLAS = ["v1", "v2", "v3", "v4"].map(villaRow);
 
 type SP = Record<string, string | string[] | undefined>;
 
-async function renderArama(sp: SP, locale: "tr" | "en" | "de" = "tr") {
+async function renderArama(sp: SP, locale: "tr" | "en" = "tr") {
   const { default: AramaPageBody } = await import(
     "@/app/components/search/AramaPageBody"
   );
@@ -590,19 +590,17 @@ describe("F) URL kontratı", () => {
    G) i18n
    =============================================================== */
 describe("G) i18n", () => {
-  it("24) TR/EN/DE sözlüklerinde yeni anahtarlar TAM", async () => {
+  it("24) TR/EN sözlüklerinde yeni anahtarlar TAM", async () => {
     const { tr } = await import("@/lib/i18n/dictionaries/tr");
     const { en } = await import("@/lib/i18n/dictionaries/en");
-    const { de } = await import("@/lib/i18n/dictionaries/de");
-    for (const d of [tr, en, de]) {
+    for (const d of [tr, en]) {
       expect(typeof d.home.search.featuresLabel).toBe("string");
       expect(d.home.search.featuresLabel.length).toBeGreaterThan(0);
       expect(d.home.search.featuresSelected).toContain("{n}");
       expect(typeof d.home.search.featuresEmpty).toBe("string");
     }
-    /* Üç dilde de FARKLI metin (kopyala-yapıştır TR sızıntısı yok). */
+    /* EN, TR'den FARKLI metin (kopyala-yapıştır TR sızıntısı yok). */
     expect(en.home.search.featuresLabel).not.toBe(tr.home.search.featuresLabel);
-    expect(de.home.search.featuresLabel).not.toBe(tr.home.search.featuresLabel);
   });
 
   it("25) loadHeroFeatures — TR'de çeviri sorgusu HİÇ atılmaz", async () => {
@@ -632,8 +630,8 @@ describe("G) i18n", () => {
     expect(jacuzzi?.name).toBe("Jacuzzi");
     /* Çevirisi olmayan canonical kalır. */
     expect(rows.find((r) => r.id === F2)?.name).toBe("Sauna");
-    /* N+1 YOK: entity başına locale başına TEK batch (en + de). */
-    expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(2);
+    /* N+1 YOK: entity başına locale başına TEK batch (yalnız en). */
+    expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(1);
     for (const call of getTranslationsForParentsMock.mock.calls) {
       expect(call[0]).toBe("villa_feature");
     }
@@ -644,7 +642,7 @@ describe("G) i18n", () => {
     const { loadHeroFeatures } = await import(
       "@/app/components/ui/hero/_components/hero-features.action"
     );
-    const rows = await loadHeroFeatures("de");
+    const rows = await loadHeroFeatures("en");
     expect(rows.find((r) => r.id === F1)?.name).toBe("Jakuzi");
   });
 });
@@ -704,7 +702,7 @@ type SidebarProps = {
   categoryOptions?: unknown[];
   featureOptions?: Array<{ id: string; name: string }>;
   initial?: Record<string, unknown>;
-  locale?: "tr" | "en" | "de";
+  locale?: "tr" | "en";
 };
 
 async function renderSidebar(props: SidebarProps = {}) {
@@ -933,17 +931,11 @@ describe("I) sidebar — /arama entegrasyonu ve i18n", () => {
     }
   });
 
-  it("45) EN/DE — bölüm başlığı sözlükten gelir (hardcoded TR yok)", async () => {
+  it("45) EN — bölüm başlığı sözlükten gelir (hardcoded TR yok)", async () => {
     const { en } = await import("@/lib/i18n/dictionaries/en");
-    const { de } = await import("@/lib/i18n/dictionaries/de");
     const enRender = await renderArama({}, "en");
     expect(enRender.container.textContent).toContain(
       en.search.filters.featuresLabel
-    );
-    enRender.unmount();
-    const deRender = await renderArama({}, "de");
-    expect(deRender.container.textContent).toContain(
-      de.search.filters.featuresLabel
     );
   });
 

@@ -74,7 +74,7 @@ export type SitePopupSaveResult =
   | { ok: true; values: SitePopupAdminValues }
   | { ok: false; error: string };
 
-const LOCALE_LABELS: Record<PopupTranslationLocale, string> = { en: "English", de: "Deutsch" };
+const LOCALE_LABELS: Record<PopupTranslationLocale, string> = { en: "English" };
 
 const EMPTY_TEXT: SitePopupTextValues = {
   title: "",
@@ -86,7 +86,7 @@ const EMPTY_TEXT: SitePopupTextValues = {
 };
 
 function emptyTranslations(): Record<PopupTranslationLocale, SitePopupTextValues> {
-  return { en: { ...EMPTY_TEXT, stats: [] }, de: { ...EMPTY_TEXT, stats: [] } };
+  return { en: { ...EMPTY_TEXT, stats: [] } };
 }
 
 const IMAGE_PATH_RE = new RegExp(`^${POPUP_IMAGE_FOLDER}/[a-z0-9-]{1,64}\\.webp$`);
@@ -114,7 +114,7 @@ function toAdminTranslations(
 ): Record<PopupTranslationLocale, SitePopupTextValues> {
   const out = emptyTranslations();
   for (const r of rows || []) {
-    if (r.locale !== "en" && r.locale !== "de") continue;
+    if (r.locale !== "en") continue;
     out[r.locale] = {
       title: r.title || "",
       description: r.description || "",

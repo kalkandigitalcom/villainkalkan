@@ -23,10 +23,6 @@ const COPY: Record<Exclude<Locale, "tr">, { title: string; body: string }> = {
     title: "This page isn't translated yet",
     body: "We're working on the English version of this page. Please check back soon, or switch to the Turkish site for the full experience.",
   },
-  de: {
-    title: "Diese Seite ist noch nicht übersetzt",
-    body: "Wir arbeiten an der deutschen Version dieser Seite. Bitte schauen Sie bald wieder vorbei oder wechseln Sie zur türkischen Seite.",
-  },
 };
 
 export default function LocaleRouteComingSoon({

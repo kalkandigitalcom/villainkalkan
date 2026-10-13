@@ -101,7 +101,7 @@ function draftsFrom(translations: SettingsTranslationsByLocale): Drafts {
     }
     return next;
   };
-  return { en: build("en"), de: build("de") };
+  return { en: build("en") };
 }
 
 export default function SettingsTranslationsPage({
@@ -166,7 +166,7 @@ export default function SettingsTranslationsPage({
       (fields: readonly SettingsTranslatableField[]): TranslationSectionStatus => {
         const filledIn = (loc: SettingsTranslationLocale) =>
           fields.some((f) => (stored[loc]?.[f] ?? "").trim() !== "");
-        if (isTr) return filledIn("en") || filledIn("de") ? "active" : "review";
+        if (isTr) return filledIn("en") ? "active" : "review";
         return filledIn(locale as SettingsTranslationLocale)
           ? "active"
           : "review";
@@ -245,7 +245,7 @@ export default function SettingsTranslationsPage({
       {/* ── DURUM BİLGİSİ ── */}
       <TranslationInfo
         title="Çeviriler nasıl çalışır"
-        body="Türkçe değerler mevcut ayarlarınızdan salt okunur olarak gösterilir ve ilgili ayar sayfasından düzenlenir. English ve Deutsch içerikleri birbirinden bağımsız kaydedilir; bir alanı boş bırakırsanız o dilde Türkçe metin gösterilir."
+        body="Türkçe değerler mevcut ayarlarınızdan salt okunur olarak gösterilir ve ilgili ayar sayfasından düzenlenir. English içerikleri ayrı kaydedilir; bir alanı boş bırakırsanız o dilde Türkçe metin gösterilir."
       />
 
       {/* ── DİL SEKMELERİ ── */}
@@ -253,8 +253,8 @@ export default function SettingsTranslationsPage({
         <TranslationLanguageTabs active={locale} onChange={setLocale} />
         <p className="text-[12px] text-[var(--color-stone-500)] leading-relaxed">
           Türkçe canonical (kaynak) içeriktir ve bu ekrandan düzenlenmez;
-          ilgili ayar sayfasından güncellenir. Çeviriler yalnız English ve
-          Deutsch için tutulur.
+          ilgili ayar sayfasından güncellenir. Çeviriler yalnız English için
+          tutulur.
         </p>
       </div>
 

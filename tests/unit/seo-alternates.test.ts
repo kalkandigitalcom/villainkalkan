@@ -18,7 +18,6 @@ import { SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 
 const TR_PATH = "/kiralik-villa/villa-in-love";
 const EN_PATH = "/en/kiralik-villa/villa-in-love";
-const DE_PATH = "/de/kiralik-villa/villa-in-love";
 
 describe("buildLocaleAlternates", () => {
   /* --- 1) TR villa path --- */
@@ -33,17 +32,17 @@ describe("buildLocaleAlternates", () => {
     expect(result.languages.en).toBe(EN_PATH);
   });
 
-  /* --- 3) DE villa path --- */
-  it("3) DE villa path → languages.de '/de' prefix'li", () => {
-    const result = buildLocaleAlternates(TR_PATH, "de");
-    expect(result.languages.de).toBe(DE_PATH);
+  /* --- 3) DE desteği kaldırıldı --- */
+  it("3) languages YALNIZ tr/en/x-default içerir — 'de' alternate'i ÜRETİLMEZ", () => {
+    const result = buildLocaleAlternates(TR_PATH, "en");
+    expect(Object.keys(result.languages).sort()).toEqual(["en", "tr", "x-default"]);
+    expect("de" in result.languages).toBe(false);
   });
 
   /* --- 4) x-default --- */
   it("4) x-default HER ZAMAN TR path'e işaret eder (hedef locale ne olursa olsun)", () => {
     expect(buildLocaleAlternates(TR_PATH, "tr").languages["x-default"]).toBe(TR_PATH);
     expect(buildLocaleAlternates(TR_PATH, "en").languages["x-default"]).toBe(TR_PATH);
-    expect(buildLocaleAlternates(TR_PATH, "de").languages["x-default"]).toBe(TR_PATH);
   });
 
   /* --- 5) TR canonical --- */
@@ -58,11 +57,6 @@ describe("buildLocaleAlternates", () => {
     expect(result.canonical).toBe(EN_PATH);
   });
 
-  /* --- 7) DE canonical --- */
-  it("7) locale='de' → canonical, '/de' prefix'li path'tir", () => {
-    const result = buildLocaleAlternates(TR_PATH, "de");
-    expect(result.canonical).toBe(DE_PATH);
-  });
 
   /* --- 8) EN prefixed input normalize --- */
   it("8) input zaten '/en/...' ile prefixed ve locale='en' → çifte prefix OLUŞMAZ ('/en/en/...' değil)", () => {
@@ -70,17 +64,8 @@ describe("buildLocaleAlternates", () => {
     expect(result.canonical).toBe(EN_PATH);
     expect(result.canonical).not.toContain("/en/en/");
     expect(result.languages.tr).toBe(TR_PATH);
-    expect(result.languages.de).toBe(DE_PATH);
   });
 
-  /* --- 9) DE prefixed input normalize --- */
-  it("9) input zaten '/de/...' ile prefixed ve locale='de' → çifte prefix OLUŞMAZ ('/de/de/...' değil)", () => {
-    const result = buildLocaleAlternates(DE_PATH, "de");
-    expect(result.canonical).toBe(DE_PATH);
-    expect(result.canonical).not.toContain("/de/de/");
-    expect(result.languages.tr).toBe(TR_PATH);
-    expect(result.languages.en).toBe(EN_PATH);
-  });
 
   /* --- 10) TR input normalize (çapraz yön: prefixed input + tr hedefi) --- */
   it("10) input '/en/...' prefixed ama hedef locale='tr' → canonical prefix'siz TR path'e NORMALIZE olur", () => {
@@ -91,15 +76,14 @@ describe("buildLocaleAlternates", () => {
 
   /* --- 11) '/tr/...' hiçbir zaman üretilmez --- */
   it("11) hiçbir input/locale kombinasyonu '/tr' prefix'i ÜRETMEZ", () => {
-    const inputs = [TR_PATH, EN_PATH, DE_PATH, "/", "/kiralik-villalar"];
-    const locales: Locale[] = ["tr", "en", "de"];
+    const inputs = [TR_PATH, EN_PATH, "/", "/kiralik-villalar"];
+    const locales: Locale[] = ["tr", "en"];
     for (const input of inputs) {
       for (const locale of locales) {
         const result = buildLocaleAlternates(input, locale);
         expect(result.canonical.startsWith("/tr")).toBe(false);
         expect(result.languages.tr.startsWith("/tr")).toBe(false);
         expect(result.languages.en.startsWith("/tr")).toBe(false);
-        expect(result.languages.de.startsWith("/tr")).toBe(false);
         expect(result.languages["x-default"].startsWith("/tr")).toBe(false);
       }
     }
@@ -150,11 +134,10 @@ describe("buildLocaleAlternates", () => {
   });
 
   /* --- Ek: kök path özel durumu ("/") --- */
-  it("ek) path='/' → EN/DE '/en/' veya '/de/' değil, '/en' ve '/de' üretir (çifte slash yok)", () => {
+  it("ek) path='/' → EN '/en/' değil, '/en' üretir (çifte slash yok)", () => {
     const result = buildLocaleAlternates("/", "en");
     expect(result.languages.tr).toBe("/");
     expect(result.languages.en).toBe("/en");
-    expect(result.languages.de).toBe("/de");
     expect(result.languages["x-default"]).toBe("/");
   });
 

@@ -105,7 +105,6 @@ type Feature = {
 const BOOKING_SIDEBAR_ID: Record<Locale, string> = {
   tr: "booking-sidebar",
   en: "booking-sidebar-en",
-  de: "booking-sidebar-de",
 };
 
 export default async function PrivateVillaPageBody({

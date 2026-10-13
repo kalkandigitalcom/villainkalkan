@@ -56,7 +56,7 @@ describe("upsertFeatureTranslation", () => {
     );
   });
 
-  it("DE upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("locale 'de' reddedilir (DE desteği kaldırıldı) — repository çağrılmaz", async () => {
     const { upsertFeatureTranslation } = await import(
       "@/app/services/villa-feature-translation.service"
     );
@@ -67,13 +67,8 @@ describe("upsertFeatureTranslation", () => {
       name: "Test Merkmal",
     });
 
-    expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith(
-      "villa_feature",
-      "feature-uuid-1",
-      "de",
-      { name: "Test Merkmal" }
-    );
+    expect(result.ok).toBe(false);
+    expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
   it("mevcut EN çeviriyi günceller", async () => {
@@ -169,7 +164,7 @@ describe("upsertFeatureTranslation", () => {
 });
 
 describe("getFeatureTranslations", () => {
-  it("yalnız en/de satırlarını döner (tr varsa filtrelenir)", async () => {
+  it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
         { ...VALID_ROW, locale: "tr" },
@@ -187,7 +182,7 @@ describe("getFeatureTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["de", "en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
     }
   });
 

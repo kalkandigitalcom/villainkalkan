@@ -179,7 +179,6 @@ export async function PATCH(
   /* 🛡️ EN/DE blog listeleri de ISR — yalnız TR tazeleniyordu; kapak
      (ve `?v=` versiyonu) EN/DE listede de hemen güncel olsun. */
   revalidatePath("/en/blog");
-  revalidatePath("/de/blog");
 
   return NextResponse.json({ ok: true });
 }
@@ -241,7 +240,6 @@ export async function DELETE(
   /* 🛡️ EN/DE blog listeleri de ISR — yalnız TR tazeleniyordu; kapak
      (ve `?v=` versiyonu) EN/DE listede de hemen güncel olsun. */
   revalidatePath("/en/blog");
-  revalidatePath("/de/blog");
 
   return NextResponse.json({ ok: true });
 }

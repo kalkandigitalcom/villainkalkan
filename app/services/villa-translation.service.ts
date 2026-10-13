@@ -15,10 +15,10 @@ import type { VillaTranslationRow } from "@/lib/i18n/translations.types";
  * `upsertOne` yorum bloğu).
  */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 const MAX_DESCRIPTION_LEN = 5000;
@@ -70,7 +70,7 @@ export async function upsertVillaTranslation(
   if (!villaId) return { ok: false, error: "Geçersiz villa" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
   }
   const locale = input.locale;
 

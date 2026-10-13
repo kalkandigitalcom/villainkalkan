@@ -176,7 +176,6 @@ export function getLocaleSwitchTargets(
     return {
       tr: `${trHome}${suffix}`,
       en: `${languages.en}${suffix}`,
-      de: `${languages.de}${suffix}`,
     };
   }
 
@@ -184,5 +183,5 @@ export function getLocaleSwitchTargets(
      ⚠️ Burada `trHome` KULLANILMAZ: bu dalda `basePath` "/" değildir,
      dolayısıyla `trHome` o sayfanın kendi path'idir. TR KÖKÜ MOD B'de
      "/tr", aksi halde "/" olmalıdır. */
-  return { tr: trHomePath || "/", en: "/en", de: "/de" };
+  return { tr: trHomePath || "/", en: "/en" };
 }

@@ -2,8 +2,8 @@
    🛡️ PHASE 10D — Batch 2 — Features Admin Sayfası + Çeviri Paneli TESTLERİ
    ===============================================================
    Hedef: app/(admin)/maki-admin/features/page.tsx (multilingual gate +
-   yeni "Çeviriler" butonu) ve FeatureTranslationsPanel.tsx (EN/DE
-   pill-tab panel).
+   yeni "Çeviriler" butonu) ve FeatureTranslationsPanel.tsx (EN
+   pill-tab panel; DE desteği kaldırıldı).
 
    TopBar.test.tsx (Phase 10C) ile AYNI mock-katman prensibi: gerçek
    DB/RPC/server action'lara ÇIKILMAZ. features.action / feature-
@@ -14,9 +14,8 @@
      2)  multilingual_enabled=true → "Çeviriler" butonu VAR.
      3)  Butona tıklanınca panel açılıyor.
      4)  Panel açıldığında varsayılan EN tab + EN input gösteriliyor.
-     5)  DE tab seçilince DE input gösteriliyor.
+     5)  DE tab ARTIK YOK (DE desteği kaldırıldı).
      6)  Mevcut EN çevirisi input'a yükleniyor.
-     7)  Mevcut DE çevirisi input'a yükleniyor.
      8)  Kaydet → saveFeatureTranslationAction doğru featureId/locale/name.
      9)  Boş/trim input → action ÇAĞRILMAZ (service normalize'ıyla uyumlu).
      10) Yetkisiz action cevabı ({ok:false,error:"Yetkisiz"}) → hata toast.
@@ -157,17 +156,15 @@ describe("FeaturesPage — Phase 10D Batch 2 — panel açma/kapama + tab mekani
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
-  it("5) DE tab seçilince DE input gösterilir (EN input kaybolur)", async () => {
+  it("5) DE tab ARTIK YOK (DE desteği kaldırıldı) — yalnız English", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(true));
     render(<FeaturesPage />);
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
     await screen.findByLabelText("English");
 
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-
-    expect(await screen.findByLabelText("Deutsch")).toBeInTheDocument();
-    expect(screen.queryByLabelText("English")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 });
 
@@ -193,31 +190,6 @@ describe("FeaturesPage — Phase 10D Batch 2 — mevcut çeviri yükleme", () =>
 
     const input = (await screen.findByLabelText("English")) as HTMLInputElement;
     await waitFor(() => expect(input.value).toBe("Pool"));
-  });
-
-  it("7) Mevcut DE çevirisi input'a yüklenir", async () => {
-    loadFeatureTranslationsMock.mockResolvedValue({
-      ok: true,
-      rows: [
-        {
-          id: "row-de",
-          feature_id: "feature-1",
-          locale: "de",
-          name: "Schwimmbad",
-          created_at: "2026-01-01T00:00:00.000Z",
-          updated_at: "2026-01-01T00:00:00.000Z",
-        },
-      ],
-    });
-    getPublicSettingsMock.mockResolvedValue(settingsWith(true));
-    render(<FeaturesPage />);
-
-    fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
-    await screen.findByLabelText("English");
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-
-    const input = (await screen.findByLabelText("Deutsch")) as HTMLInputElement;
-    await waitFor(() => expect(input.value).toBe("Schwimmbad"));
   });
 });
 

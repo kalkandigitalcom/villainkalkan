@@ -178,9 +178,9 @@ describe("settings-translations.types — whitelist", () => {
     }
   });
 
-  it("3) locale guard — yalnız en/de", () => {
+  it("3) locale guard — yalnız en (DE desteği kaldırıldı)", () => {
     expect(isSettingsTranslationLocale("en")).toBe(true);
-    expect(isSettingsTranslationLocale("de")).toBe(true);
+    expect(isSettingsTranslationLocale("de")).toBe(false);
     expect(isSettingsTranslationLocale("tr")).toBe(false);
     expect(isSettingsTranslationLocale("fr")).toBe(false);
     expect(isSettingsTranslationLocale("")).toBe(false);
@@ -238,7 +238,7 @@ describe("settingsTranslationRepository — query wiring", () => {
   });
 
   it("7) upsertOne fazladan alanı SQL'e TAŞIMAZ (spread YOK)", async () => {
-    await settingsTranslationRepository.upsertOne("settings-1", "de", {
+    await settingsTranslationRepository.upsertOne("settings-1", "en", {
       footer_copyright: "A",
       default_meta_title: null,
       default_meta_description: null,
@@ -280,14 +280,21 @@ describe("upsertSettingsTranslation — locale whitelist", () => {
     expect(upsertMock).not.toHaveBeenCalled();
   });
 
-  it("11) 'en' ve 'de' kabul edilir", async () => {
-    for (const locale of ["en", "de"]) {
-      const result = await upsertSettingsTranslation({
-        locale,
-        footer_copyright: "X",
-      });
-      expect(result.ok).toBe(true);
-    }
+  it("11) 'en' kabul edilir", async () => {
+    const result = await upsertSettingsTranslation({
+      locale: "en",
+      footer_copyright: "X",
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("11b) 'de' artık REDDEDİLİR (DE desteği kaldırıldı), DB'ye gidilmez", async () => {
+    const result = await upsertSettingsTranslation({
+      locale: "de",
+      footer_copyright: "X",
+    });
+    expect(result.ok).toBe(false);
+    expect(upsertMock).not.toHaveBeenCalled();
   });
 });
 
@@ -330,7 +337,7 @@ describe("upsertSettingsTranslation — alan whitelist ve normalizasyon", () => 
 
   it("14) değerler trim edilir", async () => {
     await upsertSettingsTranslation({
-      locale: "de",
+      locale: "en",
       footer_copyright: "  © {year} {site_name}  ",
     });
     const [payload] = upsertMock.mock.calls[0] as [Record<string, unknown>];
@@ -385,7 +392,8 @@ describe("getSettingsTranslations / getPublicSettingsTranslations", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
 
-    expect(Object.keys(result.translations).sort()).toEqual(["de", "en"]);
+    /* DE desteği kaldırıldı — eski bir "de" satırı haritaya GİRMEZ. */
+    expect(Object.keys(result.translations).sort()).toEqual(["en"]);
     expect(Object.keys(result.translations.en!).sort()).toEqual(
       [...SETTINGS_TRANSLATABLE_FIELDS].sort()
     );

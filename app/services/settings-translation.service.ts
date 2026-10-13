@@ -154,7 +154,7 @@ export async function upsertSettingsTranslation(
   if (!isSettingsTranslationLocale(input?.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir",
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
     };
   }
   const locale = input.locale;
@@ -209,7 +209,7 @@ export async function deleteSettingsTranslation(
   if (!isSettingsTranslationLocale(locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir",
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
     };
   }
 

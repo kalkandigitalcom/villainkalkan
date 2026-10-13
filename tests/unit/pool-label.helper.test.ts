@@ -23,7 +23,7 @@ import { getPoolTypeLabel } from "@/lib/pool-label.helper";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
 
-const LOCALES: Locale[] = ["tr", "en", "de"];
+const LOCALES: Locale[] = ["tr", "en"];
 
 /* Bu batch ÖNCESİNDEKİ inline TR literal'leri — regresyon kilidi. */
 const TR_LEGACY: Record<string, string> = {
@@ -70,17 +70,7 @@ describe("dictionary — poolTypeLabels", () => {
     expect(getPoolTypeLabel("child", "en")).toBe("Children's Pool");
   });
 
-  it("DE değerleri doğru", () => {
-    expect(getPoolTypeLabel("private", "de")).toBe("Privatpool");
-    expect(getPoolTypeLabel("private_sheltered", "de")).toBe(
-      "Privater überdachter Pool"
-    );
-    expect(getPoolTypeLabel("shared", "de")).toBe("Gemeinschaftspool");
-    expect(getPoolTypeLabel("indoor", "de")).toBe("Hallenbad");
-    expect(getPoolTypeLabel("child", "de")).toBe("Kinderpool");
-  });
-
-  it("TR/EN/DE key parity — POOL_TYPE_KEYS ile birebir", () => {
+  it("TR/EN key parity — POOL_TYPE_KEYS ile birebir", () => {
     for (const locale of LOCALES) {
       const dict = getDictionary(locale);
       expect(Object.keys(dict.poolTypeLabels).sort()).toEqual(
@@ -92,7 +82,7 @@ describe("dictionary — poolTypeLabels", () => {
     }
   });
 
-  it("pool UI metinleri üç locale'de de dolu", () => {
+  it("pool UI metinleri her locale'de dolu", () => {
     for (const locale of LOCALES) {
       const dict = getDictionary(locale);
       for (const v of Object.values(dict.pool)) {

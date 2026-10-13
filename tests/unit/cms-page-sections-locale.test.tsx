@@ -5,7 +5,7 @@
    kilitler:
 
      `pages.sections` (JSONB: richtext | image | quote) için
-     `page_translations`'ta kolon YOKTU → EN/DE `/p/[slug]`
+     `page_translations`'ta kolon YOKTU → EN `/p/[slug]`
      sayfalarında canonical TÜRKÇE bölüm metni render ediliyordu
      (DB_CANONICAL_LEAK).
 
@@ -16,7 +16,7 @@
    GERÇEKTEN kanıtlanabilir.
 
    KAPSAM:
-     A) TR / EN / DE bölüm metinleri
+     A) TR / EN bölüm metinleri
      B) Fallback: satır yok · sections null · boş dizi · bozuk veri
      C) Alan bazında: richtext.content · quote.text · quote.author ·
         image.alt (+ image.path ÇEVRİLMEZ)
@@ -105,12 +105,6 @@ const EN_SECTIONS = [
   { type: "quote", text: "The sea heals everything.", author: "Founding Partner" },
 ];
 
-const DE_SECTIONS = [
-  { type: "richtext", content: "Ein unvergesslicher Urlaub in Kalkan." },
-  { type: "image", path: "pages/kalkan.webp", alt: "Blick auf die Bucht" },
-  { type: "quote", text: "Das Meer heilt alles.", author: "Gruendungspartner" },
-];
-
 const TR_PAGE = {
   id: PAGE_ID,
   slug: SLUG,
@@ -124,14 +118,14 @@ const TR_PAGE = {
   sections: TR_SECTIONS,
 };
 
-function translationRow(locale: "en" | "de", sections: unknown) {
+function translationRow(locale: "en", sections: unknown) {
   return {
     id: `t-${locale}`,
     page_id: PAGE_ID,
     locale,
-    title: locale === "en" ? "An Unforgettable Holiday" : "Ein Urlaub",
-    body: locale === "en" ? "EN body" : "DE body",
-    excerpt: locale === "en" ? "EN excerpt" : "DE excerpt",
+    title: "An Unforgettable Holiday",
+    body: "EN body",
+    excerpt: "EN excerpt",
     seo_title: null,
     seo_description: null,
     sections,
@@ -143,7 +137,6 @@ function translationRow(locale: "en" | "de", sections: unknown) {
 const ROUTES = {
   tr: "@/app/p/[slug]/page",
   en: "@/app/(public)/en/p/[slug]/page",
-  de: "@/app/(public)/de/p/[slug]/page",
 } as const;
 
 async function renderRoute(locale: keyof typeof ROUTES) {
@@ -160,7 +153,7 @@ beforeEach(() => {
 });
 
 /* ===============================================================
-   A) TR / EN / DE — bölüm metinleri
+   A) TR / EN — bölüm metinleri
    =============================================================== */
 describe("CMS bölümleri (sections) — locale-aware render", () => {
   it("1) TR: canonical bölüm metinleri gösterilir", async () => {
@@ -186,22 +179,13 @@ describe("CMS bölümleri (sections) — locale-aware render", () => {
     expect(screen.queryByText(/Deniz her seyi iyilestirir/)).not.toBeInTheDocument();
     expect(screen.queryByAltText("Kalkan koyu manzarasi")).not.toBeInTheDocument();
   });
-
-  it("4) DE: DE bölüm metinleri gösterilir, TR metinleri DOM'da YOK", async () => {
-    getTranslationMock.mockResolvedValue(translationRow("de", DE_SECTIONS));
-    await renderRoute("de");
-    expect(screen.getByText(/unvergesslicher Urlaub in Kalkan/)).toBeInTheDocument();
-    expect(screen.getByText(/Das Meer heilt alles/)).toBeInTheDocument();
-    expect(screen.getByAltText("Blick auf die Bucht")).toBeInTheDocument();
-    expect(screen.queryByText(/Kalkan koylarinda/)).not.toBeInTheDocument();
-  });
 });
 
 /* ===============================================================
    B) FALLBACK
    =============================================================== */
 describe("CMS bölümleri — canonical TR fallback", () => {
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "5) %s: çeviri SATIRI yoksa canonical TR bölümleri gösterilir",
     async (locale) => {
       getTranslationMock.mockResolvedValue(null);
@@ -211,7 +195,7 @@ describe("CMS bölümleri — canonical TR fallback", () => {
     }
   );
 
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "6) %s: sections NULL ise canonical TR bölümleri gösterilir",
     async (locale) => {
       getTranslationMock.mockResolvedValue(translationRow(locale, null));
@@ -220,7 +204,7 @@ describe("CMS bölümleri — canonical TR fallback", () => {
     }
   );
 
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "7) %s: sections BOŞ DİZİ ise canonical TR bölümleri gösterilir",
     async (locale) => {
       getTranslationMock.mockResolvedValue(translationRow(locale, []));
@@ -229,7 +213,7 @@ describe("CMS bölümleri — canonical TR fallback", () => {
     }
   );
 
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "8) %s: sections BOZUK/geçersiz ise canonical TR bölümleri gösterilir",
     async (locale) => {
       getTranslationMock.mockResolvedValue(
@@ -268,13 +252,13 @@ describe("CMS bölümleri — alan bazında davranış", () => {
   });
 
   it("12) mevcut section TİPLERİ korunur (richtext + image + quote hepsi render)", async () => {
-    getTranslationMock.mockResolvedValue(translationRow("de", DE_SECTIONS));
+    getTranslationMock.mockResolvedValue(translationRow("en", EN_SECTIONS));
     const { container } = render(<div />);
     container.remove();
-    await renderRoute("de");
-    expect(screen.getByText(/unvergesslicher Urlaub/)).toBeInTheDocument();
-    expect(screen.getByAltText("Blick auf die Bucht")).toBeInTheDocument();
-    expect(screen.getByText(/Das Meer heilt alles/)).toBeInTheDocument();
+    await renderRoute("en");
+    expect(screen.getByText(/unforgettable holiday in Kalkan bays/)).toBeInTheDocument();
+    expect(screen.getByAltText("View of Kalkan bay")).toBeInTheDocument();
+    expect(screen.getByText(/The sea heals everything/)).toBeInTheDocument();
   });
 
   it("13) mevcut page translation alanları (title) ÇALIŞMAYA DEVAM EDİYOR", async () => {
@@ -296,13 +280,6 @@ describe("CMS bölümleri — N+1 yok", () => {
     /* 3 bölüm var; yine de TEK `getTranslation("page", …)` çağrısı. */
     expect(getTranslationMock).toHaveBeenCalledTimes(1);
     expect(getTranslationMock).toHaveBeenCalledWith("page", PAGE_ID, "en");
-  });
-
-  it("15) DE: aynı — bölüm sayısından BAĞIMSIZ tek sorgu", async () => {
-    getTranslationMock.mockResolvedValue(translationRow("de", DE_SECTIONS));
-    await renderRoute("de");
-    expect(getTranslationMock).toHaveBeenCalledTimes(1);
-    expect(getTranslationMock).toHaveBeenCalledWith("page", PAGE_ID, "de");
   });
 });
 
@@ -340,7 +317,7 @@ describe("resolveTranslatedSections — fallback semantiği", () => {
    F) STRUCTURAL INVARIANT — kaynak kilidi
    ---------------------------------------------------------------
    "Translation tablosunda karşılığı bulunan canonical DB alanı public
-    EN/DE yüzeyde render ediliyorsa translation resolver/batch reader
+    EN yüzeyde render ediliyorsa translation resolver/batch reader
     zincirinden geçmelidir."
    Bu blok o invariant'ı `pages.sections` için YAPISAL olarak kilitler
    — davranış testleri geçse bile zincir koparsa test KIRILIR.
@@ -387,16 +364,19 @@ describe("STRUCTURAL INVARIANT — pages.sections resolver zinciri", () => {
     expect(src).not.toMatch(/getTranslation\(|resolvePageContent\(/);
   });
 
-  it("21) TR/EN/DE üç route da `resolvedSections` prop'unu geçer", () => {
+  it("21) TR/EN iki route da `resolvedSections` prop'unu geçer (DE route'u YOK)", () => {
     for (const rel of [
       "app/p/[slug]/page.tsx",
       "app/(public)/en/p/[slug]/page.tsx",
-      "app/(public)/de/p/[slug]/page.tsx",
     ]) {
       const src = read(rel);
       expect(src, rel).toMatch(/resolvedSections=\{resolved\.sections\}/);
       expect(src, rel).toMatch(/resolvePageContent\(/);
     }
+    /* DE desteği kaldırıldı — route dosyası artık mevcut değil. */
+    expect(
+      fs.existsSync(path.join(process.cwd(), "app/(public)/de/p/[slug]/page.tsx"))
+    ).toBe(false);
   });
 
   it("22) PageSectionRenderer locale/DB bilmez (render saf kalır)", () => {

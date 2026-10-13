@@ -174,21 +174,19 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — panel açma/kapama + tab m
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
-  it("8) DE tab çalışıyor", async () => {
+  it("8) DE tab YOK (DE desteği kaldırıldı) — yalnız English", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(true));
     render(<PriceIncludesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
     await screen.findByLabelText("English");
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-
-    expect(await screen.findByLabelText("Deutsch")).toBeInTheDocument();
-    expect(screen.queryByLabelText("English")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Deutsch")).not.toBeInTheDocument();
   });
 });
 
 describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet", () => {
-  it("9) Mevcut EN/DE çevirileri input'a yüklenir", async () => {
+  it("9) Mevcut EN çevirisi input'a yüklenir", async () => {
     loadPriceIncludeTranslationsMock.mockResolvedValue({
       ok: true,
       rows: [
@@ -197,14 +195,6 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + 
           include_id: "inc-1",
           locale: "en",
           title: "WiFi",
-          created_at: "2026-01-01T00:00:00.000Z",
-          updated_at: "2026-01-01T00:00:00.000Z",
-        },
-        {
-          id: "row-de",
-          include_id: "inc-1",
-          locale: "de",
-          title: "WLAN",
           created_at: "2026-01-01T00:00:00.000Z",
           updated_at: "2026-01-01T00:00:00.000Z",
         },
@@ -217,10 +207,6 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + 
 
     const enInput = (await screen.findByLabelText("English")) as HTMLInputElement;
     await waitFor(() => expect(enInput.value).toBe("WiFi"));
-
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-    const deInput = (await screen.findByLabelText("Deutsch")) as HTMLInputElement;
-    await waitFor(() => expect(deInput.value).toBe("WLAN"));
   });
 
   it("10) Kaydet → savePriceIncludeTranslationAction doğru includeId/locale/title ile çağrılır", async () => {

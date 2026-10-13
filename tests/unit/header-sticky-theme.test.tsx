@@ -101,8 +101,8 @@ describe("Header — sticky tema", () => {
     expect(imgs[0].getAttribute("src")).toBe(SITE_LOGO);
   });
 
-  it("3) TR/EN/DE ana sayfaları aynı logo + sticky beyaz temayı kullanır", () => {
-    for (const p of ["/", "/tr", "/en", "/de"]) {
+  it("3) TR/EN ana sayfaları aynı logo + sticky beyaz temayı kullanır", () => {
+    for (const p of ["/", "/tr", "/en"]) {
       const { shell, light, dark, unmount } = renderAt(p);
       expect(light!.className, p).toContain("opacity-100");
       setScroll(200);

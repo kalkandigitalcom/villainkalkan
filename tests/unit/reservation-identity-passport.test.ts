@@ -155,7 +155,7 @@ describe("6-8) reddedilen değerler", () => {
    =============================================================== */
 describe("9) i18n ve sözleşme korundu", () => {
   it("9a) hata mesajı ANAHTARLARI değişmedi — yeni metin eklenmedi", () => {
-    for (const locale of ["tr", "en", "de"] as const) {
+    for (const locale of ["tr", "en"] as const) {
       const v = getDictionary(locale).reservation.validation;
       expect(check("").identity).toBeDefined();
       expect(typeof v.identityRequired).toBe("string");
@@ -164,7 +164,7 @@ describe("9) i18n ve sözleşme korundu", () => {
   });
 
   it("9b) her locale'de MEVCUT identityInvalid mesajı kullanılır", () => {
-    for (const locale of ["tr", "en", "de"] as const) {
+    for (const locale of ["tr", "en"] as const) {
       const v = getDictionary(locale).reservation.validation;
       const errors = validatePublicReservationForm(
         { form: { ...valid(), identity: "!!!" }, start: "2026-06-01", end: "2026-06-08" },

@@ -107,7 +107,7 @@ export default function SettingsGeneralPage() {
      davranışı BİREBİR aynı kalır (DB default'larıyla birebir). */
   const [multilingualEnabled, setMultilingualEnabled] = useState(false);
   const [publicDefaultLocale, setPublicDefaultLocale] = useState<
-    "tr" | "en" | "de"
+    "tr" | "en"
   >("tr");
 
   const [loading, setLoading] = useState(true);
@@ -163,7 +163,9 @@ export default function SettingsGeneralPage() {
       setPageHeroBg(s.page_hero_background_image || null);
       setMultilingualEnabled(!!s.multilingual_enabled);
       setPublicDefaultLocale(
-        (s.public_default_locale as "tr" | "en" | "de") || "tr"
+        /* Almanca desteği kaldırıldı — DB'de eski "de" değeri kalmışsa
+           (veya geçersizse) seçici Türkçe'ye düşer. */
+        s.public_default_locale === "en" ? "en" : "tr"
       );
       setLoading(false);
     });
@@ -488,7 +490,7 @@ export default function SettingsGeneralPage() {
             site zaten tr davranıyor). */}
         <SettingsSection
           title="Çoklu Dil"
-          description="Public sitenin çoklu dil (TR/EN/DE) altyapısı için hazırlık ayarı. Bu adımda yalnız ayar kaydedilir; public site davranışı henüz değişmez."
+          description="Public sitenin çoklu dil (TR/EN) altyapısı için hazırlık ayarı. Bu adımda yalnız ayar kaydedilir; public site davranışı henüz değişmez."
         >
           <ToggleField
             label="Çoklu Dil Sistemi"
@@ -505,7 +507,7 @@ export default function SettingsGeneralPage() {
               value={publicDefaultLocale}
               onChange={(e) =>
                 setPublicDefaultLocale(
-                  e.target.value as "tr" | "en" | "de"
+                  e.target.value === "en" ? "en" : "tr"
                 )
               }
               disabled={loading || !multilingualEnabled}
@@ -513,7 +515,6 @@ export default function SettingsGeneralPage() {
             >
               <option value="tr">Türkçe</option>
               <option value="en">English</option>
-              <option value="de">Deutsch</option>
             </select>
           </FieldShell>
         </SettingsSection>

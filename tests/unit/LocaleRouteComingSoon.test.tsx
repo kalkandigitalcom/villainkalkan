@@ -17,10 +17,4 @@ describe("LocaleRouteComingSoon", () => {
     ).toBeInTheDocument();
   });
 
-  it("locale=de → Almanca metin render eder", () => {
-    render(<LocaleRouteComingSoon locale="de" />);
-    expect(
-      screen.getByText(/diese seite ist noch nicht übersetzt/i)
-    ).toBeInTheDocument();
-  });
 });

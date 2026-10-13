@@ -13,8 +13,8 @@
         sidebar ön-seçimi (redirect → mevcut /arama), breadcrumb
      F) Sitemap path'leri: yalnız slug'lı + villalı kategori ve kökler
      G) Link üreticileri: menü resolver, footer, bölge kartları
-     H) Route dosyaları (TR/EN/DE) + EN/DE dil kapısı
-     I) Sözlük bütünlüğü (TR/EN/DE)
+     H) Route dosyaları (TR/EN) + EN dil kapısı
+     I) Sözlük bütünlüğü (TR/EN)
      J) Admin: kategori adı değişince slug korunur
 =============================================================== */
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -33,7 +33,6 @@ import {
 import { resolveMenuRow, type MenuSourceMaps } from "@/lib/menu-resolver";
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 
 /* ---------------- mock katmanı ---------------- */
 const typesMock = vi.fn();
@@ -135,7 +134,7 @@ beforeEach(() => {
   locationsMock.mockResolvedValue(LOCATIONS);
   villasMock.mockResolvedValue(VILLAS);
   settingsMock.mockResolvedValue({ site_name: "Balayı Villanız", multilingual_enabled: false });
-  typeNamesMock.mockResolvedValue({ "t-muh": { en: "Conservative Villas", de: "Konservative Villen" } });
+  typeNamesMock.mockResolvedValue({ "t-muh": { en: "Conservative Villas" } });
   typeRelsMock.mockImplementation(async (ids: string[]) => ({
     data: ids[0] === "t-muh"
       ? ["v1", "v2", "v3", "v99-inactive"].map((villa_id) => ({ villa_id, type_id: "t-muh" }))
@@ -277,7 +276,7 @@ describe("D) metadata", () => {
     expect(m.robots).toBeUndefined();
   });
 
-  it("bölge TR: 'Bodrum Villaları | marka'; EN 'Bodrum Villas', DE 'Villen in Bodrum'", async () => {
+  it("bölge TR: 'Bodrum Villaları | marka'; EN 'Bodrum Villas'", async () => {
     const { buildTaxonomyLandingMetadata } = await import(
       "@/app/components/search/TaxonomyLandingPageBody"
     );
@@ -286,9 +285,6 @@ describe("D) metadata", () => {
     );
     expect((await buildTaxonomyLandingMetadata("region", "bodrum", "en", sp())).title).toBe(
       "Bodrum Villas | Balayı Villanız"
-    );
-    expect((await buildTaxonomyLandingMetadata("region", "bodrum", "de", sp())).title).toBe(
-      "Villen in Bodrum | Balayı Villanız"
     );
   });
 
@@ -304,7 +300,6 @@ describe("D) metadata", () => {
       languages: {
         tr: "/villa-turleri/muhafazakar-villalar",
         en: "/en/villa-turleri/muhafazakar-villalar",
-        de: "/de/villa-turleri/muhafazakar-villalar",
         "x-default": "/villa-turleri/muhafazakar-villalar",
       },
     });
@@ -512,17 +507,20 @@ describe("G) link üreticileri", () => {
 describe("H) route dosyaları", () => {
   const read = (p: string) => fs.readFileSync(path.join(process.cwd(), p), "utf-8");
   for (const [seg, kind] of [["villa-turleri", "category"], ["bolgeler", "region"]] as const) {
-    it(`${seg}: TR/EN/DE dosyaları ortak gövdeyi doğru locale ile çağırır`, () => {
+    it(`${seg}: TR/EN dosyaları ortak gövdeyi doğru locale ile çağırır; DE route YOK`, () => {
       const trSrc = read(`app/(public)/${seg}/[slug]/page.tsx`);
       expect(trSrc).toContain(`kind="${kind}"`);
       expect(trSrc).toContain('locale="tr"');
       expect(trSrc).not.toContain("requirePublicLocaleEnabled");
-      for (const loc of ["en", "de"]) {
+      for (const loc of ["en"]) {
         const s = read(`app/(public)/${loc}/${seg}/[slug]/page.tsx`);
         expect(s).toContain(`locale="${loc}"`);
         expect(s).toContain(`setRequestLocale("${loc}")`);
         expect(s).toContain("await requirePublicLocaleEnabled();");
       }
+      expect(
+        fs.existsSync(path.join(process.cwd(), `app/(public)/de/${seg}/[slug]/page.tsx`))
+      ).toBe(false);
     });
   }
 
@@ -537,11 +535,10 @@ describe("H) route dosyaları", () => {
    I) SÖZLÜK
    =============================================================== */
 describe("I) sözlük", () => {
-  it("taxonomyLanding anahtarları TR/EN/DE'de aynı ve {name} içeriyor", () => {
+  it("taxonomyLanding anahtarları TR/EN'de aynı ve {name} içeriyor", () => {
     const keys = Object.keys(tr.taxonomyLanding).sort();
     expect(Object.keys(en.taxonomyLanding).sort()).toEqual(keys);
-    expect(Object.keys(de.taxonomyLanding).sort()).toEqual(keys);
-    for (const d of [tr, en, de]) {
+    for (const d of [tr, en]) {
       expect(d.taxonomyLanding.categoryMetaTitle).toContain("{name}");
       expect(d.taxonomyLanding.regionMetaTitle).toContain("{brand}");
     }

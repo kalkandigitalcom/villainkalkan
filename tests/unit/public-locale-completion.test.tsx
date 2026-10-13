@@ -2,10 +2,10 @@
    🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — YENİ LOCALE ROUTE'LARI
    ===============================================================
    Kapsam:
-     • `/en|de/teklif-al`, `/en|de/rezervasyon-kontrol`,
-       `/en|de/favoriler`, `/en|de/favoriler/paylas/[token]`,
-       `/en|de/kisa-sureli-tarihler/[ay]/[gece]` gate + ortak gövde
-     • Yeni dictionary namespace'lerinin TR/EN/DE bütünlüğü
+     • `/en/teklif-al`, `/en/rezervasyon-kontrol`,
+       `/en/favoriler`, `/en/favoriler/paylas/[token]`,
+       `/en/kisa-sureli-tarihler/[ay]/[gece]` gate + ortak gövde
+     • Yeni dictionary namespace'lerinin TR/EN bütünlüğü
      • TR byte-identity (eski hardcoded metinler dictionary'de AYNEN)
      • 404 + bakım ekranı locale çözümü
      • Source-lock: gövdelerde hardcoded TR kullanıcı metni YOK
@@ -22,8 +22,8 @@ import { resolve } from "node:path";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
 
-const LOCALES: Locale[] = ["tr", "en", "de"];
-const WRITABLE: Array<"en" | "de"> = ["en", "de"];
+const LOCALES: Locale[] = ["tr", "en"];
+const WRITABLE: Array<"en"> = ["en"];
 
 /* ---------------- Mocks ---------------- */
 
@@ -151,11 +151,10 @@ const NEW_NAMESPACES = [
   "maintenance",
 ] as const;
 
-describe("yeni dictionary namespace'leri — TR/EN/DE", () => {
+describe("yeni dictionary namespace'leri — TR/EN", () => {
   it.each(NEW_NAMESPACES)("3-%s) anahtar ağaçları BİREBİR aynı", (ns) => {
     const tr = leafPaths(getDictionary("tr")[ns]).sort();
     expect(leafPaths(getDictionary("en")[ns]).sort()).toEqual(tr);
-    expect(leafPaths(getDictionary("de")[ns]).sort()).toEqual(tr);
   });
 
   it.each(NEW_NAMESPACES)("4-%s) hiçbir değer boş/whitespace değil", (ns) => {
@@ -166,16 +165,11 @@ describe("yeni dictionary namespace'leri — TR/EN/DE", () => {
     }
   });
 
-  it.each(NEW_NAMESPACES)("5-%s) EN ve DE gerçekten çevrilmiş", (ns) => {
+  it.each(NEW_NAMESPACES)("5-%s) EN gerçekten çevrilmiş", (ns) => {
     const tr = leafValues(getDictionary("tr")[ns]);
     const en = leafValues(getDictionary("en")[ns]);
-    const de = leafValues(getDictionary("de")[ns]);
     expect(en.length).toBe(tr.length);
-    expect(de.length).toBe(tr.length);
     expect(en.filter((v, i) => v === tr[i]).length).toBeLessThan(
-      Math.max(2, Math.ceil(tr.length * 0.2))
-    );
-    expect(de.filter((v, i) => v === tr[i]).length).toBeLessThan(
       Math.max(2, Math.ceil(tr.length * 0.2))
     );
   });
@@ -235,7 +229,8 @@ describe("NotFoundContent — pathname'den locale", () => {
   it.each([
     ["/olmayan-sayfa", "tr"],
     ["/en/olmayan-sayfa", "en"],
-    ["/de/olmayan-sayfa", "de"],
+    /* DE desteği kaldırıldı — `/de/...` artık TR'ye düşer. */
+    ["/de/olmayan-sayfa", "tr"],
   ] as const)("8) %s → %s metinleri", async (pathname, locale) => {
     usePathnameMock.mockReturnValue(pathname);
     const { default: NotFoundContent } = await import(
@@ -265,14 +260,14 @@ describe("MaintenanceScreen — canonical mesaj + locale etiketi", () => {
   });
 
   it("10) 🔒 admin mesajı CANONICAL kalır (migration 084 kararı)", async () => {
-    usePathnameMock.mockReturnValue("/de");
+    usePathnameMock.mockReturnValue("/en");
     const { default: MaintenanceScreen } = await import(
       "@/app/components/layout/MaintenanceScreen"
     );
     render(<MaintenanceScreen brand="Marka" message="Özel bakım mesajı" />);
     expect(screen.getByText("Özel bakım mesajı")).toBeInTheDocument();
     expect(
-      screen.queryByText(getDictionary("de").maintenance.defaultMessage)
+      screen.queryByText(getDictionary("en").maintenance.defaultMessage)
     ).toBeNull();
   });
 });

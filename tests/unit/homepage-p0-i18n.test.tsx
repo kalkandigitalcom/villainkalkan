@@ -35,12 +35,6 @@ describe("1) home.search.guestsOption", () => {
     expect(formatDictionaryString(tpl, { n: 10 })).toBe("10 guests");
   });
 
-  it("1c) DE — '1 Gäste' … '10 Gäste'", () => {
-    const tpl = getDictionary("de").home.search.guestsOption;
-    expect(formatDictionaryString(tpl, { n: 1 })).toBe("1 Gäste");
-    expect(formatDictionaryString(tpl, { n: 10 })).toBe("10 Gäste");
-  });
-
   it("1d) 🔒 kaynak kilidi — HeroSearchPanel'de hardcoded '{g} kişi' KALMADI", () => {
     const src = readFileSync(
       "app/components/ui/hero/_components/HeroSearchPanel.tsx",
@@ -126,25 +120,14 @@ describe("2) loadHeroFilters — villa tipi adı locale-aware", () => {
     expect(types?.[1].name).toBe("Havuzlu Villa");
   });
 
-  it("2d) DE — çeviri kullanılır", async () => {
-    getTranslationsForParentsMock.mockResolvedValue(
-      new Map([["t2", { name: "Villa mit Pool" }]])
-    );
-    const { loadHeroFilters } = await import(
-      "@/app/components/ui/hero/_components/hero-filters.action"
-    );
-    const { types } = await loadHeroFilters("de");
-    expect(types?.[1].name).toBe("Villa mit Pool");
-  });
-
   it("2e) N+1 YOK — locale başına TEK batch sorgu, tüm id'ler birlikte", async () => {
     const { loadHeroFilters } = await import(
       "@/app/components/ui/hero/_components/hero-filters.action"
     );
     await loadHeroFilters("en");
-    /* getVillaTypeNamesByLocale en/de için 2 paralel batch çağırır
-       (Phase 10H deseni) — tip SAYISINDAN bağımsız sabit. */
-    expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(2);
+    /* getVillaTypeNamesByLocale yalnız en için TEK batch çağırır
+       (DE kaldırıldı) — tip SAYISINDAN bağımsız sabit. */
+    expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(1);
     for (const call of getTranslationsForParentsMock.mock.calls) {
       expect(call[0]).toBe("villa_type");
       expect(call[1]).toEqual(["t1", "t2"]);
@@ -186,8 +169,8 @@ describe("3) home.reviews — buton + accessibility metinleri", () => {
     );
   });
 
-  it("3b) EN/DE gerçekten çevrilmiş (TR ile aynı değil)", () => {
-    for (const locale of ["en", "de"] as const) {
+  it("3b) EN gerçekten çevrilmiş (TR ile aynı değil)", () => {
+    for (const locale of ["en"] as const) {
       const d = getDictionary(locale).home.reviews;
       const tr = getDictionary("tr").home.reviews;
       expect(d.readMore).not.toBe(tr.readMore);
@@ -268,11 +251,11 @@ describe("4) HorizontalCarousel prevLabel/nextLabel", () => {
     });
   });
 
-  it("4c) EN/DE label'ları geçilince aria-label çevrilir", async () => {
+  it("4c) EN label'ları geçilince aria-label çevrilir", async () => {
     const { default: HorizontalCarousel } = await import(
       "@/app/components/villa/HorizontalCarousel"
     );
-    for (const locale of ["en", "de"] as const) {
+    for (const locale of ["en"] as const) {
       const d = getDictionary(locale).home.carousel;
       withOverflow(() => {
         const { unmount } = render(
@@ -305,21 +288,21 @@ describe("4) HorizontalCarousel prevLabel/nextLabel", () => {
 /* ===============================================================
    5) DICTIONARY BÜTÜNLÜĞÜ
    =============================================================== */
-describe("5) yeni key'ler 3 dilde de var ve leaf kümeleri EŞİT", () => {
+describe("5) yeni key'ler TR/EN'de var ve leaf kümeleri EŞİT", () => {
   const leaves = (o: unknown, pre = ""): string[] =>
     Object.entries(o as Record<string, unknown>).flatMap(([k, v]) =>
       typeof v === "object" && v ? leaves(v, `${pre}${k}.`) : [`${pre}${k}`]
     );
 
-  it("5a) tr/en/de leaf kümeleri BİREBİR aynı", () => {
+  it("5a) tr/en leaf kümeleri BİREBİR aynı (DE YOK)", () => {
     const sets = SUPPORTED_LOCALES.map((l: Locale) =>
       JSON.stringify(leaves(getDictionary(l)).sort())
     );
+    expect(SUPPORTED_LOCALES).toEqual(["tr", "en"]);
     expect(sets[1]).toBe(sets[0]);
-    expect(sets[2]).toBe(sets[0]);
   });
 
-  it("5b) P0'da eklenen 7 key üç dilde de DOLU", () => {
+  it("5b) P0'da eklenen 7 key her dilde DOLU", () => {
     for (const locale of SUPPORTED_LOCALES) {
       const h = getDictionary(locale).home;
       for (const v of [

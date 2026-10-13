@@ -29,7 +29,7 @@
 
 import { DayPicker, type DayContentProps } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { tr, enUS, de } from "date-fns/locale";
+import { tr, enUS } from "date-fns/locale";
 
 import { useState } from "react";
 import { formatCurrency } from "@/lib/currency";
@@ -68,7 +68,7 @@ export default function BookingCalendar({
   const { currency } = useCurrency();
   const dict = getDictionary(locale);
   const dateFnsLocale =
-    locale === "en" ? enUS : locale === "de" ? de : tr;
+    locale === "en" ? enUS : tr;
 
   /* 🛡️ Modern inline error — alert() yerine takvim üstünde geçici
      uyarı banner'ı; 3 saniye sonra otomatik temizlenir. */

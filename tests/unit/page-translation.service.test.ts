@@ -80,7 +80,7 @@ describe("upsertPageTranslation", () => {
     });
   });
 
-  it("DE upsert — locale doğru iletilir", async () => {
+  it("DE upsert — DE desteği kaldırıldı, reddedilir ve repository çağrılmaz", async () => {
     const { upsertPageTranslation } = await svc();
 
     const result = await upsertPageTranslation({
@@ -89,13 +89,11 @@ describe("upsertPageTranslation", () => {
       title: "Über uns",
     });
 
-    expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith(
-      "page",
-      PAGE_ID,
-      "de",
-      expect.objectContaining({ title: "Über uns" })
-    );
+    expect(result).toEqual({
+      ok: false,
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
+    });
+    expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
   it("BOŞ çeviri güvenli — tüm alanlar null yazılır (TR'ye fallback)", async () => {
@@ -145,7 +143,7 @@ describe("upsertPageTranslation", () => {
     });
     expect(result).toEqual({
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir",
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
     });
     expect(upsertOneMock).not.toHaveBeenCalled();
     expect(findByIdMock).not.toHaveBeenCalled();
@@ -286,7 +284,7 @@ describe("upsertPageTranslation", () => {
 });
 
 describe("getPageTranslations", () => {
-  it("yalnız en/de satırlarını döner (tr varsa filtrelenir)", async () => {
+  it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValue({
       data: [
         { ...VALID_ROW, locale: "tr" },
@@ -299,7 +297,7 @@ describe("getPageTranslations", () => {
     const result = await getPageTranslations(PAGE_ID);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.rows.map((r) => r.locale)).toEqual(["en", "de"]);
+    expect(result.rows.map((r) => r.locale)).toEqual(["en"]);
     expect(findAllForParentMock).toHaveBeenCalledWith("page", PAGE_ID);
   });
 

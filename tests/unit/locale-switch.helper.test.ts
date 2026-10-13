@@ -44,17 +44,17 @@ describe("hasLocaleRoute", () => {
     expect(hasLocaleRoute("/kiralik-villa")).toBe(false);
   });
 
-  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en|de/teklif-al` GERÇEK route
+  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en/teklif-al` GERÇEK route
      dosyaları eklendi (ortak `OfferPageBody`) → allowlist'e girdi. */
-  it("8) '/teklif-al' → true (EN/DE route'ları var)", () => {
+  it("8) '/teklif-al' → true (EN route'ları var)", () => {
     expect(hasLocaleRoute("/teklif-al")).toBe(true);
   });
 
-  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en|de/blog` ve
-     `/en|de/blog/[slug]` GERÇEK route dosyaları eklendi (ortak
+  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en/blog` ve
+     `/en/blog/[slug]` GERÇEK route dosyaları eklendi (ortak
      `BlogIndexPageBody` / `BlogDetailPageBody` + migration 089
      `blog_post_translations`) → beklenen değer false → true. */
-  it("9) '/blog' → true (EN/DE route'ları var)", () => {
+  it("9) '/blog' → true (EN route'ları var)", () => {
     expect(hasLocaleRoute("/blog")).toBe(true);
   });
 
@@ -66,8 +66,8 @@ describe("hasLocaleRoute", () => {
     expect(hasLocaleRoute("/bloglar")).toBe(false);
   });
 
-  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en|de/favoriler`. */
-  it("10) '/favoriler' → true (EN/DE route'ları var)", () => {
+  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en/favoriler`. */
+  it("10) '/favoriler' → true (EN route'ları var)", () => {
     expect(hasLocaleRoute("/favoriler")).toBe(true);
   });
 
@@ -79,9 +79,9 @@ describe("hasLocaleRoute", () => {
     expect(hasLocaleRoute("/kisa-sureli-tarihler/haziran/2")).toBe(true);
   });
 
-  /* 🛡️ `/en|de/iletisim` GERÇEK route dosyaları eklendi (ortak
+  /* 🛡️ `/en/iletisim` GERÇEK route dosyaları eklendi (ortak
      `ContactPageBody`) → allowlist'e girdi; artık fallback DEĞİL. */
-  it("11) '/iletisim' → true (EN/DE route'ları var)", () => {
+  it("11) '/iletisim' → true (EN route'ları var)", () => {
     expect(hasLocaleRoute("/iletisim")).toBe(true);
   });
 
@@ -89,10 +89,10 @@ describe("hasLocaleRoute", () => {
     expect(hasLocaleRoute("/liste")).toBe(false);
   });
 
-  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en|de/rezervasyon-kontrol`.
+  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en/rezervasyon-kontrol`.
      ⚠️ Eşleşme `/rezervasyon/` PREFIX'inden değil, KENDİ exact
      kaydından gelir (aşağıdaki 13b bunu doğrular). */
-  it("13) '/rezervasyon-kontrol' → true (EN/DE route'ları var)", () => {
+  it("13) '/rezervasyon-kontrol' → true (EN route'ları var)", () => {
     expect(hasLocaleRoute("/rezervasyon-kontrol")).toBe(true);
   });
 
@@ -100,15 +100,15 @@ describe("hasLocaleRoute", () => {
     expect(hasLocaleRoute("/rezervasyon-kontrolX")).toBe(false);
   });
 
-  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en|de/v/[token]` ve
-     `/en|de/liste/[token]` GERÇEK route dosyaları eklendi. Sayfalar
-     `noindex`'tir ama kullanıcı linke EN/DE ile de ulaşabildiği için
+  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en/v/[token]` ve
+     `/en/liste/[token]` GERÇEK route dosyaları eklendi. Sayfalar
+     `noindex`'tir ama kullanıcı linke EN ile de ulaşabildiği için
      dil değiştirici çalışmalıdır → beklenen değer false → true. */
-  it("14) '/v/abc123' → true (EN/DE route'ları var)", () => {
+  it("14) '/v/abc123' → true (EN route'ları var)", () => {
     expect(hasLocaleRoute("/v/abc123")).toBe(true);
   });
 
-  it("14b) '/liste/abc123' → true (EN/DE route'ları var)", () => {
+  it("14b) '/liste/abc123' → true (EN route'ları var)", () => {
     expect(hasLocaleRoute("/liste/abc123")).toBe(true);
   });
 
@@ -116,7 +116,7 @@ describe("hasLocaleRoute", () => {
     expect(hasLocaleRoute("/v/")).toBe(false);
   });
 
-  /* 🛡️ PHASE 12D — /en/p/[slug] ve /de/p/[slug] route'ları EKLENDİ;
+  /* 🛡️ PHASE 12D — /en/p/[slug] route'u EKLENDİ;
      bu yüzden beklenen değer false → true olarak GÜNCELLENDİ. */
   it("15) '/p/some-slug' (slug'lı) → true", () => {
     expect(hasLocaleRoute("/p/some-slug")).toBe(true);
@@ -136,11 +136,10 @@ describe("hasLocaleRoute", () => {
 });
 
 describe("getLocaleSwitchTargets", () => {
-  it("1) '/' → tr:'/', en:'/en', de:'/de'", () => {
+  it("1) '/' → tr:'/', en:'/en'", () => {
     expect(getLocaleSwitchTargets("/")).toEqual({
       tr: "/",
       en: "/en",
-      de: "/de",
     });
   });
 
@@ -148,7 +147,6 @@ describe("getLocaleSwitchTargets", () => {
     expect(getLocaleSwitchTargets(null)).toEqual({
       tr: "/",
       en: "/en",
-      de: "/de",
     });
   });
 
@@ -156,63 +154,47 @@ describe("getLocaleSwitchTargets", () => {
     expect(getLocaleSwitchTargets(undefined)).toEqual({
       tr: "/",
       en: "/en",
-      de: "/de",
     });
   });
 
-  it("4) '/en' (EN ana sayfa) → tr:'/', en:'/en', de:'/de'", () => {
+  it("4) '/en' (EN ana sayfa) → tr:'/', en:'/en'", () => {
     expect(getLocaleSwitchTargets("/en")).toEqual({
       tr: "/",
       en: "/en",
-      de: "/de",
     });
   });
 
-  it("5) '/de' (DE ana sayfa) → tr:'/', en:'/en', de:'/de'", () => {
-    expect(getLocaleSwitchTargets("/de")).toEqual({
-      tr: "/",
-      en: "/en",
-      de: "/de",
-    });
+  it("5) DE desteği kaldırıldı — '/de/kiralik-villalar' locale route DEĞİL, fallback'e düşer ve 'de' hedefi ÜRETİLMEZ", () => {
+    const t = getLocaleSwitchTargets("/de/kiralik-villalar");
+    expect(t).toEqual({ tr: "/", en: "/en" });
+    expect("de" in t).toBe(false);
   });
 
-  it("6) '/kiralik-villalar' → 3 locale varyantı (gerçek route)", () => {
+  it("6) '/kiralik-villalar' → 2 locale varyantı (gerçek route)", () => {
     expect(getLocaleSwitchTargets("/kiralik-villalar")).toEqual({
       tr: "/kiralik-villalar",
       en: "/en/kiralik-villalar",
-      de: "/de/kiralik-villalar",
     });
   });
 
-  it("7) '/kiralik-villa/test-villa' → 3 locale varyantı", () => {
+  it("7) '/kiralik-villa/test-villa' → 2 locale varyantı", () => {
     expect(getLocaleSwitchTargets("/kiralik-villa/test-villa")).toEqual({
       tr: "/kiralik-villa/test-villa",
       en: "/en/kiralik-villa/test-villa",
-      de: "/de/kiralik-villa/test-villa",
     });
   });
 
-  it("8) '/en/kiralik-villa/test-villa' (zaten EN prefixli) → aynı 3 varyant", () => {
+  it("8) '/en/kiralik-villa/test-villa' (zaten EN prefixli) → aynı 2 varyant", () => {
     expect(getLocaleSwitchTargets("/en/kiralik-villa/test-villa")).toEqual({
       tr: "/kiralik-villa/test-villa",
       en: "/en/kiralik-villa/test-villa",
-      de: "/de/kiralik-villa/test-villa",
     });
   });
 
-  it("9) '/de/kiralik-villa/test-villa' (zaten DE prefixli) → aynı 3 varyant", () => {
-    expect(getLocaleSwitchTargets("/de/kiralik-villa/test-villa")).toEqual({
-      tr: "/kiralik-villa/test-villa",
-      en: "/en/kiralik-villa/test-villa",
-      de: "/de/kiralik-villa/test-villa",
-    });
-  });
-
-  it("10) '/rezervasyon/test-villa' → 3 locale varyantı", () => {
+  it("10) '/rezervasyon/test-villa' → 2 locale varyantı", () => {
     expect(getLocaleSwitchTargets("/rezervasyon/test-villa")).toEqual({
       tr: "/rezervasyon/test-villa",
       en: "/en/rezervasyon/test-villa",
-      de: "/de/rezervasyon/test-villa",
     });
   });
 
@@ -220,22 +202,19 @@ describe("getLocaleSwitchTargets", () => {
     expect(getLocaleSwitchTargets("/teklif-al")).toEqual({
       tr: "/teklif-al",
       en: "/en/teklif-al",
-      de: "/de/teklif-al",
     });
   });
 
-  it("12) '/en/teklif-al' → DE '/de/teklif-al', TR '/teklif-al'", () => {
+  it("12) '/en/teklif-al' → EN '/en/teklif-al', TR '/teklif-al'", () => {
     const targets = getLocaleSwitchTargets("/en/teklif-al");
     expect(targets.tr).toBe("/teklif-al");
     expect(targets.en).toBe("/en/teklif-al");
-    expect(targets.de).toBe("/de/teklif-al");
   });
 
-  it("13) '/de/blog' → locale prefix'li hedefler (artık EN/DE route'u var)", () => {
-    expect(getLocaleSwitchTargets("/de/blog")).toEqual({
+  it("13) '/en/blog' → locale prefix'li hedefler (artık EN route'u var)", () => {
+    expect(getLocaleSwitchTargets("/en/blog")).toEqual({
       tr: "/blog",
       en: "/en/blog",
-      de: "/de/blog",
     });
   });
 
@@ -243,7 +222,6 @@ describe("getLocaleSwitchTargets", () => {
     expect(getLocaleSwitchTargets("/en/blog/bir-yazi")).toEqual({
       tr: "/blog/bir-yazi",
       en: "/en/blog/bir-yazi",
-      de: "/de/blog/bir-yazi",
     });
   });
 
@@ -251,7 +229,6 @@ describe("getLocaleSwitchTargets", () => {
     expect(getLocaleSwitchTargets("/rezervasyon-kontrol")).toEqual({
       tr: "/rezervasyon-kontrol",
       en: "/en/rezervasyon-kontrol",
-      de: "/de/rezervasyon-kontrol",
     });
   });
 
@@ -259,16 +236,14 @@ describe("getLocaleSwitchTargets", () => {
     expect(getLocaleSwitchTargets("/favoriler")).toEqual({
       tr: "/favoriler",
       en: "/en/favoriler",
-      de: "/de/favoriler",
     });
   });
 
   /* 🛡️ Dinamik segmentler (token / ay / gece) AYNEN korunur. */
-  it("15b) '/de/favoriler/paylas/abc123' → token korunur", () => {
-    expect(getLocaleSwitchTargets("/de/favoriler/paylas/abc123")).toEqual({
+  it("15b) '/en/favoriler/paylas/abc123' → token korunur", () => {
+    expect(getLocaleSwitchTargets("/en/favoriler/paylas/abc123")).toEqual({
       tr: "/favoriler/paylas/abc123",
       en: "/en/favoriler/paylas/abc123",
-      de: "/de/favoriler/paylas/abc123",
     });
   });
 
@@ -278,7 +253,6 @@ describe("getLocaleSwitchTargets", () => {
     ).toEqual({
       tr: "/kisa-sureli-tarihler/haziran/2",
       en: "/en/kisa-sureli-tarihler/haziran/2",
-      de: "/de/kisa-sureli-tarihler/haziran/2",
     });
   });
 
@@ -286,15 +260,13 @@ describe("getLocaleSwitchTargets", () => {
     expect(getLocaleSwitchTargets("/v/abc123")).toEqual({
       tr: "/v/abc123",
       en: "/en/v/abc123",
-      de: "/de/v/abc123",
     });
   });
 
-  it("16b) '/de/liste/abc123' → token AYNEN korunur", () => {
-    expect(getLocaleSwitchTargets("/de/liste/abc123")).toEqual({
+  it("16b) '/en/liste/abc123' → token AYNEN korunur", () => {
+    expect(getLocaleSwitchTargets("/en/liste/abc123")).toEqual({
       tr: "/liste/abc123",
       en: "/en/liste/abc123",
-      de: "/de/liste/abc123",
     });
   });
 });
@@ -319,23 +291,13 @@ describe("getLocaleSwitchTargets — query string koruma", () => {
     expect(getLocaleSwitchTargets("/arama", Q)).toEqual({
       tr: `/arama?${Q}`,
       en: `/en/arama?${Q}`,
-      de: `/de/arama?${Q}`,
     });
   });
 
-  it("Q2) '/en/arama' + query → '/de/arama' + AYNI query", () => {
+  it("Q2) '/en/arama' + query → '/arama' + AYNI query", () => {
     expect(getLocaleSwitchTargets("/en/arama", Q)).toEqual({
       tr: `/arama?${Q}`,
       en: `/en/arama?${Q}`,
-      de: `/de/arama?${Q}`,
-    });
-  });
-
-  it("Q3) '/de/arama' + query → '/arama' + AYNI query (kullanıcı senaryosu)", () => {
-    expect(getLocaleSwitchTargets("/de/arama", Q)).toEqual({
-      tr: `/arama?${Q}`,
-      en: `/en/arama?${Q}`,
-      de: `/de/arama?${Q}`,
     });
   });
 
@@ -343,30 +305,27 @@ describe("getLocaleSwitchTargets — query string koruma", () => {
     const multi = "regions=fethiye&guests=6&start=2026-07-01&end=2026-07-08&page=2&sort=price-asc";
     const t = getLocaleSwitchTargets("/arama", multi);
     expect(t.en).toBe(`/en/arama?${multi}`);
-    expect(t.de).toBe(`/de/arama?${multi}`);
     expect(t.tr).toBe(`/arama?${multi}`);
   });
 
   it("Q5) `villa-turleri` virgüllü değerleri canonical slug olarak kalır (çeviri YOK)", () => {
     const q = "villa-turleri=2027-kiralik-villalar%2Cmuhafazakar-villalar";
-    const t = getLocaleSwitchTargets("/de/arama", q);
+    const t = getLocaleSwitchTargets("/en/arama", q);
     expect(t.en).toBe(`/en/arama?${q}`);
     expect(t.en).toContain("2027-kiralik-villalar%2Cmuhafazakar-villalar");
-    /* Slug'lar hiçbir locale'de değişmez — 3 hedefte de AYNI token. */
+    /* Slug'lar hiçbir locale'de değişmez — 2 hedefte de AYNI token. */
     expect(t.tr.endsWith(q)).toBe(true);
-    expect(t.de.endsWith(q)).toBe(true);
   });
 
   it("Q6) `flexible` parametresi korunur", () => {
     expect(getLocaleSwitchTargets("/arama", "flexible=3")).toEqual({
       tr: "/arama?flexible=3",
       en: "/en/arama?flexible=3",
-      de: "/de/arama?flexible=3",
     });
   });
 
   it("Q7) query YOK (undefined / '' / '?') → MEVCUT davranış birebir (soru işareti eklenmez)", () => {
-    const expected = { tr: "/arama", en: "/en/arama", de: "/de/arama" };
+    const expected = { tr: "/arama", en: "/en/arama" };
     expect(getLocaleSwitchTargets("/arama")).toEqual(expected);
     expect(getLocaleSwitchTargets("/arama", "")).toEqual(expected);
     expect(getLocaleSwitchTargets("/arama", "?")).toEqual(expected);
@@ -387,35 +346,31 @@ describe("getLocaleSwitchTargets — query string koruma", () => {
     expect(getLocaleSwitchTargets("/teklif-al", "foo=bar")).toEqual({
       tr: "/teklif-al?foo=bar",
       en: "/en/teklif-al?foo=bar",
-      de: "/de/teklif-al?foo=bar",
     });
     /* (a2) `/blog` artık allowlist'te → query AYNEN korunur */
-    expect(getLocaleSwitchTargets("/de/blog", "x=1")).toEqual({
+    expect(getLocaleSwitchTargets("/en/blog", "x=1")).toEqual({
       tr: "/blog?x=1",
       en: "/en/blog?x=1",
-      de: "/de/blog?x=1",
     });
     /* (a3) gerçek fallback (locale karşılığı YOK) → query EKLENMEZ */
     expect(getLocaleSwitchTargets("/bilinmeyen-sayfa", "x=1")).toEqual({
       tr: "/",
       en: "/en",
-      de: "/de",
     });
 
     /* (b) query'siz çağrılar — Phase 10C çıktısı BİREBİR aynı */
-    expect(getLocaleSwitchTargets("/")).toEqual({ tr: "/", en: "/en", de: "/de" });
+    expect(getLocaleSwitchTargets("/")).toEqual({ tr: "/", en: "/en" });
     expect(getLocaleSwitchTargets("/kiralik-villa/test-villa")).toEqual({
       tr: "/kiralik-villa/test-villa",
       en: "/en/kiralik-villa/test-villa",
-      de: "/de/kiralik-villa/test-villa",
     });
 
     /* (c) query'li diğer allowlist route'ları da aynı kuralı izler */
     expect(getLocaleSwitchTargets("/kiralik-villa/test-villa", "guests=4").en).toBe(
       "/en/kiralik-villa/test-villa?guests=4"
     );
-    expect(getLocaleSwitchTargets("/p/hakkimizda", "utm=x").de).toBe(
-      "/de/p/hakkimizda?utm=x"
+    expect(getLocaleSwitchTargets("/p/hakkimizda", "utm=x").en).toBe(
+      "/en/p/hakkimizda?utm=x"
     );
   });
 
@@ -429,9 +384,8 @@ describe("getLocaleSwitchTargets — query string koruma", () => {
     expect(getLocaleSwitchTargets("/arama?flexible=3")).toEqual({
       tr: "/arama?flexible=3",
       en: "/en/arama?flexible=3",
-      de: "/de/arama?flexible=3",
     });
-    expect(getLocaleSwitchTargets("/de/arama?flexible=3").tr).toBe("/arama?flexible=3");
+    expect(getLocaleSwitchTargets("/en/arama?flexible=3").tr).toBe("/arama?flexible=3");
   });
 
   it("Q12) `hasLocaleRoute` query'den ETKİLENMEZ (yalnız path allowlist'i)", () => {
@@ -445,7 +399,7 @@ describe("getLocaleSwitchTargets — query string koruma", () => {
 /* ===============================================================
    🛡️ SEO LANDING — Villa Tipleri / Bölgeler dil değiştirici
    ===============================================================
-   `/en|de/villa-turleri/[slug]` ve `/en|de/bolgeler/[slug]` route
+   `/en/villa-turleri/[slug]` ve `/en/bolgeler/[slug]` route
    dosyaları var ama allowlist'te değildi → dil değiştirici ana
    sayfaya düşüyordu. Slug locale'den bağımsız (hreflang ile aynı).
    =============================================================== */
@@ -453,19 +407,16 @@ describe("SEO landing sayfaları — aynı slug, yalnız locale prefix'i değiş
   it.each([
     ["/villa-turleri/balayi-villalari", "/villa-turleri/balayi-villalari"],
     ["/en/villa-turleri/balayi-villalari", "/villa-turleri/balayi-villalari"],
-    ["/de/villa-turleri/balayi-villalari", "/villa-turleri/balayi-villalari"],
     ["/bolgeler/kalkan", "/bolgeler/kalkan"],
     ["/en/bolgeler/kalkan", "/bolgeler/kalkan"],
-    ["/de/bolgeler/kalkan", "/bolgeler/kalkan"],
   ])("%s", (path, tr) => {
-    expect(getLocaleSwitchTargets(path)).toEqual({ tr, en: `/en${tr}`, de: `/de${tr}` });
+    expect(getLocaleSwitchTargets(path)).toEqual({ tr, en: `/en${tr}` });
   });
 
   it("sayfalama/sort query'si korunur", () => {
     expect(getLocaleSwitchTargets("/en/bolgeler/kalkan", "page=2")).toEqual({
       tr: "/bolgeler/kalkan?page=2",
       en: "/en/bolgeler/kalkan?page=2",
-      de: "/de/bolgeler/kalkan?page=2",
     });
   });
 
@@ -473,21 +424,21 @@ describe("SEO landing sayfaları — aynı slug, yalnız locale prefix'i değiş
     expect(hasLocaleRoute("/villa-turleri")).toBe(false);
     expect(hasLocaleRoute("/villa-turleri/")).toBe(false);
     expect(hasLocaleRoute("/bolgeler")).toBe(false);
-    expect(getLocaleSwitchTargets("/en/bolgeler")).toEqual({ tr: "/", en: "/en", de: "/de" });
+    expect(getLocaleSwitchTargets("/en/bolgeler")).toEqual({ tr: "/", en: "/en" });
   });
 
-  it("MOD B (varsayılan EN/DE): TR hedefi landing sayfasının kendisidir, /tr değil", () => {
+  it("MOD B (varsayılan EN): TR hedefi landing sayfasının kendisidir, /tr değil", () => {
     expect(getLocaleSwitchTargets("/en/villa-turleri/x", "", "/tr").tr).toBe("/villa-turleri/x");
   });
 });
 
-/* Gerçek `/en` ve `/de` route dosyalarının HEPSİ allowlist'te olmalı —
+/* Gerçek `/en` route dosyalarının HEPSİ allowlist'te olmalı —
    yeni bir locale route eklenip listeye yazılmazsa bu test yakalar. */
-describe("allowlist ↔ app/(public)/en|de route dosyaları", () => {
-  it("her EN/DE sayfası için hasLocaleRoute(true)", async () => {
+describe("allowlist ↔ app/(public)/en route dosyaları", () => {
+  it("her EN sayfası için hasLocaleRoute(true)", async () => {
     const { readdirSync } = await import("node:fs");
     const { join, relative, sep } = await import("node:path");
-    for (const locale of ["en", "de"]) {
+    for (const locale of ["en"]) {
       const root = join(process.cwd(), "app/(public)", locale);
       const paths: string[] = [];
       const walk = (dir: string) => {

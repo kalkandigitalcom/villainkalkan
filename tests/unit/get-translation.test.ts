@@ -62,13 +62,6 @@ const enVillaRow = {
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
-const deVillaRow = {
-  ...enVillaRow,
-  id: "t-de-1",
-  locale: "de" as const,
-  title: "Villa Verliebt",
-};
-
 describe("getTranslation", () => {
   /* --- 1) TR locale --- */
   it("1) locale='tr' → findOne HİÇ ÇAĞRILMAZ, null döner (TR için gereksiz DB bağımlılığı yok)", async () => {
@@ -84,24 +77,22 @@ describe("getTranslation", () => {
     expect(result).toEqual(enVillaRow);
   });
 
-  /* --- 3) DE + mevcut --- */
-  it("3) locale='de' + çeviri mevcut → satırın TAMAMINI döner", async () => {
-    findOneMock.mockResolvedValue({ data: deVillaRow, error: null });
-    const result = await getTranslation("villa", "villa-uuid-1", "de");
-    expect(result).toEqual(deVillaRow);
+  /* --- 3) DE artık desteklenmiyor --- */
+  it("3) locale='de' (DE desteği kaldırıldı) → 'tr'ye düşer, findOne ÇAĞRILMAZ, null döner", async () => {
+    const result = await getTranslation(
+      "villa",
+      "villa-uuid-1",
+      // @ts-expect-error 'de' artık geçerli bir Locale DEĞİL — runtime güvenliği test edilir
+      "de"
+    );
+    expect(result).toBeNull();
+    expect(findOneMock).not.toHaveBeenCalled();
   });
 
   /* --- 4) EN yok --- */
   it("4) locale='en' + çeviri YOK (0 satır) → null döner", async () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
     const result = await getTranslation("villa", "villa-uuid-2", "en");
-    expect(result).toBeNull();
-  });
-
-  /* --- 5) DE yok --- */
-  it("5) locale='de' + çeviri YOK (0 satır) → null döner", async () => {
-    findOneMock.mockResolvedValue({ data: null, error: null });
-    const result = await getTranslation("villa", "villa-uuid-2", "de");
     expect(result).toBeNull();
   });
 
@@ -132,9 +123,9 @@ describe("getTranslation", () => {
   /* --- 8) Doğru parent/locale sorgusu --- */
   it("8) findOne DOĞRU (entity, parentId, resolvedLocale) argümanlarıyla çağrılır", async () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
-    await getTranslation("rule_item", "rule-uuid-9", "de");
+    await getTranslation("rule_item", "rule-uuid-9", "en");
     expect(findOneMock).toHaveBeenCalledTimes(1);
-    expect(findOneMock).toHaveBeenCalledWith("rule_item", "rule-uuid-9", "de");
+    expect(findOneMock).toHaveBeenCalledWith("rule_item", "rule-uuid-9", "en");
   });
 
   /* --- 9) Boş tablo / tüm entity'ler güvenli ---
@@ -189,7 +180,7 @@ describe("getTranslation", () => {
    ===============================================================
    `translationRepository.findManyForLocale` mock'lanır (`findOne` ile
    AYNI mock seviyesi/desen) — GERÇEK DB'YE HİÇ DOKUNULMAZ. Bu
-   fonksiyonun BUGÜN HİÇBİR call-site'ı YOK (Phase 8D audit — EN/DE
+   fonksiyonun BUGÜN HİÇBİR call-site'ı YOK (Phase 8D audit — EN
    villa detail'e location/features/rules/priceIncludes/distances BU
    FAZDA EKLENMEDİ); testler yalnız fonksiyonun kendi sözleşmesini
    (TR kısayolu, boş parentIds, hata güvenliği, Map inşası) kanıtlıyor.
@@ -209,12 +200,6 @@ const featureRowB = {
   name: "Private pool",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
-};
-const featureRowDe = {
-  ...featureRowA,
-  id: "tf-1-de",
-  locale: "de" as const,
-  name: "Meerblick",
 };
 
 describe("getTranslationsForParents", () => {
@@ -257,19 +242,16 @@ describe("getTranslationsForParents", () => {
     expect(result.get("feature-uuid-2")).toEqual(featureRowB);
   });
 
-  /* d) DE başarılı sonuç → Map doğru parentId'lerle oluşuyor */
-  it("d) locale='de' + çeviri satırı mevcut → Map, feature_id'yi key olarak kullanır", async () => {
-    findManyForLocaleMock.mockResolvedValue({
-      data: [featureRowDe],
-      error: null,
-    });
+  /* d) DE artık desteklenmiyor → TR kısayolu */
+  it("d) locale='de' (DE desteği kaldırıldı) → 'tr'ye düşer, findManyForLocale ÇAĞRILMAZ, boş Map döner", async () => {
     const result = await getTranslationsForParents(
       "villa_feature",
       ["feature-uuid-1"],
+      // @ts-expect-error 'de' artık geçerli bir Locale DEĞİL — runtime güvenliği test edilir
       "de"
     );
-    expect(result.size).toBe(1);
-    expect(result.get("feature-uuid-1")).toEqual(featureRowDe);
+    expect(result.size).toBe(0);
+    expect(findManyForLocaleMock).not.toHaveBeenCalled();
   });
 
   /* e) missing translation row → ilgili parent Map'te yok */

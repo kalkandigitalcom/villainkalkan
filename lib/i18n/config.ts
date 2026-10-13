@@ -1,7 +1,7 @@
 /* ===============================================================
    🛡️ LOCALE CORE — PHASE 1B (yalnız temel primitive'ler)
    ===============================================================
-   Bu modül çoklu dil (TR/EN/DE) mimarisinin PHASE 1B "Locale Core"
+   Bu modül çoklu dil (TR/EN) mimarisinin PHASE 1B "Locale Core"
    adımıdır. Yalnız tip/validasyon/resolver/settings-okuma primitive'leri
    içerir — HİÇBİR kullanıcı-görünür davranışı değiştirmez:
 
@@ -19,20 +19,20 @@
      `settings.multilingual_enabled` / `settings.public_default_locale`
      (migration 081) alanlarını type-safe okuyan iki saf (pure) yardımcı
      da burada. `multilingual_enabled=false` olsa da, `public_default_locale`
-     "en"/"de" olsa da bu fonksiyonlar hiçbir side-effect üretmez ve bu
+     "en" olsa da bu fonksiyonlar hiçbir side-effect üretmez ve bu
      fazda hiçbir yerden çağrılmaz — public site davranışı DEĞİŞMEZ.
    =============================================================== */
 
 /** Desteklenen tek locale kümesi. Projede locale değeri bunun dışında
  *  dağınık string olarak KULLANILMAMALI — her yeni call-site bu tipi
  *  veya aşağıdaki helper'ları kullanmalı. */
-export type Locale = "tr" | "en" | "de";
+export type Locale = "tr" | "en";
 
-export const SUPPORTED_LOCALES: readonly Locale[] = ["tr", "en", "de"];
+export const SUPPORTED_LOCALES: readonly Locale[] = ["tr", "en"];
 
 export const DEFAULT_LOCALE: Locale = "tr";
 
-/** Type guard — yalnız `SUPPORTED_LOCALES` içindeki 3 değeri kabul eder. */
+/** Type guard — yalnız `SUPPORTED_LOCALES` içindeki 2 değeri kabul eder. */
 export function isSupportedLocale(value: unknown): value is Locale {
   return (
     typeof value === "string" &&
@@ -60,7 +60,7 @@ export function resolveLocale(explicitLocale?: string | null): Locale {
 }
 
 /* ===============================================================
-   🛡️ PHASE 9A — PATHNAME'DEN LOCALE TESPİTİ (yalnız /en, /de prefix'i)
+   🛡️ PHASE 9A — PATHNAME'DEN LOCALE TESPİTİ (yalnız /en prefix'i)
    ===============================================================
    AMAÇ: Header.tsx ("use client", zaten `usePathname()` kullanıyor —
    Phase 9A audit'inde doğrulandı) kendi locale'ini middleware/headers()
@@ -85,7 +85,7 @@ export function localeFromPathname(
 ): Locale {
   if (!pathname) return DEFAULT_LOCALE;
   const firstSegment = pathname.split("/")[1] || "";
-  if (firstSegment === "en" || firstSegment === "de") {
+  if (firstSegment === "en") {
     return firstSegment;
   }
   return DEFAULT_LOCALE;
@@ -111,8 +111,9 @@ export function isMultilingualEnabled(
 
 /** settings.public_default_locale'i güvenli bir Locale'e çevirir.
  *  Geçersiz/eksik/null → DEFAULT_LOCALE ("tr"). DB CHECK constraint'i
- *  (migration 081) zaten yalnız tr/en/de'ye izin veriyor; bu fonksiyon
- *  yine de savunmacı davranır (constraint bypass edilse veya satır
+ *  (migration 081) tarihsel olarak tr/en/de'ye izin veriyor; Almanca
+ *  desteği kaldırıldığı için "de" (veya başka geçersiz değer) burada
+ *  DEFAULT_LOCALE'e düşer. Fonksiyon ayrıca savunmacı davranır (constraint bypass edilse veya satır
  *  hiç yoksa bile güvenli). */
 export function getPublicDefaultLocale(
   settings: SettingsLocaleFields | null | undefined
@@ -137,5 +138,4 @@ export function getPublicDefaultLocale(
 export const LOCALE_BCP47: Record<Locale, string> = {
   tr: "tr-TR",
   en: "en-US",
-  de: "de-DE",
 };

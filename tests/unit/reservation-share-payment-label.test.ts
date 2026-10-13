@@ -1,5 +1,5 @@
 /* ===============================================================
-   🛡️ /rezervasyon-kontrol — ÖDEME YÖNTEMİ ETİKETİ (TR/EN/DE)
+   🛡️ /rezervasyon-kontrol — ÖDEME YÖNTEMİ ETİKETİ (TR/EN)
    ===============================================================
    Public audit bulgusu: etiket `"Kredi Kartı"` / `"Havale/EFT"` olarak
    hardcoded TR üretiliyordu ve EN/DE paylaşım görünümünde Türkçe
@@ -64,7 +64,7 @@ function row(overrides: Record<string, unknown> = {}) {
   };
 }
 
-async function label(locale?: "tr" | "en" | "de", pm?: unknown) {
+async function label(locale?: "tr" | "en", pm?: unknown) {
   findReservationForShareMock.mockResolvedValue({
     data: [pm === undefined ? row() : row({ payment_method: pm })],
     error: null,
@@ -78,7 +78,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   resolveByTokenHashMock.mockResolvedValue({ data: "res-1", error: null });
   getPaymentMethodNamesByLocaleMock.mockResolvedValue({
-    [PM_ID]: { en: "Bank Transfer", de: "Banküberweisung" },
+    [PM_ID]: { en: "Bank Transfer" },
   });
 });
 
@@ -95,17 +95,10 @@ describe("paymentMethodLabel — locale çözümü", () => {
     expect(await label("en")).toBe("Bank Transfer");
   });
 
-  it("4) DE → admin'in girdiği çeviri", async () => {
-    expect(await label("de")).toBe("Banküberweisung");
+  it("5) EN çeviri YOKSA canonical TR fallback", async () => {
+    getPaymentMethodNamesByLocaleMock.mockResolvedValue({});
+    expect(await label("en")).toBe("Havale / EFT");
   });
-
-  it.each(["en", "de"] as const)(
-    "5-%s) çeviri YOKSA canonical TR fallback",
-    async (l) => {
-      getPaymentMethodNamesByLocaleMock.mockResolvedValue({});
-      expect(await label(l)).toBe("Havale / EFT");
-    }
-  );
 
   it.each(["", "   "])(
     "6) boş/whitespace çeviri → canonical TR fallback (%s)",
@@ -132,7 +125,7 @@ describe("paymentMethodLabel — locale çözümü", () => {
     expect(getPaymentMethodNamesByLocaleMock).not.toHaveBeenCalled();
   });
 
-  it("10) 🔒 EN/DE'de TEK batch çağrısı, tek id ile (N+1 yok)", async () => {
+  it("10) 🔒 EN'de TEK batch çağrısı, tek id ile (N+1 yok)", async () => {
     await label("en");
     expect(getPaymentMethodNamesByLocaleMock).toHaveBeenCalledTimes(1);
     expect(getPaymentMethodNamesByLocaleMock).toHaveBeenCalledWith([PM_ID]);
@@ -140,7 +133,7 @@ describe("paymentMethodLabel — locale çözümü", () => {
 
   it("11) çeviri okuma hatası fail-soft → canonical TR, DTO bozulmaz", async () => {
     getPaymentMethodNamesByLocaleMock.mockRejectedValue(new Error("db"));
-    expect(await label("de")).toBe("Havale / EFT");
+    expect(await label("en")).toBe("Havale / EFT");
   });
 
   it("12) 🔒 hardcoded 'Kredi Kartı' / 'Havale/EFT' ÜRETİLMEZ (type'tan türetme yok)", async () => {

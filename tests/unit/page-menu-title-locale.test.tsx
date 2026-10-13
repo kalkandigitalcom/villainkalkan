@@ -1,5 +1,5 @@
 /* ===============================================================
-   🛡️ CMS SAYFA BAŞLIKLARI — HEADER + FOOTER TR/EN/DE
+   🛡️ CMS SAYFA BAŞLIKLARI — HEADER + FOOTER TR/EN
    ===============================================================
    Kapsam:
      A) `getPageTitlesByLocale` — batch okuma, N+1 YOK, fallback
@@ -131,12 +131,12 @@ const REGION_ITEM = {
 
 /** Entity'ye göre farklı satır döndüren `findManyForLocale` mock'u. */
 function mockTranslations(opts: {
-  page?: Record<string, { en?: string; de?: string }>;
-  menu?: Record<string, { en?: string; de?: string }>;
-  villaType?: Record<string, { en?: string; de?: string }>;
+  page?: Record<string, { en?: string }>;
+  menu?: Record<string, { en?: string }>;
+  villaType?: Record<string, { en?: string }>;
 }) {
   findManyForLocaleMock.mockImplementation(
-    (entity: string, ids: string[], locale: "en" | "de") => {
+    (entity: string, ids: string[], locale: "en") => {
       const src =
         entity === "page"
           ? opts.page
@@ -177,15 +177,14 @@ beforeEach(() => {
    A) BATCH OKUYUCU
    =============================================================== */
 describe("getPageTitlesByLocale — batch okuma", () => {
-  it("1) locale başına TAM 1 sorgu (en + de) — sayfa başına sorgu YOK", async () => {
+  it("1) locale başına TAM 1 sorgu (yalnız en) — sayfa başına sorgu YOK", async () => {
     await getPageTitlesByLocale(["p1", "p2", "p3", "p4", "p5"]);
-    expect(findManyForLocaleMock).toHaveBeenCalledTimes(2);
+    expect(findManyForLocaleMock).toHaveBeenCalledTimes(1);
     for (const call of findManyForLocaleMock.mock.calls) {
       expect(call[0]).toBe("page");
       expect(call[1]).toEqual(["p1", "p2", "p3", "p4", "p5"]);
     }
     expect(findManyForLocaleMock.mock.calls.map((c) => c[2]).sort()).toEqual([
-      "de",
       "en",
     ]);
   });
@@ -200,24 +199,26 @@ describe("getPageTitlesByLocale — batch okuma", () => {
     expect(findManyForLocaleMock.mock.calls[0][1]).toEqual(["p1", "p2"]);
   });
 
-  it("4) satırlar page_id → {en, de} haritasına dönüşür (title kolonu)", async () => {
+  it("4) satırlar page_id → {en} haritasına dönüşür (title kolonu)", async () => {
     mockTranslations({
-      page: { "page-1": { en: "About Us", de: "Über uns" } },
+      page: { "page-1": { en: "About Us" } },
     });
     expect(await getPageTitlesByLocale(["page-1"])).toEqual({
-      "page-1": { en: "About Us", de: "Über uns" },
+      "page-1": { en: "About Us" },
     });
   });
 
   it("5) BOŞ çeviri haritaya GİRMEZ → TR fallback", async () => {
-    mockTranslations({ page: { "page-1": { en: "", de: "Über uns" } } });
-    expect(await getPageTitlesByLocale(["page-1"])).toEqual({
-      "page-1": { de: "Über uns" },
+    mockTranslations({
+      page: { "page-1": { en: "" }, "page-2": { en: "Contact" } },
+    });
+    expect(await getPageTitlesByLocale(["page-1", "page-2"])).toEqual({
+      "page-2": { en: "Contact" },
     });
   });
 
   it("6) WHITESPACE çeviri haritaya GİRMEZ → TR fallback", async () => {
-    mockTranslations({ page: { "page-1": { en: "   ", de: "\t\n " } } });
+    mockTranslations({ page: { "page-1": { en: "\t\n " } } });
     expect(await getPageTitlesByLocale(["page-1"])).toEqual({});
   });
 
@@ -246,7 +247,7 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
   it("9) TR path (multilingual AÇIK) → yine canonical başlık gösterilir", async () => {
     usePathnameMock.mockReturnValue("/");
     mockTranslations({
-      page: { "page-1": { en: "About Us", de: "Über uns" } },
+      page: { "page-1": { en: "About Us" } },
     });
     render(await HeaderWrapper());
     expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
@@ -255,31 +256,25 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
 
   it("10) EN → `page_translations.title` gösterilir", async () => {
     mockTranslations({
-      page: { "page-1": { en: "About Us", de: "Über uns" } },
+      page: { "page-1": { en: "About Us" } },
     });
     render(await HeaderWrapper());
     expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
     expect(screen.queryByText("Hakkımızda")).not.toBeInTheDocument();
   });
 
-  it("11) DE → `page_translations.title` gösterilir", async () => {
+  it("11) '/de' artık desteklenmiyor → canonical TR başlık (EN sızmaz)", async () => {
     usePathnameMock.mockReturnValue("/de");
     mockTranslations({
-      page: { "page-1": { en: "About Us", de: "Über uns" } },
+      page: { "page-1": { en: "About Us" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Über uns").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.queryByText("About Us")).not.toBeInTheDocument();
   });
 
   it("12) EN çevirisi YOK → TR fallback", async () => {
-    mockTranslations({ page: { "page-1": { de: "Über uns" } } });
-    render(await HeaderWrapper());
-    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
-  });
-
-  it("13) DE çevirisi YOK → TR fallback", async () => {
-    usePathnameMock.mockReturnValue("/de");
-    mockTranslations({ page: { "page-1": { en: "About Us" } } });
+    mockTranslations({ page: {} });
     render(await HeaderWrapper());
     expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
   });
@@ -307,7 +302,7 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
     expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Contact").length).toBeGreaterThan(0);
     /* locale başına 1 sorgu → 2; sayfa başına sorgu YOK (N+1 YOK). */
-    expect(pageCalls()).toHaveLength(2);
+    expect(pageCalls()).toHaveLength(1);
     expect([...pageCalls()[0][1]].sort()).toEqual(["page-1", "page-2"]);
   });
 
@@ -321,7 +316,7 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
     render(await HeaderWrapper());
     expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Contact").length).toBeGreaterThan(0);
-    expect(pageCalls()).toHaveLength(2);
+    expect(pageCalls()).toHaveLength(1);
     expect([...pageCalls()[0][1]].sort()).toEqual(["page-1", "page-2"]);
   });
 
@@ -410,8 +405,8 @@ describe("İzolasyon — category / manual / region", () => {
     expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Luxury Villa").length).toBeGreaterThan(0);
     expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
-    /* 3 entity × 2 locale = 6 sorgu; öğe başına sorgu YOK. */
-    expect(findManyForLocaleMock).toHaveBeenCalledTimes(6);
+    /* 3 entity × 1 locale = 3 sorgu; öğe başına sorgu YOK. */
+    expect(findManyForLocaleMock).toHaveBeenCalledTimes(3);
   });
 });
 
@@ -458,26 +453,13 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
   it("28) EN → çevrilmiş başlıklar", async () => {
     mockTranslations({
       page: {
-        "page-1": { en: "About Us", de: "Über uns" },
-        "page-2": { en: "Contact", de: "Kontakt" },
+        "page-1": { en: "About Us" },
+        "page-2": { en: "Contact" },
       },
     });
     render(await FooterWrapper());
     expect(screen.getByText("About Us")).toBeInTheDocument();
     expect(screen.getByText("Contact")).toBeInTheDocument();
-  });
-
-  it("29) DE → çevrilmiş başlıklar", async () => {
-    usePathnameMock.mockReturnValue("/de");
-    mockTranslations({
-      page: {
-        "page-1": { en: "About Us", de: "Über uns" },
-        "page-2": { en: "Contact", de: "Kontakt" },
-      },
-    });
-    render(await FooterWrapper());
-    expect(screen.getByText("Über uns")).toBeInTheDocument();
-    expect(screen.getByText("Kontakt")).toBeInTheDocument();
   });
 
   it("30) çeviri yok / boş / whitespace → TR fallback", async () => {
@@ -492,7 +474,7 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
   it("31) TEK batch sorgu — sayfa başına sorgu YOK (N+1 YOK)", async () => {
     mockTranslations({ page: { "page-1": { en: "About Us" } } });
     render(await FooterWrapper());
-    expect(pageCalls()).toHaveLength(2);
+    expect(pageCalls()).toHaveLength(1);
     expect([...pageCalls()[0][1]].sort()).toEqual(["page-1", "page-2"]);
   });
 

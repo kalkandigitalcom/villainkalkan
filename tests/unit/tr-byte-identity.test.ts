@@ -92,7 +92,6 @@ describe("TR byte-identity — VillaMapModal", () => {
   it("Google Maps embed dil parametresi TR'de 'tr' kalır", () => {
     expect(tr.map.embedLanguage).toBe("tr");
     expect(getDictionary("en").map.embedLanguage).toBe("en");
-    expect(getDictionary("de").map.embedLanguage).toBe("de");
   });
 });
 
@@ -290,61 +289,59 @@ describe("TR byte-identity — VillaCardBookingModal", () => {
   });
 });
 
-describe("EN/DE — Türkçe hardcoded metin kalmadı (regresyon kilidi)", () => {
-  /* Bu anahtarların TR değerleri, EN/DE değerlerinden FARKLI olmalı;
+describe("EN — Türkçe hardcoded metin kalmadı (regresyon kilidi)", () => {
+  /* Bu anahtarların TR değerleri, EN değerlerinden FARKLI olmalı;
      aynıysa çeviri atlanmış (TR metin sızmış) demektir. */
   const en = getDictionary("en");
-  const de = getDictionary("de");
 
-  const KEYS: Array<[string, string, string, string]> = [
-    ["villa.aboutTitle", tr.villa.aboutTitle, en.villa.aboutTitle, de.villa.aboutTitle],
-    ["villa.seasonPricesTitle", tr.villa.seasonPricesTitle, en.villa.seasonPricesTitle, de.villa.seasonPricesTitle],
-    ["villa.calendarTitle", tr.villa.calendarTitle, en.villa.calendarTitle, de.villa.calendarTitle],
-    ["villa.distancesTitle", tr.villa.distancesTitle, en.villa.distancesTitle, de.villa.distancesTitle],
-    ["villa.distancesEyebrow", tr.villa.distancesEyebrow, en.villa.distancesEyebrow, de.villa.distancesEyebrow],
-    ["villa.distancesSubtitle", tr.villa.distancesSubtitle, en.villa.distancesSubtitle, de.villa.distancesSubtitle],
-    ["villa.distancesEmpty", tr.villa.distancesEmpty, en.villa.distancesEmpty, de.villa.distancesEmpty],
-    ["villa.featuresTitle", tr.villa.featuresTitle, en.villa.featuresTitle, de.villa.featuresTitle],
-    ["villa.featuresEmpty", tr.villa.featuresEmpty, en.villa.featuresEmpty, de.villa.featuresEmpty],
-    ["villa.priceIncludesTitle", tr.villa.priceIncludesTitle, en.villa.priceIncludesTitle, de.villa.priceIncludesTitle],
-    ["villa.rulesTitle", tr.villa.rulesTitle, en.villa.rulesTitle, de.villa.rulesTitle],
-    ["villa.checkInOutTitle", tr.villa.checkInOutTitle, en.villa.checkInOutTitle, de.villa.checkInOutTitle],
-    ["villa.checkInLabel", tr.villa.checkInLabel, en.villa.checkInLabel, de.villa.checkInLabel],
-    ["villa.checkOutLabel", tr.villa.checkOutLabel, en.villa.checkOutLabel, de.villa.checkOutLabel],
-    ["villa.similarVillasTitle", tr.villa.similarVillasTitle, en.villa.similarVillasTitle, de.villa.similarVillasTitle],
-    ["villa.tourismCertificate", tr.villa.tourismCertificate, en.villa.tourismCertificate, de.villa.tourismCertificate],
-    ["villaTabs.prices", tr.villaTabs.prices, en.villaTabs.prices, de.villaTabs.prices],
-    ["villaTabs.availability", tr.villaTabs.availability, en.villaTabs.availability, de.villaTabs.availability],
-    ["villaTabs.location", tr.villaTabs.location, en.villaTabs.location, de.villaTabs.location],
-    ["villaTabs.features", tr.villaTabs.features, en.villaTabs.features, de.villaTabs.features],
-    ["map.openMap", tr.map.openMap, en.map.openMap, de.map.openMap],
-    ["map.directions", tr.map.directions, en.map.directions, de.map.directions],
-    ["map.whereTitle", tr.map.whereTitle, en.map.whereTitle, de.map.whereTitle],
-    ["map.noLocation", tr.map.noLocation, en.map.noLocation, de.map.noLocation],
-    ["shortStay.hint", tr.shortStay.hint, en.shortStay.hint, de.shortStay.hint],
-    ["favorites.add", tr.favorites.add, en.favorites.add, de.favorites.add],
-    ["favorites.save", tr.favorites.save, en.favorites.save, de.favorites.save],
-    ["reviews.title", tr.reviews.title, en.reviews.title, de.reviews.title],
-    ["reviews.submit", tr.reviews.submit, en.reviews.submit, de.reviews.submit],
-    ["card.availabilityCta", tr.card.availabilityCta, en.card.availabilityCta, de.card.availabilityCta],
-    ["card.bookNow", tr.card.bookNow, en.card.bookNow, de.card.bookNow],
-    ["card.priceOnRequest", tr.card.priceOnRequest, en.card.priceOnRequest, de.card.priceOnRequest],
-    ["card.imageComing", tr.card.imageComing, en.card.imageComing, de.card.imageComing],
-    ["card.bedroom", tr.card.bedroom, en.card.bedroom, de.card.bedroom],
-    ["card.bathroom", tr.card.bathroom, en.card.bathroom, de.card.bathroom],
-    ["card.person", tr.card.person, en.card.person, de.card.person],
-    ["villa.readMore", tr.villa.readMore, en.villa.readMore, de.villa.readMore],
-    ["villa.readLess", tr.villa.readLess, en.villa.readLess, de.villa.readLess],
-    ["gallery.closeVideoAriaLabel", tr.gallery.closeVideoAriaLabel, en.gallery.closeVideoAriaLabel, de.gallery.closeVideoAriaLabel],
-    ["gallery.otherVideosAriaLabel", tr.gallery.otherVideosAriaLabel, en.gallery.otherVideosAriaLabel, de.gallery.otherVideosAriaLabel],
-    ["booking.modalEyebrow", tr.booking.modalEyebrow, en.booking.modalEyebrow, de.booking.modalEyebrow],
-    ["booking.modalLoading", tr.booking.modalLoading, en.booking.modalLoading, de.booking.modalLoading],
-    ["booking.dateLabel", tr.booking.dateLabel, en.booking.dateLabel, de.booking.dateLabel],
-    ["booking.perNightSuffix", tr.booking.perNightSuffix, en.booking.perNightSuffix, de.booking.perNightSuffix],
+  const KEYS: Array<[string, string, string]> = [
+    ["villa.aboutTitle", tr.villa.aboutTitle, en.villa.aboutTitle],
+    ["villa.seasonPricesTitle", tr.villa.seasonPricesTitle, en.villa.seasonPricesTitle],
+    ["villa.calendarTitle", tr.villa.calendarTitle, en.villa.calendarTitle],
+    ["villa.distancesTitle", tr.villa.distancesTitle, en.villa.distancesTitle],
+    ["villa.distancesEyebrow", tr.villa.distancesEyebrow, en.villa.distancesEyebrow],
+    ["villa.distancesSubtitle", tr.villa.distancesSubtitle, en.villa.distancesSubtitle],
+    ["villa.distancesEmpty", tr.villa.distancesEmpty, en.villa.distancesEmpty],
+    ["villa.featuresTitle", tr.villa.featuresTitle, en.villa.featuresTitle],
+    ["villa.featuresEmpty", tr.villa.featuresEmpty, en.villa.featuresEmpty],
+    ["villa.priceIncludesTitle", tr.villa.priceIncludesTitle, en.villa.priceIncludesTitle],
+    ["villa.rulesTitle", tr.villa.rulesTitle, en.villa.rulesTitle],
+    ["villa.checkInOutTitle", tr.villa.checkInOutTitle, en.villa.checkInOutTitle],
+    ["villa.checkInLabel", tr.villa.checkInLabel, en.villa.checkInLabel],
+    ["villa.checkOutLabel", tr.villa.checkOutLabel, en.villa.checkOutLabel],
+    ["villa.similarVillasTitle", tr.villa.similarVillasTitle, en.villa.similarVillasTitle],
+    ["villa.tourismCertificate", tr.villa.tourismCertificate, en.villa.tourismCertificate],
+    ["villaTabs.prices", tr.villaTabs.prices, en.villaTabs.prices],
+    ["villaTabs.availability", tr.villaTabs.availability, en.villaTabs.availability],
+    ["villaTabs.location", tr.villaTabs.location, en.villaTabs.location],
+    ["villaTabs.features", tr.villaTabs.features, en.villaTabs.features],
+    ["map.openMap", tr.map.openMap, en.map.openMap],
+    ["map.directions", tr.map.directions, en.map.directions],
+    ["map.whereTitle", tr.map.whereTitle, en.map.whereTitle],
+    ["map.noLocation", tr.map.noLocation, en.map.noLocation],
+    ["shortStay.hint", tr.shortStay.hint, en.shortStay.hint],
+    ["favorites.add", tr.favorites.add, en.favorites.add],
+    ["favorites.save", tr.favorites.save, en.favorites.save],
+    ["reviews.title", tr.reviews.title, en.reviews.title],
+    ["reviews.submit", tr.reviews.submit, en.reviews.submit],
+    ["card.availabilityCta", tr.card.availabilityCta, en.card.availabilityCta],
+    ["card.bookNow", tr.card.bookNow, en.card.bookNow],
+    ["card.priceOnRequest", tr.card.priceOnRequest, en.card.priceOnRequest],
+    ["card.imageComing", tr.card.imageComing, en.card.imageComing],
+    ["card.bedroom", tr.card.bedroom, en.card.bedroom],
+    ["card.bathroom", tr.card.bathroom, en.card.bathroom],
+    ["card.person", tr.card.person, en.card.person],
+    ["villa.readMore", tr.villa.readMore, en.villa.readMore],
+    ["villa.readLess", tr.villa.readLess, en.villa.readLess],
+    ["gallery.closeVideoAriaLabel", tr.gallery.closeVideoAriaLabel, en.gallery.closeVideoAriaLabel],
+    ["gallery.otherVideosAriaLabel", tr.gallery.otherVideosAriaLabel, en.gallery.otherVideosAriaLabel],
+    ["booking.modalEyebrow", tr.booking.modalEyebrow, en.booking.modalEyebrow],
+    ["booking.modalLoading", tr.booking.modalLoading, en.booking.modalLoading],
+    ["booking.dateLabel", tr.booking.dateLabel, en.booking.dateLabel],
+    ["booking.perNightSuffix", tr.booking.perNightSuffix, en.booking.perNightSuffix],
   ];
 
-  it.each(KEYS)("%s — EN ve DE, TR metninden farklı", (_k, trv, env, dev) => {
+  it.each(KEYS)("%s — EN, TR metninden farklı", (_k, trv, env) => {
     expect(env).not.toBe(trv);
-    expect(dev).not.toBe(trv);
   });
 });

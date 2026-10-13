@@ -49,7 +49,7 @@ beforeEach(() => {
 const VILLA_ID = "villa-uuid-1";
 
 /* 🛡️ `getVillaTranslatedTitle` KALDIRILDI — villa adı özel isimdir,
-   hiçbir locale'de çevrilmez; EN/DE sayfalar canonical `villa.title`
+   hiçbir locale'de çevrilmez; EN sayfalar canonical `villa.title`
    kullanır. Bu dosyadaki diğer getter testleri DEĞİŞMEDİ. */
 
 /* ===============================================================
@@ -96,31 +96,6 @@ describe("getVillaTranslatedDescription", () => {
       "en"
     );
     expect(result).toBe("<p>A wonderful villa description.</p>");
-  });
-
-  /* --- 3) DE + mevcut --- */
-  it("3) locale='de' + çeviri mevcut → çevrilmiş description döner", async () => {
-    findOneMock.mockResolvedValue({
-      data: {
-        id: "t2",
-        villa_id: VILLA_ID,
-        locale: "de",
-        title: null,
-        description: "<p>Eine wunderbare Villenbeschreibung.</p>",
-        badge: null,
-        seo_title: null,
-        seo_description: null,
-        created_at: "",
-        updated_at: "",
-      },
-      error: null,
-    });
-    const result = await getVillaTranslatedDescription(
-      VILLA_ID,
-      ORIGINAL_DESCRIPTION,
-      "de"
-    );
-    expect(result).toBe("<p>Eine wunderbare Villenbeschreibung.</p>");
   });
 
   /* --- 4) çeviri satırı yok --- */
@@ -199,12 +174,6 @@ describe("getVillaTranslatedDescription", () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
     await getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "en");
     expect(findOneMock).toHaveBeenCalledWith("villa", VILLA_ID, "en");
-  });
-
-  it("7b) helper, findOne'ı TAM OLARAK geçirilen locale ile çağırır ('de')", async () => {
-    findOneMock.mockResolvedValue({ data: null, error: null });
-    await getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "de");
-    expect(findOneMock).toHaveBeenCalledWith("villa", VILLA_ID, "de");
   });
 
   /* --- 8) title + description AYNI cache-anahtarını (entity/villaId/locale)
@@ -324,32 +293,6 @@ describe("getVillaTranslatedSeoDescription", () => {
     expect(result).toBe("A stunning villa with sea view.");
   });
 
-  /* --- 3) DE + translation.seo_description mevcut --- */
-  it("3) locale='de' + çeviri seo_description'ı DOLU → AYNEN döner", async () => {
-    findOneMock.mockResolvedValue({
-      data: {
-        id: "t2",
-        villa_id: VILLA_ID,
-        locale: "de",
-        title: null,
-        description: "<p>Eine wunderbare Villenbeschreibung.</p>",
-        badge: null,
-        seo_title: null,
-        seo_description: "Eine atemberaubende Villa mit Meerblick.",
-        created_at: "",
-        updated_at: "",
-      },
-      error: null,
-    });
-    const result = await getVillaTranslatedSeoDescription(
-      VILLA_ID,
-      ORIGINAL_SEO_DESCRIPTION,
-      ORIGINAL_DESCRIPTION,
-      "de"
-    );
-    expect(result).toBe("Eine atemberaubende Villa mit Meerblick.");
-  });
-
   /* --- 4) seo_description boş/null, description çevrilmiş (B) --- */
   it("4) çeviri satırı var ama seo_description null → çevrilmiş description'dan excerpt üretir", async () => {
     findOneMock.mockResolvedValue({
@@ -417,7 +360,7 @@ describe("getVillaTranslatedSeoDescription", () => {
     expect(result.length).toBeLessThanOrEqual(160);
     expect(result.endsWith("…")).toBe(true);
     // ÖNEMLİ: orijinal seo_description KULLANILMAZ (yalnız TR dalında kullanılır) —
-    // EN/DE'de çeviri yoksa excerpt DAİMA description'dan üretilir.
+    // EN'de çeviri yoksa excerpt DAİMA description'dan üretilir.
     expect(result).not.toBe(ORIGINAL_SEO_DESCRIPTION);
   });
 

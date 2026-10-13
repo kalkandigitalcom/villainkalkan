@@ -38,7 +38,7 @@ import type {
    ⚠️ Yalnız GÖRÜNEN AD. href/slug/source_id bu dosyaya HİÇ girmez.
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en", "de"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
 
 /**
  * Verilen menü satırı id'leri için `{ menuId: { en?, de? } }` haritası.

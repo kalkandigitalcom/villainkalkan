@@ -2,7 +2,7 @@
    🛡️ /teklif-al "Tercihleriniz" — TAXONOMY ETİKETİ LOCALE ÇÖZÜMÜ
    ===============================================================
    SORUN (auditte tespit edildi):
-   `/en|de/teklif-al` "Tercihleriniz" bölümündeki villa TİPİ ve
+   `/en/teklif-al` "Tercihleriniz" bölümündeki villa TİPİ ve
    ÖZELLİK chip'leri `/api/public/taxonomies` cevabındaki canonical
    TR `name` alanını render ediyordu. `villa_type_translations` ve
    `villa_feature_translations` (migration 082) DB'de MEVCUT ve
@@ -80,12 +80,12 @@ beforeEach(() => {
   findFeaturesMock.mockResolvedValue({ data: FEATURES, error: null });
   getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
   typeNamesMock.mockResolvedValue({
-    t1: { en: "Honeymoon Villa", de: "Flitterwochen-Villa" },
-    t2: { en: "Conservative Villa", de: "Konservative Villa" },
+    t1: { en: "Honeymoon Villa" },
+    t2: { en: "Conservative Villa" },
   });
   featureNamesMock.mockResolvedValue({
-    f1: { en: "Sheltered Pool", de: "Geschützter Pool" },
-    f2: { en: "Sea View", de: "Meerblick" },
+    f1: { en: "Sheltered Pool" },
+    f2: { en: "Sea View" },
   });
 });
 
@@ -127,11 +127,9 @@ describe("A) /api/public/taxonomies — additive name_by_locale", () => {
 
     expect(json.types[0].name_by_locale).toEqual({
       en: "Honeymoon Villa",
-      de: "Flitterwochen-Villa",
     });
     expect(json.features[1].name_by_locale).toEqual({
       en: "Sea View",
-      de: "Meerblick",
     });
   });
 
@@ -216,16 +214,16 @@ const TAXONOMY_RESPONSE = {
   ok: true,
   locations: LOCATIONS,
   types: [
-    { ...TYPES[0], name_by_locale: { en: "Honeymoon Villa", de: "Flitterwochen-Villa" } },
+    { ...TYPES[0], name_by_locale: { en: "Honeymoon Villa" } },
     { ...TYPES[1], name_by_locale: {} },
   ],
   features: [
-    { ...FEATURES[0], name_by_locale: { en: "Sheltered Pool", de: "Geschützter Pool" } },
-    { ...FEATURES[1], name_by_locale: { en: "Sea View", de: "Meerblick" } },
+    { ...FEATURES[0], name_by_locale: { en: "Sheltered Pool" } },
+    { ...FEATURES[1], name_by_locale: { en: "Sea View" } },
   ],
 };
 
-async function renderForm(locale: "tr" | "en" | "de") {
+async function renderForm(locale: "tr" | "en") {
   const fetchMock = vi.fn(async (url: string) => ({
     ok: true,
     json: async () =>
@@ -266,15 +264,6 @@ describe("B) /teklif-al chip etiketleri", () => {
     expect(screen.queryByText("Korunaklı Havuz")).toBeNull();
   });
 
-  it("11) DE — çeviri VARSA Almanca etiket görünür", async () => {
-    await renderForm("de");
-
-    await screen.findByText("Flitterwochen-Villa");
-    expect(screen.getByText("Geschützter Pool")).toBeInTheDocument();
-    expect(screen.getByText("Meerblick")).toBeInTheDocument();
-    expect(screen.queryByText("Deniz Manzarası")).toBeNull();
-  });
-
   it("12) EN — çeviri YOKSA canonical TR ad FALLBACK olarak kalır", async () => {
     await renderForm("en");
 
@@ -283,10 +272,10 @@ describe("B) /teklif-al chip etiketleri", () => {
     expect(screen.getByText("Muhafazakar Villa")).toBeInTheDocument();
   });
 
-  it("13) BÖLGE adları EN/DE'de de canonical kalır (özel isim)", async () => {
-    await renderForm("de");
+  it("13) BÖLGE adları EN'de de canonical kalır (özel isim)", async () => {
+    await renderForm("en");
 
-    await screen.findByText("Flitterwochen-Villa");
+    await screen.findByText("Honeymoon Villa");
     expect(screen.getByText("Kalkan")).toBeInTheDocument();
     expect(screen.getByText("Kaş")).toBeInTheDocument();
   });
@@ -335,7 +324,5 @@ describe("C) regresyon kilitleri", () => {
     const { getDictionary } = await import("@/lib/i18n/get-dictionary");
     expect(getDictionary("tr").offer.step3Title).toBe("Tercihleriniz");
     expect(getDictionary("en").offer.step3Title).toBe("Your preferences");
-    expect(getDictionary("de").offer.step3Title.length).toBeGreaterThan(0);
-    expect(getDictionary("de").offer.step3Title).not.toBe("Tercihleriniz");
   });
 });

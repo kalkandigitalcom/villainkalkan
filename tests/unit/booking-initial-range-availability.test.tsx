@@ -382,13 +382,10 @@ describe("BookingSidebar", () => {
     expect(hrefSet.mock.calls[0][0]).toContain(`start=${ymd(14)}&end=${ymd(17)}`);
   });
 
-  it("I) EN / DE: mevcut locale sözlüğünün conflictError metni", async () => {
+  it("I) EN: mevcut locale sözlüğünün conflictError metni", async () => {
     setRanges([{ kind: "manual", status: null, start_date: ymd(7), end_date: ymd(10) }]);
-    const { unmount } = render(<BookingSidebar {...props} locale="en" />);
+    render(<BookingSidebar {...props} locale="en" />);
     await screen.findByText("This date range contains unavailable days");
-    unmount();
-    render(<BookingSidebar {...props} locale="de" />);
-    await screen.findByText("Dieser Zeitraum enthält nicht verfügbare Tage");
   });
 });
 

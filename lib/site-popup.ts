@@ -87,7 +87,7 @@ export type PublicSitePopup = {
    tablosunda; boş alan → aynı alanın Türkçe değeri (alan bazında
    fallback — projedeki settings/villa çevirileriyle aynı kural). */
 
-export const POPUP_TRANSLATION_LOCALES = ["en", "de"] as const;
+export const POPUP_TRANSLATION_LOCALES = ["en"] as const;
 export type PopupTranslationLocale = (typeof POPUP_TRANSLATION_LOCALES)[number];
 
 export function isPopupTranslationLocale(v: unknown): v is PopupTranslationLocale {
@@ -242,7 +242,7 @@ export function isWithinPopupWindow(
  *  EN/DE ana sayfaları. */
 export function isPopupHomePath(pathname: string | null | undefined): boolean {
   const p = (pathname || "").replace(/\/+$/, "") || "/";
-  return p === "/" || p === "/tr" || p === "/en" || p === "/de";
+  return p === "/" || p === "/tr" || p === "/en";
 }
 
 /** Admin tarih input'u ("YYYY-MM-DD", Europe/Istanbul günü) →

@@ -48,12 +48,6 @@ describe("buildVacationRental — Phase 7D inLanguage", () => {
     expect(result.inLanguage).toBe("en");
   });
 
-  /* --- 3) DE -> inLanguage de --- */
-  it("3) locale='de' → inLanguage 'de'", () => {
-    const result = buildVacationRental({ ...BASE_INPUT, locale: "de" });
-    expect(result.inLanguage).toBe("de");
-  });
-
   /* --- 4) mevcut schema alanları korunuyor --- */
   it("4) locale verilmezse inLanguage HİÇ EKLENMEZ (önceki call-site'lar byte-identical)", () => {
     const result = buildVacationRental(BASE_INPUT);
@@ -112,11 +106,6 @@ describe("buildBreadcrumb — Phase 7D inLanguage", () => {
   it("2) locale='en' → inLanguage 'en'", () => {
     const result = buildBreadcrumb(ITEMS, "en");
     expect(result.inLanguage).toBe("en");
-  });
-
-  it("3) locale='de' → inLanguage 'de'", () => {
-    const result = buildBreadcrumb(ITEMS, "de");
-    expect(result.inLanguage).toBe("de");
   });
 
   it("4) locale verilmezse (mevcut TÜM call-site'lar) inLanguage HİÇ EKLENMEZ, itemListElement AYNEN korunuyor", () => {

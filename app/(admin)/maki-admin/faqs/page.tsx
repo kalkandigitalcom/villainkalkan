@@ -39,14 +39,13 @@ import { useNotify } from "@/app/components/admin/notifications/NotificationProv
 
 const MAX_FAQS = 15;
 
-/* 🛡️ ÇOKLU DİL — EN/DE OPSİYONEL. Kaynak tablo `faq_translations`
+/* 🛡️ ÇOKLU DİL — EN OPSİYONEL. Kaynak tablo `faq_translations`
    (migration 082, ZATEN VAR). TR alanları canonical `faqs` tablosunda
    kalır ve bu bloktan ETKİLENMEZ. */
-type WritableLocale = "en" | "de";
+type WritableLocale = "en";
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
   en: "English",
-  de: "Deutsch",
 };
 
 const LOCALE_FIELD_LABELS: Record<
@@ -54,12 +53,10 @@ const LOCALE_FIELD_LABELS: Record<
   { question: string; answer: string }
 > = {
   en: { question: "Question", answer: "Answer" },
-  de: { question: "Frage", answer: "Antwort" },
 };
 
 const EMPTY_TRANSLATIONS: Record<WritableLocale, FaqTranslationFields> = {
   en: { question: "", answer: "" },
-  de: { question: "", answer: "" },
 };
 
 type FaqTranslationFields = { question: string; answer: string };
@@ -114,10 +111,6 @@ export default function FaqsAdminPage() {
                 en: {
                   question: translationMap[d.id]?.en?.question ?? "",
                   answer: translationMap[d.id]?.en?.answer ?? "",
-                },
-                de: {
-                  question: translationMap[d.id]?.de?.question ?? "",
-                  answer: translationMap[d.id]?.de?.answer ?? "",
                 },
               },
             }))
@@ -217,7 +210,7 @@ export default function FaqsAdminPage() {
     for (let idx = 0; idx < nextItems.length; idx++) {
       const row = nextItems[idx];
       if (!row.id) continue;
-      for (const locale of ["en", "de"] as WritableLocale[]) {
+      for (const locale of ["en"] as WritableLocale[]) {
         const t = row.translations[locale];
         const originallyHadId = !!kept[idx].id;
         /* Yeni satırda boş çeviri için gereksiz istek atma. */

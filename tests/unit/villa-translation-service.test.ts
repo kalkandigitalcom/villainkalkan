@@ -73,7 +73,7 @@ describe("upsertVillaTranslation", () => {
     );
   });
 
-  it("DE upsert — geçerli girdi başarıyla repository.upsertOne'a ulaşır", async () => {
+  it("locale 'de' reddedilir (DE desteği kaldırıldı) — repository çağrılmaz", async () => {
     const { upsertVillaTranslation } = await import(
       "@/app/services/villa-translation.service"
     );
@@ -84,13 +84,11 @@ describe("upsertVillaTranslation", () => {
       description: "Test Beschreibung",
     });
 
-    expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith(
-      "villa",
-      "villa-uuid-1",
-      "de",
-      expect.objectContaining({ description: "Test Beschreibung" })
-    );
+    expect(result).toEqual({
+      ok: false,
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
+    });
+    expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
   it("mevcut EN çeviriyi günceller (aynı upsertOne çağrı deseni — repository UNIQUE(villa_id,locale) ile ayırt eder)", async () => {
@@ -106,22 +104,6 @@ describe("upsertVillaTranslation", () => {
       "villa",
       "villa-uuid-1",
       "en",
-      expect.objectContaining({ description: "V2 güncel" })
-    );
-  });
-
-  it("mevcut DE çeviriyi günceller", async () => {
-    const { upsertVillaTranslation } = await import(
-      "@/app/services/villa-translation.service"
-    );
-
-    await upsertVillaTranslation({ villaId: "villa-uuid-1", locale: "de", description: "V1" });
-    await upsertVillaTranslation({ villaId: "villa-uuid-1", locale: "de", description: "V2 güncel" });
-
-    expect(upsertOneMock).toHaveBeenLastCalledWith(
-      "villa",
-      "villa-uuid-1",
-      "de",
       expect.objectContaining({ description: "V2 güncel" })
     );
   });
@@ -239,7 +221,7 @@ describe("upsertVillaTranslation", () => {
 });
 
 describe("getVillaTranslations", () => {
-  it("yalnız en/de satırlarını döner (tr varsa filtrelenir)", async () => {
+  it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
         { ...VALID_ROW, locale: "tr" },
@@ -257,7 +239,7 @@ describe("getVillaTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["de", "en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
     }
   });
 });

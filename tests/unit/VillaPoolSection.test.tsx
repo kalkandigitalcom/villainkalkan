@@ -1,7 +1,7 @@
 /* ===============================================================
    🛡️ PHASE 10E BATCH 5 — VillaPoolSection TESTLERİ
    ===============================================================
-   Hedef: app/components/villa/VillaPoolSection.tsx (EN/DE havuz bölümü).
+   Hedef: app/components/villa/VillaPoolSection.tsx (EN havuz bölümü).
    GERÇEK dictionary + GERÇEK pool helper'ları kullanılır.
 =============================================================== */
 
@@ -33,15 +33,6 @@ describe("VillaPoolSection — locale etiketleri", () => {
     expect(screen.getByText("Children's Pool")).toBeInTheDocument();
     expect(screen.getAllByText("Width").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Depth").length).toBeGreaterThan(0);
-  });
-
-  it("DE havuz tipleri ve UI metinleri", () => {
-    render(<VillaPoolSection villa={VILLA} locale="de" />);
-    expect(screen.getByText("Poolinformationen")).toBeInTheDocument();
-    expect(screen.getByText("Privater überdachter Pool")).toBeInTheDocument();
-    expect(screen.getByText("Hallenbad")).toBeInTheDocument();
-    expect(screen.getByText("Kinderpool")).toBeInTheDocument();
-    expect(screen.getAllByText("Breite").length).toBeGreaterThan(0);
   });
 
   it("TR locale mevcut TR metinlerini verir", () => {
@@ -86,7 +77,7 @@ describe("VillaPoolSection — locale etiketleri", () => {
     render(
       <VillaPoolSection
         villa={{ pool_type: "ozel", pool_width: "4", pool_length: "8" }}
-        locale="de"
+        locale="tr"
       />
     );
     /* Ölçü DEĞERİ çevrilmez. */
@@ -98,10 +89,10 @@ describe("VillaPoolSection — locale etiketleri", () => {
       <VillaPoolSection villa={VILLA} locale="en" />
     );
     const enSvg = en.querySelectorAll("svg").length;
-    const { container: de } = render(
-      <VillaPoolSection villa={VILLA} locale="de" />
+    const { container: tr } = render(
+      <VillaPoolSection villa={VILLA} locale="tr" />
     );
-    expect(de.querySelectorAll("svg").length).toBe(enSvg);
+    expect(tr.querySelectorAll("svg").length).toBe(enSvg);
     expect(enSvg).toBe(1);
   });
 

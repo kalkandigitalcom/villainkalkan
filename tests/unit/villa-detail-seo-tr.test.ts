@@ -74,7 +74,7 @@ describe("TR villa detail generateMetadata — Phase 7C canonical/hreflang", () 
   });
 
   /* --- 4) multilingual_enabled=true iken dört hreflang key'i --- */
-  it("4) multilingual_enabled=true iken languages tr/en/de/x-default TAMAMI mevcut", async () => {
+  it("4) multilingual_enabled=true iken languages tr/en/x-default TAMAMI mevcut (de YOK)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
     getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
@@ -85,7 +85,7 @@ describe("TR villa detail generateMetadata — Phase 7C canonical/hreflang", () 
     expect(languages).toBeDefined();
     expect(languages?.tr).toBe("/kiralik-villa/villa-in-love");
     expect(languages?.en).toBe("/en/kiralik-villa/villa-in-love");
-    expect(languages?.de).toBe("/de/kiralik-villa/villa-in-love");
+    expect(languages).not.toHaveProperty("de");
     expect(languages?.["x-default"]).toBe("/kiralik-villa/villa-in-love");
   });
 

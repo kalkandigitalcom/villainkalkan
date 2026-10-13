@@ -150,8 +150,9 @@ describe("saf yardımcılar", () => {
   });
 
   it("ana sayfa yolları ve süreler", () => {
-    for (const p of ["/", "/tr", "/en", "/de", "/en/"]) expect(isPopupHomePath(p)).toBe(true);
-    for (const p of ["/kiralik-villalar", "/en/blog", "/p/x"]) expect(isPopupHomePath(p)).toBe(false);
+    for (const p of ["/", "/tr", "/en", "/en/"]) expect(isPopupHomePath(p)).toBe(true);
+    /* DE desteği kaldırıldı — "/de" artık ana sayfa değil. */
+    for (const p of ["/kiralik-villalar", "/en/blog", "/p/x", "/de"]) expect(isPopupHomePath(p)).toBe(false);
     expect(popupDismissMs("session")).toBeNull();
     expect(popupDismissMs("1d")).toBe(86_400_000);
     expect(popupDismissMs("30d")).toBe(30 * 86_400_000);
@@ -454,8 +455,8 @@ describe("SitePopupLoader (public davranış)", () => {
 });
 
 /* ================================================================
-   🌐 ÇOKLU DİL (migration 096) — TR canonical + EN/DE, alan bazında
-   Türkçe fallback; locale URL prefix'inden (/en, /de).
+   🌐 ÇOKLU DİL (migration 096) — TR canonical + EN, alan bazında
+   Türkçe fallback; locale URL prefix'inden (/en). DE desteği kaldırıldı.
    ================================================================ */
 describe("çoklu dil — saf yardımcılar", () => {
   const EN = tRow("en", {
@@ -476,24 +477,27 @@ describe("çoklu dil — saf yardımcılar", () => {
       stats: ["300,000+ guests"],
       button: { text: "Explore All Villas", url: "/en/kiralik-villalar", external: false },
     });
-    expect(p.translations.de).toBeUndefined();
+    expect(Object.keys(p.translations)).toEqual(["en"]);
   });
 
-  it("DE kısmi: yalnız buton metni → URL/başlık/alt bilgiler Türkçe; tamamen boş satır → yok sayılır", () => {
+  it("EN kısmi: yalnız buton metni → URL/başlık/alt bilgiler Türkçe; tamamen boş satır → yok sayılır; eski 'de' satırı alınmaz", () => {
     const p = toPublicSitePopup(
       row(),
       resolve,
       NOW,
-      [tRow("de", { button_text: "Alle Villen entdecken" }), tRow("en")]
+      [tRow("en", { button_text: "Explore All Villas" }), tRow("de", { title: "Hallo" })]
     )!;
-    expect(p.translations.en).toBeUndefined();
-    expect(p.translations.de?.title).toBe("2006'dan bu yana tatilinizin yanındayız.");
-    expect(p.translations.de?.stats).toEqual(["300.000+ misafir", "4.9 misafir puanı", "TÜRSAB 9117"]);
-    expect(p.translations.de?.button).toEqual({
-      text: "Alle Villen entdecken",
+    expect(Object.keys(p.translations)).toEqual(["en"]);
+    expect(p.translations.en?.title).toBe("2006'dan bu yana tatilinizin yanındayız.");
+    expect(p.translations.en?.stats).toEqual(["300.000+ misafir", "4.9 misafir puanı", "TÜRSAB 9117"]);
+    expect(p.translations.en?.button).toEqual({
+      text: "Explore All Villas",
       url: "/kiralik-villalar",
       external: false,
     });
+
+    const empty = toPublicSitePopup(row(), resolve, NOW, [tRow("en")])!;
+    expect(empty.translations.en).toBeUndefined();
   });
 
   it("çeviride HTML temizlenir, güvensiz URL yok sayılır (TR URL'e düşer), 'tr'/bilinmeyen locale satırı alınmaz", () => {
@@ -514,7 +518,7 @@ describe("çoklu dil — saf yardımcılar", () => {
     expect(p.translations.en?.button).toBeNull();
   });
 
-  it("localizeSitePopup: tr/bilinmeyen → aynen; en → çeviri; çevirisi olmayan de → Türkçe; dil-bağımsız alanlar korunur", () => {
+  it("localizeSitePopup: tr/bilinmeyen (de dahil) → aynen; en → çeviri; dil-bağımsız alanlar korunur", () => {
     const p = toPublicSitePopup(row(), resolve, NOW, [EN])!;
     expect(localizeSitePopup(p, "tr")).toBe(p);
     expect(localizeSitePopup(p, "xx")).toBe(p);
@@ -552,7 +556,6 @@ describe("çoklu dil — servis", () => {
   };
   const translations = {
     en: { title: "<b>Title</b>", description: "", highlight: "", stats: [" x ", ""], buttonText: "Explore All Villas", buttonUrl: "/en/kiralik-villalar" },
-    de: { title: "", description: "", highlight: "", stats: [], buttonText: "", buttonUrl: "" },
   };
 
   beforeEach(() => {
@@ -568,12 +571,15 @@ describe("çoklu dil — servis", () => {
     }));
   });
 
-  it("EN/DE her kayıtta tam durumuyla yazılır (isimli alanlar, temizlenmiş); TR site_popup'a gider", async () => {
-    const res = await saveSitePopup({ ...base, translations: { ...translations, fr: { title: "x" } } });
+  it("EN her kayıtta tam durumuyla yazılır (isimli alanlar, temizlenmiş); TR site_popup'a gider; de/fr yok sayılır", async () => {
+    const res = await saveSitePopup({
+      ...base,
+      translations: { ...translations, fr: { title: "x" }, de: { title: "Hallo" } },
+    });
     expect(res.ok).toBe(true);
-    expect(repoUpsertTranslation).toHaveBeenCalledTimes(2);
-    const [[l1, v1], [l2, v2]] = repoUpsertTranslation.mock.calls as [string, Record<string, unknown>][];
-    expect([l1, l2]).toEqual(["en", "de"]);
+    expect(repoUpsertTranslation).toHaveBeenCalledTimes(1);
+    const [[l1, v1]] = repoUpsertTranslation.mock.calls as [string, Record<string, unknown>][];
+    expect(l1).toBe("en");
     expect(Object.keys(v1).sort()).toEqual(
       ["button_text", "button_url", "description", "highlight_text", "stats", "title"].sort()
     );
@@ -585,12 +591,8 @@ describe("çoklu dil — servis", () => {
       button_text: "Explore All Villas",
       button_url: "/en/kiralik-villalar",
     });
-    expect(v2).toEqual({
-      title: null, description: null, highlight_text: null, stats: [], button_text: null, button_url: null,
-    });
     expect((repoUpdate.mock.calls[0][0] as Record<string, unknown>).title).toBe("Başlık");
     expect(res.ok && res.values.translations.en.title).toBe("Title");
-    expect(res.ok && res.values.translations.de.title).toBe("");
   });
 
   it("translations anahtarı yoksa çevirilere DOKUNULMAZ (geriye uyum)", async () => {
@@ -602,7 +604,7 @@ describe("çoklu dil — servis", () => {
   it("EN'de güvensiz URL / URL'siz buton (TR URL de yoksa) → RED, hiçbir şey yazılmaz", async () => {
     for (const bad of [
       { translations: { ...translations, en: { ...translations.en, buttonUrl: "javascript:alert(1)" } } },
-      { translations: { ...translations, de: { ...translations.de, buttonUrl: "//evil.com" } } },
+      { translations: { ...translations, en: { ...translations.en, buttonUrl: "//evil.com" } } },
       { buttonText: "", buttonUrl: "", translations: { ...translations, en: { ...translations.en, buttonUrl: "" } } },
     ]) {
       const res = await saveSitePopup({ ...base, ...bad });
@@ -649,14 +651,14 @@ describe("çoklu dil — servis", () => {
     repoFindTranslations.mockResolvedValueOnce({ data: null, error: { message: "relation does not exist" } });
     expect(await loadSitePopupAction()).toBeNull();
     repoFindTranslations.mockResolvedValueOnce({
-      data: [tRow("de", { title: "Hallo", stats: ["a", 5, "<b>b</b>"] })],
+      data: [tRow("en", { title: "Hello", stats: ["a", 5, "<b>b</b>"] })],
       error: null,
     });
     const v = await loadSitePopupAction();
-    expect(v?.translations.de).toEqual({
-      title: "Hallo", description: "", highlight: "", stats: ["a", "b"], buttonText: "", buttonUrl: "",
+    expect(v?.translations.en).toEqual({
+      title: "Hello", description: "", highlight: "", stats: ["a", "b"], buttonText: "", buttonUrl: "",
     });
-    expect(v?.translations.en.title).toBe("");
+    expect(Object.keys(v?.translations ?? {})).toEqual(["en"]);
   });
 });
 
@@ -688,12 +690,12 @@ describe("çoklu dil — SitePopupLoader", () => {
     expect(screen.getByText("20")).toBeTruthy();
   });
 
-  it("/de (çeviri yok) → Türkçe içerik; / → Türkçe içerik", async () => {
+  it("/de artık ana sayfa değil → popup (kapsam 'home') açılmaz; / → Türkçe içerik", async () => {
     pathname = "/de";
     const { unmount } = render(<SitePopupLoader popup={popup} />);
     await openNow();
-    expect(screen.getByRole("heading", { name: "2006'dan bu yana tatilinizin yanındayız." })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Schließen" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "2006'dan bu yana tatilinizin yanındayız." })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Schließen" })).toBeNull();
     unmount();
     window.localStorage.clear();
     pathname = "/";

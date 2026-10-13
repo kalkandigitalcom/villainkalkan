@@ -56,7 +56,7 @@ import { revalidateMenu } from "@/app/services/revalidate.actions";
 /* 🛡️ MIGRATION 091 — canonical bölüm yapısı için TEK parser (REUSE). */
 import { parsePageSections, type PageSection } from "@/lib/page-sections";
 
-type WritableLocale = "en" | "de";
+type WritableLocale = "en";
 
 type LocaleFormState = {
   title: string;
@@ -166,7 +166,6 @@ function buildTranslatedSections(
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
   en: "English",
-  de: "Deutsch",
 };
 
 type Props = {
@@ -187,7 +186,6 @@ export default function PageTranslationsCard({
 
   const [forms, setForms] = useState<Record<WritableLocale, LocaleFormState>>({
     en: EMPTY_FORM,
-    de: EMPTY_FORM,
   });
   /* 🛡️ MIGRATION 091 — canonical yapı (yalnız OKUNUR) + locale başına
      metin taslakları. `useMemo` ile prop değişmedikçe yeniden
@@ -198,7 +196,7 @@ export default function PageTranslationsCard({
   );
   const [sectionDrafts, setSectionDrafts] = useState<
     Record<WritableLocale, SectionDraft[]>
-  >({ en: [], de: [] });
+  >({ en: [] });
   const [activeLocale, setActiveLocale] = useState<WritableLocale>("en");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -223,7 +221,7 @@ export default function PageTranslationsCard({
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en" && row.locale !== "de") continue;
+          if (row.locale !== "en") continue;
           next[row.locale] = {
             title: row.title ?? "",
             excerpt: row.excerpt ?? "",
@@ -240,10 +238,9 @@ export default function PageTranslationsCard({
         const empty = canonical.map(() => EMPTY_DRAFT);
         const next: Record<WritableLocale, SectionDraft[]> = {
           en: empty,
-          de: empty,
         };
         for (const row of result.rows) {
-          if (row.locale !== "en" && row.locale !== "de") continue;
+          if (row.locale !== "en") continue;
           next[row.locale] = draftsFromSaved(canonical, row.sections);
         }
         return next;
@@ -362,7 +359,7 @@ export default function PageTranslationsCard({
         <div>
           <p className="eyebrow">Çok Dilli İçerik</p>
           <h2 className="text-lg font-semibold text-[var(--color-stone-900)]">
-            Çeviriler (EN / DE)
+            Çeviriler (EN)
           </h2>
           <p className="mt-1 text-sm text-[var(--color-stone-500)]">
             Bu alanlar yalnızca İngilizce ve Almanca sürümler içindir. Türkçe

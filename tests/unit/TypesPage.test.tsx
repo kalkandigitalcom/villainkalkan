@@ -206,21 +206,19 @@ describe("TypesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
-  it("8) DE tab çalışıyor", async () => {
+  it("8) DE tab YOK (DE desteği kaldırıldı) — yalnız English", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(true));
     render(<TypesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
     await screen.findByLabelText("English");
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-
-    expect(await screen.findByLabelText("Deutsch")).toBeInTheDocument();
-    expect(screen.queryByLabelText("English")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Deutsch")).not.toBeInTheDocument();
   });
 });
 
 describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet", () => {
-  it("9) Mevcut EN/DE çevirileri input'a yüklenir", async () => {
+  it("9) Mevcut EN çevirisi input'a yüklenir", async () => {
     loadTypeTranslationsMock.mockResolvedValue({
       ok: true,
       rows: [
@@ -229,14 +227,6 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
           type_id: "type-1",
           locale: "en",
           name: "Luxury Villa",
-          created_at: "2026-01-01T00:00:00.000Z",
-          updated_at: "2026-01-01T00:00:00.000Z",
-        },
-        {
-          id: "row-de",
-          type_id: "type-1",
-          locale: "de",
-          name: "Luxusvilla",
           created_at: "2026-01-01T00:00:00.000Z",
           updated_at: "2026-01-01T00:00:00.000Z",
         },
@@ -249,10 +239,6 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
 
     const enInput = (await screen.findByLabelText("English")) as HTMLInputElement;
     await waitFor(() => expect(enInput.value).toBe("Luxury Villa"));
-
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-    const deInput = (await screen.findByLabelText("Deutsch")) as HTMLInputElement;
-    await waitFor(() => expect(deInput.value).toBe("Luxusvilla"));
   });
 
   it("10) Kaydet → saveTypeTranslationAction doğru typeId/locale/name ile çağrılır", async () => {

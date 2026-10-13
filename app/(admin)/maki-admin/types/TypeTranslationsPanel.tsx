@@ -28,11 +28,10 @@ import {
   revalidateMenu,
 } from "@/app/services/revalidate.actions";
 
-type WritableLocale = "en" | "de";
+type WritableLocale = "en";
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
   en: "English",
-  de: "Deutsch",
 };
 
 type Props = {
@@ -46,7 +45,6 @@ export default function TypeTranslationsPanel({ typeId, typeName }: Props) {
 
   const [forms, setForms] = useState<Record<WritableLocale, string>>({
     en: "",
-    de: "",
   });
   const [activeLocale, setActiveLocale] = useState<WritableLocale>("en");
   const [loading, setLoading] = useState(true);
@@ -72,7 +70,7 @@ export default function TypeTranslationsPanel({ typeId, typeName }: Props) {
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en" && row.locale !== "de") continue;
+          if (row.locale !== "en") continue;
           next[row.locale] = row.name ?? "";
         }
         return next;

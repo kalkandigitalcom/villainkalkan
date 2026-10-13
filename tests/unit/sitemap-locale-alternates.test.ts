@@ -127,7 +127,6 @@ describe("sitemap() — Phase 7D villa locale alternates", () => {
     expect(villa.alternates?.languages).toEqual({
       tr: "https://example.com/kiralik-villa/villa-in-love",
       en: "https://example.com/en/kiralik-villa/villa-in-love",
-      de: "https://example.com/de/kiralik-villa/villa-in-love",
       "x-default": "https://example.com/kiralik-villa/villa-in-love",
     });
   });
@@ -192,9 +191,9 @@ describe("sitemap() — Phase 7D villa locale alternates", () => {
 
   /* --- 10) mevcut diğer sitemap entry'leri korunuyor --- */
   /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/`, `/kiralik-villalar`,
-     `/iletisim`, `/teklif-al` ve `/p/[slug]` ARTIK gerçek `/en` + `/de`
+     `/iletisim`, `/teklif-al` ve `/p/[slug]` ARTIK gerçek `/en`
      route'larına sahip → sitemap onlara da `alternates.languages` verir.
-     🛡️ BLOG da ARTIK `/en|de/blog` + `/en|de/blog/[slug]` route'larına
+     🛡️ BLOG da ARTIK `/en/blog` + `/en/blog/[slug]` route'larına
      sahip (migration 089 `blog_post_translations`) → alternates TAŞIR. */
   it("10) locale route'u OLAN entry'ler alternates taşır (blog dahil)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
@@ -225,7 +224,6 @@ describe("sitemap() — Phase 7D villa locale alternates", () => {
         ?.alternates as { languages?: Record<string, string> } | undefined;
       expect(alt?.languages).toBeDefined();
       expect(Object.keys(alt!.languages!).sort()).toEqual([
-        "de",
         "en",
         "tr",
         "x-default",
@@ -237,7 +235,7 @@ describe("sitemap() — Phase 7D villa locale alternates", () => {
       byUrl.get("https://example.com/") as Record<string, unknown>
     ).alternates as { languages: Record<string, string> };
     expect(homeAlt.languages.en).toBe("https://example.com/en");
-    expect(homeAlt.languages.de).toBe("https://example.com/de");
+    expect(homeAlt.languages).not.toHaveProperty("de");
     expect(homeAlt.languages.tr).toBe("https://example.com/");
 
     /* BLOG hreflang — `buildLocaleAlternates` ile birebir. */
@@ -246,7 +244,6 @@ describe("sitemap() — Phase 7D villa locale alternates", () => {
     ).alternates as { languages: Record<string, string> };
     expect(blogAlt.languages.tr).toBe("https://example.com/blog/ilk-yazi");
     expect(blogAlt.languages.en).toBe("https://example.com/en/blog/ilk-yazi");
-    expect(blogAlt.languages.de).toBe("https://example.com/de/blog/ilk-yazi");
     expect(blogAlt.languages["x-default"]).toBe(blogAlt.languages.tr);
 
     // Toplam entry sayısı: 4 statik + 2 villa + 1 page + 1 blog-index + 1 blog = 9

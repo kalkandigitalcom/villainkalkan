@@ -279,7 +279,7 @@ describe("validatePublicReservationForm — accumulated errors", () => {
    (`reservation.validation`) gelir.
 =============================================================== */
 
-describe("validatePublicReservationForm — locale (TR/EN/DE)", () => {
+describe("validatePublicReservationForm — locale (TR/EN)", () => {
   const allInvalid = () => ({
     form: {
       ...initialPublicReservationFormData(),
@@ -320,25 +320,11 @@ describe("validatePublicReservationForm — locale (TR/EN/DE)", () => {
     expect(errors.date).toBe(dict.dateRequired);
   });
 
-  it('locale="de" → mesajlar dictionary DE değerleri', () => {
-    const dict = getDictionary("de").reservation.validation;
-    const errors = validatePublicReservationForm(allInvalid(), "de");
-    expect(errors.name).toBe(dict.nameRequired);
-    expect(errors.phone).toBe(dict.phoneRequired);
-    expect(errors.email).toBe(dict.emailRequired);
-    expect(errors.identity).toBe(dict.identityRequired);
-    expect(errors.payment_method_id).toBe(dict.paymentMethodRequired);
-    expect(errors.date).toBe(dict.dateRequired);
-  });
-
-  it("EN/DE mesajları TR ile AYNI DEĞİL (gerçekten çevrilmiş)", () => {
+  it("EN mesajları TR ile AYNI DEĞİL (gerçekten çevrilmiş)", () => {
     const tr = validatePublicReservationForm(allInvalid(), "tr");
     const en = validatePublicReservationForm(allInvalid(), "en");
-    const de = validatePublicReservationForm(allInvalid(), "de");
     for (const key of ["name", "phone", "phone2", "email", "identity", "date"] as const) {
       expect(en[key]).not.toBe(tr[key]);
-      expect(de[key]).not.toBe(tr[key]);
-      expect(en[key]).not.toBe(de[key]);
     }
   });
 
@@ -365,10 +351,9 @@ describe("validatePublicReservationForm — locale (TR/EN/DE)", () => {
   });
 
   it("locale hata ALANLARINI (key set) DEĞİŞTİRMEZ — sadece metni", () => {
-    const keys = (l?: "tr" | "en" | "de") =>
+    const keys = (l?: "tr" | "en") =>
       Object.keys(validatePublicReservationForm(allInvalid(), l)).sort();
     expect(keys("en")).toEqual(keys());
-    expect(keys("de")).toEqual(keys());
   });
 
   it("geçerli form her locale'de {} döner (kural değişmedi)", () => {
@@ -387,6 +372,5 @@ describe("validatePublicReservationForm — locale (TR/EN/DE)", () => {
     };
     expect(validatePublicReservationForm(input, "tr")).toEqual({});
     expect(validatePublicReservationForm(input, "en")).toEqual({});
-    expect(validatePublicReservationForm(input, "de")).toEqual({});
   });
 });

@@ -25,10 +25,10 @@ import type { FaqTranslationRow } from "@/lib/i18n/translations.types";
    — DEĞİŞTİRİLMEDİ.
    =============================================================== */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 export type FaqTranslationInput = {
@@ -53,7 +53,7 @@ export type FaqTranslationsMapResult =
   | { ok: true; map: Record<string, FaqTranslationsByLocale> }
   | { ok: false; error: string };
 
-const WRITABLE_LOCALES: readonly WritableTranslationLocale[] = ["en", "de"];
+const WRITABLE_LOCALES: readonly WritableTranslationLocale[] = ["en"];
 
 function normalize(value: string | null | undefined): string | null {
   const trimmed = (value ?? "").toString().trim();
@@ -112,7 +112,7 @@ export async function upsertFaqTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir",
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
     };
   }
   const locale = input.locale;

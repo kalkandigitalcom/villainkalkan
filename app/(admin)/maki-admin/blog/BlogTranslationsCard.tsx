@@ -32,7 +32,7 @@ import {
   saveBlogTranslationAction,
 } from "./blog-translations.action";
 
-type WritableLocale = "en" | "de";
+type WritableLocale = "en";
 
 type LocaleFormState = {
   title: string;
@@ -52,7 +52,6 @@ const EMPTY_FORM: LocaleFormState = {
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
   en: "English",
-  de: "Deutsch",
 };
 
 type Props = {
@@ -66,7 +65,6 @@ export default function BlogTranslationsCard({ postId, postTitle }: Props) {
 
   const [forms, setForms] = useState<Record<WritableLocale, LocaleFormState>>({
     en: EMPTY_FORM,
-    de: EMPTY_FORM,
   });
   const [activeLocale, setActiveLocale] = useState<WritableLocale>("en");
   const [loading, setLoading] = useState(true);
@@ -92,7 +90,7 @@ export default function BlogTranslationsCard({ postId, postTitle }: Props) {
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en" && row.locale !== "de") continue;
+          if (row.locale !== "en") continue;
           next[row.locale] = {
             title: row.title ?? "",
             excerpt: row.excerpt ?? "",
@@ -176,7 +174,7 @@ export default function BlogTranslationsCard({ postId, postTitle }: Props) {
         <div>
           <p className="eyebrow">Çok Dilli İçerik</p>
           <h2 className="text-lg font-semibold text-[var(--color-stone-900)]">
-            Çeviriler (EN / DE)
+            Çeviriler (EN)
           </h2>
           <p className="mt-1 text-sm text-[var(--color-stone-500)]">
             Bu alanlar yalnızca İngilizce ve Almanca sürümler içindir. Türkçe

@@ -43,7 +43,10 @@ export type Settings = {
      ETKİLENMEZ — bu faz yalnız admin ayar + get_public_settings
      whitelist'i genişletir). public_default_locale yalnız
      multilingual_enabled=true iken anlamlıdır; DB CHECK constraint'i
-     ile tr/en/de dışına izin verilmez. Default: false / 'tr'. */
+     ile tr/en/de dışına izin verilmez. Default: false / 'tr'.
+     Almanca desteği kaldırıldı: uygulama artık yalnız tr/en yazar;
+     DB'de kalmış eski bir "de" değeri `getPublicDefaultLocale` ile
+     "tr"ye düşer (tip, DB satırının olası değerlerini yansıtır). */
   multilingual_enabled?: boolean | null;
   public_default_locale?: "tr" | "en" | "de" | null;
 

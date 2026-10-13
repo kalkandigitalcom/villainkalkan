@@ -68,12 +68,11 @@ describe("Footer — Phase 9B locale dictionary (props ile doğrudan render)", (
     expect(screen.getByText("Check Reservation")).toBeInTheDocument();
   });
 
-  it("3) '/de/kiralik-villalar' → DE footer dictionary metinleri (lib/i18n/dictionaries/de.ts değerleri)", () => {
+  it("3) '/de/kiralik-villalar' → DE desteklenmiyor, TR footer metinlerine düşer", () => {
     usePathnameMock.mockReturnValue("/de/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.queryByText("Keşfet")).not.toBeInTheDocument();
-    expect(screen.getByText("Entdecken")).toBeInTheDocument();
-    expect(screen.getByText("Reservierung prüfen")).toBeInTheDocument();
+    expect(screen.getByText("Keşfet")).toBeInTheDocument();
+    expect(screen.queryByText("Entdecken")).not.toBeInTheDocument();
   });
 
   it("4) segment sınırı — '/energy-something' YANLIŞLIKLA 'en' ile eşleşmez, TR'ye düşer", () => {
@@ -269,28 +268,6 @@ describe("Footer — href locale kilidi (iç linkler aktif locale'i taşır)", (
     expect(screen.getByRole("link", { name: "Hakkımızda" })).toHaveAttribute(
       "href",
       "/en/p/hakkimizda"
-    );
-    /* Prefix'siz TR route'una DÜŞMÜYOR. */
-    expect(screen.getByRole("link", { name: "Kalkan" })).not.toHaveAttribute(
-      "href",
-      "/arama?bolgeler=kalkan"
-    );
-  });
-
-  it("13) taxonomy + CMS href'leri '/de/...' path'te '/de' prefix'i alır (token/slug kontratı AYNEN)", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villalar");
-    render(<Footer {...PROPS_WITH_TAXONOMY_AND_CMS} />);
-    expect(screen.getByRole("link", { name: "Havuzlu Villa" })).toHaveAttribute(
-      "href",
-      "/de/villa-turleri/havuzlu-villa"
-    );
-    expect(screen.getByRole("link", { name: "Kalkan" })).toHaveAttribute(
-      "href",
-      "/de/arama?bolgeler=kalkan"
-    );
-    expect(screen.getByRole("link", { name: "Hakkımızda" })).toHaveAttribute(
-      "href",
-      "/de/p/hakkimizda"
     );
     /* Prefix'siz TR route'una DÜŞMÜYOR. */
     expect(screen.getByRole("link", { name: "Kalkan" })).not.toHaveAttribute(

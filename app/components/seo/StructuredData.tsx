@@ -46,7 +46,6 @@ function abs(path: string): string {
 export const SCHEMA_IN_LANGUAGE: Record<Locale, string> = {
   tr: "tr-TR",
   en: "en",
-  de: "de",
 };
 
 /* ---------------------------------------------

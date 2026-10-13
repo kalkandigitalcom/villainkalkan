@@ -11,7 +11,7 @@
         ÇIKIŞ tarihidir → start_date/end_date URL'e AYNEN taşınır.
         ⛔ `+1 gün` UYGULANMAZ (kartta 10–17 Ekim ise rezervasyon
         sayfasında da 10–17 Ekim görünmeli).
-     3) Locale önekleri (/en, /de) doğru.
+     3) Locale önekleri (/en) doğru.
      4) Bozuk/eksik veride MEVCUT davranışa (villa detayı) düşüş.
      5) discount variant DIŞINDA hiçbir şey değişmedi.
 =============================================================== */
@@ -61,7 +61,7 @@ const BASE_DISCOUNT: DiscountProp = {
 function renderDiscountCard(opts?: {
   discount?: DiscountProp | null;
   slug?: string;
-  locale?: "tr" | "en" | "de";
+  locale?: "tr" | "en";
   discountAvailable?: boolean;
 }) {
   render(
@@ -171,18 +171,6 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     clickCta("Book Now");
     expect(pushSpy.mock.calls[0][0]).toBe(
       "/en/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
-    );
-  });
-
-  it("9) DE locale → /de/rezervasyon/...", () => {
-    renderDiscountCard({ locale: "de" });
-    const btn = screen.getAllByRole("button").find((b) =>
-      (b.textContent || "").trim().length > 0 &&
-      (b.getAttribute("class") || "").includes("bg-[#C9A55A]")
-    )!;
-    fireEvent.click(btn);
-    expect(pushSpy.mock.calls[0][0]).toBe(
-      "/de/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
     );
   });
 

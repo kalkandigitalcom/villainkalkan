@@ -35,10 +35,10 @@ import { parsePageSections, type PageSection } from "@/lib/page-sections";
  * bırakılan alanlar `null` yazılır → public tarafta TR'ye fallback.
  */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 /* Limitler: SEO alanları proje genelindeki değerlerle AYNI
@@ -129,7 +129,7 @@ export async function upsertPageTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir",
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
     };
   }
   const locale = input.locale;

@@ -37,11 +37,10 @@ const OPEN_DELAY_MS = 700;
 
 const SitePopupDialog = dynamic(() => import("./SitePopupDialog"), { ssr: false });
 
-const CLOSE_LABELS: Record<string, string> = { tr: "Kapat", en: "Close", de: "Schließen" };
+const CLOSE_LABELS: Record<string, string> = { tr: "Kapat", en: "Close" };
 
-function localeOf(pathname: string): "tr" | "en" | "de" {
+function localeOf(pathname: string): "tr" | "en" {
   if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
-  if (pathname === "/de" || pathname.startsWith("/de/")) return "de";
   return "tr";
 }
 
@@ -83,7 +82,7 @@ export default function SitePopupLoader({ popup }: { popup: PublicSitePopup }) {
   const [closedHere, setClosedHere] = useState(false);
 
   const inScope = popup.scope === "all" || isPopupHomePath(pathname);
-  /* İçerik dili: URL prefix'i (/en, /de; diğerleri TR). Çeviri yoksa
+  /* İçerik dili: URL prefix'i (/en; diğerleri TR). Çeviri yoksa
      veya alan boşsa Türkçe (server'da uygulanmış fallback). */
   const locale = localeOf(pathname);
   const content = useMemo(() => localizeSitePopup(popup, locale), [popup, locale]);

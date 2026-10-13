@@ -59,7 +59,6 @@ const CURRENCY_OPTIONS: { code: string; flag: string; symbol: string }[] = [
 const LOCALE_FLAGS: Record<Locale, string> = {
   tr: "/flags/tr.svg",
   en: "/flags/gb.svg",
-  de: "/flags/de.svg",
 };
 
 /* ═══════════════════════════════════════════════════════════════

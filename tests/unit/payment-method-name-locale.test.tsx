@@ -50,13 +50,15 @@ const PAYMENT_METHODS = [
     id: "pm-1",
     name: "Kredi Kartı",
     type: "credit_card",
+    /* Eski (DE desteği kaldırılmadan önce yazılmış) `de` anahtarı —
+       artık hiçbir locale'de KULLANILMAZ. */
     name_by_locale: { de: "Kreditkarte" },
   },
   {
     id: "pm-2",
     name: "Havale / EFT",
     type: "bank_transfer",
-    name_by_locale: { en: "Bank Transfer", de: "Banküberweisung" },
+    name_by_locale: { en: "Bank Transfer" },
   },
 ];
 
@@ -120,10 +122,11 @@ describe("resolveTaxonomyName — ödeme yöntemi adı", () => {
     ).toBe("Credit Card");
   });
 
-  it("3) EN yok / DE var → EN'de TR, DE'de çeviri (istenen senaryo)", () => {
-    const map = { de: "Kreditkarte" };
+  it("3) EN yok / yalnız eski DE anahtarı var → EN'de TR canonical", () => {
+    /* Eski veri (DE kaldırılmadan önce) — runtime'da `de` anahtarı
+       taşıyabilir ama artık tipte YOK. */
+    const map = { de: "Kreditkarte" } as Record<string, string>;
     expect(resolveTaxonomyName("Kredi Kartı", map, "en")).toBe("Kredi Kartı");
-    expect(resolveTaxonomyName("Kredi Kartı", map, "de")).toBe("Kreditkarte");
   });
 
   it.each([undefined, null, {}, { en: "" }, { en: "   " }])(
@@ -170,30 +173,22 @@ describe("ReservationForm — ödeme yöntemi etiketi", () => {
     );
     /* pm-1'in EN çevirisi YOK → TR canonical gösterilir. */
     expect(screen.getByText("Kredi Kartı")).toBeInTheDocument();
-  });
-
-  it("8) DE → her ikisi de çevrilir", async () => {
-    renderForm("de");
-    await waitFor(() =>
-      expect(screen.getByText("Kreditkarte")).toBeInTheDocument()
-    );
-    expect(screen.getByText("Banküberweisung")).toBeInTheDocument();
-    expect(screen.queryByText("Kredi Kartı")).toBeNull();
-    expect(screen.queryByText("Havale / EFT")).toBeNull();
+    /* Eski `de` anahtarı hiçbir zaman gösterilmez. */
+    expect(screen.queryByText("Kreditkarte")).toBeNull();
   });
 
   it("9) `name_by_locale` HİÇ yoksa (eski cevap şekli) TR canonical — çökmez", async () => {
     stubFetch([{ id: "pm-1", name: "Havale / EFT", type: "bank_transfer" }]);
-    renderForm("de");
+    renderForm("en");
     await waitFor(() =>
       expect(screen.getByText("Havale / EFT")).toBeInTheDocument()
     );
   });
 
   it("10) 🔒 seçim canonical `id` ile yapılır — etiket/çeviri payload'a GİRMEZ", async () => {
-    renderForm("de");
+    renderForm("en");
     await waitFor(() =>
-      expect(screen.getByText("Kreditkarte")).toBeInTheDocument()
+      expect(screen.getByText("Bank Transfer")).toBeInTheDocument()
     );
 
     const radios = screen.getAllByRole("radio");

@@ -374,11 +374,11 @@ describe("D) modal fiyat özeti — indirimli tutar", () => {
    E) MODAL TAKVİM DİLİ — modalın locale'i ile eşleşir
    ===============================================================
    Regresyon: modal, `BookingCalendar`'a `locale` GEÇMİYORDU → takvim
-   EN/DE modallarda da Türkçe render ediliyordu. Aşağıdaki test UÇTAN
+   EN modalda da Türkçe render ediliyordu. Aşağıdaki test UÇTAN
    UCA (modal → takvim) dil paritesini kilitler.
 =============================================================== */
 describe("E) modal takvim dili", () => {
-  function renderModalWithLocale(locale?: "tr" | "en" | "de") {
+  function renderModalWithLocale(locale?: "tr" | "en") {
     mockFetch();
     return render(
       <VillaCardBookingModal
@@ -406,14 +406,6 @@ describe("E) modal takvim dili", () => {
     const { container } = renderModalWithLocale("en");
     const { caption, weekdays } = await calendarTexts(container);
     expect(caption).toMatch(/January|February|March|April|May|June|July|August|September|October|November|December/);
-    expect(weekdays).not.toMatch(/Ça|Ct|Pz/);
-  });
-
-  it("19) DE modal → Almanca ay adı + hafta günleri", async () => {
-    const { container } = renderModalWithLocale("de");
-    const { caption, weekdays } = await calendarTexts(container);
-    expect(caption).toMatch(/Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember/);
-    expect(weekdays).toMatch(/Mo|Di|Mi/);
     expect(weekdays).not.toMatch(/Ça|Ct|Pz/);
   });
 

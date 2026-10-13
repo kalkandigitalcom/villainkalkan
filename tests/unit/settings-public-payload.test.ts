@@ -94,11 +94,12 @@ describe("getPublicSettings — §5 çeviri payload'ı", () => {
     expect(result?.translations?.en?.footer_copyright).toBe(
       "© {year} {site_name} · All rights reserved"
     );
-    expect(result?.translations?.de).toBeUndefined();
+    /* DE desteği kaldırıldı — payload'da `de` anahtarı YOK. */
+    expect("de" in (result?.translations ?? {})).toBe(false);
   });
 
   /* 🛡️ MIGRATION 087 — 8 → 9 alan (`business_hours` eklendi;
-     /iletisim EN/DE sürümü "Çalışma Saatleri" metnini çözer). */
+     /iletisim EN sürümü "Çalışma Saatleri" metnini çözer). */
   it("4) çeviri payload'ı YALNIZ 9 alan taşır — id/settings_id/timestamp YOK", async () => {
     findPublicViaRpcMock.mockResolvedValue({
       data: { id: "settings-1", multilingual_enabled: true },

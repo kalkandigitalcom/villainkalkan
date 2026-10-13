@@ -167,21 +167,18 @@ describe("RulesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
-  it("8) DE tab çalışıyor", async () => {
+  it("8) DE tab YOK (DE desteği kaldırıldı)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(true));
     render(<RulesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
     await screen.findByLabelText("English");
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-
-    expect(await screen.findByLabelText("Deutsch")).toBeInTheDocument();
-    expect(screen.queryByLabelText("English")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
   });
 });
 
 describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet", () => {
-  it("9) Mevcut EN/DE çevirileri input'a yüklenir", async () => {
+  it("9) Mevcut EN çevirisi input'a yüklenir", async () => {
     loadRuleTranslationsMock.mockResolvedValue({
       ok: true,
       rows: [
@@ -190,14 +187,6 @@ describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
           rule_id: "rule-1",
           locale: "en",
           title: "No smoking",
-          created_at: "2026-01-01T00:00:00.000Z",
-          updated_at: "2026-01-01T00:00:00.000Z",
-        },
-        {
-          id: "row-de",
-          rule_id: "rule-1",
-          locale: "de",
-          title: "Rauchen verboten",
           created_at: "2026-01-01T00:00:00.000Z",
           updated_at: "2026-01-01T00:00:00.000Z",
         },
@@ -210,10 +199,6 @@ describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
 
     const enInput = (await screen.findByLabelText("English")) as HTMLInputElement;
     await waitFor(() => expect(enInput.value).toBe("No smoking"));
-
-    fireEvent.click(screen.getByRole("button", { name: "Deutsch" }));
-    const deInput = (await screen.findByLabelText("Deutsch")) as HTMLInputElement;
-    await waitFor(() => expect(deInput.value).toBe("Rauchen verboten"));
   });
 
   it("10) Kaydet → saveRuleTranslationAction doğru ruleId/locale/title ile çağrılır", async () => {

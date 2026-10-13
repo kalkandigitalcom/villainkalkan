@@ -25,8 +25,8 @@ import {
 } from "@/lib/i18n/config";
 
 describe("SUPPORTED_LOCALES / DEFAULT_LOCALE", () => {
-  it("SUPPORTED_LOCALES sadece tr/en/de içerir", () => {
-    expect(SUPPORTED_LOCALES).toEqual(["tr", "en", "de"]);
+  it("SUPPORTED_LOCALES sadece tr/en içerir", () => {
+    expect(SUPPORTED_LOCALES).toEqual(["tr", "en"]);
   });
 
   it("DEFAULT_LOCALE tr'dir", () => {
@@ -43,8 +43,8 @@ describe("isSupportedLocale", () => {
     expect(isSupportedLocale("en")).toBe(true);
   });
 
-  it("'de' geçerli", () => {
-    expect(isSupportedLocale("de")).toBe(true);
+  it("'de' artık desteklenmiyor", () => {
+    expect(isSupportedLocale("de")).toBe(false);
   });
 
   it("desteklenmeyen değer geçersiz ('fr')", () => {
@@ -69,12 +69,12 @@ describe("isSupportedLocale", () => {
 describe("toLocale", () => {
   it("geçerli locale aynen döner", () => {
     expect(toLocale("en")).toBe("en");
-    expect(toLocale("de")).toBe("de");
     expect(toLocale("tr")).toBe("tr");
   });
 
   it("geçersiz/tanınmayan değer -> tr fallback", () => {
     expect(toLocale("fr")).toBe("tr");
+    expect(toLocale("de")).toBe("tr");
     /* case-sensitive — büyük harf normalize edilmez, bilinçli olarak
        geçersiz sayılır (üst katman gerekirse normalize eder). */
     expect(toLocale("EN")).toBe("tr");
@@ -90,7 +90,6 @@ describe("toLocale", () => {
 describe("resolveLocale", () => {
   it("geçerli explicit locale verilmişse onu kullanır", () => {
     expect(resolveLocale("en")).toBe("en");
-    expect(resolveLocale("de")).toBe("de");
     expect(resolveLocale("tr")).toBe("tr");
   });
 
@@ -134,9 +133,9 @@ describe("localeFromPathname (Phase 9A — Header client-side locale tespiti)", 
     expect(localeFromPathname("/en/kiralik-villalar")).toBe("en");
   });
 
-  it("'/de' veya '/de/...' -> 'de'", () => {
-    expect(localeFromPathname("/de")).toBe("de");
-    expect(localeFromPathname("/de/kiralik-villa/ornek-slug")).toBe("de");
+  it("'/de' veya '/de/...' artık locale değil -> 'tr'", () => {
+    expect(localeFromPathname("/de")).toBe("tr");
+    expect(localeFromPathname("/de/kiralik-villa/ornek-slug")).toBe("tr");
   });
 
   it("TR path'leri (prefix yok) -> 'tr'", () => {
@@ -146,7 +145,7 @@ describe("localeFromPathname (Phase 9A — Header client-side locale tespiti)", 
     expect(localeFromPathname("/arama")).toBe("tr");
   });
 
-  it("segment sınırı korunur — '/en'/'/de' ile BAŞLAYAN ama farklı bir segment olan path'ler YANLIŞLIKLA eşleşmez", () => {
+  it("segment sınırı korunur — '/en' ile BAŞLAYAN ama farklı bir segment olan path'ler YANLIŞLIKLA eşleşmez", () => {
     expect(localeFromPathname("/energy-tasarrufu")).toBe("tr");
     expect(localeFromPathname("/destek")).toBe("tr");
     expect(localeFromPathname("/development")).toBe("tr");
@@ -169,13 +168,13 @@ describe("getPublicDefaultLocale (Phase 1A settings entegrasyonu)", () => {
     expect(getPublicDefaultLocale({ public_default_locale: "en" })).toBe(
       "en"
     );
-    expect(getPublicDefaultLocale({ public_default_locale: "de" })).toBe(
-      "de"
-    );
   });
 
   it("geçersiz/bozuk değer -> tr fallback (DB CHECK bypass edilse bile güvenli)", () => {
     expect(getPublicDefaultLocale({ public_default_locale: "fr" })).toBe(
+      "tr"
+    );
+    expect(getPublicDefaultLocale({ public_default_locale: "de" })).toBe(
       "tr"
     );
   });

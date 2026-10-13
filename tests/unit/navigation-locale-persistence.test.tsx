@@ -21,7 +21,7 @@
      B) Header — logo · CTA · menü · alt menü
      C) Footer — logo · taksonomi · CTA · kurumsal sayfalar
      D) Diğer global navigasyon (BottomNav · favoriler · çerez)
-     E) Dil değiştirici hedefleri (TR↔EN↔DE)
+     E) Dil değiştirici hedefleri (TR↔EN)
      F) SSR/hydration — saf, senkron, storage/cookie YOK
      G) STRUCTURAL INVARIANT — kaynak kilidi (yeni leak eklenirse kırılır)
    =============================================================== */
@@ -57,15 +57,14 @@ import Header from "@/app/components/layout/Header";
 import FloatingQuoteCta from "@/app/components/layout/FloatingQuoteCta";
 import Footer from "@/app/components/layout/Footer";
 
-const LOCALES = ["tr", "en", "de"] as const;
+const LOCALES = ["tr", "en"] as const;
 type L = (typeof LOCALES)[number];
 /** Aktif locale için beklenen prefix. */
-const PREFIX: Record<L, string> = { tr: "", en: "/en", de: "/de" };
+const PREFIX: Record<L, string> = { tr: "", en: "/en" };
 /** O locale'in "bulunduğu sayfa" pathname'i. */
 const ON_PAGE: Record<L, string> = {
   tr: "/kiralik-villa/villa-lorien",
   en: "/en/kiralik-villa/villa-lorien",
-  de: "/de/kiralik-villa/villa-lorien",
 };
 
 const MENU = [
@@ -122,25 +121,23 @@ describe("localeHref — birim davranışı", () => {
     }
   });
 
-  it("2) EN/DE prefix uygular; kök için çifte slash üretmez", () => {
+  it("2) EN prefix uygular; kök için çifte slash üretmez", () => {
     expect(localeHref("/", "en")).toBe("/en");
-    expect(localeHref("/", "de")).toBe("/de");
     expect(localeHref("/teklif-al", "en")).toBe("/en/teklif-al");
-    expect(localeHref("/p/hakkimizda", "de")).toBe("/de/p/hakkimizda");
+    expect(localeHref("/p/hakkimizda", "en")).toBe("/en/p/hakkimizda");
   });
 
   it("3) query ve hash AYNEN taşınır (kontrat değişmez)", () => {
     expect(localeHref("/arama?villa-turleri=balayi&flexible=3", "en")).toBe(
       "/en/arama?villa-turleri=balayi&flexible=3"
     );
-    expect(localeHref("/arama#sonuc", "de")).toBe("/de/arama#sonuc");
+    expect(localeHref("/arama#sonuc", "en")).toBe("/en/arama#sonuc");
     expect(localeHref("/?a=1", "en")).toBe("/en?a=1");
   });
 
   it("4) idempotent — zaten prefix'li path yeniden prefix'lenmez", () => {
     expect(localeHref("/en/blog", "en")).toBe("/en/blog");
-    expect(localeHref("/en/blog", "de")).toBe("/de/blog");
-    expect(localeHref("/de/blog", "tr")).toBe("/blog");
+    expect(localeHref("/en/blog", "tr")).toBe("/blog");
   });
 
   it("5) dış bağlantı / özel şema AYNEN korunur", () => {
@@ -155,7 +152,7 @@ describe("localeHref — birim davranışı", () => {
       expect(localeHref(p, "en")).toBe(p);
     }
     expect(localeHref(null, "en")).toBe("");
-    expect(localeHref(undefined, "de")).toBe("");
+    expect(localeHref(undefined, "en")).toBe("");
   });
 });
 
@@ -197,19 +194,11 @@ describe("Header — iç linkler aktif locale'i taşır", () => {
     }
   });
 
-  it("8) DE'de HİÇBİR iç link prefix'siz TR route'una gitmiyor", () => {
-    usePathnameMock.mockReturnValue(ON_PAGE.de);
-    const { container } = render(<PublicChrome />);
-    for (const h of allHrefs(container)) {
-      expect(h, `prefix'siz link: ${h}`).toMatch(/^\/de(\/|$|\?)/);
-    }
-  });
-
   it("9) TR'de linkler canonical (prefix'siz) KALIR — TR davranışı değişmedi", () => {
     usePathnameMock.mockReturnValue(ON_PAGE.tr);
     const { container } = render(<PublicChrome />);
     for (const h of allHrefs(container)) {
-      expect(h).not.toMatch(/^\/(en|de)(\/|$)/);
+      expect(h).not.toMatch(/^\/en(\/|$)/);
     }
     expect(container.querySelector('a[href="/teklif-al"]')).toBeTruthy();
     expect(container.querySelector('a[href="/p/hakkimizda"]')).toBeTruthy();
@@ -233,7 +222,7 @@ describe("Footer — iç linkler aktif locale'i taşır", () => {
        prop tipine daraltılır. */
   } as unknown as React.ComponentProps<typeof Footer>;
 
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "10) %s: footer iç linklerinin TAMAMI prefix'li",
     (loc) => {
       usePathnameMock.mockReturnValue(ON_PAGE[loc]);
@@ -252,27 +241,27 @@ describe("Footer — iç linkler aktif locale'i taşır", () => {
     usePathnameMock.mockReturnValue(ON_PAGE.tr);
     const { container } = render(<Footer {...footerProps} />);
     for (const h of allHrefs(container)) {
-      expect(h).not.toMatch(/^\/(en|de)(\/|$)/);
+      expect(h).not.toMatch(/^\/en(\/|$)/);
     }
   });
 });
 
 /* ===============================================================
-   D) DİL DEĞİŞTİRİCİ — TR ↔ EN ↔ DE
+   D) DİL DEĞİŞTİRİCİ — TR ↔ EN
    =============================================================== */
 describe("Dil değiştirici hedefleri", () => {
-  it("12) TR → EN / DE: aynı içeriğin locale karşılığı", () => {
+  it("12) TR → EN: aynı içeriğin locale karşılığı (de hedefi YOK)", () => {
     const t = getLocaleSwitchTargets("/kiralik-villa/villa-lorien");
     expect(t.tr).toBe("/kiralik-villa/villa-lorien");
     expect(t.en).toBe("/en/kiralik-villa/villa-lorien");
-    expect(t.de).toBe("/de/kiralik-villa/villa-lorien");
+    expect("de" in t).toBe(false);
   });
 
-  it("13) EN → DE ve DE → EN: aynı sayfada kalır (mapping korunur)", () => {
-    expect(getLocaleSwitchTargets("/en/blog/kalkan-rehberi").de).toBe(
-      "/de/blog/kalkan-rehberi"
+  it("13) EN ↔ TR: aynı sayfada kalır (mapping korunur)", () => {
+    expect(getLocaleSwitchTargets("/en/blog/kalkan-rehberi").tr).toBe(
+      "/blog/kalkan-rehberi"
     );
-    expect(getLocaleSwitchTargets("/de/blog/kalkan-rehberi").en).toBe(
+    expect(getLocaleSwitchTargets("/blog/kalkan-rehberi").en).toBe(
       "/en/blog/kalkan-rehberi"
     );
   });
@@ -284,13 +273,11 @@ describe("Dil değiştirici hedefleri", () => {
   it("15) query korunur (mevcut /arama davranışı BOZULMADI)", () => {
     const t = getLocaleSwitchTargets("/arama", "villa-turleri=balayi&flexible=3");
     expect(t.en).toBe("/en/arama?villa-turleri=balayi&flexible=3");
-    expect(t.de).toBe("/de/arama?villa-turleri=balayi&flexible=3");
   });
 
   it("16) hedef, o locale'de GEÇERLİ bir route'tur (switch → yeni sayfa → locale korunur)", () => {
     const t = getLocaleSwitchTargets("/kisa-sureli-tarihler/haziran/3");
     expect(localeFromPathname(t.en)).toBe("en");
-    expect(localeFromPathname(t.de)).toBe("de");
     expect(localeFromPathname(t.tr)).toBe("tr");
   });
 });
@@ -301,9 +288,6 @@ describe("Dil değiştirici hedefleri", () => {
 describe("Uçtan uca: locale seç → navigasyon → locale korunuyor", () => {
   it.each([
     ["tr", "en"],
-    ["tr", "de"],
-    ["en", "de"],
-    ["de", "en"],
     ["en", "tr"],
   ] as const)(
     "17) %s → %s seçildi → sonraki iç linkler hedef locale'de",
@@ -425,7 +409,7 @@ const INTENTIONAL_CANONICAL: Record<string, string[]> = {
      "/tr"). Buradaki "/" yalnızca fail-safe başlangıç değeridir;
      gerçek değer `resolvePublicHome(settings)`'ten gelir ve Header'a
      prop olarak geçer (Header bunu `locale === DEFAULT_LOCALE`
-     dalında kullanır, EN/DE'de `localeHref` devrede kalır).
+     dalında kullanır, EN'de `localeHref` devrede kalır).
      Kural GEVŞETİLMEDİ — yalnız bu dosya + bu tek değer muaf. */
   "app/components/layout/HeaderWrapper.tsx": ["/"],
 };
@@ -573,7 +557,6 @@ describe("STRUCTURAL INVARIANT — prefix'siz iç link eklenemez", () => {
             if (
               url.startsWith("//") ||
               url.startsWith("/en") ||
-              url.startsWith("/de") ||
               url.startsWith("/api/")
             ) {
               continue;

@@ -451,25 +451,9 @@ const MONTHS_EN_SHORT = [
   "Dec",
 ] as const;
 
-const MONTHS_DE_SHORT = [
-  "Jan",
-  "Feb",
-  "Mär",
-  "Apr",
-  "Mai",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Dez",
-] as const;
-
 const MONTHS_SHORT_BY_LOCALE: Record<Locale, readonly string[]> = {
   tr: MONTHS_TR_SHORT,
   en: MONTHS_EN_SHORT,
-  de: MONTHS_DE_SHORT,
 };
 
 /** `formatDateTr` ile AYNI çıktı şekli ("11 May 2026" / "—"), yalnız

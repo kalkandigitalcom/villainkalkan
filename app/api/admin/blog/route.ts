@@ -154,7 +154,6 @@ export async function POST(req: Request): Promise<NextResponse> {
   /* 🛡️ EN/DE blog listeleri de ISR — yalnız TR tazeleniyordu; kapak
      (ve `?v=` versiyonu) EN/DE listede de hemen güncel olsun. */
   revalidatePath("/en/blog");
-  revalidatePath("/de/blog");
 
   return NextResponse.json({ ok: true, id: data?.id });
 }

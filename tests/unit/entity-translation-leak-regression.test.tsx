@@ -5,7 +5,7 @@
 
      B#1  `/v/[token]` (PrivateVillaPageBody) — `villa.description`,
           mesafe başlıkları, `villa_feature.name`, `rule_item.title`
-          ve `price_include_item.title` EN/DE'de canonical TR
+          ve `price_include_item.title` EN'de canonical TR
           basılıyordu (çeviri tablosu ve batch reader VAR, kullanım
           noktası helper'ı HİÇ ÇAĞIRMIYORDU).
 
@@ -214,23 +214,18 @@ type Row = Record<string, unknown>;
 const TRANSLATIONS: Record<string, Record<string, Row[]>> = {
   villa: {
     en: [{ villa_id: "villa-1", locale: "en", description: "<p>EN description.</p>" }],
-    de: [{ villa_id: "villa-1", locale: "de", description: "<p>DE Beschreibung.</p>" }],
   },
   villa_feature: {
     en: [{ feature_id: "f-1", locale: "en", name: "Private Pool" }],
-    de: [{ feature_id: "f-1", locale: "de", name: "Privatpool" }],
   },
   rule_item: {
     en: [{ rule_id: "r-1", locale: "en", title: "No pets allowed" }],
-    de: [{ rule_id: "r-1", locale: "de", title: "Keine Haustiere" }],
   },
   price_include_item: {
     en: [{ include_id: "p-1", locale: "en", title: "Towels and linen" }],
-    de: [{ include_id: "p-1", locale: "de", title: "Handtucher und Bettwasche" }],
   },
   villa_type: {
     en: [{ type_id: "type-1", locale: "en", name: "Honeymoon Villa" }],
-    de: [{ type_id: "type-1", locale: "de", name: "Flitterwochen-Villa" }],
   },
 };
 
@@ -264,7 +259,7 @@ beforeEach(() => {
   withoutTranslations();
 });
 
-async function renderPrivateVilla(locale?: "tr" | "en" | "de") {
+async function renderPrivateVilla(locale?: "tr" | "en") {
   const el = await PrivateVillaPageBody({
     params: Promise.resolve({ token: "tok-1" }),
     searchParams: Promise.resolve({}),
@@ -275,12 +270,12 @@ async function renderPrivateVilla(locale?: "tr" | "en" | "de") {
 
 /* 🛡️ VillaDetailBody parity — özellikler ve mesafeler normal detaydaki
    gibi SEKME içinde (yalnız aktif sekme DOM'da). */
-function openTab(locale: "tr" | "en" | "de" | undefined, tab: "features" | "location") {
+function openTab(locale: "tr" | "en" | undefined, tab: "features" | "location") {
   const label = getDictionary(locale ?? "tr").villaTabs[tab];
   fireEvent.click(screen.getByRole("button", { name: label }));
 }
 
-async function renderShortGaps(locale?: "tr" | "en" | "de") {
+async function renderShortGaps(locale?: "tr" | "en") {
   const el = await ShortGapsPageBody({
     params: Promise.resolve({ ay: "haziran", gece: "3" }),
     searchParams: Promise.resolve({}),
@@ -345,22 +340,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
     expect(screen.queryByText(/canonical TR aciklama/)).not.toBeInTheDocument();
   });
 
-  it("DE: feature / rule / price-include / mesafe / açıklama DE gösterilir", async () => {
-    withTranslations();
-    await renderPrivateVilla("de");
-    expect(screen.getByText("Keine Haustiere")).toBeInTheDocument();
-    expect(screen.getByText("Handtucher und Bettwasche")).toBeInTheDocument();
-    expect(screen.getByText(/DE Beschreibung/)).toBeInTheDocument();
-    openTab("de", "features");
-    expect(screen.getByText("Privatpool")).toBeInTheDocument();
-    expect(screen.queryByText("Ozel Havuz")).not.toBeInTheDocument();
-    openTab("de", "location");
-    expect(
-      screen.getByText(getDictionary("de").distanceLabels["Plaj"])
-    ).toBeInTheDocument();
-  });
-
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "%s: çeviri satırı YOKSA canonical TR fallback gösterilir",
     async (locale) => {
       withoutTranslations();
@@ -377,7 +357,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
 
   it("villa ADI her locale'de CANONICAL kalır (özel isim)", async () => {
     withTranslations();
-    for (const locale of ["tr", "en", "de"] as const) {
+    for (const locale of ["tr", "en"] as const) {
       const { unmount } = await renderPrivateVilla(locale);
       expect(screen.getAllByText("Villa Lorien").length).toBeGreaterThan(0);
       unmount();
@@ -428,16 +408,7 @@ describe("ShortGapsPageBody — sidebar villa tipi adları locale-aware", () => 
     expect(screen.queryAllByText("Balayi Villasi")).toHaveLength(0);
   });
 
-  it("DE: çevirisi olan tip DE gösterilir", async () => {
-    withTranslations();
-    await renderShortGaps("de");
-    expect(
-      screen.getAllByText("Flitterwochen-Villa").length
-    ).toBeGreaterThan(0);
-    expect(screen.queryAllByText("Balayi Villasi")).toHaveLength(0);
-  });
-
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "%s: çevirisi OLMAYAN tip canonical TR kalır (alan bazlı fallback)",
     async (locale) => {
       withTranslations();
@@ -447,7 +418,7 @@ describe("ShortGapsPageBody — sidebar villa tipi adları locale-aware", () => 
     }
   );
 
-  it.each(["en", "de"] as const)(
+  it.each(["en"] as const)(
     "%s: hiç çeviri satırı yoksa tüm tipler canonical TR kalır",
     async (locale) => {
       withoutTranslations();
@@ -457,7 +428,7 @@ describe("ShortGapsPageBody — sidebar villa tipi adları locale-aware", () => 
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "%s: BÖLGE adları CANONICAL kalır (Phase 10I — çevrilmez)",
     async (locale) => {
       withTranslations();
@@ -477,9 +448,9 @@ describe("ShortGapsPageBody — sidebar villa tipi adları locale-aware", () => 
     const typeCalls = findManyForLocaleMock.mock.calls.filter(
       (c) => c[0] === "villa_type"
     );
-    /* `getVillaTypeNamesByLocale` en + de için birer batch atar
+    /* `getVillaTypeNamesByLocale` yalnız en için TEK batch atar
        (locale-bağımsız harita); tip BAŞINA sorgu YOKTUR. */
-    expect(typeCalls).toHaveLength(2);
+    expect(typeCalls).toHaveLength(1);
     for (const call of typeCalls) {
       expect(call[1]).toEqual(["type-1", "type-2"]);
     }

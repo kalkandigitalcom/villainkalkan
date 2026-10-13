@@ -24,7 +24,7 @@ import { resolveSettingsText } from "@/lib/i18n/settings-translation.helper";
      mimari kararı DEĞİŞMEDİ.
 
    ÜRETİLEN:
-     • canonical  : "/" | "/en" | "/de"
+     • canonical  : "/" | "/en"
      • languages  : tr/en/de/x-default (buildLocaleAlternates, Phase 7B)
      • title/desc : settings.default_meta_* → settings_translations
                     (Phase 10L) → yoksa TR canonical
@@ -75,7 +75,7 @@ export async function buildHomeMetadata(
 
        MOD A (varsayılan "tr" veya multilingual kapalı)
          → hiçbir şey değişmez; çıktı BYTE-IDENTICAL.
-       MOD B (varsayılan "en"/"de")
+       MOD B (varsayılan "en")
          → `/` bir yönlendiricidir; TR ana sayfa `/tr`'de yaşar.
            `hreflang="tr"` ve TR canonical `/tr`'yi gösterir,
            `x-default` ise varsayılan dilin ana sayfasını gösterir.

@@ -97,7 +97,6 @@ describe("prop yalnız gizli link (pasif villa) için", () => {
   it.each([
     "app/(public)/kiralik-villa/[slug]/page.tsx",
     "app/(public)/en/kiralik-villa/[slug]/page.tsx",
-    "app/(public)/de/kiralik-villa/[slug]/page.tsx",
   ])("normal villa detay sayfası prop'u VERMEZ: %s", (rel) => {
     expect(read(rel)).not.toContain("hideReservationCta");
   });

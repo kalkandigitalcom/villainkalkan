@@ -112,7 +112,7 @@ const DIRECT_MENU = [
 const CACHED_SETTINGS = {
   site_name: "CACHED-SITE",
   multilingual_enabled: true,
-  public_default_locale: "de",
+  public_default_locale: "en",
 };
 const DIRECT_SETTINGS = {
   site_name: "DIRECT-SITE",

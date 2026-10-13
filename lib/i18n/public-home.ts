@@ -33,7 +33,7 @@ import {
        • trHomeHref = "/"
        → BUGÜNKÜ PRODUCTION DAVRANIŞI BYTE-IDENTICAL.
 
-     MOD B — multilingual AÇIK **ve** varsayılan ∈ {"en","de"}
+     MOD B — multilingual AÇIK **ve** varsayılan = "en"
        • `/`   → `/<varsayılan>` (307)
        • `/tr` → TR ana sayfayı RENDER eder (canonical "/tr")
        • trHomeHref = "/tr"

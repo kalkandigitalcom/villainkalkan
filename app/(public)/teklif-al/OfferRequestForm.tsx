@@ -22,7 +22,7 @@ import "react-datepicker/dist/react-datepicker.css";
    `HeroSearchPanel.tsx` ile AYNI desen. `react-datepicker` sürümü ve
    mevcut `registerLocale` mekanizması DEĞİŞMEDİ; yalnız iki locale
    daha kaydedildi. Yeni kütüphane EKLENMEDİ. */
-import { tr, enUS, de } from "date-fns/locale";
+import { tr, enUS } from "date-fns/locale";
 
 import MobileKbSafeInput from "@/app/components/ui/datepicker/MobileKbSafeInput";
 import {
@@ -64,7 +64,6 @@ import {
 
 registerLocale("tr", tr);
 registerLocale("en", enUS);
-registerLocale("de", de);
 
 /* ─────────────── Travel groups (static) ─────────────── */
 type TravelGroup = "honeymoon" | "core_family" | "extended_family" | "friends";

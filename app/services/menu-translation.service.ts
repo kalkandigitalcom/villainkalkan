@@ -31,10 +31,10 @@ import type { MenuTranslationRow } from "@/lib/i18n/translations.types";
    bu servise HİÇ girmez — menü linki canonical kalır.
    =============================================================== */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 export type MenuTranslationInput = {
@@ -84,7 +84,7 @@ export async function upsertMenuTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir",
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
     };
   }
   const locale = input.locale;

@@ -24,7 +24,7 @@ import { getPublicHomeResolution } from "@/lib/i18n/public-home.server";
      • MOD A (multilingual KAPALI **veya** varsayılan = "tr"):
        bu dosya AYNEN eskisi gibi TR ana sayfayı render eder.
        Yönlendirme YOK, metadata AYNI → BYTE-IDENTICAL.
-     • MOD B (multilingual AÇIK **ve** varsayılan ∈ {"en","de"}):
+     • MOD B (multilingual AÇIK **ve** varsayılan = "en"):
        `/` saf bir yönlendirici olur → `/en` veya `/de`.
        TR ana sayfa `/tr`'ye taşınır (app/(public)/tr/page.tsx);
        logo/footer/bottom-nav/dil-değiştirici TR hedefleri de oraya

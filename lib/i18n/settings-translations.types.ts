@@ -21,18 +21,19 @@
 
 /** Bu tablodan yazılabilen/okunabilen diller. TR KASITLI OLARAK YOK —
  *  TR canonical değer `settings` satırının kendisidir (migration 083
- *  CHECK (locale IN ('en','de')) ile DB seviyesinde de zorlanır). */
-export type SettingsTranslationLocale = "en" | "de";
+ *  CHECK (locale IN ('en','de')) ile DB seviyesinde de zorlanır; Almanca
+ *  desteği kaldırıldığından uygulama yalnız 'en' yazar/okur). */
+export type SettingsTranslationLocale = "en";
 
 export const SETTINGS_TRANSLATION_LOCALES: readonly SettingsTranslationLocale[] =
-  ["en", "de"];
+  ["en"];
 
 /** Runtime type guard — güvenilmeyen (client'tan gelen) locale değeri
  *  için TEK doğrulama noktası. */
 export function isSettingsTranslationLocale(
   value: unknown
 ): value is SettingsTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 /* ---------------- ALAN WHITELIST'İ (TEK DOĞRULUK KAYNAĞI) ---------------- */

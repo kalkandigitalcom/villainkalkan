@@ -2,12 +2,12 @@
    🛡️ PHASE 12E — PUBLIC CMS SAYFASI STATİK UI ÇEVİRİ TESTLERİ
    ===============================================================
    Kapsam:
-     A) `cms` dictionary namespace bütünlüğü (TR/EN/DE)
+     A) `cms` dictionary namespace bütünlüğü (TR/EN)
      B) TR BYTE-IDENTITY — değerler Phase 12E öncesindeki hardcoded
         metinlerin BİREBİR kopyası
      C) SOURCE-LOCK — `CmsPageBody.tsx`'te kullanıcıya görünen
         hardcoded TR metin KALMADI (yalnız anahtar kelime regex'leri)
-     D) GERÇEK RENDER — /p, /en/p, /de/p breadcrumb + eyebrow +
+     D) GERÇEK RENDER — /p, /en/p breadcrumb + eyebrow +
         rozet + boş içerik metinleri DOĞRU dilde
 
    CMS'in ASIL içeriği (title/excerpt/body/seo_*) bu testin konusu
@@ -23,7 +23,6 @@ import path from "node:path";
 
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 
 /* ---------------- mock katmanı (locale-routes testiyle AYNI) ---------------- */
 
@@ -133,7 +132,6 @@ async function renderRoute(modulePath: string, slug = EDITORIAL_PAGE.slug) {
 const ROUTES = {
   tr: "@/app/p/[slug]/page",
   en: "@/app/(public)/en/p/[slug]/page",
-  de: "@/app/(public)/de/p/[slug]/page",
 } as const;
 
 /* ===============================================================
@@ -149,22 +147,20 @@ describe("Phase 12E — `cms` namespace bütünlüğü", () => {
     "badgePolicy",
     "fallbackTitle",
     "contentComingSoon",
-    /* 🛡️ Sayfa bulunamadığında `generateMetadata` başlığı (EN/DE açığı
+    /* 🛡️ Sayfa bulunamadığında `generateMetadata` başlığı (EN açığı
        kapatıldı; TR değeri eski hardcoded metinle BİREBİR). */
     "notFoundMetaTitle",
   ];
 
-  it("1) TR/EN/DE'de AYNI key seti", () => {
+  it("1) TR/EN'de AYNI key seti", () => {
     expect(Object.keys(tr.cms).sort()).toEqual([...KEYS].sort());
     expect(Object.keys(en.cms).sort()).toEqual([...KEYS].sort());
-    expect(Object.keys(de.cms).sort()).toEqual([...KEYS].sort());
   });
 
   it("2) hiçbir dilde boş değer yok", () => {
     for (const [name, d] of [
       ["tr", tr],
       ["en", en],
-      ["de", de],
     ] as const) {
       for (const [k, v] of Object.entries(d.cms)) {
         expect(typeof v, `${name}.${k}`).toBe("string");
@@ -179,17 +175,10 @@ describe("Phase 12E — `cms` namespace bütünlüğü", () => {
     }
   });
 
-  it("4) DE'de Türkçeye ÖZGÜ karakter yok (ö/ü Almancada geçerli)", () => {
-    for (const v of Object.values(de.cms)) {
-      expect(/[çÇğĞıİşŞ]/.test(v as string), v as string).toBe(false);
-    }
-  });
-
-  it("5) EN/DE değerleri TR'nin kopyası değil", () => {
+  it("5) EN değerleri TR'nin kopyası değil", () => {
     for (const k of KEYS) {
       const t = (tr.cms as Record<string, string>)[k];
       expect((en.cms as Record<string, string>)[k], k).not.toBe(t);
-      expect((de.cms as Record<string, string>)[k], k).not.toBe(t);
     }
   });
 
@@ -331,7 +320,6 @@ describe("Phase 12E — editorial hero (breadcrumb + eyebrow)", () => {
   const CASES = [
     ["tr", tr] as const,
     ["en", en] as const,
-    ["de", de] as const,
   ];
 
   it.each(CASES)("11) /%s → breadcrumb + eyebrow doğru dilde", async (loc, d) => {
@@ -348,12 +336,6 @@ describe("Phase 12E — editorial hero (breadcrumb + eyebrow)", () => {
     expect(screen.getByText("Content")).toBeTruthy();
   });
 
-  it("13) DE sayfada TR statik metinler YOK", async () => {
-    await renderRoute(ROUTES.de);
-    expect(screen.queryAllByText(tr.cms.breadcrumbHome)).toHaveLength(0);
-    expect(screen.getByText("Startseite")).toBeTruthy();
-    expect(screen.getByText("Inhalt")).toBeTruthy();
-  });
 });
 
 describe("Phase 12E — kurumsal/PageHero metinleri", () => {
@@ -366,7 +348,6 @@ describe("Phase 12E — kurumsal/PageHero metinleri", () => {
   const CASES = [
     ["tr", tr] as const,
     ["en", en] as const,
-    ["de", de] as const,
   ];
 
   it.each(CASES)(
@@ -436,7 +417,6 @@ describe("Phase 12E — boş içerik durumu", () => {
   const CASES = [
     ["tr", tr] as const,
     ["en", en] as const,
-    ["de", de] as const,
   ];
 
   it.each(CASES)("18) /%s → 'İçerik yakında.' doğru dilde", async (loc, d) => {

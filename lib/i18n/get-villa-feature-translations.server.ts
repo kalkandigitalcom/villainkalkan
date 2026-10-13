@@ -39,7 +39,7 @@ import type {
    döner, dolayısıyla çeviri okumak GEREKSİZ bir sorgu olur.
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en", "de"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
 
 /**
  * Verilen villa özelliği id'leri için `{ featureId: { en?, de? } }`

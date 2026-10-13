@@ -7,7 +7,7 @@
 export const MAX_BODY_BYTES = 16 * 1024;
 const DEDUPE_MS = 10 * 60 * 1000;
 const MAX_KEYS = 500;
-const LOCALES = new Set(["tr", "en", "de"]);
+const LOCALES = new Set(["tr", "en"]);
 const seen = new Map<string, number>();
 
 export type CspViolation = {

@@ -185,30 +185,19 @@ describe("Phase 12C — EN çeviri kaydı uçtan uca", () => {
     expect(singleMock).toHaveBeenCalled();
   });
 
-  it("DE çevirisi de aynı tabloya locale='de' ile yazılır", async () => {
+  it("DE artık desteklenmiyor — locale='de' reddedilir, page_translations'a YAZILMAZ", async () => {
     const { savePageTranslationAction } = await import(
       "@/app/(admin)/maki-admin/pages/[id]/page-translations.action"
     );
 
-    await savePageTranslationAction({
+    const result = await savePageTranslationAction({
       pageId: PAGE_ID,
       locale: "de",
       title: "Ein unvergesslicher Urlaub in Kaş",
     });
 
-    expect(fromMock).toHaveBeenCalledWith("page_translations");
-    expect(upsertMock).toHaveBeenCalledWith(
-      {
-        page_id: PAGE_ID,
-        locale: "de",
-        title: "Ein unvergesslicher Urlaub in Kaş",
-        excerpt: null,
-        body: null,
-        seo_title: null,
-        seo_description: null,
-      },
-      { onConflict: "page_id,locale" }
-    );
+    expect(result.ok).toBe(false);
+    expect(upsertMock).not.toHaveBeenCalled();
   });
 
   it("yetkisiz oturumda DB'ye HİÇ gidilmez", async () => {

@@ -14,10 +14,10 @@ import type { VillaTypeTranslationRow } from "@/lib/i18n/translations.types";
  * `findById` YOK, FK constraint hatası generic mesaja çevrilir).
  */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 export type TypeTranslationInput = {
@@ -62,7 +62,7 @@ export async function upsertTypeTranslation(
   if (!typeId) return { ok: false, error: "Geçersiz villa tipi" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
   }
   const locale = input.locale;
 

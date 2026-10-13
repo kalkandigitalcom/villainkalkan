@@ -110,7 +110,7 @@ describe("🛡️ TR REGRESYON", () => {
 });
 
 /* ---------------------------------------------------------------
-   ENUM ETİKETLERİ — EN / DE
+   ENUM ETİKETLERİ — EN
    --------------------------------------------------------------- */
 describe("enum etiketleri locale-aware", () => {
   it("EN bed type etiketleri", () => {
@@ -121,14 +121,6 @@ describe("enum etiketleri locale-aware", () => {
     expect(screen.getByText("Bunk Bed × 1")).toBeInTheDocument();
   });
 
-  it("DE bed type etiketleri", () => {
-    render(
-      <AccommodationLayout bedrooms={BEDROOMS} bathrooms={[]} locale="de" />
-    );
-    expect(screen.getByText("Doppelbett × 1")).toBeInTheDocument();
-    expect(screen.getByText("Etagenbett × 1")).toBeInTheDocument();
-  });
-
   it("EN bathroom type etiketleri", () => {
     render(
       <AccommodationLayout bedrooms={[]} bathrooms={BATHROOMS} locale="en" />
@@ -137,16 +129,8 @@ describe("enum etiketleri locale-aware", () => {
     expect(screen.getByText("Shower + WC")).toBeInTheDocument();
   });
 
-  it("DE bathroom type etiketleri", () => {
+  it("EN section başlığı ve fallback metinleri locale'e uyar", () => {
     render(
-      <AccommodationLayout bedrooms={[]} bathrooms={BATHROOMS} locale="de" />
-    );
-    expect(screen.getByText("Vollbad")).toBeInTheDocument();
-    expect(screen.getByText("Dusche + WC")).toBeInTheDocument();
-  });
-
-  it("EN/DE section başlığı ve fallback metinleri locale'e uyar", () => {
-    const { unmount } = render(
       <AccommodationLayout
         bedrooms={[{ name: "", beds: [] }]}
         bathrooms={[{ name: "", type: "wc" }]}
@@ -157,19 +141,6 @@ describe("enum etiketleri locale-aware", () => {
     expect(screen.getByText("Bedroom 1")).toBeInTheDocument();
     expect(screen.getByText("Bathroom 1")).toBeInTheDocument();
     expect(screen.getByText("No details provided")).toBeInTheDocument();
-    unmount();
-
-    render(
-      <AccommodationLayout
-        bedrooms={[{ name: "", beds: [] }]}
-        bathrooms={[{ name: "", type: "wc" }]}
-        locale="de"
-      />
-    );
-    expect(screen.getByText("Unterkunftsaufteilung")).toBeInTheDocument();
-    expect(screen.getByText("Schlafzimmer 1")).toBeInTheDocument();
-    expect(screen.getByText("Badezimmer 1")).toBeInTheDocument();
-    expect(screen.getByText("Keine Angaben")).toBeInTheDocument();
   });
 
   it("bilinmeyen enum CRASH ETMEZ, güvenli fallback verir", () => {
@@ -197,7 +168,7 @@ describe("enum etiketleri locale-aware", () => {
 /* ---------------------------------------------------------------
    🛡️ PHASE 10F — ODA/BANYO ADLARI ARTIK SÖZLÜKTEN
    ---------------------------------------------------------------
-   Villa bazlı EN/DE ad çevirisi KALDIRILDI (bedroomNames/bathroomNames
+   Villa bazlı EN ad çevirisi KALDIRILDI (bedroomNames/bathroomNames
    prop'ları yok). Adlar merkezi `roomNameLabels` sözlüğünden çözülür;
    sözlükte olmayan serbest adlar olduğu gibi kalır.
    --------------------------------------------------------------- */
@@ -211,49 +182,29 @@ describe("oda/banyo adları — sözlük çözümü", () => {
     expect(screen.queryByText("Ana Yatak Odası")).not.toBeInTheDocument();
   });
 
-  it("DE: canonical oda adları sözlükten çevrilir", () => {
-    render(
-      <AccommodationLayout bedrooms={BEDROOMS} bathrooms={[]} locale="de" />
-    );
-    expect(screen.getByText("Hauptschlafzimmer")).toBeInTheDocument();
-    expect(screen.getByText("Kinderzimmer")).toBeInTheDocument();
-  });
-
-  it("EN/DE: numaralı oda adı şablondan üretilir", () => {
+  it("EN: numaralı oda adı şablondan üretilir", () => {
     const numbered = [
       { name: "1. Yatak Odası", beds: [] },
       { name: "2. Yatak Odası", beds: [] },
     ];
-    const { unmount } = render(
+    render(
       <AccommodationLayout bedrooms={numbered} bathrooms={[]} locale="en" />
     );
     expect(screen.getByText("Bedroom 1")).toBeInTheDocument();
     expect(screen.getByText("Bedroom 2")).toBeInTheDocument();
-    unmount();
-
-    render(
-      <AccommodationLayout bedrooms={numbered} bathrooms={[]} locale="de" />
-    );
-    expect(screen.getByText("Schlafzimmer 1")).toBeInTheDocument();
   });
 
-  it("EN/DE: numaralı banyo adı şablondan üretilir", () => {
-    const { unmount } = render(
+  it("EN: numaralı banyo adı şablondan üretilir", () => {
+    render(
       <AccommodationLayout bedrooms={[]} bathrooms={BATHROOMS} locale="en" />
     );
     expect(screen.getByText("Bathroom 1")).toBeInTheDocument();
     expect(screen.getByText("Bathroom 2")).toBeInTheDocument();
-    unmount();
-
-    render(
-      <AccommodationLayout bedrooms={[]} bathrooms={BATHROOMS} locale="de" />
-    );
-    expect(screen.getByText("Badezimmer 1")).toBeInTheDocument();
   });
 
   it("🛡️ sözlükte OLMAYAN serbest ad her locale'de olduğu gibi kalır", () => {
     const custom = [{ name: "Deniz Manzaralı Süit", beds: [] }];
-    for (const locale of ["tr", "en", "de"] as const) {
+    for (const locale of ["tr", "en"] as const) {
       const { unmount } = render(
         <AccommodationLayout bedrooms={custom} bathrooms={[]} locale={locale} />
       );

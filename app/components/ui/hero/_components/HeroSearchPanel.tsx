@@ -15,7 +15,6 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { tr } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
-import { de as deLocale } from "date-fns/locale";
 /* 🛡️ PHASE 11 — panel metinleri ve takvim locale'i dile göre. Arama
    state'i, `buildHeroSearchParams` ve `router.push` hedefi DEĞİŞMEDİ. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
@@ -45,7 +44,6 @@ registerLocale("tr", tr);
 /* 🛡️ PHASE 11 — EN/DE takvim locale'leri de module-level kaydedilir;
    `registerLocale("tr", tr)` çağrısı DEĞİŞMEDİ. */
 registerLocale("en", enUS);
-registerLocale("de", deLocale);
 
 /* ===============================================================
    🛡️ FAZ 4 — HeroSearchPanel (CLIENT — STATEFUL)

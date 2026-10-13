@@ -1,5 +1,5 @@
 /* ===============================================================
-   🛡️ PHASE 10H — VİLLA TİPİ ADININ EN/DE LOCALE ÇÖZÜMÜ
+   🛡️ PHASE 10H — VİLLA TİPİ ADININ EN LOCALE ÇÖZÜMÜ
    ===============================================================
    Kapsam (kullanıcı talimatıyla sınırlı): villa tipi ADININ public
    tarafta locale-aware gösterilmesi — YALNIZ Header ve Footer.
@@ -29,7 +29,7 @@ import { resolveTaxonomyName } from "@/lib/i18n/taxonomy-name.helper";
 
 describe("resolveTaxonomyName — saf fallback mantığı", () => {
   const CANONICAL = "Balayı Villası";
-  const NAMES = { en: "Honeymoon Villa", de: "Flitterwochen-Villa" };
+  const NAMES = { en: "Honeymoon Villa" };
 
   it("1) TR → canonical TR adı (çeviri haritası DOLU olsa bile)", () => {
     expect(resolveTaxonomyName(CANONICAL, NAMES, "tr")).toBe(CANONICAL);
@@ -39,28 +39,18 @@ describe("resolveTaxonomyName — saf fallback mantığı", () => {
     expect(resolveTaxonomyName(CANONICAL, NAMES, "en")).toBe("Honeymoon Villa");
   });
 
-  it("3) DE → DE çevirisi", () => {
-    expect(resolveTaxonomyName(CANONICAL, NAMES, "de")).toBe(
-      "Flitterwochen-Villa"
-    );
-  });
-
   it("4) EN çevirisi YOKSA → TR fallback", () => {
-    expect(resolveTaxonomyName(CANONICAL, { de: "X" }, "en")).toBe(CANONICAL);
-  });
-
-  it("5) DE çevirisi YOKSA → TR fallback", () => {
-    expect(resolveTaxonomyName(CANONICAL, { en: "X" }, "de")).toBe(CANONICAL);
+    expect(resolveTaxonomyName(CANONICAL, {}, "en")).toBe(CANONICAL);
   });
 
   it("6) harita undefined/null → TR fallback (eski davranış)", () => {
     expect(resolveTaxonomyName(CANONICAL, undefined, "en")).toBe(CANONICAL);
-    expect(resolveTaxonomyName(CANONICAL, null, "de")).toBe(CANONICAL);
+    expect(resolveTaxonomyName(CANONICAL, null, "en")).toBe(CANONICAL);
   });
 
   it("7) boş / whitespace çeviri → TR fallback (resolveTranslatedField ile aynı ilke)", () => {
     expect(resolveTaxonomyName(CANONICAL, { en: "" }, "en")).toBe(CANONICAL);
-    expect(resolveTaxonomyName(CANONICAL, { de: "   " }, "de")).toBe(CANONICAL);
+    expect(resolveTaxonomyName(CANONICAL, { en: "   " }, "en")).toBe(CANONICAL);
   });
 });
 
@@ -84,11 +74,11 @@ describe("getVillaTypeNamesByLocale — batch okuma", () => {
     findManyForLocaleMock.mockResolvedValue({ data: [], error: null });
   });
 
-  it("8) locale başına TAM 1 sorgu (en + de), kayıt başına sorgu YOK", async () => {
+  it("8) locale başına TAM 1 sorgu (yalnız en — DE kaldırıldı), kayıt başına sorgu YOK", async () => {
     await getVillaTypeNamesByLocale(["t1", "t2", "t3"]);
-    expect(findManyForLocaleMock).toHaveBeenCalledTimes(2);
+    expect(findManyForLocaleMock).toHaveBeenCalledTimes(1);
     const locales = findManyForLocaleMock.mock.calls.map((c) => c[2]).sort();
-    expect(locales).toEqual(["de", "en"]);
+    expect(locales).toEqual(["en"]);
     for (const call of findManyForLocaleMock.mock.calls) {
       expect(call[0]).toBe("villa_type");
       expect(call[1]).toEqual(["t1", "t2", "t3"]);
@@ -106,7 +96,7 @@ describe("getVillaTypeNamesByLocale — batch okuma", () => {
     expect(findManyForLocaleMock.mock.calls[0][1]).toEqual(["t1", "t2"]);
   });
 
-  it("11) satırlar type_id → {en, de} haritasına dönüşür", async () => {
+  it("11) satırlar type_id → {en} haritasına dönüşür (de anahtarı YOK)", async () => {
     findManyForLocaleMock.mockImplementation(
       (_e: string, _ids: string[], locale: string) =>
         Promise.resolve({
@@ -114,26 +104,26 @@ describe("getVillaTypeNamesByLocale — batch okuma", () => {
             {
               type_id: "t1",
               locale,
-              name: locale === "en" ? "Luxury Villa" : "Luxusvilla",
+              name: "Luxury Villa",
             },
           ],
           error: null,
         })
     );
     const out = await getVillaTypeNamesByLocale(["t1"]);
-    expect(out).toEqual({ t1: { en: "Luxury Villa", de: "Luxusvilla" } });
+    expect(out).toEqual({ t1: { en: "Luxury Villa" } });
   });
 
   it("12) boş/whitespace çeviri haritaya GİRMEZ (→ tüketicide TR fallback)", async () => {
     findManyForLocaleMock.mockImplementation(
       (_e: string, _ids: string[], locale: string) =>
         Promise.resolve({
-          data: [{ type_id: "t1", locale, name: locale === "en" ? "   " : "Luxusvilla" }],
+          data: [{ type_id: "t1", locale, name: "   " }],
           error: null,
         })
     );
     const out = await getVillaTypeNamesByLocale(["t1"]);
-    expect(out).toEqual({ t1: { de: "Luxusvilla" } });
+    expect(out).toEqual({});
   });
 
   it("13) DB hatası → boş harita (çökmez, TR fallback korunur)", async () => {
@@ -219,7 +209,7 @@ const TYPE_ITEM = {
   id: "type-1",
   name: "Lüks Villa",
   slug: "luks-villa",
-  nameByLocale: { en: "Luxury Villa", de: "Luxusvilla" },
+  nameByLocale: { en: "Luxury Villa" },
 };
 
 describe("Footer — villa tipi adı locale-aware", () => {
@@ -241,10 +231,11 @@ describe("Footer — villa tipi adı locale-aware", () => {
     expect(screen.queryByText("Lüks Villa")).not.toBeInTheDocument();
   });
 
-  it("16) DE path → DE adı", () => {
+  it("16) '/de' path (DE desteği kaldırıldı) → TR'ye düşer, canonical TR adı", () => {
     usePathnameMock.mockReturnValue("/de/kiralik-villa/test");
     render(<Footer {...FOOTER_BASE} villaTypes={[TYPE_ITEM]} />);
-    expect(screen.getByText("Luxusvilla")).toBeInTheDocument();
+    expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
+    expect(screen.queryByText("Luxury Villa")).not.toBeInTheDocument();
   });
 
   it("17) EN çevirisi YOKSA → TR fallback", () => {
@@ -252,14 +243,14 @@ describe("Footer — villa tipi adı locale-aware", () => {
     render(
       <Footer
         {...FOOTER_BASE}
-        villaTypes={[{ ...TYPE_ITEM, nameByLocale: { de: "Luxusvilla" } }]}
+        villaTypes={[{ ...TYPE_ITEM, nameByLocale: {} }]}
       />
     );
     expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
   });
 
   it("18) nameByLocale HİÇ YOKSA (eski caller) → TR adı, çökme yok", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villa/test");
+    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
     render(
       <Footer
         {...FOOTER_BASE}
@@ -271,7 +262,7 @@ describe("Footer — villa tipi adı locale-aware", () => {
 
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — TOKEN (`luks-villa`) ve query
      parametresi (`villa-turleri`) canonical KALIR; link yalnız aktif
-     locale prefix'ini alır. Eski "prefix'siz" beklentisi EN/DE'de
+     locale prefix'ini alır. Eski "prefix'siz" beklentisi EN'de
      locale kaybına yol açıyordu. */
   it("19) 🛡️ SLUG/TOKEN DEĞİŞMEDİ — EN'de canonical token + '/en' prefix", () => {
     usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
@@ -300,7 +291,7 @@ describe("FooterWrapper — multilingual gate + prop-passing", () => {
             {
               type_id: "type-1",
               locale,
-              name: locale === "en" ? "Luxury Villa" : "Luxusvilla",
+              name: "Luxury Villa",
             },
           ],
           error: null,
@@ -380,15 +371,16 @@ describe("Header — kategori menü adı locale-aware", () => {
     expect(screen.queryByText("Lüks Villa")).not.toBeInTheDocument();
   });
 
-  it("26) DE path → DE adı", () => {
+  it("26) '/de' path (DE desteği kaldırıldı) → TR'ye düşer, canonical TR adı", () => {
     usePathnameMock.mockReturnValue("/de/kiralik-villa/test");
     render(
       <Header
-        menu={[{ ...CATEGORY_MENU_ITEM, nameByLocale: { de: "Luxusvilla" } }]}
+        menu={[{ ...CATEGORY_MENU_ITEM, nameByLocale: { en: "Luxury Villa" } }]}
         siteLogo={null}
       />
     );
-    expect(screen.getAllByText("Luxusvilla").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lüks Villa").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Luxury Villa")).not.toBeInTheDocument();
   });
 
   it("27) çeviri yoksa TR fallback; nameByLocale olmayan öğeler etkilenmez", () => {
@@ -396,7 +388,7 @@ describe("Header — kategori menü adı locale-aware", () => {
     render(
       <Header
         menu={[
-          { ...CATEGORY_MENU_ITEM, nameByLocale: { de: "Luxusvilla" } },
+          { ...CATEGORY_MENU_ITEM, nameByLocale: {} },
           { id: "m2", name: "Hakkımızda", href: "/p/hakkimizda" },
         ]}
         siteLogo={null}
@@ -431,7 +423,7 @@ describe("Header — kategori menü adı locale-aware", () => {
 
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — TOKEN (`luks-villa`) ve query
      parametresi (`villa-turleri`) canonical KALIR; link yalnız aktif
-     locale prefix'ini alır. Eski "prefix'siz" beklentisi EN/DE'de
+     locale prefix'ini alır. Eski "prefix'siz" beklentisi EN'de
      locale kaybına yol açıyordu. */
   it("29) 🛡️ SLUG/TOKEN DEĞİŞMEDİ — EN'de canonical token + '/en' prefix", () => {
     usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
@@ -466,7 +458,7 @@ describe("HeaderWrapper — multilingual gate + ağaç birleştirme", () => {
             {
               type_id: "type-1",
               locale,
-              name: locale === "en" ? "Luxury Villa" : "Luxusvilla",
+              name: "Luxury Villa",
             },
           ],
           error: null,
@@ -510,11 +502,11 @@ describe("HeaderWrapper — multilingual gate + ağaç birleştirme", () => {
     const typeCalls = findManyForLocaleMock.mock.calls.filter(
       (call) => call[0] === "villa_type"
     );
-    expect(typeCalls).toHaveLength(2);
+    expect(typeCalls).toHaveLength(1);
     const menuCalls = findManyForLocaleMock.mock.calls.filter(
       (call) => call[0] === "menu"
     );
-    expect(menuCalls).toHaveLength(2);
+    expect(menuCalls).toHaveLength(1);
   });
 
   it("33) menüde kategori öğesi yoksa VİLLA TİPİ çeviri sorgusu atılmaz", async () => {

@@ -71,17 +71,6 @@ const EN_ROW = {
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
-const DE_ROW = {
-  ...EN_ROW,
-  id: "t-de",
-  locale: "de",
-  title: "Ein unvergesslicher Urlaub in Kaş",
-  excerpt: "DE Auszug",
-  body: "DE Inhalt",
-  seo_title: "DE SEO Titel",
-  seo_description: "DE SEO Beschreibung",
-};
-
 beforeEach(() => {
   vi.clearAllMocks();
   getTranslationMock.mockResolvedValue(null);
@@ -135,7 +124,7 @@ describe("resolvePageContent — TR", () => {
   });
 });
 
-describe("resolvePageContent — EN / DE", () => {
+describe("resolvePageContent — EN", () => {
   it("5) EN: doğru entity/parent/locale ile okunur ve EN değerler döner", async () => {
     getTranslationMock.mockResolvedValue(EN_ROW);
     const r = await resolvePageContent(TR_PAGE, "en");
@@ -153,14 +142,6 @@ describe("resolvePageContent — EN / DE", () => {
     });
   });
 
-  it("6) DE: locale='de' ile okunur ve DE değerler döner", async () => {
-    getTranslationMock.mockResolvedValue(DE_ROW);
-    const r = await resolvePageContent(TR_PAGE, "de");
-    expect(getTranslationMock).toHaveBeenCalledWith("page", PAGE_ID, "de");
-    expect(r.title).toBe(DE_ROW.title);
-    expect(r.body).toBe(DE_ROW.body);
-  });
-
   it("7) EN çeviri satırı YOKSA tüm alanlar TR'ye fallback", async () => {
     getTranslationMock.mockResolvedValue(null);
     const r = await resolvePageContent(TR_PAGE, "en");
@@ -176,9 +157,9 @@ describe("resolvePageContent — EN / DE", () => {
     });
   });
 
-  it("8) DE çeviri satırı YOKSA tüm alanlar TR'ye fallback", async () => {
-    getTranslationMock.mockResolvedValue(null);
-    const r = await resolvePageContent(TR_PAGE, "de");
+  it("8) DE artık desteklenmiyor → TR kısayolu (sorgu yok)", async () => {
+    const r = await resolvePageContent(TR_PAGE, "de" as unknown as "en");
+    expect(getTranslationMock).not.toHaveBeenCalled();
     expect(r.title).toBe(TR_PAGE.title);
     expect(r.body).toBe(TR_PAGE.body);
   });
@@ -243,7 +224,7 @@ describe("buildCmsPageMetadata — TR (mevcut davranış korunuyor)", () => {
 
   /* 🛡️ "Sayfa bulunamadı" başlığı ARTIK dictionary'den
      (`cms.notFoundMetaTitle`) — TR değeri eski hardcoded metinle
-     BİREBİR, EN/DE kendi karşılığını döner. `noindex` DEĞİŞMEDİ. */
+     BİREBİR, EN kendi karşılığını döner. `noindex` DEĞİŞMEDİ. */
   it("14) sayfa yoksa locale'e uygun 'bulunamadı' başlığı + noindex", async () => {
     getPageBySlugMock.mockResolvedValue(null);
 
@@ -255,10 +236,6 @@ describe("buildCmsPageMetadata — TR (mevcut davranış korunuyor)", () => {
     expect(en.title).toBe(getDictionary("en").cms.notFoundMetaTitle);
     expect(en.title).not.toBe("Sayfa bulunamadı");
     expect(en.robots).toEqual({ index: false, follow: false });
-
-    const de = await buildCmsPageMetadata(SLUG, "de");
-    expect(de.title).toBe(getDictionary("de").cms.notFoundMetaTitle);
-    expect(de.robots).toEqual({ index: false, follow: false });
   });
 
   it("15) page.noindex her locale'de uygulanır", async () => {
@@ -269,7 +246,7 @@ describe("buildCmsPageMetadata — TR (mevcut davranış korunuyor)", () => {
   });
 });
 
-describe("buildCmsPageMetadata — EN / DE", () => {
+describe("buildCmsPageMetadata — EN", () => {
   it("16) EN: SEO başlık/açıklama çeviriden gelir, canonical '/en/p/{slug}'", async () => {
     getTranslationMock.mockResolvedValue(EN_ROW);
     const md = await buildCmsPageMetadata(SLUG, "en");
@@ -277,14 +254,6 @@ describe("buildCmsPageMetadata — EN / DE", () => {
     expect(md.description).toBe(EN_ROW.seo_description);
     expect(md.alternates).toEqual({ canonical: `/en/p/${SLUG}` });
     expect(md.openGraph).toMatchObject({ url: `/en/p/${SLUG}` });
-  });
-
-  it("17) DE: SEO başlık/açıklama çeviriden gelir, canonical '/de/p/{slug}'", async () => {
-    getTranslationMock.mockResolvedValue(DE_ROW);
-    const md = await buildCmsPageMetadata(SLUG, "de");
-    expect(md.title).toBe(DE_ROW.seo_title);
-    expect(md.description).toBe(DE_ROW.seo_description);
-    expect(md.alternates).toEqual({ canonical: `/de/p/${SLUG}` });
   });
 
   it("18) EN çevirisi yoksa SEO TR'ye düşer ama URL /en/p/… kalır", async () => {
@@ -295,7 +264,7 @@ describe("buildCmsPageMetadata — EN / DE", () => {
     expect(md.alternates).toEqual({ canonical: `/en/p/${SLUG}` });
   });
 
-  it("19) multilingual AÇIK → hreflang seti eklenir (3 locale + x-default)", async () => {
+  it("19) multilingual AÇIK → hreflang seti eklenir (2 locale + x-default, DE YOK)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
     getTranslationMock.mockResolvedValue(EN_ROW);
     const md = await buildCmsPageMetadata(SLUG, "en");
@@ -304,16 +273,15 @@ describe("buildCmsPageMetadata — EN / DE", () => {
       languages: {
         tr: `/p/${SLUG}`,
         en: `/en/p/${SLUG}`,
-        de: `/de/p/${SLUG}`,
         "x-default": `/p/${SLUG}`,
       },
     });
   });
 
-  it("20) slug ÇEVRİLMEZ — üç locale de aynı slug'ı taşır", async () => {
+  it("20) slug ÇEVRİLMEZ — tüm locale'ler aynı slug'ı taşır", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
     getTranslationMock.mockResolvedValue(EN_ROW);
-    const md = await buildCmsPageMetadata(SLUG, "de");
+    const md = await buildCmsPageMetadata(SLUG, "en");
     const langs = (md.alternates as { languages: Record<string, string> })
       .languages;
     for (const url of Object.values(langs)) {

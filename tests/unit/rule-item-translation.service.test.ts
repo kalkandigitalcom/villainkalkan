@@ -57,7 +57,7 @@ describe("upsertRuleTranslation", () => {
     );
   });
 
-  it("DE upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("locale 'de' reddedilir (DE desteği kaldırıldı) — repository çağrılmaz", async () => {
     const { upsertRuleTranslation } = await import(
       "@/app/services/rule-item-translation.service"
     );
@@ -68,13 +68,11 @@ describe("upsertRuleTranslation", () => {
       title: "Test Regel",
     });
 
-    expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith(
-      "rule_item",
-      "rule-uuid-1",
-      "de",
-      { title: "Test Regel" }
-    );
+    expect(result).toEqual({
+      ok: false,
+      error: "Geçersiz dil — yalnız 'en' desteklenir",
+    });
+    expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
   it("mevcut EN çeviriyi günceller", async () => {
@@ -170,7 +168,7 @@ describe("upsertRuleTranslation", () => {
 });
 
 describe("getRuleTranslations", () => {
-  it("yalnız en/de satırlarını döner (tr varsa filtrelenir)", async () => {
+  it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
         { ...VALID_ROW, locale: "tr" },
@@ -188,7 +186,7 @@ describe("getRuleTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["de", "en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
     }
   });
 

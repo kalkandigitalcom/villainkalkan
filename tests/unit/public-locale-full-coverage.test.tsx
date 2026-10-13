@@ -2,10 +2,10 @@
    🛡️ PUBLIC ÇOKLU DİL — TAM KAPSAM (blog + token sayfaları)
    ===============================================================
    Kapsam:
-     • `/en|de/blog`, `/en|de/blog/[slug]`, `/en|de/liste/[token]`,
-       `/en|de/v/[token]` route dosyalarının VARLIĞI + locale gate
+     • `/en/blog`, `/en/blog/[slug]`, `/en/liste/[token]`,
+       `/en/v/[token]` route dosyalarının VARLIĞI + locale gate
      • `blog`, `sharedList`, `privateVilla` dictionary namespace'lerinin
-       TR/EN/DE bütünlüğü ve TR byte-identity
+       TR/EN bütünlüğü ve TR byte-identity
      • `blog_post` translation entity'sinin registry'de olması
      • locale-switch allowlist: blog/liste/v için slug/token korunur
      • Source-lock: yeni gövdelerde hardcoded TR kullanıcı metni YOK
@@ -23,49 +23,40 @@ import type { Locale } from "@/lib/i18n/config";
 import { TRANSLATION_ENTITY_CONFIG } from "@/lib/i18n/translations.types";
 import { getLocaleSwitchTargets } from "@/lib/i18n/locale-switch.helper";
 
-const LOCALES: Locale[] = ["tr", "en", "de"];
+const LOCALES: Locale[] = ["tr", "en"];
 
 /* ===============================================================
-   1) ROUTE DOSYALARI — her public route'un TR/EN/DE karşılığı
+   1) ROUTE DOSYALARI — her public route'un TR/EN karşılığı
+   (DE desteği kaldırıldı → `/de` route ağacı YOK)
    =============================================================== */
 
-const ROUTE_TRIPLETS: Array<[string, string, string]> = [
-  ["app/(public)/blog/page.tsx", "app/(public)/en/blog/page.tsx", "app/(public)/de/blog/page.tsx"],
-  [
-    "app/(public)/blog/[slug]/page.tsx",
-    "app/(public)/en/blog/[slug]/page.tsx",
-    "app/(public)/de/blog/[slug]/page.tsx",
-  ],
-  [
-    "app/(public)/liste/[token]/page.tsx",
-    "app/(public)/en/liste/[token]/page.tsx",
-    "app/(public)/de/liste/[token]/page.tsx",
-  ],
-  [
-    "app/(public)/v/[token]/page.tsx",
-    "app/(public)/en/v/[token]/page.tsx",
-    "app/(public)/de/v/[token]/page.tsx",
-  ],
+const ROUTE_PAIRS: Array<[string, string]> = [
+  ["app/(public)/blog/page.tsx", "app/(public)/en/blog/page.tsx"],
+  ["app/(public)/blog/[slug]/page.tsx", "app/(public)/en/blog/[slug]/page.tsx"],
+  ["app/(public)/liste/[token]/page.tsx", "app/(public)/en/liste/[token]/page.tsx"],
+  ["app/(public)/v/[token]/page.tsx", "app/(public)/en/v/[token]/page.tsx"],
 ];
 
-describe("1) blog + token sayfalarının TR/EN/DE route dosyaları var", () => {
-  it.each(ROUTE_TRIPLETS)("%s ↔ EN ↔ DE", (tr, en, de) => {
-    for (const p of [tr, en, de]) {
+describe("1) blog + token sayfalarının TR/EN route dosyaları var", () => {
+  it.each(ROUTE_PAIRS)("%s ↔ EN", (tr, en) => {
+    for (const p of [tr, en]) {
       expect(existsSync(resolve(process.cwd(), p)), p).toBe(true);
     }
   });
 
-  it("EN/DE route'ları locale gate + setRequestLocale çağırıyor", () => {
-    for (const [, en, de] of ROUTE_TRIPLETS) {
-      for (const p of [en, de]) {
-        const src = readFileSync(resolve(process.cwd(), p), "utf8");
-        expect(src, p).toContain("requirePublicLocaleEnabled");
-        expect(src, p).toContain("setRequestLocale");
-      }
+  it("DE route ağacı YOK (DE desteği kaldırıldı)", () => {
+    expect(existsSync(resolve(process.cwd(), "app/(public)/de"))).toBe(false);
+  });
+
+  it("EN route'ları locale gate + setRequestLocale çağırıyor", () => {
+    for (const [, en] of ROUTE_PAIRS) {
+      const src = readFileSync(resolve(process.cwd(), en), "utf8");
+      expect(src, en).toContain("requirePublicLocaleEnabled");
+      expect(src, en).toContain("setRequestLocale");
     }
   });
 
-  it("EN/DE route'ları TR ile AYNI gövdeyi kullanıyor (kopya JSX yok)", () => {
+  it("EN route'ları TR ile AYNI gövdeyi kullanıyor (kopya JSX yok)", () => {
     const bodies: Record<string, string> = {
       "blog/page.tsx": "BlogIndexPageBody",
       "blog/[slug]/page.tsx": "BlogDetailPageBody",
@@ -73,7 +64,7 @@ describe("1) blog + token sayfalarının TR/EN/DE route dosyaları var", () => {
       "v/[token]/page.tsx": "PrivateVillaPageBody",
     };
     for (const [key, body] of Object.entries(bodies)) {
-      for (const prefix of ["app/(public)/", "app/(public)/en/", "app/(public)/de/"]) {
+      for (const prefix of ["app/(public)/", "app/(public)/en/"]) {
         const src = readFileSync(resolve(process.cwd(), prefix + key), "utf8");
         expect(src, prefix + key).toContain(body);
       }
@@ -82,7 +73,7 @@ describe("1) blog + token sayfalarının TR/EN/DE route dosyaları var", () => {
 });
 
 /* ===============================================================
-   2) DICTIONARY — TR/EN/DE bütünlüğü
+   2) DICTIONARY — TR/EN bütünlüğü
    =============================================================== */
 
 function leafPaths(obj: unknown, prefix = ""): string[] {
@@ -94,13 +85,11 @@ function leafPaths(obj: unknown, prefix = ""): string[] {
 
 const NEW_NAMESPACES = ["blog", "sharedList", "privateVilla"] as const;
 
-describe("2) yeni dictionary namespace'leri üç dilde eksiksiz", () => {
-  it.each(NEW_NAMESPACES)("%s — TR/EN/DE key ağacı birebir aynı", (ns) => {
+describe("2) yeni dictionary namespace'leri iki dilde eksiksiz", () => {
+  it.each(NEW_NAMESPACES)("%s — TR/EN key ağacı birebir aynı", (ns) => {
     const trPaths = leafPaths(getDictionary("tr")[ns]).sort();
     const enPaths = leafPaths(getDictionary("en")[ns]).sort();
-    const dePaths = leafPaths(getDictionary("de")[ns]).sort();
     expect(enPaths).toEqual(trPaths);
-    expect(dePaths).toEqual(trPaths);
     expect(trPaths.length).toBeGreaterThan(0);
   });
 
@@ -116,17 +105,14 @@ describe("2) yeni dictionary namespace'leri üç dilde eksiksiz", () => {
     }
   });
 
-  it.each(NEW_NAMESPACES)("%s — EN ve DE değerleri TR'den FARKLI", (ns) => {
+  it.each(NEW_NAMESPACES)("%s — EN değerleri TR'den FARKLI", (ns) => {
     const tr = getDictionary("tr")[ns] as Record<string, string>;
     const en = getDictionary("en")[ns] as Record<string, string>;
-    const de = getDictionary("de")[ns] as Record<string, string>;
     /* "Blog" gibi dile bağımsız kelimeler aynı kalabilir; en az yarısı
        farklı olmalı — gerçekten çevrilmiş olduğunun kanıtı. */
     const keys = Object.keys(tr);
     const enDiff = keys.filter((k) => en[k] !== tr[k]).length;
-    const deDiff = keys.filter((k) => de[k] !== tr[k]).length;
     expect(enDiff / keys.length).toBeGreaterThan(0.5);
-    expect(deDiff / keys.length).toBeGreaterThan(0.5);
   });
 });
 
@@ -249,29 +235,18 @@ describe("4) blog_post translation entity", () => {
 
 describe("5) locale switcher blog + token sayfalarında segmenti korur", () => {
   it.each([
-    ["/blog", "/blog", "/en/blog", "/de/blog"],
-    [
-      "/blog/kas-rehberi",
-      "/blog/kas-rehberi",
-      "/en/blog/kas-rehberi",
-      "/de/blog/kas-rehberi",
-    ],
-    [
-      "/en/liste/AbC-123_x",
-      "/liste/AbC-123_x",
-      "/en/liste/AbC-123_x",
-      "/de/liste/AbC-123_x",
-    ],
-    ["/de/v/tok_9Z", "/v/tok_9Z", "/en/v/tok_9Z", "/de/v/tok_9Z"],
-  ])("%s", (path, tr, en, de) => {
-    expect(getLocaleSwitchTargets(path)).toEqual({ tr, en, de });
+    ["/blog", "/blog", "/en/blog"],
+    ["/blog/kas-rehberi", "/blog/kas-rehberi", "/en/blog/kas-rehberi"],
+    ["/en/liste/AbC-123_x", "/liste/AbC-123_x", "/en/liste/AbC-123_x"],
+    ["/en/v/tok_9Z", "/v/tok_9Z", "/en/v/tok_9Z"],
+  ])("%s", (path, tr, en) => {
+    expect(getLocaleSwitchTargets(path)).toEqual({ tr, en });
   });
 
   it("query string AYNEN korunur", () => {
     expect(getLocaleSwitchTargets("/v/tok_9Z", "start=2026-06-04&end=2026-06-11")).toEqual({
       tr: "/v/tok_9Z?start=2026-06-04&end=2026-06-11",
       en: "/en/v/tok_9Z?start=2026-06-04&end=2026-06-11",
-      de: "/de/v/tok_9Z?start=2026-06-04&end=2026-06-11",
     });
   });
 });

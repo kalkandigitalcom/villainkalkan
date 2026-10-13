@@ -1,12 +1,12 @@
 /* ===============================================================
-   🛡️ REZERVASYON ÇOKLU DİL (TR/EN/DE) — ROUTE + GÖVDE + FORM
+   🛡️ REZERVASYON ÇOKLU DİL (TR/EN) — ROUTE + GÖVDE + FORM
    ===============================================================
    Kapsam:
-     • `reservation` dictionary namespace bütünlüğü (TR/EN/DE)
+     • `reservation` dictionary namespace bütünlüğü (TR/EN)
      • `ReservationPageBody` — locale prop → PageHero metinleri,
        breadcrumb href'leri, ReservationForm'a locale geçişi
      • `ReservationSuccessBody` — locale prop → metinler + linkler
-     • `ReservationForm` — TR parity + EN/DE render
+     • `ReservationForm` — TR parity + EN render
      • Sunucu hata metni sızıntı guard'ı (409 istisnası dahil)
      • Locale-aware success redirect (`router.push`)
      • Locale switch hedefleri (/rezervasyon/*)
@@ -84,7 +84,7 @@ import ReservationPageBody from "@/app/components/reservation/ReservationPageBod
 import ReservationSuccessBody from "@/app/components/reservation/ReservationSuccessBody";
 import PageHero from "@/app/components/ui/PageHero";
 
-const LOCALES: Locale[] = ["tr", "en", "de"];
+const LOCALES: Locale[] = ["tr", "en"];
 
 const VILLA = {
   id: "villa-1",
@@ -183,13 +183,11 @@ function leafValues(obj: unknown): string[] {
   return Object.values(obj as Record<string, unknown>).flatMap(leafValues);
 }
 
-describe("reservation dictionary — TR/EN/DE bütünlüğü", () => {
-  it("1) TR/EN/DE anahtar ağaçları BİREBİR aynı", () => {
+describe("reservation dictionary — TR/EN bütünlüğü", () => {
+  it("1) TR/EN anahtar ağaçları BİREBİR aynı", () => {
     const tr = leafPaths(getDictionary("tr").reservation).sort();
     const en = leafPaths(getDictionary("en").reservation).sort();
-    const de = leafPaths(getDictionary("de").reservation).sort();
     expect(en).toEqual(tr);
-    expect(de).toEqual(tr);
   });
 
   it.each(LOCALES)("2) %s — hiçbir değer boş/whitespace değil", (locale) => {
@@ -216,13 +214,11 @@ describe("reservation dictionary — TR/EN/DE bütünlüğü", () => {
     }
   });
 
-  it("5) EN ve DE değerleri TR ile aynı DEĞİL (gerçekten çevrilmiş)", () => {
+  it("5) EN değerleri TR ile aynı DEĞİL (gerçekten çevrilmiş)", () => {
     const tr = leafValues(getDictionary("tr").reservation);
     const en = leafValues(getDictionary("en").reservation);
-    const de = leafValues(getDictionary("de").reservation);
     /* Metin sayısı aynı; birebir aynı kalan metin oranı düşük olmalı. */
     expect(en.length).toBe(tr.length);
-    expect(de.length).toBe(tr.length);
     /* 🛡️ ÇEVRİLEBİLİR metinler karşılaştırılır. Harf İÇERMEYEN
        değerler (ör. telefon örneği "532 123 45 67") hiçbir dilde
        farklılaşamaz; bunları "çevrilmemiş" saymak yanlış pozitif
@@ -233,11 +229,7 @@ describe("reservation dictionary — TR/EN/DE bütünlüğü", () => {
     const sameEn = en.filter(
       (v, i) => v === tr[i] && translatable(v, i)
     ).length;
-    const sameDe = de.filter(
-      (v, i) => v === tr[i] && translatable(v, i)
-    ).length;
     expect(sameEn).toBeLessThan(3);
-    expect(sameDe).toBeLessThan(3);
   });
 
   it("6) TR değerleri ESKİ hardcoded metinlerle BİREBİR", () => {
@@ -345,7 +337,6 @@ describe("ReservationPageBody — locale-aware gövde", () => {
 
   it.each([
     ["en", "/en", "/en/kiralik-villalar"],
-    ["de", "/de", "/de/kiralik-villalar"],
   ] as const)("12) %s breadcrumb href'leri locale-prefixli", async (locale, home, villas) => {
     const el = await renderBody(locale);
     const hero = childrenOf(el).find((c) => c?.type === PageHero);
@@ -403,7 +394,7 @@ describe("ReservationPageBody — locale-aware gövde", () => {
   });
 
   it("15) 🔒 4 servis AYNI sırada/imzayla çağrılır (DB akışı değişmedi)", async () => {
-    await renderBody("de");
+    await renderBody("en");
     expect(getVillaBySlugMock).toHaveBeenCalledWith("test-villa");
     expect(getVillaPricesMock).toHaveBeenCalledWith("villa-1");
     expect(getVillaDiscountsMock).toHaveBeenCalledWith("villa-1");
@@ -525,7 +516,6 @@ describe("ReservationSuccessBody — locale-aware başarı sayfası", () => {
 
   it.each([
     ["en", "/en", "/en/kiralik-villa/test-villa"],
-    ["de", "/de", "/de/kiralik-villa/test-villa"],
   ] as const)("24) %s — CTA href'leri locale-prefixli", async (locale, home, villa) => {
     await renderSuccess(locale, { villa: "test-villa" });
     const d = getDictionary(locale).reservation.success;
@@ -540,9 +530,9 @@ describe("ReservationSuccessBody — locale-aware başarı sayfası", () => {
   });
 
   it("25) villa query yoksa 'Villa Detayına Dön' render EDİLMEZ", async () => {
-    await renderSuccess("de");
+    await renderSuccess("en");
     expect(
-      screen.queryByText(getDictionary("de").reservation.success.villaCta)
+      screen.queryByText(getDictionary("en").reservation.success.villaCta)
     ).toBeNull();
   });
 
@@ -666,10 +656,10 @@ describe("ReservationForm — TR parity (regresyon)", () => {
 });
 
 /* ===============================================================
-   5) RESERVATION FORM — EN/DE
+   5) RESERVATION FORM — EN
    =============================================================== */
 
-describe.each(["en", "de"] as const)("ReservationForm — %s", (locale) => {
+describe.each(["en"] as const)("ReservationForm — %s", (locale) => {
   const d = getDictionary(locale).reservation;
   const b = getDictionary(locale).booking;
 
@@ -1061,8 +1051,8 @@ describe("ReservationForm — sunucu hata metni SIZMAZ", () => {
 
   it("49) hata banner'ı kapatma aria-label'ı locale-aware", async () => {
     mockReservationPost(500, { ok: false, error: "boom" });
-    await fillAndSubmit("de");
-    const d = getDictionary("de").reservation.form;
+    await fillAndSubmit("en");
+    const d = getDictionary("en").reservation.form;
     await waitFor(() =>
       expect(
         screen.getByLabelText(d.errorDismissAriaLabel)
@@ -1087,7 +1077,6 @@ describe("ReservationForm — locale-aware success redirect", () => {
   it.each([
     ["tr", "/rezervasyon/basarili"],
     ["en", "/en/rezervasyon/basarili"],
-    ["de", "/de/rezervasyon/basarili"],
   ] as const)("51) %s → %s", async (locale, base) => {
     mockReservationPost(200, {
       ok: true,
@@ -1116,10 +1105,10 @@ describe("ReservationForm — locale-aware success redirect", () => {
 
   it("53) ref yoksa yalnız villa param'ı kalır", async () => {
     mockReservationPost(200, { ok: true, reservation: {} });
-    await fillAndSubmit("de");
+    await fillAndSubmit("en");
     await waitFor(() => expect(pushMock).toHaveBeenCalledTimes(1));
     expect(pushMock.mock.calls[0][0]).toBe(
-      "/de/rezervasyon/basarili?villa=test-villa"
+      "/en/rezervasyon/basarili?villa=test-villa"
     );
   });
 });
@@ -1129,18 +1118,19 @@ describe("ReservationForm — locale-aware success redirect", () => {
    =============================================================== */
 
 describe("locale switch — /rezervasyon/*", () => {
-  it("54) /rezervasyon/<slug> → EN/DE prefixli hedefler", () => {
+  it("54) /rezervasyon/<slug> → EN prefixli hedef (DE hedefi YOK)", () => {
     const t = getLocaleSwitchTargets("/rezervasyon/test-villa");
-    expect(t.tr).toBe("/rezervasyon/test-villa");
-    expect(t.en).toBe("/en/rezervasyon/test-villa");
-    expect(t.de).toBe("/de/rezervasyon/test-villa");
+    expect(t).toEqual({
+      tr: "/rezervasyon/test-villa",
+      en: "/en/rezervasyon/test-villa",
+    });
   });
 
   it("55) query string AYNEN korunur", () => {
     const search = "?start=2026-06-01&end=2026-06-08&adults=2&poolHeating=1";
     const t = getLocaleSwitchTargets("/en/rezervasyon/test-villa", search);
     expect(t.tr).toBe(`/rezervasyon/test-villa${search}`);
-    expect(t.de).toBe(`/de/rezervasyon/test-villa${search}`);
+    expect(t.en).toBe(`/en/rezervasyon/test-villa${search}`);
   });
 
   it("56) /rezervasyon/basarili de allowlist'te (ref/villa korunur)", () => {
@@ -1149,25 +1139,22 @@ describe("locale switch — /rezervasyon/*", () => {
       "?ref=res-1&villa=test-villa"
     );
     expect(t.en).toBe("/en/rezervasyon/basarili?ref=res-1&villa=test-villa");
-    expect(t.de).toBe("/de/rezervasyon/basarili?ref=res-1&villa=test-villa");
   });
 
   /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/rezervasyon-kontrol` ARTIK kendi
-     `/en` + `/de` route'larına sahip (ortak `ReservationLookupPageBody`)
+     `/en` route'una sahip (ortak `ReservationLookupPageBody`)
      → locale switch onu da korur. `/rezervasyon/` PREFIX'i ile
      YANLIŞLIKLA eşleşme olmadığı aşağıda ayrıca doğrulanır. */
   it("57) /rezervasyon-kontrol locale-routed (kendi exact kaydı)", () => {
     const t = getLocaleSwitchTargets("/rezervasyon-kontrol");
     expect(t.tr).toBe("/rezervasyon-kontrol");
     expect(t.en).toBe("/en/rezervasyon-kontrol");
-    expect(t.de).toBe("/de/rezervasyon-kontrol");
   });
 
   it("57b) /rezervasyon-kontrolX → fallback (prefix ile yanlış eşleşme yok)", () => {
     const t = getLocaleSwitchTargets("/rezervasyon-kontrolX");
     expect(t.tr).toBe("/");
     expect(t.en).toBe("/en");
-    expect(t.de).toBe("/de");
   });
 });
 

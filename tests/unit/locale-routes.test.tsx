@@ -300,7 +300,7 @@ const VILLA_PAGE_PROPS = { params: Promise.resolve({ slug: "test-villa" }) };
    sayfasının BUGÜNKÜ davranışıdır, test için DEĞİŞTİRİLMEDİ. Bu yüzden
    ilgili assertion'lardan önce sekme GERÇEKTEN tıklanır. */
 function openVillaTab(
-  locale: "en" | "de",
+  locale: "en",
   tab: "prices" | "availability" | "location" | "features"
 ) {
   const dict = getDictionary(locale);
@@ -322,19 +322,11 @@ function openVillaTab(
    prop'u. `params` ve `searchParams` Promise'leri sayfaya AYNEN
    geçirilir (URL/slug kontratı DEĞİŞMEDİ). */
 const RESERVATION_GATE_ROUTES: Array<
-  [string, "en" | "de", Record<string, unknown>]
+  [string, "en", Record<string, unknown>]
 > = [
   [
     "@/app/(public)/en/rezervasyon/[slug]/page",
     "en",
-    {
-      params: Promise.resolve({ slug: "test-villa" }),
-      searchParams: Promise.resolve({}),
-    },
-  ],
-  [
-    "@/app/(public)/de/rezervasyon/[slug]/page",
-    "de",
     {
       params: Promise.resolve({ slug: "test-villa" }),
       searchParams: Promise.resolve({}),
@@ -346,16 +338,11 @@ const RESERVATION_GATE_ROUTES: Array<
    sözleşmesi AYNEN, içerik assertion'ı ortak `ReservationSuccessBody`
    + locale prop'u. `searchParams` (ref/villa) AYNEN geçirilir. */
 const RESERVATION_SUCCESS_GATE_ROUTES: Array<
-  [string, "en" | "de", Record<string, unknown>]
+  [string, "en", Record<string, unknown>]
 > = [
   [
     "@/app/(public)/en/rezervasyon/basarili/page",
     "en",
-    { searchParams: Promise.resolve({}) },
-  ],
-  [
-    "@/app/(public)/de/rezervasyon/basarili/page",
-    "de",
     { searchParams: Promise.resolve({}) },
   ],
 ];
@@ -364,16 +351,11 @@ const RESERVATION_SUCCESS_GATE_ROUTES: Array<
    assertion'ı ComingSoon yerine ortak `AramaPageBody` + locale prop'u.
    `searchParams` Promise'i sayfaya AYNEN geçirilir (URL kontratı). */
 const SEARCH_GATE_ROUTES: Array<
-  [string, "en" | "de", Record<string, unknown>]
+  [string, "en", Record<string, unknown>]
 > = [
   [
     "@/app/(public)/en/arama/page",
     "en",
-    { searchParams: Promise.resolve({}) },
-  ],
-  [
-    "@/app/(public)/de/arama/page",
-    "de",
     { searchParams: Promise.resolve({}) },
   ],
 ];
@@ -383,16 +365,11 @@ const SEARCH_GATE_ROUTES: Array<
    + locale prop'u. `searchParams` Promise'i sayfaya AYNEN geçirilir
    (URL kontratı DEĞİŞMEDİ). */
 const ARCHIVE_GATE_ROUTES: Array<
-  [string, "en" | "de", Record<string, unknown>]
+  [string, "en", Record<string, unknown>]
 > = [
   [
     "@/app/(public)/en/kiralik-villalar/page",
     "en",
-    { searchParams: Promise.resolve({}) },
-  ],
-  [
-    "@/app/(public)/de/kiralik-villalar/page",
-    "de",
     { searchParams: Promise.resolve({}) },
   ],
 ];
@@ -427,9 +404,8 @@ describe.each(ARCHIVE_GATE_ROUTES)("%s", (modulePath, locale, pageProps) => {
 /* 🛡️ İletişim route'ları (/iletisim): gate sözleşmesi AYNEN, içerik
    assertion'ı ortak `ContactPageBody` + locale prop'u. Sayfa prop
    ALMAZ (searchParams yok). */
-const CONTACT_GATE_ROUTES: Array<[string, "en" | "de"]> = [
+const CONTACT_GATE_ROUTES: Array<[string, "en"]> = [
   ["@/app/(public)/en/iletisim/page", "en"],
-  ["@/app/(public)/de/iletisim/page", "de"],
 ];
 
 describe.each(CONTACT_GATE_ROUTES)("%s", (modulePath, locale) => {
@@ -467,10 +443,9 @@ describe.each(CONTACT_GATE_ROUTES)("%s", (modulePath, locale) => {
    yalnız "ComingSoon metni var" assertion'ı bu route'lar için ARTIK
    GEÇERSİZ (bkz. aşağıda). */
 const VILLA_DETAIL_GATE_ROUTES: Array<
-  [string, "en" | "de", Record<string, unknown> | undefined]
+  [string, "en", Record<string, unknown> | undefined]
 > = [
   ["@/app/(public)/en/kiralik-villa/[slug]/page", "en", VILLA_PAGE_PROPS],
-  ["@/app/(public)/de/kiralik-villa/[slug]/page", "de", VILLA_PAGE_PROPS],
 ];
 
 describe.each(RESERVATION_GATE_ROUTES)(
@@ -613,9 +588,8 @@ describe.each(VILLA_DETAIL_GATE_ROUTES)(
    page.tsx'in resolve edilen description'ı doğru şekilde
    `CollapsibleDescription`'a/fallback'e ilettiği doğrulanıyor.
    =============================================================== */
-const VILLA_DETAIL_ROUTES: Array<[string, "en" | "de"]> = [
+const VILLA_DETAIL_ROUTES: Array<[string, "en"]> = [
   ["@/app/(public)/en/kiralik-villa/[slug]/page", "en"],
-  ["@/app/(public)/de/kiralik-villa/[slug]/page", "de"],
 ];
 
 describe.each(VILLA_DETAIL_ROUTES)(
@@ -1282,3 +1256,15 @@ describe.each(VILLA_DETAIL_ROUTES)(
     });
   }
 );
+
+/* 🛡️ DE desteği kaldırıldı — `app/(public)/de/**` route ağacı YOK
+   (/de artık normal 404'e düşer). */
+describe("DE locale route ağacı kaldırıldı", () => {
+  it("app/(public)/de dizini mevcut değil", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    expect(
+      fs.existsSync(path.join(process.cwd(), "app", "(public)", "de"))
+    ).toBe(false);
+  });
+});

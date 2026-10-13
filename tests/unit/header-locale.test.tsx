@@ -75,19 +75,18 @@ describe("Header — Phase 9A locale dictionary", () => {
     expect(screen.queryByText("Teklif Al")).not.toBeInTheDocument();
   });
 
-  it("4) '/de/...' path → 'Angebot anfordern' (DE dictionary)", () => {
+  it("4) '/de/...' artık locale değil → TR fallback 'Teklif Al'", () => {
     usePathnameMock.mockReturnValue("/de/kiralik-villa/ornek-slug");
     render(<FloatingQuoteCta />);
-    expect(screen.getAllByText("Angebot anfordern").length).toBeGreaterThan(0);
-    expect(screen.queryByText("Teklif Al")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Teklif Al").length).toBeGreaterThan(0);
   });
 
   it("4b) Header artık 'Teklif Al' CTA'sı İÇERMEZ (sol kenardaki FloatingQuoteCta'ya taşındı)", () => {
-    for (const p of ["/", "/en/kiralik-villalar", "/de/kiralik-villalar"]) {
+    for (const p of ["/", "/en/kiralik-villalar"]) {
       usePathnameMock.mockReturnValue(p);
       const { container, unmount } = render(<Header menu={[]} siteLogo={null} />);
       expect(container.querySelector('a[href$="/teklif-al"]')).toBeNull();
-      for (const t of ["Teklif Al", "Get a Quote", "Angebot anfordern"]) {
+      for (const t of ["Teklif Al", "Get a Quote"]) {
         expect(screen.queryByText(t)).not.toBeInTheDocument();
       }
       unmount();
@@ -95,7 +94,7 @@ describe("Header — Phase 9A locale dictionary", () => {
   });
 
   it("4c) FloatingQuoteCta teklif sayfasının kendisinde render EDİLMEZ", () => {
-    for (const p of ["/teklif-al", "/en/teklif-al", "/de/teklif-al"]) {
+    for (const p of ["/teklif-al", "/en/teklif-al"]) {
       usePathnameMock.mockReturnValue(p);
       const { container, unmount } = render(<FloatingQuoteCta />);
       expect(container.querySelector("a")).toBeNull();
@@ -107,12 +106,6 @@ describe("Header — Phase 9A locale dictionary", () => {
     usePathnameMock.mockReturnValue("/en/kiralik-villalar");
     render(<Header menu={[]} siteLogo={null} />);
     expect(screen.getByLabelText("Open menu")).toBeInTheDocument();
-  });
-
-  it("6) menuOpen aria-label — DE path'te 'Menü öffnen'", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villalar");
-    render(<Header menu={[]} siteLogo={null} />);
-    expect(screen.getByLabelText("Menü öffnen")).toBeInTheDocument();
   });
 
   it("7) menuOpen aria-label — TR path'te ÖNCEKİ 'Menüyü aç' (regresyon)", () => {
@@ -171,13 +164,6 @@ describe("Header — href locale kilidi (iç linkler aktif locale'i taşır)", (
     expect(logoLink).not.toHaveAttribute("href", "/");
   });
 
-  it("Logo href '/de/...' path'te '/de' olur", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villa/ornek-slug");
-    render(<Header menu={[]} siteLogo={null} />);
-    const logoLink = screen.getByRole("link", { name: /Kiralama/i });
-    expect(logoLink).toHaveAttribute("href", "/de");
-  });
-
   it("'Teklif Al' CTA href her zaman '/teklif-al' — TR path'te", () => {
     usePathnameMock.mockReturnValue("/");
     render(<FloatingQuoteCta />);
@@ -196,18 +182,6 @@ describe("Header — href locale kilidi (iç linkler aktif locale'i taşır)", (
     ctaLinks.forEach((link) => {
       expect(link).toHaveAttribute("href", "/en/teklif-al");
       expect(link).not.toHaveAttribute("href", "/teklif-al");
-    });
-  });
-
-  it("CTA href '/de/...' path'te '/de/teklif-al' olur", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villalar");
-    render(<FloatingQuoteCta />);
-    const ctaLinks = screen.getAllByRole("link", {
-      name: "Angebot anfordern",
-    });
-    expect(ctaLinks.length).toBeGreaterThan(0);
-    ctaLinks.forEach((link) => {
-      expect(link).toHaveAttribute("href", "/de/teklif-al");
     });
   });
 });

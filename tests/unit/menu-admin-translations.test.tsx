@@ -6,7 +6,7 @@
 
    Kapsam:
      A) `MenuTranslationsPanel` — mevcut menüyü DÜZENLEME akışı
-     B) `/maki-admin/menu/new` — YENİ menü oluştururken TR + EN + DE
+     B) `/maki-admin/menu/new` — YENİ menü oluştururken TR + EN (DE kaldırıldı)
      C) Mevcut CRUD sözleşmesinin BOZULMADIĞI (POST payload, href,
         source_type/source_id)
 
@@ -119,10 +119,10 @@ describe("MenuTranslationsPanel", () => {
     ).not.toBe("INPUT");
   });
 
-  it("2) EN + DE alanları AYNI ANDA görünür", async () => {
+  it("2) EN alanı görünür, DE alanı YOK (DE desteği kaldırıldı)", async () => {
     await mountPanel();
     expect(screen.getByLabelText("English")).toBeInTheDocument();
-    expect(screen.getByLabelText("Deutsch")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
   it("3) mevcut çeviriler yüklenir (düzenleme akışı)", async () => {
@@ -130,37 +130,27 @@ describe("MenuTranslationsPanel", () => {
       ok: true,
       rows: [
         { locale: "en", name: "Rental Villas" },
-        { locale: "de", name: "Mietvillen" },
       ],
     });
     await mountPanel();
     expect(loadMenuTranslationsMock).toHaveBeenCalledWith("m1");
     expect(screen.getByLabelText("English")).toHaveValue("Rental Villas");
-    expect(screen.getByLabelText("Deutsch")).toHaveValue("Mietvillen");
   });
 
-  it("4) EN + DE güncellenir ve İKİSİ DE kaydedilir", async () => {
+  it("4) EN güncellenir ve kaydedilir (yalnız en)", async () => {
     await mountPanel();
     fireEvent.change(screen.getByLabelText("English"), {
       target: { value: "Rental Villas" },
     });
-    fireEvent.change(screen.getByLabelText("Deutsch"), {
-      target: { value: "Mietvillen" },
-    });
     fireEvent.click(screen.getByText("Çevirileri kaydet"));
 
     await waitFor(() =>
-      expect(saveMenuTranslationMock).toHaveBeenCalledTimes(2)
+      expect(saveMenuTranslationMock).toHaveBeenCalledTimes(1)
     );
     expect(saveMenuTranslationMock).toHaveBeenCalledWith({
       menuId: "m1",
       locale: "en",
       name: "Rental Villas",
-    });
-    expect(saveMenuTranslationMock).toHaveBeenCalledWith({
-      menuId: "m1",
-      locale: "de",
-      name: "Mietvillen",
     });
   });
 
@@ -168,7 +158,7 @@ describe("MenuTranslationsPanel", () => {
     await mountPanel();
     fireEvent.click(screen.getByText("Çevirileri kaydet"));
     await waitFor(() =>
-      expect(saveMenuTranslationMock).toHaveBeenCalledTimes(2)
+      expect(saveMenuTranslationMock).toHaveBeenCalledTimes(1)
     );
     expect(saveMenuTranslationMock.mock.calls[0][0].name).toBe("");
     await waitFor(() => expect(notifySuccessMock).toHaveBeenCalled());
@@ -181,7 +171,7 @@ describe("MenuTranslationsPanel", () => {
     await waitFor(() => expect(revalidateMenuMock).toHaveBeenCalled());
   });
 
-  it("7) yetkisiz/hatalı kayıt kullanıcıya bildirilir, 2. locale denenmez", async () => {
+  it("7) yetkisiz/hatalı kayıt kullanıcıya bildirilir, yeniden denenmez", async () => {
     saveMenuTranslationMock.mockResolvedValue({ ok: false, error: "Yetkisiz" });
     await mountPanel();
     fireEvent.click(screen.getByText("Çevirileri kaydet"));
@@ -203,7 +193,7 @@ describe("MenuTranslationsPanel", () => {
 /* ===============================================================
    B+C) /maki-admin/menu/new — OLUŞTURMA
    =============================================================== */
-describe("/maki-admin/menu/new — TR + EN + DE", () => {
+describe("/maki-admin/menu/new — TR + EN", () => {
   async function fillManual() {
     render(<NewMenu />);
     await waitFor(() => expect(adminFetchMock).toHaveBeenCalled());
@@ -239,35 +229,27 @@ describe("/maki-admin/menu/new — TR + EN + DE", () => {
     });
   }
 
-  it("9) EN + DE alanları formda mevcut", async () => {
+  it("9) EN alanı formda mevcut, DE alanı YOK", async () => {
     await fillManual();
     expect(screen.getByLabelText("English")).toBeInTheDocument();
-    expect(screen.getByLabelText("Deutsch")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
-  it("10) TR + EN + DE birlikte kaydedilir", async () => {
+  it("10) TR + EN birlikte kaydedilir", async () => {
     mockCreateOk();
     await fillManual();
     fireEvent.change(screen.getByLabelText("English"), {
       target: { value: "Rental Villas" },
     });
-    fireEvent.change(screen.getByLabelText("Deutsch"), {
-      target: { value: "Mietvillen" },
-    });
     fireEvent.click(screen.getByText("Kaydet"));
 
     await waitFor(() =>
-      expect(saveMenuTranslationMock).toHaveBeenCalledTimes(2)
+      expect(saveMenuTranslationMock).toHaveBeenCalledTimes(1)
     );
     expect(saveMenuTranslationMock).toHaveBeenCalledWith({
       menuId: "new-menu-id",
       locale: "en",
       name: "Rental Villas",
-    });
-    expect(saveMenuTranslationMock).toHaveBeenCalledWith({
-      menuId: "new-menu-id",
-      locale: "de",
-      name: "Mietvillen",
     });
   });
 
@@ -297,7 +279,7 @@ describe("/maki-admin/menu/new — TR + EN + DE", () => {
     });
   });
 
-  it("12) EN/DE BOŞ bırakılırsa çeviri isteği HİÇ atılmaz", async () => {
+  it("12) EN BOŞ bırakılırsa çeviri isteği HİÇ atılmaz", async () => {
     mockCreateOk();
     await fillManual();
     fireEvent.click(screen.getByText("Kaydet"));
@@ -378,7 +360,7 @@ describe("/maki-admin/menu/new — TR + EN + DE", () => {
     ["CMS Sayfa"],
     ["Mülk Tipi"],
     ["Bölge"],
-  ])("17-%#) '%s' türü seçilince EN/DE alanları GİZLENİR", async (label) => {
+  ])("17-%#) '%s' türü seçilince EN alanı GİZLENİR", async (label) => {
     render(<NewMenu />);
     await waitFor(() => expect(adminFetchMock).toHaveBeenCalled());
     /* Varsayılan "Manuel Link" → alanlar görünür. */
@@ -386,7 +368,6 @@ describe("/maki-admin/menu/new — TR + EN + DE", () => {
 
     fireEvent.click(screen.getByText(label));
     expect(screen.queryByLabelText("English")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
   it("20) manual'de doldurulup tür DEĞİŞTİRİLİRSE çeviri yazılmaz", async () => {

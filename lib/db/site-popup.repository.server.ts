@@ -70,7 +70,7 @@ export const sitePopupRepository = {
   },
 
   /** Tek dilin TAM durumunu yazar — UNIQUE (popup_id, locale) upsert.
-   *  Payload isimle kurulur (spread YOK); locale tipi yalnız "en"|"de". */
+   *  Payload isimle kurulur (spread YOK); locale tipi yalnız "en". */
   async upsertTranslation(locale: PopupTranslationLocale, values: SitePopupTranslationWritable) {
     return dbAdmin
       .from<SitePopupTranslationRow>(TRANSLATIONS_TABLE)

@@ -7,7 +7,7 @@
      • RDP caption'ı (takvimin İÇİNDEKİ ay/yıl + ileri/geri okları)
        görünür kılındı,
      • nav aria-label'ları MEVCUT sözlük anahtarlarından verildi
-       (TR/EN/DE davranışı korunur, yeni anahtar yok).
+       (TR/EN davranışı korunur, yeni anahtar yok).
    Seçim/disabled/fiyat davranışına DOKUNULMADI.
 =============================================================== */
 
@@ -16,7 +16,6 @@ import { render, fireEvent } from "@testing-library/react";
 
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 
 vi.mock("@/app/context/CurrencyContext", () => ({
   useCurrency: () => ({ currency: "TRY", rates: { TRY: 1 } }),
@@ -49,7 +48,7 @@ function makeEngine(): UseBookingEngineReturn {
   } as unknown as UseBookingEngineReturn;
 }
 
-function renderCalendar(locale?: "tr" | "en" | "de") {
+function renderCalendar(locale?: "tr" | "en") {
   const onMonthChange = vi.fn();
   const engine = makeEngine();
   const utils = render(
@@ -87,11 +86,10 @@ describe("dış nav strip", () => {
     expect(onMonthChange).toHaveBeenCalledTimes(2);
   });
 
-  it("4) TR/EN/DE — nav aria-label'ları MEVCUT sözlükten gelir", () => {
+  it("4) TR/EN — nav aria-label'ları MEVCUT sözlükten gelir", () => {
     for (const [loc, dict] of [
       ["tr", tr],
       ["en", en],
-      ["de", de],
     ] as const) {
       const { getByLabelText, queryByText, unmount } = renderCalendar(loc);
       expect(getByLabelText(dict.availability.nextMonth)).toBeTruthy();
@@ -123,7 +121,7 @@ describe("dış nav strip", () => {
    ===============================================================
    Kök neden: `VillaCardBookingModal` → `<BookingCalendar>` çağrısında
    `locale` prop'u GEÇİLMİYORDU → component "tr" default'una düşüyor ve
-   takvim EN/DE modallarda da Türkçe görünüyordu (BookingSidebar bu
+   takvim EN modallarda da Türkçe görünüyordu (BookingSidebar bu
    prop'u zaten geçiyordu). Aşağıdaki testler hem component seviyesinde
    hem de kaynak seviyesinde bu bağı kilitler.
 =============================================================== */
@@ -152,15 +150,7 @@ describe("datepicker dili — locale paritesi", () => {
     expect(w).not.toMatch(/Çar|Prş|Cmt/i);
   });
 
-  it("9) DE — Almanca ay adı + Almanca hafta günleri", () => {
-    const { container } = renderCalendar("de");
-    expect(captionText(container)).toMatch(/Oktober\s*2026/i);
-    const w = weekdays(container).join(" ");
-    expect(w).toMatch(/Mo|Di|Mi/i);
-    expect(w).not.toMatch(/Çar|Prş|Cmt/i);
-  });
-
-  it("10) locale değişince takvim dili DE değişir (TR ≠ EN ≠ DE)", () => {
+  it("10) locale değişince takvim dili değişir (TR ≠ EN)", () => {
     const trR = renderCalendar("tr");
     const trCap = captionText(trR.container);
     const trDays = weekdays(trR.container).join(" ");
@@ -171,12 +161,7 @@ describe("datepicker dili — locale paritesi", () => {
     const enDays = weekdays(enR.container).join(" ");
     enR.unmount();
 
-    const deR = renderCalendar("de");
-    const deCap = captionText(deR.container);
-    deR.unmount();
-
     expect(trCap).not.toBe(enCap);
-    expect(enCap).not.toBe(deCap);
     expect(trDays).not.toBe(enDays);
   });
 

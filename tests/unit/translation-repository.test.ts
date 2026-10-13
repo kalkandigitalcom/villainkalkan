@@ -221,11 +221,11 @@ describe("translationRepository.findOne", () => {
       "@/lib/db/translation.repository.server"
     );
 
-    await translationRepository.findOne("rule_item", "rule-uuid-1", "de");
+    await translationRepository.findOne("rule_item", "rule-uuid-1", "en");
 
     expect(fromMock).toHaveBeenCalledWith("rule_item_translations");
     expect(eqMock).toHaveBeenCalledWith("rule_id", "rule-uuid-1");
-    expect(eqMock).toHaveBeenCalledWith("locale", "de");
+    expect(eqMock).toHaveBeenCalledWith("locale", "en");
   });
 });
 
@@ -279,7 +279,7 @@ describe("translationRepository.findManyForLocale", () => {
     expect(maybeSingleMock).not.toHaveBeenCalled();
   });
 
-  it("rule_item entity → rule_item_translations + rule_id + 'de' locale kullanır", async () => {
+  it("rule_item entity → rule_item_translations + rule_id + 'en' locale kullanır", async () => {
     const { translationRepository } = await import(
       "@/lib/db/translation.repository.server"
     );
@@ -287,12 +287,12 @@ describe("translationRepository.findManyForLocale", () => {
     await translationRepository.findManyForLocale(
       "rule_item",
       ["rule-uuid-1"],
-      "de"
+      "en"
     );
 
     expect(fromMock).toHaveBeenCalledWith("rule_item_translations");
     expect(inMock).toHaveBeenCalledWith("rule_id", ["rule-uuid-1"]);
-    expect(eqMock).toHaveBeenCalledWith("locale", "de");
+    expect(eqMock).toHaveBeenCalledWith("locale", "en");
   });
 
   /* d) birden fazla parent ID'nin TEK sorguda kullanılması */
@@ -413,13 +413,13 @@ describe("translationRepository.upsertOne", () => {
       "@/lib/db/translation.repository.server"
     );
 
-    await translationRepository.upsertOne("rule_item", "rule-uuid-1", "de", {
-      title: "Regel",
+    await translationRepository.upsertOne("rule_item", "rule-uuid-1", "en", {
+      title: "Rule",
     });
 
     expect(fromMock).toHaveBeenCalledWith("rule_item_translations");
     expect(upsertMock).toHaveBeenCalledWith(
-      { rule_id: "rule-uuid-1", locale: "de", title: "Regel" },
+      { rule_id: "rule-uuid-1", locale: "en", title: "Rule" },
       { onConflict: "rule_id,locale" }
     );
   });

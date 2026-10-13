@@ -1,13 +1,13 @@
 /* ===============================================================
-   🛡️ /kiralik-villalar · /en/... · /de/... ÇOKLU DİL TESTLERİ
+   🛡️ /kiralik-villalar · /en/... ÇOKLU DİL TESTLERİ (DE kaldırıldı)
    ===============================================================
    Kapsam:
-     A) Üç route da AYNI `KiralikVillalarPageBody`'yi DOĞRU locale
-        ile render eder (üç kopya YOK); EN/DE gate davranışı korunur
-     B) `villasArchive` dictionary namespace bütünlüğü (TR/EN/DE)
+     A) İki route da AYNI `KiralikVillalarPageBody`'yi DOĞRU locale
+        ile render eder (kopya YOK); EN gate davranışı korunur
+     B) `villasArchive` dictionary namespace bütünlüğü (TR/EN)
      C) TR BYTE-IDENTITY — değerler bu fazdan önceki hardcoded
         metinlerle birebir
-     D) Gövde render'ı: görünür TR/EN/DE metinler, PageHero, boş
+     D) Gövde render'ı: görünür TR/EN metinler, PageHero, boş
         koleksiyon durumu, "Hakkında" bloğu
      E) FilterSidebar sözleşmesi (mode="redirect" + locale + arama
         route'una giden basePath)
@@ -27,7 +27,6 @@ import path from "node:path";
 
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
 import { getLocaleSwitchTargets } from "@/lib/i18n/locale-switch.helper";
 import { PUBLIC_SORT_LABELS } from "@/lib/pagination";
@@ -166,7 +165,7 @@ function villa(i: number) {
 const MANY_VILLAS = Array.from({ length: 30 }, (_, i) => villa(i + 1));
 
 async function renderBody(
-  locale: "tr" | "en" | "de",
+  locale: "tr" | "en",
   sp: Record<string, string> = {}
 ) {
   const element = await KiralikVillalarPageBody({
@@ -276,8 +275,8 @@ beforeEach(() => {
   typesMock.mockResolvedValue(TYPE_OPTIONS);
   settingsMock.mockResolvedValue({ site_name: "Tatilin Yeri" });
   typeNamesMock.mockResolvedValue({
-    t1: { en: "Conservative Villas", de: "Konservative Villen" },
-    t2: { en: "Honeymoon Villas", de: "Flitterwochen-Villen" },
+    t1: { en: "Conservative Villas" },
+    t2: { en: "Honeymoon Villas" },
   });
   villaBadgesMock.mockResolvedValue(new Map());
 });
@@ -285,9 +284,8 @@ beforeEach(() => {
 /* ===============================================================
    A) ROUTE DAVRANIŞI
    =============================================================== */
-const LOCALE_ROUTES: Array<[string, "en" | "de"]> = [
+const LOCALE_ROUTES: Array<[string, "en"]> = [
   ["@/app/(public)/en/kiralik-villalar/page", "en"],
-  ["@/app/(public)/de/kiralik-villalar/page", "de"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -354,16 +352,23 @@ describe("app/(public)/kiralik-villalar/page.tsx — TR", () => {
     expect(mod.dynamic).toBeUndefined();
     expect(mod.revalidate).toBeUndefined();
   });
+
+  it("7b) DE desteği kaldırıldı — /de/kiralik-villalar route dosyası YOK", () => {
+    expect(
+      fs.existsSync(
+        path.join(process.cwd(), "app/(public)/de/kiralik-villalar/page.tsx")
+      )
+    ).toBe(false);
+  });
 });
 
 /* ===============================================================
    B) DICTIONARY BÜTÜNLÜĞÜ
    =============================================================== */
 describe("`villasArchive` namespace bütünlüğü", () => {
-  it("8) TR/EN/DE'de AYNI key ağacı", () => {
+  it("8) TR/EN'de AYNI key ağacı", () => {
     const trPaths = leafPaths(tr.villasArchive).sort();
     expect(leafPaths(en.villasArchive).sort()).toEqual(trPaths);
-    expect(leafPaths(de.villasArchive).sort()).toEqual(trPaths);
     expect(trPaths.length).toBe(20);
   });
 
@@ -371,7 +376,6 @@ describe("`villasArchive` namespace bütünlüğü", () => {
     for (const [name, d] of [
       ["tr", tr],
       ["en", en],
-      ["de", de],
     ] as const) {
       for (const v of leafValues(d.villasArchive)) {
         expect(typeof v, name).toBe("string");
@@ -386,14 +390,8 @@ describe("`villasArchive` namespace bütünlüğü", () => {
     }
   });
 
-  it("11) DE'de Türkçeye ÖZGÜ karakter yok (ö/ü Almancada geçerli)", () => {
-    for (const v of leafValues(de.villasArchive)) {
-      expect(/[çÇğĞıİşŞ]/.test(v), v).toBe(false);
-    }
-  });
-
-  it("12) `metaTitle` üç dilde de `{brand}` placeholder'ını KORUYOR", () => {
-    for (const d of [tr, en, de]) {
+  it("12) `metaTitle` TR/EN'de `{brand}` placeholder'ını KORUYOR", () => {
+    for (const d of [tr, en]) {
       expect(d.villasArchive.metaTitle).toContain("{brand}");
     }
   });
@@ -461,11 +459,11 @@ describe("TR byte-identity — eski hardcoded metinler", () => {
 /* ===============================================================
    D) GÖVDE RENDER — görünür metinler
    =============================================================== */
-describe("Gövde render — TR/EN/DE görünür metinler", () => {
-  it.each(["tr", "en", "de"] as const)(
+describe("Gövde render — TR/EN görünür metinler", () => {
+  it.each(["tr", "en"] as const)(
     "16) %s: hero breadcrumb/eyebrow/başlık/stat kendi dilinde",
     async (locale) => {
-      const d = { tr, en, de }[locale].villasArchive;
+      const d = { tr, en }[locale].villasArchive;
       await renderBody(locale);
       expect(screen.getByTestId("hero-breadcrumb")).toHaveTextContent(
         `${d.breadcrumbHome} / ${d.breadcrumbCurrent}`
@@ -480,10 +478,10 @@ describe("Gövde render — TR/EN/DE görünür metinler", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "17) %s: 'Hakkında' bloğu kendi dilinde",
     async (locale) => {
-      const d = { tr, en, de }[locale].villasArchive;
+      const d = { tr, en }[locale].villasArchive;
       await renderBody(locale);
       expect(screen.getByText(d.aboutEyebrow)).toBeInTheDocument();
       expect(screen.getByText(d.aboutParagraph1)).toBeInTheDocument();
@@ -499,11 +497,11 @@ describe("Gövde render — TR/EN/DE görünür metinler", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "18) %s: boş koleksiyon durumu kendi dilinde",
     async (locale) => {
       villasMock.mockResolvedValue([]);
-      const d = { tr, en, de }[locale].villasArchive;
+      const d = { tr, en }[locale].villasArchive;
       await renderBody(locale);
       expect(screen.getByText(d.emptyEyebrow)).toBeInTheDocument();
       expect(
@@ -514,10 +512,10 @@ describe("Gövde render — TR/EN/DE görünür metinler", () => {
     }
   );
 
-  it("19) TR görünümünde EN/DE metinleri SIZMAZ (regresyon)", async () => {
+  it("19) TR görünümünde EN metinleri SIZMAZ (regresyon)", async () => {
     await renderBody("tr");
     expect(screen.queryByText(en.villasArchive.heroEyebrow)).toBeNull();
-    expect(screen.queryByText(de.villasArchive.aboutEyebrow)).toBeNull();
+    expect(screen.queryByText(en.villasArchive.aboutEyebrow)).toBeNull();
   });
 });
 
@@ -528,7 +526,6 @@ describe("FilterSidebar sözleşmesi", () => {
   it.each([
     ["tr", "/arama"],
     ["en", "/en/arama"],
-    ["de", "/de/arama"],
   ] as const)(
     "20) %s: mode='redirect' + locale + basePath='%s' (arama route'u, bu sayfa DEĞİL)",
     async (locale, expectedBasePath) => {
@@ -586,7 +583,6 @@ describe("Villa tipi çevirisi", () => {
 
   it.each([
     ["en", "Conservative Villas", "Honeymoon Villas"],
-    ["de", "Konservative Villen", "Flitterwochen-Villen"],
   ] as const)(
     "23) %s: sidebar villa tipi adları çevrilir",
     async (locale, n1, n2) => {
@@ -607,7 +603,7 @@ describe("Villa tipi çevirisi", () => {
   });
 
   it("25) CANONICAL id/slug DEĞİŞMEZ — yalnız görünen `name` çevrilir", async () => {
-    await renderBody("de");
+    await renderBody("en");
     const opts = sidebarProps[0].categoryOptions as Array<{
       id: string;
       slug: string;
@@ -630,9 +626,9 @@ describe("Villa tipi çevirisi", () => {
   });
 
   it("27) VillaCard `locale` prop'u alır (kart metinleri + detay linki)", async () => {
-    await renderBody("de");
+    await renderBody("en");
     expect(cardProps.length).toBeGreaterThan(0);
-    for (const p of cardProps) expect(p.locale).toBe("de");
+    for (const p of cardProps) expect(p.locale).toBe("en");
   });
 });
 
@@ -640,21 +636,19 @@ describe("Villa tipi çevirisi", () => {
    G) URL / PAGINATION / SORT KONTRATI
    =============================================================== */
 describe("URL kontratı — pagination / sort / pageSize", () => {
-  it("28) archivePath() üç locale için doğru", () => {
+  it("28) archivePath() her locale için doğru", () => {
     expect(ARCHIVE_TR_PATH).toBe("/kiralik-villalar");
     expect(archivePath("tr")).toBe("/kiralik-villalar");
     expect(archivePath("en")).toBe("/en/kiralik-villalar");
-    expect(archivePath("de")).toBe("/de/kiralik-villalar");
   });
 
   it.each([
     ["tr", "/kiralik-villalar"],
     ["en", "/en/kiralik-villalar"],
-    ["de", "/de/kiralik-villalar"],
   ] as const)(
     "29) %s: pagination linkleri locale'li basePath kullanır, query adları AYNI",
     async (locale, base) => {
-      const d = { tr, en, de }[locale].search;
+      const d = { tr, en }[locale].search;
       await renderBody(locale, { pageSize: "12" });
       const nav = screen.getByRole("navigation", {
         name: d.paginationAriaLabel,
@@ -684,18 +678,18 @@ describe("URL kontratı — pagination / sort / pageSize", () => {
   });
 
   it("31) pageSize default (12) URL'e YAZILMAZ; diğerleri yazılır + sort korunur", async () => {
-    await renderBody("de", { sort: "price-desc" });
+    await renderBody("en", { sort: "price-desc" });
     const group = screen.getByRole("group", {
-      name: de.search.pageSizeAriaLabel,
+      name: en.search.pageSizeAriaLabel,
     });
     const hrefs = Array.from(group.querySelectorAll("a")).map((a) =>
       a.getAttribute("href")
     );
     expect(hrefs).toEqual([
-      "/de/kiralik-villalar?sort=price-desc",
-      "/de/kiralik-villalar?pageSize=30&sort=price-desc",
-      "/de/kiralik-villalar?pageSize=50&sort=price-desc",
-      "/de/kiralik-villalar?pageSize=100&sort=price-desc",
+      "/en/kiralik-villalar?sort=price-desc",
+      "/en/kiralik-villalar?pageSize=30&sort=price-desc",
+      "/en/kiralik-villalar?pageSize=50&sort=price-desc",
+      "/en/kiralik-villalar?pageSize=100&sort=price-desc",
     ]);
   });
 
@@ -717,16 +711,15 @@ describe("Locale switch — query string korunması", () => {
   const Q =
     "villa-turleri=2027-kiralik-villalar%2Cmuhafazakar-villalar&flexible=3";
 
-  it("34) /de/kiralik-villalar + query → EN'de AYNI query (kullanıcı senaryosu)", () => {
-    const t = getLocaleSwitchTargets("/de/kiralik-villalar", Q);
+  it("34) /kiralik-villalar + query → EN'de AYNI query (kullanıcı senaryosu)", () => {
+    const t = getLocaleSwitchTargets("/kiralik-villalar", Q);
     expect(t.en).toBe(`/en/kiralik-villalar?${Q}`);
     expect(t.tr).toBe(`/kiralik-villalar?${Q}`);
-    expect(t.de).toBe(`/de/kiralik-villalar?${Q}`);
   });
 
   it("35) canonical token'lar ÇEVRİLMEZ / yeniden yorumlanmaz", () => {
     const t = getLocaleSwitchTargets("/kiralik-villalar", Q);
-    for (const href of [t.tr, t.en, t.de]) {
+    for (const href of [t.tr, t.en]) {
       expect(href).toContain("2027-kiralik-villalar%2Cmuhafazakar-villalar");
       expect(href).toContain("flexible=3");
     }
@@ -737,14 +730,13 @@ describe("Locale switch — query string korunması", () => {
       "/en/kiralik-villalar",
       "page=3&pageSize=50&sort=price-asc"
     );
-    expect(t.de).toBe("/de/kiralik-villalar?page=3&pageSize=50&sort=price-asc");
+    expect(t.tr).toBe("/kiralik-villalar?page=3&pageSize=50&sort=price-asc");
   });
 
   it("37) query YOKSA mevcut davranış BİREBİR (soru işareti eklenmez)", () => {
     expect(getLocaleSwitchTargets("/kiralik-villalar")).toEqual({
       tr: "/kiralik-villalar",
       en: "/en/kiralik-villalar",
-      de: "/de/kiralik-villalar",
     });
   });
 });
@@ -797,7 +789,7 @@ describe("SOURCE-LOCK — gövdede hardcoded TR kalmadı", () => {
 /* ===============================================================
    F) VILLA ROZETİ (villa_translations.badge) — LOCALE DAVRANIŞI
    ===============================================================
-   Bu blok, rozetin EN/DE'de GERÇEKTEN çevrilmiş değerle render
+   Bu blok, rozetin EN'de GERÇEKTEN çevrilmiş değerle render
    edildiğini (implementation detayını değil, VillaCard'a ulaşan
    PROP'u) doğrular. Fallback ve N+1 guard'ları da buradadır.
    Mevcut `renderBody` helper'ı REUSE edilir.
@@ -824,22 +816,6 @@ describe("F) villa rozeti locale davranışı", () => {
     expect(badges).toContain("Popular");
     expect(badges).not.toContain("Yeni");
     expect(badges).not.toContain("Popüler");
-  });
-
-  it("31) DE — çeviri VARSA DE rozet VillaCard'a ulaşır", async () => {
-    villasMock.mockResolvedValue(BADGED);
-    villaBadgesMock.mockResolvedValue(
-      new Map([
-        ["v1", "Neu"],
-        ["v2", "Beliebt"],
-      ])
-    );
-    await renderBody("de");
-
-    const badges = cardProps.map((p) => p.badge);
-    expect(badges).toContain("Neu");
-    expect(badges).toContain("Beliebt");
-    expect(badges).not.toContain("Yeni");
   });
 
   it("32) EN — çeviri YOKSA canonical TR rozet FALLBACK olarak kalır", async () => {

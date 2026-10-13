@@ -33,9 +33,9 @@
    DAVRANIŞ:
      localeHref("/teklif-al", "tr") → "/teklif-al"
      localeHref("/teklif-al", "en") → "/en/teklif-al"
-     localeHref("/", "de")          → "/de"          (çifte slash yok)
+     localeHref("/", "en")          → "/en"          (çifte slash yok)
      localeHref("/arama?x=1", "en") → "/en/arama?x=1" (query AYNEN)
-     localeHref("/en/blog", "de")   → "/de/blog"      (idempotent)
+     localeHref("/en/blog", "en")   → "/en/blog"      (idempotent)
      localeHref("https://…", "en")  → "https://…"     (dış bağlantı)
      localeHref("mailto:…", "en")   → "mailto:…"
      localeHref("#hero", "en")      → "#hero"

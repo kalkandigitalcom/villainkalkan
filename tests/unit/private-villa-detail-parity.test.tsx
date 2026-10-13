@@ -326,7 +326,7 @@ describe("Turizm belge numarası görünürlüğü", () => {
 });
 
 describe("BottomNav — villa detayında tek alt bar", () => {
-  it.each(["/v/tok-1", "/en/v/tok-1", "/de/v/tok-1", "/kiralik-villa/x"])(
+  it.each(["/v/tok-1", "/en/v/tok-1", "/kiralik-villa/x"])(
     "%s → BottomNav render edilmez",
     (p) => {
       pathname.value = p;

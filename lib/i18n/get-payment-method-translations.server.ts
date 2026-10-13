@@ -32,7 +32,7 @@ import type {
    dolayısıyla çeviri okumak GEREKSİZ bir sorgu olur.
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en", "de"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
 
 /**
  * Verilen ödeme yöntemi id'leri için `{ paymentMethodId: { en?, de? } }`

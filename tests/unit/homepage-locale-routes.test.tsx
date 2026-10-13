@@ -2,11 +2,12 @@
    🛡️ PHASE 11 — ANA SAYFA ROUTE + CACHE İZOLASYON TESTLERİ
    ===============================================================
    Kapsam:
-     A) `/`, `/en`, `/de` üçü de AYNI `HomePageBody` component'ini
-        render eder (üç ayrı kopya YOK) ve DOĞRU locale'i geçirir
-     B) EN/DE `setRequestLocale` + `requirePublicLocaleEnabled` gate
+     A) `/` ve `/en` AYNI `HomePageBody` component'ini
+        render eder (ayrı kopya YOK) ve DOĞRU locale'i geçirir
+        (DE desteği kaldırıldı — `/de` route ağacı YOK)
+     B) EN `setRequestLocale` + `requirePublicLocaleEnabled` gate
         davranışı KORUNDU (multilingual kapalıyken notFound)
-     C) EN/DE ana sayfasında placeholder `noindex` KALDIRILDI
+     C) EN ana sayfasında placeholder `noindex` KALDIRILDI
      D) 🔴 CACHE LOCALE İZOLASYONU — SSS cache key'i locale içerir,
         yani EN çevirisi TR isteğine servis EDİLEMEZ
 
@@ -16,6 +17,8 @@
 =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { existsSync } from "node:fs";
+import path from "node:path";
 
 const requirePublicLocaleEnabledMock = vi.fn();
 const setRequestLocaleMock = vi.fn();
@@ -38,9 +41,8 @@ beforeEach(() => {
 /* ===============================================================
    A + B) ROUTE DAVRANIŞI
    =============================================================== */
-const LOCALE_ROUTES: Array<[string, "en" | "de"]> = [
+const LOCALE_ROUTES: Array<[string, "en"]> = [
   ["@/app/(public)/en/page", "en"],
-  ["@/app/(public)/de/page", "de"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -84,11 +86,15 @@ describe("app/(public)/page.tsx — TR", () => {
     expect(setRequestLocaleMock).not.toHaveBeenCalled();
   });
 
-  it("6) üç route da AYNI component referansını kullanır (kopya YOK)", async () => {
+  it("6) TR ve EN route AYNI component referansını kullanır (kopya YOK)", async () => {
     const tr = await (await import("@/app/(public)/page")).default();
     const en = await (await import("@/app/(public)/en/page")).default();
-    const de = await (await import("@/app/(public)/de/page")).default();
     expect(tr.type).toBe(en.type);
-    expect(en.type).toBe(de.type);
+  });
+
+  it("6b) DE desteği kaldırıldı — `/de` route ağacı YOK", () => {
+    expect(
+      existsSync(path.join(process.cwd(), "app/(public)/de/page.tsx"))
+    ).toBe(false);
   });
 });

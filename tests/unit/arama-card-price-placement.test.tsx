@@ -73,7 +73,7 @@ function renderCard(opts: {
   prices?: typeof PRICES;
   price?: number | null;
   cleaningFee?: number;
-  locale?: "tr" | "en" | "de";
+  locale?: "tr" | "en";
 } = {}) {
   const withDates = opts.withDates ?? true;
   return render(
@@ -370,7 +370,7 @@ describe("G) üç satırlı fiyat alanı", () => {
     expect(priceAreaText(container)).not.toContain(tr.card.cleaningIncluded);
   });
 
-  it("28) EN/DE — indirim metni sözlükten gelir (hardcoded TR yok)", async () => {
+  it("28) EN — indirim metni sözlükten gelir (hardcoded TR yok)", async () => {
     const { en } = await import("@/lib/i18n/dictionaries/en");
     const { container } = renderCard({ discounts: DISCOUNTS, locale: "en" });
     const line = savingsLine(container);

@@ -32,9 +32,9 @@ import { SettingsSection, FieldShell } from "./SettingsField";
 /* ---------- Locale modeli ---------- */
 
 /** Bu ekranın dil kümesi. TR canonical kaynaktır (salt okunur). */
-export type TranslationLocale = "tr" | "en" | "de";
+export type TranslationLocale = "tr" | "en";
 
-/** TR canonical olduğu için yazılabilir locale'ler yalnız EN/DE —
+/** TR canonical olduğu için yazılabilir locale yalnız EN —
  *  projedeki diğer çeviri panelleriyle (types/features/rules/
  *  price-includes/villas) AYNI kural. */
 export type WritableTranslationLocale = Exclude<TranslationLocale, "tr">;
@@ -45,7 +45,6 @@ export const TRANSLATION_LOCALES: ReadonlyArray<{
 }> = [
   { code: "tr", label: "Türkçe" },
   { code: "en", label: "English" },
-  { code: "de", label: "Deutsch" },
 ];
 
 /* ---------- TranslationLanguageTabs ---------- */
@@ -244,7 +243,7 @@ export function TranslationSection({
  *
  * - `locale === "tr"` → canonical değer HER ZAMAN salt okunur.
  *   (TR'nin düzenlendiği yer ilgili settings alt sayfasıdır.)
- * - `locale === "en" | "de"`:
+ * - `locale === "en"`:
  *     • `onChange` VERİLDİYSE → düzenlenebilir (Phase 10L kapsamındaki
  *       4 alan). Boş bırakılırsa public tarafta TR canonical gösterilir.
  *     • `onChange` VERİLMEDİYSE → eski davranış: `disabled`, açıklayıcı

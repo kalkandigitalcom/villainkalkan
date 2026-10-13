@@ -28,7 +28,7 @@ import type {
    okumak GEREKSİZ bir sorgu olur (bkz. HeaderWrapper/FooterWrapper).
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en", "de"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
 
 /**
  * Verilen villa tipi id'leri için `{ typeId: { en?, de? } }` haritası.

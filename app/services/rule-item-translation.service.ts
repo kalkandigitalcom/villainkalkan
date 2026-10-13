@@ -17,10 +17,10 @@ import type { RuleItemTranslationRow } from "@/lib/i18n/translations.types";
  * "villa_rules" → gerçek tablo `rule_items` doğrulama notuyla tutarlı).
  */
 
-export type WritableTranslationLocale = "en" | "de";
+export type WritableTranslationLocale = "en";
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en" || value === "de";
+  return value === "en";
 }
 
 export type RuleTranslationInput = {
@@ -65,7 +65,7 @@ export async function upsertRuleTranslation(
   if (!ruleId) return { ok: false, error: "Geçersiz kural" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' veya 'de' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
   }
   const locale = input.locale;
 

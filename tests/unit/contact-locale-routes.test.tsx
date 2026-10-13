@@ -1,10 +1,10 @@
 /* ===============================================================
-   🛡️ /iletisim · /en/iletisim · /de/iletisim ÇOKLU DİL TESTLERİ
+   🛡️ /iletisim · /en/iletisim ÇOKLU DİL TESTLERİ
    ===============================================================
    Kapsam:
-     A) Üç route da AYNI `ContactPageBody`'yi DOĞRU locale ile render
-        eder; EN/DE gate davranışı korunur
-     B) `contact` dictionary namespace bütünlüğü (TR/EN/DE)
+     A) İki route da AYNI `ContactPageBody`'yi DOĞRU locale ile render
+        eder; EN gate davranışı korunur
+     B) `contact` dictionary namespace bütünlüğü (TR/EN)
      C) TR BYTE-IDENTITY — değerler bu fazdan önceki hardcoded
         metinlerle birebir
      D) Gövde render'ı: hero · info · map · FAQ · CTA
@@ -26,7 +26,6 @@ import path from "node:path";
 
 import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { de } from "@/lib/i18n/dictionaries/de";
 import { getLocaleSwitchTargets, hasLocaleRoute } from "@/lib/i18n/locale-switch.helper";
 
 /* ---------------- mock katmanı ---------------- */
@@ -90,7 +89,7 @@ function settingsWith(overrides: Record<string, unknown> = {}) {
   return { ...SETTINGS, ...overrides };
 }
 
-async function renderBody(locale: "tr" | "en" | "de") {
+async function renderBody(locale: "tr" | "en") {
   const element = await ContactPageBody({ locale });
   return render(element);
 }
@@ -188,9 +187,8 @@ beforeEach(() => {
 /* ===============================================================
    A) ROUTE DAVRANIŞI
    =============================================================== */
-const LOCALE_ROUTES: Array<[string, "en" | "de"]> = [
+const LOCALE_ROUTES: Array<[string, "en"]> = [
   ["@/app/(public)/en/iletisim/page", "en"],
-  ["@/app/(public)/de/iletisim/page", "de"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -248,10 +246,9 @@ describe("app/(public)/iletisim/page.tsx — TR", () => {
    B) DICTIONARY BÜTÜNLÜĞÜ
    =============================================================== */
 describe("`contact` namespace bütünlüğü", () => {
-  it("7) TR/EN/DE'de AYNI key ağacı", () => {
+  it("7) TR/EN'de AYNI key ağacı", () => {
     const trPaths = leafPaths(tr.contact).sort();
     expect(leafPaths(en.contact).sort()).toEqual(trPaths);
-    expect(leafPaths(de.contact).sort()).toEqual(trPaths);
     expect(trPaths.length).toBeGreaterThan(35);
   });
 
@@ -259,7 +256,6 @@ describe("`contact` namespace bütünlüğü", () => {
     for (const [name, d] of [
       ["tr", tr],
       ["en", en],
-      ["de", de],
     ] as const) {
       for (const v of leafValues(d.contact)) {
         expect(typeof v, name).toBe("string");
@@ -274,14 +270,8 @@ describe("`contact` namespace bütünlüğü", () => {
     }
   });
 
-  it("10) DE'de Türkçeye ÖZGÜ karakter yok (ö/ü Almancada geçerli)", () => {
-    for (const v of leafValues(de.contact)) {
-      expect(/[çÇğĞıİşŞ]/.test(v), v).toBe(false);
-    }
-  });
-
-  it("11) `{brand}` ve `{n}` placeholder'ları üç dilde de KORUNUYOR", () => {
-    for (const d of [tr, en, de]) {
+  it("11) `{brand}` ve `{n}` placeholder'ları iki dilde de KORUNUYOR", () => {
+    for (const d of [tr, en]) {
       expect(d.contact.meta.title).toContain("{brand}");
       expect(d.contact.meta.ogTitle).toContain("{brand}");
       expect(d.contact.form.validation.messageMinLength).toContain("{n}");
@@ -347,18 +337,17 @@ describe("TR byte-identity — eski hardcoded metinler", () => {
     expect(tr.search.breadcrumbHome).toBe("Ana sayfa");
     expect(tr.header.contact).toBe("İletişim");
     expect(en.header.contact).toBe("Contact");
-    expect(de.header.contact).toBe("Kontakt");
   });
 });
 
 /* ===============================================================
    D) GÖVDE RENDER
    =============================================================== */
-describe("Gövde render — TR/EN/DE", () => {
-  it.each(["tr", "en", "de"] as const)(
+describe("Gövde render — TR/EN", () => {
+  it.each(["tr", "en"] as const)(
     "15) %s: hero breadcrumb/eyebrow/başlık/açıklama kendi dilinde",
     async (locale) => {
-      const d = { tr, en, de }[locale];
+      const d = { tr, en }[locale];
       await renderBody(locale);
       expect(screen.getByTestId("hero-breadcrumb")).toHaveTextContent(
         `${d.search.breadcrumbHome} / ${d.header.contact}`
@@ -375,10 +364,10 @@ describe("Gövde render — TR/EN/DE", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "16) %s: info başlıkları ve etiketleri kendi dilinde",
     async (locale) => {
-      const c = { tr, en, de }[locale].contact;
+      const c = { tr, en }[locale].contact;
       await renderBody(locale);
       expect(screen.getByText(c.info.title)).toBeInTheDocument();
       expect(screen.getByText(c.info.socialMedia)).toBeInTheDocument();
@@ -391,10 +380,10 @@ describe("Gövde render — TR/EN/DE", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "17) %s: harita bloğu ve iframe title kendi dilinde",
     async (locale) => {
-      const c = { tr, en, de }[locale].contact;
+      const c = { tr, en }[locale].contact;
       await renderBody(locale);
       expect(screen.getByText(c.map.eyebrow)).toBeInTheDocument();
       expect(screen.getByText(c.map.title)).toBeInTheDocument();
@@ -402,10 +391,10 @@ describe("Gövde render — TR/EN/DE", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "18) %s: 3 FAQ kartı kendi dilinde",
     async (locale) => {
-      const c = { tr, en, de }[locale].contact;
+      const c = { tr, en }[locale].contact;
       await renderBody(locale);
       expect(screen.getByText(c.faq.eyebrow)).toBeInTheDocument();
       expect(screen.getByText(c.faq.title)).toBeInTheDocument();
@@ -416,10 +405,10 @@ describe("Gövde render — TR/EN/DE", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "19) %s: CTA bloğu kendi dilinde",
     async (locale) => {
-      const c = { tr, en, de }[locale].contact;
+      const c = { tr, en }[locale].contact;
       await renderBody(locale);
       expect(screen.getByText(c.cta.eyebrow)).toBeInTheDocument();
       expect(screen.getByText(c.cta.titleAccent)).toBeInTheDocument();
@@ -434,10 +423,10 @@ describe("Gövde render — TR/EN/DE", () => {
     }
   );
 
-  it("20) TR görünümünde EN/DE metinleri SIZMAZ (regresyon)", async () => {
+  it("20) TR görünümünde EN metinleri SIZMAZ (regresyon)", async () => {
     await renderBody("tr");
     expect(screen.queryByText(en.contact.info.title)).toBeNull();
-    expect(screen.queryByText(de.contact.map.eyebrow)).toBeNull();
+    expect(screen.queryByText(en.contact.map.eyebrow)).toBeNull();
     expect(screen.getByText(tr.contact.info.title)).toBeInTheDocument();
   });
 });
@@ -446,7 +435,7 @@ describe("Gövde render — TR/EN/DE", () => {
    E) VERİ — ÇEVRİLMEZ + business_hours
    =============================================================== */
 describe("Settings verisi", () => {
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "21) %s: telefon/e-posta/adres/sosyal handle ÇEVRİLMEZ",
     async (locale) => {
       await renderBody(locale);
@@ -460,7 +449,7 @@ describe("Settings verisi", () => {
   );
 
   it("22) sosyal medya bağlantı href'leri canonical kalır", async () => {
-    await renderBody("de");
+    await renderBody("en");
     const links = screen.getAllByRole("link");
     const hrefs = links.map((l) => l.getAttribute("href"));
     expect(hrefs).toContain(SETTINGS.instagram);
@@ -490,16 +479,6 @@ describe("Settings verisi", () => {
     expect(screen.queryByText("Hafta içi 09:00 - 18:00")).toBeNull();
   });
 
-  it("25) DE → business_hours çevirisi gösterilir", async () => {
-    getCachedSettingsMock.mockResolvedValue(
-      settingsWith({
-        translations: { de: { business_hours: "Werktags 09:00 - 18:00" } },
-      })
-    );
-    await renderBody("de");
-    expect(screen.getByText("Werktags 09:00 - 18:00")).toBeInTheDocument();
-  });
-
   it("26) çeviri YOK → TR canonical fallback", async () => {
     getCachedSettingsMock.mockResolvedValue(settingsWith({ translations: {} }));
     await renderBody("en");
@@ -509,7 +488,7 @@ describe("Settings verisi", () => {
   it("27) BOŞ / WHITESPACE çeviri → TR canonical fallback", async () => {
     getCachedSettingsMock.mockResolvedValue(
       settingsWith({
-        translations: { en: { business_hours: "   " }, de: { business_hours: "" } },
+        translations: { en: { business_hours: "   " } },
       })
     );
     await renderBody("en");
@@ -530,10 +509,10 @@ describe("Settings verisi", () => {
    F) FORM
    =============================================================== */
 describe("ContactForm — çoklu dil", () => {
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "29) %s: label/placeholder/buton metinleri kendi dilinde",
     (locale) => {
-      const f = { tr, en, de }[locale].contact.form;
+      const f = { tr, en }[locale].contact.form;
       render(<ContactForm locale={locale} />);
       expect(screen.getByText(f.nameLabel)).toBeInTheDocument();
       expect(screen.getByPlaceholderText(f.namePlaceholder)).toBeInTheDocument();
@@ -552,10 +531,10 @@ describe("ContactForm — çoklu dil", () => {
     expect(screen.getByText("Gönder")).toBeInTheDocument();
   });
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "31) %s: ad zorunlu validation mesajı kendi dilinde",
     async (locale) => {
-      const f = { tr, en, de }[locale].contact.form;
+      const f = { tr, en }[locale].contact.form;
       render(<ContactForm locale={locale} />);
       /* time-trap'i aşmak için mount zamanını geriye al. */
       vi.setSystemTime(new Date(Date.now() + 5000));
@@ -567,10 +546,10 @@ describe("ContactForm — çoklu dil", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "32) %s: mesaj uzunluğu validation'ı `{n}` ile doldurulur",
     async (locale) => {
-      const f = { tr, en, de }[locale].contact.form;
+      const f = { tr, en }[locale].contact.form;
       render(<ContactForm locale={locale} />);
       fireEvent.change(screen.getByPlaceholderText(f.namePlaceholder), {
         target: { value: "Ad" },
@@ -586,10 +565,10 @@ describe("ContactForm — çoklu dil", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "33) %s: telefon/e-posta zorunluluğu kendi dilinde",
     async (locale) => {
-      const f = { tr, en, de }[locale].contact.form;
+      const f = { tr, en }[locale].contact.form;
       render(<ContactForm locale={locale} />);
       fireEvent.change(screen.getByPlaceholderText(f.namePlaceholder), {
         target: { value: "Ad" },
@@ -608,8 +587,8 @@ describe("ContactForm — çoklu dil", () => {
     }
   );
 
-  async function submitValid(locale: "tr" | "en" | "de") {
-    const f = { tr, en, de }[locale].contact.form;
+  async function submitValid(locale: "tr" | "en") {
+    const f = { tr, en }[locale].contact.form;
     render(<ContactForm locale={locale} />);
     fireEvent.change(screen.getByPlaceholderText(f.namePlaceholder), {
       target: { value: "Ad Soyad" },
@@ -626,7 +605,7 @@ describe("ContactForm — çoklu dil", () => {
     return f;
   }
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "34) %s: başarı mesajı kendi dilinde",
     async (locale) => {
       vi.stubGlobal(
@@ -642,7 +621,7 @@ describe("ContactForm — çoklu dil", () => {
     }
   );
 
-  it.each(["tr", "en", "de"] as const)(
+  it.each(["tr", "en"] as const)(
     "35) %s: SUNUCU hata metni UI'a SIZMAZ → generic locale mesajı",
     async (locale) => {
       vi.stubGlobal(
@@ -682,7 +661,7 @@ describe("ContactForm — çoklu dil", () => {
       .fn()
       .mockResolvedValue({ ok: true, json: async () => ({ ok: true }) });
     vi.stubGlobal("fetch", fetchMock);
-    await submitValid("de");
+    await submitValid("en");
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("/api/public/contact");
@@ -706,20 +685,18 @@ describe("ContactForm — çoklu dil", () => {
    G) SEO / METADATA
    =============================================================== */
 describe("Metadata", () => {
-  it("38) contactPath() üç locale için doğru", () => {
+  it("38) contactPath() iki locale için doğru", () => {
     expect(CONTACT_TR_PATH).toBe("/iletisim");
     expect(contactPath("tr")).toBe("/iletisim");
     expect(contactPath("en")).toBe("/en/iletisim");
-    expect(contactPath("de")).toBe("/de/iletisim");
   });
 
   it.each([
     ["tr", "/iletisim"],
     ["en", "/en/iletisim"],
-    ["de", "/de/iletisim"],
   ] as const)("39) %s: canonical '%s' + locale başlık", async (locale, canonical) => {
     const meta = await buildContactMetadata(locale);
-    const d = { tr, en, de }[locale].contact.meta;
+    const d = { tr, en }[locale].contact.meta;
     expect(meta.title).toBe(d.title.replace("{brand}", "Tatilin Yeri"));
     expect(meta.description).toBe(d.description);
     expect(meta.alternates?.canonical).toBe(canonical);
@@ -731,7 +708,6 @@ describe("Metadata", () => {
     expect(meta.alternates?.languages).toEqual({
       tr: "/iletisim",
       en: "/en/iletisim",
-      de: "/de/iletisim",
       "x-default": "/iletisim",
     });
   });
@@ -760,17 +736,16 @@ describe("Locale switch", () => {
     expect(hasLocaleRoute("/iletisim")).toBe(true);
   });
 
-  it("44) /de/iletisim → EN/TR hedefleri doğru", () => {
-    expect(getLocaleSwitchTargets("/de/iletisim")).toEqual({
+  it("44) /en/iletisim → EN/TR hedefleri doğru (de hedefi YOK)", () => {
+    expect(getLocaleSwitchTargets("/en/iletisim")).toEqual({
       tr: "/iletisim",
       en: "/en/iletisim",
-      de: "/de/iletisim",
     });
   });
 
   it("45) query string KORUNUR", () => {
     const q = "utm_source=mail&x=1";
-    const t = getLocaleSwitchTargets("/de/iletisim", q);
+    const t = getLocaleSwitchTargets("/en/iletisim", q);
     expect(t.en).toBe(`/en/iletisim?${q}`);
     expect(t.tr).toBe(`/iletisim?${q}`);
   });
@@ -830,7 +805,7 @@ describe("SOURCE-LOCK — hardcoded TR kalmadı", () => {
   });
 
   it("50) GERÇEK iletişim verisi dictionary'ye ALINMADI", () => {
-    for (const d of [tr, en, de]) {
+    for (const d of [tr, en]) {
       const values = leafValues(d.contact).join(" ");
       /* Gerçek telefon/e-posta/adres/sosyal URL HİÇBİR dilde yok.
          (`form.emailPlaceholder` bilinçli bir ÖRNEK metindir —
@@ -841,7 +816,7 @@ describe("SOURCE-LOCK — hardcoded TR kalmadı", () => {
       expect(values).not.toMatch(/\+90\s?5\d\d\s?\d{3}/);
     }
     /* Placeholder dışında hiçbir değerde "@" yok. */
-    for (const d of [tr, en, de]) {
+    for (const d of [tr, en]) {
       const others = leafValues(d.contact).filter(
         (v) => v !== d.contact.form.emailPlaceholder
       );
