@@ -559,6 +559,45 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
      hem yeni sunumu hem de "iş mantığı değişmedi" garantisini kilitler.
   =============================================================== */
 
+  /* 🔄 DİL ÇİPLERİ (md+) — Header'dan TopBar'a taşındı. Dropdown
+     kapalıyken DOM'daki tek dil linkleri çiplerdir. */
+  it("43b) TR/EN/DE çipleri — aktif dil vurgulu, hedefler aynı sayfada kalır", async () => {
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
+    getPublicSettingsMock.mockResolvedValue(
+      settingsWith({ multilingual_enabled: true })
+    );
+    const { container } = render(<TopBar />);
+    await screen.findByLabelText(LANGUAGE_LABEL.tr);
+    const active = container.querySelector('span[aria-current="true"]');
+    expect(active?.textContent).toBe("TR");
+    expect(container.querySelector('a[href="/en/kiralik-villa/test"]')).toBeTruthy();
+    expect(container.querySelector('a[href="/de/kiralik-villa/test"]')).toBeTruthy();
+  });
+
+  it("43c) çipler query string'i korur (arama sayfası)", async () => {
+    usePathnameMock.mockReturnValue("/arama");
+    useSearchParamsMock.mockReturnValue(new URLSearchParams(ARAMA_QUERY));
+    getPublicSettingsMock.mockResolvedValue(
+      settingsWith({ multilingual_enabled: true })
+    );
+    const { container } = render(<TopBar />);
+    await screen.findByLabelText(LANGUAGE_LABEL.tr);
+    expect(
+      container.querySelector(`a[href="/en/arama?${ARAMA_QUERY}"]`)
+    ).toBeTruthy();
+  });
+
+  it("43d) multilingual KAPALI → çip YOK", async () => {
+    usePathnameMock.mockReturnValue("/");
+    getPublicSettingsMock.mockResolvedValue(
+      settingsWith({ multilingual_enabled: false })
+    );
+    const { container } = render(<TopBar />);
+    await screen.findByText("TRY");
+    expect(container.querySelector('span[aria-current="true"]')).toBeNull();
+    expect(container.querySelector('a[href="/en"]')).toBeNull();
+  });
+
   it("44) KUR dropdown'ı — her seçenek KENDİ sembolünü gösterir", async () => {
     usePathnameMock.mockReturnValue("/");
     getPublicSettingsMock.mockResolvedValue(

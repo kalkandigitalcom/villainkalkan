@@ -243,7 +243,6 @@ export default async function HeaderWrapper() {
       siteLogo={siteLogo}
       trHomeHref={trHomeHref}
       footerLogo={footerLogo}
-      multilingualEnabled={multilingualEnabled}
     />
   );
 }

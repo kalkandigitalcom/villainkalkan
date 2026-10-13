@@ -147,6 +147,86 @@ function LocaleSwitchOptions({
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   🛡️ DİL ÇİPLERİ (md+) — TR / EN / DE yan yana; aktif dil vurgulu
+   ═══════════════════════════════════════════════════════════════
+   Header'dan TopBar'a TAŞINDI. Hedefler dropdown ile AYNI üreticiden
+   (`getLocaleSwitchTargets`) gelir → aynı sayfada kalma + query string
+   koruması BİREBİR. `useSearchParams()` nedeniyle çağrı yerinde
+   <Suspense> ile sarılır; fallback query'siz hedefleri kullanır. */
+function LocaleChipLinks({
+  locale,
+  targets,
+  label,
+}: {
+  locale: Locale;
+  targets: Record<Locale, string>;
+  label: string;
+}) {
+  const base =
+    "inline-flex items-center gap-1.5 h-[26px] px-2 rounded-md text-[12.5px] font-medium tracking-[0.04em] transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60";
+  return (
+    <div className="flex items-center gap-1.5">
+      {SUPPORTED_LOCALES.map((l: Locale) => {
+        const inner = (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LOCALE_FLAGS[l]}
+              alt=""
+              className="w-4 h-3 rounded-[1px] object-cover shrink-0"
+            />
+            {l.toUpperCase()}
+          </>
+        );
+        return l === locale ? (
+          <span
+            key={l}
+            aria-current="true"
+            title={`${label}: ${l.toUpperCase()}`}
+            className={base + " bg-[#C9A55A] text-white"}
+          >
+            {inner}
+          </span>
+        ) : (
+          <Link
+            key={l}
+            href={targets[l]}
+            hrefLang={l}
+            title={`${label}: ${l.toUpperCase()}`}
+            className={
+              base +
+              " border !border-white/20 bg-white/[0.06] text-white/80 hover:bg-white/15 hover:text-white"
+            }
+          >
+            {inner}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function LocaleChipsWithQuery(props: {
+  locale: Locale;
+  pathname: string | null;
+  trHomePath: string;
+  label: string;
+}) {
+  const searchParams = useSearchParams();
+  return (
+    <LocaleChipLinks
+      locale={props.locale}
+      label={props.label}
+      targets={getLocaleSwitchTargets(
+        props.pathname,
+        searchParams?.toString() ?? "",
+        props.trHomePath
+      )}
+    />
+  );
+}
+
 export default function TopBar() {
   /* 🛡️ Faz 9 hardening: `useState<any>` → `Settings | null`. DEĞİŞMEDİ. */
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -284,8 +364,30 @@ export default function TopBar() {
           yaslayan yerleşim boşluğu. */}
       <div aria-hidden className="flex-1 min-w-0" />
 
-      {/* SAĞ — Kur seçici (TÜM breakpoint'lerde görünür) + dil seçici. */}
+      {/* SAĞ — Dil seçici (md+: TR/EN/DE çipleri; mobil: kompakt dropdown)
+          + Kur seçici (TÜM breakpoint'lerde görünür). */}
       <div className="flex items-center gap-3 md:gap-4 shrink-0">
+        {multilingualEnabled && (
+          <div className="hidden md:flex">
+            <Suspense
+              fallback={
+                <LocaleChipLinks
+                  locale={locale}
+                  label={dictionary.common.language}
+                  targets={getLocaleSwitchTargets(pathname, "", trHomeHref)}
+                />
+              }
+            >
+              <LocaleChipsWithQuery
+                locale={locale}
+                pathname={pathname}
+                trHomePath={trHomeHref}
+                label={dictionary.common.language}
+              />
+            </Suspense>
+          </div>
+        )}
+
         {/* Kur seçici — MEKANİK DEĞİŞMEDİ (aynı state/dışa-tık/useCurrency);
             yalnız görsel stil "modern/kompakt/premium" hedefiyle yenilendi. */}
         <div className="relative shrink-0" ref={curRef}>
@@ -365,10 +467,11 @@ export default function TopBar() {
             stili. State/ref TAMAMEN AYRI (`langOpen`/`langRef`).
             Yalnız `multilingualEnabled` iken render edilir — kapalı/
             null/hata durumunda hiçbir DOM eklenmez (fail-safe). */}
-        {/* 🛡️ HEADER REDESIGN — xl+ ekranlarda dil seçimi header'daki
-            TR/EN/DE çiplerinde; burada yalnız daha dar ekranlarda. */}
+        {/* Mobil (<md): çipler yerine yer kazandıran kompakt dropdown —
+            md+ ekranlarda yukarıdaki TR/EN/DE çipleri kullanılır, aynı
+            seçici iki kez GÖRÜNMEZ. */}
         {multilingualEnabled && (
-          <div className="relative shrink-0 xl:hidden" ref={langRef}>
+          <div className="relative shrink-0 md:hidden" ref={langRef}>
             <button
               type="button"
               onClick={() => setLangOpen((o) => !o)}

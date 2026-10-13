@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import TopBar from "./TopBar";
 /* 🛡️ FAZ 36 — Favorites shortcut (localStorage badge counter) */
 import HeaderFavoritesLink from "@/app/components/favorites/HeaderFavoritesLink";
@@ -29,11 +29,7 @@ import {
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
   localeFromPathname,
-  type Locale,
 } from "@/lib/i18n/config";
-/* 🛡️ HEADER REDESIGN — dil çipleri, TopBar dil seçicisiyle AYNI hedef
-   üreticiyi kullanır (yeni routing/i18n mantığı YOK). */
-import { getLocaleSwitchTargets } from "@/lib/i18n/locale-switch.helper";
 /* 🛡️ NAVIGATION LOCALE PERSISTENCE — iç linkler aktif locale'i taşır.
    Yeni bir routing sistemi DEĞİL; `buildLocaleAlternates` (Phase 7B)
    üzerine ince, saf sarmalayıcı (bkz. lib/i18n/locale-href.ts). */
@@ -90,108 +86,18 @@ import {
    - Ana sayfada (/, /tr, /en, /de) header hero görselinin ÜZERİNDE
      şeffaf durur; scroll / mobil menü açıkken ve iç sayfalarda koyu
      lacivert zemine geçer. Spacer yalnız iç sayfalarda basılır.
-   - Sağ alan: TR/EN/DE dil çipleri (xl+), mevcut arama + favoriler,
-     altın "Teklif Al" CTA'sı (hedef AYNEN /teklif-al).
-   - Daha dar ekranlarda dil seçimi TopBar'da kalır; telefon her
-     breakpoint'te YALNIZ TopBar'dadır → tekrar yok, işlev kaybı yok.
+   - Sağ alan: mevcut arama + favoriler. Dil seçici ve telefon YALNIZ
+     TopBar'da; "Teklif Al" CTA'sı sol kenardaki sabit FloatingQuoteCta
+     bileşeninde (public layout) → header'da tekrar yok.
    - Menü verisi, locale href'leri, arama, favoriler, mobil menü
      state/accordion mantığı DEĞİŞMEDİ; yalnız görsel katman.
    =============================================================== */
-
-/** Altın vurgu — yalnız header/hero CTA'larında kullanılır (global
- *  tema token'larına DOKUNULMADI). */
-const GOLD_CTA_CLASS =
-  "bg-[#C9A55A] hover:bg-[#BB9649] text-white " +
-  "shadow-[0_10px_24px_-12px_rgba(201,165,90,0.75)] " +
-  "transition-colors duration-300 motion-reduce:transition-none " +
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1f3a]";
-
-/** TopBar ile AYNI bayrak asset'leri (public/flags). */
-const LOCALE_FLAGS: Record<Locale, string> = {
-  tr: "/flags/tr.svg",
-  en: "/flags/gb.svg",
-  de: "/flags/de.svg",
-};
 
 /** Ana sayfa yolları — header'ın hero üzerinde şeffaf durduğu yerler. */
 const HOME_PATHS = new Set<string>([
   "/",
   ...SUPPORTED_LOCALES.map((l) => `/${l}`),
 ]);
-
-function LocaleChipLinks({
-  locale,
-  targets,
-  label,
-}: {
-  locale: Locale;
-  targets: Record<Locale, string>;
-  label: string;
-}) {
-  return (
-    <div role="group" aria-label={label} className="flex items-center gap-1.5">
-      {SUPPORTED_LOCALES.map((l) => {
-        const active = l === locale;
-        const inner = (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={LOCALE_FLAGS[l]}
-              alt=""
-              className="w-[18px] h-[13px] rounded-[2px] object-cover shrink-0"
-            />
-            {l.toUpperCase()}
-          </>
-        );
-        const base =
-          "inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12.5px] font-medium tracking-[0.04em] transition-colors duration-200 motion-reduce:transition-none";
-        return active ? (
-          <span
-            key={l}
-            aria-current="true"
-            className={base + " bg-[#C9A55A] text-white"}
-          >
-            {inner}
-          </span>
-        ) : (
-          <Link
-            key={l}
-            href={targets[l]}
-            className={
-              base +
-              " border !border-white/25 bg-white/10 text-white/85 hover:bg-white/20 hover:text-white"
-            }
-          >
-            {inner}
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
-/* Query string'i koruyan varyant — `useSearchParams()` statik
-   prerender'da en yakın Suspense'e kadar client-render zorladığı için
-   çağrı yerinde <Suspense> ile sarılır (TopBar ile aynı desen). */
-function LocaleChipsWithQuery(props: {
-  locale: Locale;
-  pathname: string | null;
-  trHomeHref: string;
-  label: string;
-}) {
-  const searchParams = useSearchParams();
-  return (
-    <LocaleChipLinks
-      locale={props.locale}
-      label={props.label}
-      targets={getLocaleSwitchTargets(
-        props.pathname,
-        searchParams?.toString() ?? "",
-        props.trHomeHref
-      )}
-    />
-  );
-}
 
 type MenuItem = {
   id?: string;
@@ -209,7 +115,6 @@ export default function Header({
   siteLogo = null,
   trHomeHref = "/",
   footerLogo = null,
-  multilingualEnabled = false,
 }: {
   menu?: MenuItem[];
   /* settings.site_logo — boşsa text wordmark fallback */
@@ -217,8 +122,6 @@ export default function Header({
   /* settings.footer_logo — koyu zemin için açık/negatif logo. Koyu
      (dolu) header durumunda varsa kullanılır, yoksa site_logo. */
   footerLogo?: string | null;
-  /* settings.multilingual_enabled — dil çipleri yalnız açıkken. */
-  multilingualEnabled?: boolean;
   /* 🔄 TR ana sayfanın yolu. Varsayılan dil EN/DE iken "/" bir
      YÖNLENDİRİCİ olduğu için HeaderWrapper "/tr" geçer; aksi halde
      (ve prop hiç verilmezse) "/" → davranış BYTE-IDENTICAL. */
@@ -306,26 +209,6 @@ export default function Header({
           : "shadow-none"));
   /* Koyu (dolu) durumda açık logo varyantı tercih edilir. */
   const logoSrc = overHero ? siteLogo : footerLogo || siteLogo;
-  /* "Teklif Al" CTA'sı — hedef dile uygun /teklif-al; etiket sözlükten
-     (`header.offer`: Teklif Al / Get a Quote / Angebot anfordern). */
-  const offerHref = localeHref("/teklif-al", locale);
-  const offerLabel = dictionary.header.offer;
-
-  /* 🛡️ TEKLİF AL (desktop) — sağ aksiyon alanının sonunda; DB menü
-     sırasından bağımsız. */
-  const offerDesktopCta = (
-    <Link
-      href={offerHref}
-      className={
-        "inline-flex items-center justify-center whitespace-nowrap " +
-        "h-11 px-6 rounded-full text-[14.5px] font-semibold tracking-[0.01em] " +
-        GOLD_CTA_CLASS
-      }
-    >
-      {offerLabel}
-    </Link>
-  );
-
   return (
     <>
       <header className="w-full fixed top-0 z-50">
@@ -433,8 +316,8 @@ export default function Header({
               })}
             </nav>
 
-            {/* RIGHT — dil çipleri + arama + favoriler + CTA.
-               Dil çipleri xl+ (daha dar ekranlarda TopBar'da). */}
+            {/* RIGHT — arama + favoriler. Dil seçici TopBar'da; "Teklif
+               Al" sol kenardaki sabit CTA'da (FloatingQuoteCta). */}
             <div
               className="
                 hidden md:flex items-center gap-2 lg:gap-3 shrink-0
@@ -442,27 +325,6 @@ export default function Header({
                 [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white
               "
             >
-              {multilingualEnabled && (
-                <div className="hidden xl:flex">
-                  <Suspense
-                    fallback={
-                      <LocaleChipLinks
-                        locale={locale}
-                        label={dictionary.common.language}
-                        targets={getLocaleSwitchTargets(pathname, "", trHomeHref)}
-                      />
-                    }
-                  >
-                    <LocaleChipsWithQuery
-                      locale={locale}
-                      pathname={pathname}
-                      trHomeHref={trHomeHref}
-                      label={dictionary.common.language}
-                    />
-                  </Suspense>
-                </div>
-              )}
-
               {/* SEARCH — paylaşılan VillaSearchBox (mantık AYNEN). Koyu/
                  şeffaf zemin için yalnız görsel override (descendant). */}
               <div
@@ -479,8 +341,6 @@ export default function Header({
               {/* Favorites shortcut (FAZ 36) — renk override'ı üst
                  sarmalayıcıda (açık metin). */}
               <HeaderFavoritesLink locale={locale} />
-
-              {offerDesktopCta}
             </div>
 
             {/* 🛡️ MOBILE ACTIONS — search input + hamburger toggle.
@@ -510,23 +370,8 @@ export default function Header({
                  drawer içi "Favorilerim" satırı kaldırıldı. */}
               <HeaderFavoritesLink locale={locale} />
 
-              {/* 🛡️ MOBİL TEKLİF AL — hamburger toggle'dan TAMAMEN bağımsız
-                 ayrı bir <Link>; `open` state'ine dokunmaz. Hedef AYNEN
-                 /teklif-al (locale korunur). */}
-              <Link
-                href={offerHref}
-                className={
-                  "relative inline-flex items-center justify-center shrink-0 whitespace-nowrap " +
-                  "px-3 sm:px-4 py-2 rounded-full text-[12px] sm:text-[12.5px] font-semibold " +
-                  "active:scale-[0.97] " +
-                  GOLD_CTA_CLASS
-                }
-              >
-                {offerLabel}
-              </Link>
-
               {/* HAMBURGER — aç/kapa davranışı birebir korundu. Görünür
-                 "Menü" metni kaldırıldı (yerini Teklif Al CTA'sı aldı);
+                 "Menü" metni kaldırıldı;
                  yalnız ikon kalır, simetrik padding ile tap alanı korunur.
                  Kapanış (manuel ya da route değişimiyle) submenu state'ini
                  de temizler (closeMobileMenu → openSubmenus sıfırlanır). */}

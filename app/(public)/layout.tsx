@@ -15,6 +15,7 @@ import MaintenanceScreen from "@/app/components/layout/MaintenanceScreen";
 import FloatingSocial from "@/app/components/layout/FloatingSocial";
 import BottomNav from "@/app/components/layout/BottomNav";
 import ScrollToTopButton from "@/app/components/layout/ScrollToTopButton";
+import FloatingQuoteCta from "@/app/components/layout/FloatingQuoteCta";
 import { getCachedSettings } from "@/lib/cache.helpers";
 import { resolvePublicHome } from "@/lib/i18n/public-home";
 /* 🛡️ SEC-05 Phase 2 — GTM + custom head/analytics alanları root
@@ -125,6 +126,11 @@ export default async function PublicLayout({
          (mobil MobileBookingCta bar'ını temizler). Additive; layout
          yapısına dokunmaz. */}
       <ScrollToTopButton />
+
+      {/* 💬 Sol kenardan çıkan sabit "Teklif Al" CTA'sı — Header'daki
+         eski butonun yerini alır; public layout'ta TEK kez render edilir
+         (admin'de yok), teklif sayfasının kendisinde gizlenir. */}
+      <FloatingQuoteCta />
 
       {/* 🍪 Çerez onay banner'ı — client-only island, SSR-safe, additive.
          Bakım modunda render edilmez (yukarıdaki early-return). */}

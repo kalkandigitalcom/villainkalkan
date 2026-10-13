@@ -54,6 +54,7 @@ vi.mock("@/app/components/favorites/FavoritesContext", () => ({
 }));
 
 import Header from "@/app/components/layout/Header";
+import FloatingQuoteCta from "@/app/components/layout/FloatingQuoteCta";
 import Footer from "@/app/components/layout/Footer";
 
 const LOCALES = ["tr", "en", "de"] as const;
@@ -101,6 +102,19 @@ function allHrefs(container: HTMLElement): string[] {
 /* ===============================================================
    A) localeHref — birim davranışı
    =============================================================== */
+
+/* Public layout'taki gezinme kabuğu: Header + sol kenardaki sabit
+   "Teklif Al" CTA'sı (FloatingQuoteCta). CTA header'dan bu bileşene
+   taşındığı için locale kalıcılığı ikisi BİRLİKTE doğrulanır. */
+function PublicChrome() {
+  return (
+    <>
+      <Header menu={MENU} siteLogo={null} />
+      <FloatingQuoteCta />
+    </>
+  );
+}
+
 describe("localeHref — birim davranışı", () => {
   it("1) TR çıktısı GİRDİYLE BİREBİR AYNI (canonical route korunur)", () => {
     for (const p of ["/", "/teklif-al", "/p/x", "/arama?a=1", "/blog/y"]) {
@@ -152,7 +166,7 @@ describe("Header — iç linkler aktif locale'i taşır", () => {
   it.each(LOCALES)("6) %s: logo · CTA · menü · alt menü doğru prefix", (loc) => {
     usePathnameMock.mockReturnValue(ON_PAGE[loc]);
     const { container } = render(
-      <Header menu={MENU} siteLogo={null} />
+      <PublicChrome />
     );
     const p = PREFIX[loc];
 
@@ -177,7 +191,7 @@ describe("Header — iç linkler aktif locale'i taşır", () => {
 
   it("7) EN'de HİÇBİR iç link prefix'siz TR route'una gitmiyor", () => {
     usePathnameMock.mockReturnValue(ON_PAGE.en);
-    const { container } = render(<Header menu={MENU} siteLogo={null} />);
+    const { container } = render(<PublicChrome />);
     for (const h of allHrefs(container)) {
       expect(h, `prefix'siz link: ${h}`).toMatch(/^\/en(\/|$|\?)/);
     }
@@ -185,7 +199,7 @@ describe("Header — iç linkler aktif locale'i taşır", () => {
 
   it("8) DE'de HİÇBİR iç link prefix'siz TR route'una gitmiyor", () => {
     usePathnameMock.mockReturnValue(ON_PAGE.de);
-    const { container } = render(<Header menu={MENU} siteLogo={null} />);
+    const { container } = render(<PublicChrome />);
     for (const h of allHrefs(container)) {
       expect(h, `prefix'siz link: ${h}`).toMatch(/^\/de(\/|$|\?)/);
     }
@@ -193,7 +207,7 @@ describe("Header — iç linkler aktif locale'i taşır", () => {
 
   it("9) TR'de linkler canonical (prefix'siz) KALIR — TR davranışı değişmedi", () => {
     usePathnameMock.mockReturnValue(ON_PAGE.tr);
-    const { container } = render(<Header menu={MENU} siteLogo={null} />);
+    const { container } = render(<PublicChrome />);
     for (const h of allHrefs(container)) {
       expect(h).not.toMatch(/^\/(en|de)(\/|$)/);
     }
@@ -301,7 +315,7 @@ describe("Uçtan uca: locale seç → navigasyon → locale korunuyor", () => {
 
       /* 3) Yeni sayfada Header render edilir; iç linkler `to` taşımalı. */
       usePathnameMock.mockReturnValue(target);
-      const { container } = render(<Header menu={MENU} siteLogo={null} />);
+      const { container } = render(<PublicChrome />);
       const p = PREFIX[to];
       expect(container.querySelector(`a[href="${p}/teklif-al"]`)).toBeTruthy();
 
@@ -314,14 +328,14 @@ describe("Uçtan uca: locale seç → navigasyon → locale korunuyor", () => {
     for (const loc of LOCALES) {
       usePathnameMock.mockReturnValue(ON_PAGE[loc]);
       const { container, unmount } = render(
-        <Header menu={MENU} siteLogo={null} />
+        <PublicChrome />
       );
       const p = PREFIX[loc];
       expect(container.querySelector(`a[href="${p}/teklif-al"]`)).toBeTruthy();
       unmount();
       /* İkinci render (refresh) → BİREBİR aynı sonuç (state'siz). */
       usePathnameMock.mockReturnValue(ON_PAGE[loc]);
-      const again = render(<Header menu={MENU} siteLogo={null} />);
+      const again = render(<PublicChrome />);
       expect(
         again.container.querySelector(`a[href="${p}/teklif-al"]`)
       ).toBeTruthy();
@@ -331,7 +345,7 @@ describe("Uçtan uca: locale seç → navigasyon → locale korunuyor", () => {
 
   it("19) çok adımlı gezinti: /en → menü → /en/p/... → CTA → /en/teklif-al", () => {
     usePathnameMock.mockReturnValue("/en");
-    const first = render(<Header menu={MENU} siteLogo={null} />);
+    const first = render(<PublicChrome />);
     const menuHref = href(
       first.container.querySelector('a[href^="/en/p/"]')
     );
@@ -339,7 +353,7 @@ describe("Uçtan uca: locale seç → navigasyon → locale korunuyor", () => {
     first.unmount();
 
     usePathnameMock.mockReturnValue(menuHref);
-    const second = render(<Header menu={MENU} siteLogo={null} />);
+    const second = render(<PublicChrome />);
     expect(
       second.container.querySelector('a[href="/en/teklif-al"]')
     ).toBeTruthy();
