@@ -1,9 +1,11 @@
 /* ===============================================================
    🛡️ HEADER — sticky (scroll) tema durumları
    ===============================================================
-   • Ana sayfa, en üstte      → şeffaf zemin, açık metin, site logosu
+   • Ana sayfa, en üstte      → şeffaf zemin, açık metin, AÇIK logo
+                                (footer_logo) görünür
    • Ana sayfa, kaydırılmış   → BEYAZ zemin, petrol (#244C45) metin,
-                                site logosu (koyu varyant)
+                                KOYU logo (site_logo) görünür
+     (ana sayfada iki varyant aynı hücrede; yalnız opaklık değişir)
    • İç sayfa (her durumda)   → petrol zemin, açık metin, footer logosu
    Ağır alt bileşenler shallow mock'lanır (header-locale.test ile aynı).
    =============================================================== */
@@ -42,7 +44,9 @@ function renderAt(pathname: string) {
   const shell = utils.container.querySelector("header > div") as HTMLElement;
   const nav = utils.container.querySelector("nav") as HTMLElement;
   const logo = utils.container.querySelector("header img") as HTMLImageElement;
-  return { ...utils, shell, nav, logo };
+  const light = utils.container.querySelector('img[data-logo-variant="light"]') as HTMLImageElement | null;
+  const dark = utils.container.querySelector('img[data-logo-variant="dark"]') as HTMLImageElement | null;
+  return { ...utils, shell, nav, logo, light, dark };
 }
 
 describe("Header — sticky tema", () => {
@@ -52,30 +56,58 @@ describe("Header — sticky tema", () => {
   });
   afterEach(() => setScroll(0));
 
-  it("1) ana sayfa en üstte → şeffaf zemin + açık metin + site logosu (DEĞİŞMEDİ)", () => {
-    const { shell, nav, logo } = renderAt("/");
+  it("1) ana sayfa en üstte → şeffaf zemin + açık metin + AÇIK logo görünür", () => {
+    const { shell, nav, light, dark } = renderAt("/");
     expect(shell.className).toContain("bg-[#244c45]/10");
     expect(shell.className).not.toContain("bg-white/95");
     expect(nav.className).toContain("text-white/85");
-    expect(logo.getAttribute("src")).toBe(SITE_LOGO);
+    expect(light!.getAttribute("src")).toBe(FOOTER_LOGO);
+    expect(dark!.getAttribute("src")).toBe(SITE_LOGO);
+    expect(light!.className).toContain("opacity-100");
+    expect(dark!.className).toContain("opacity-0");
+    expect(light!.getAttribute("alt")).toBe("Site logosu");
+    expect(dark!.getAttribute("aria-hidden")).toBe("true");
   });
 
-  it("2) ana sayfa kaydırılınca → beyaz zemin + petrol metin + site logosu", () => {
-    const { shell, nav, logo } = renderAt("/");
+  it("2) ana sayfa kaydırılınca → beyaz zemin + petrol metin ", () => {
+    const { shell, nav } = renderAt("/");
     setScroll(200);
     expect(shell.className).toContain("bg-white/95");
     expect(shell.className).not.toContain("bg-[var(--color-stone-900)]/95");
     expect(shell.className).toContain("transition-[background-color,box-shadow,border-color]");
     expect(nav.className).toContain("text-[#244C45]/80");
     expect(nav.className).not.toContain("text-white/85");
-    expect(logo.getAttribute("src")).toBe(SITE_LOGO);
   });
 
-  it("3) EN/DE ana sayfaları da aynı sticky beyaz temayı kullanır", () => {
-    for (const p of ["/en", "/de"]) {
-      const { shell, unmount } = renderAt(p);
+  it("2b) kaydırınca KOYU logo görünür, açık logo gizlenir (aynı hücre → kayma yok)", () => {
+    const { light, dark } = renderAt("/");
+    setScroll(200);
+    expect(dark!.className).toContain("opacity-100");
+    expect(light!.className).toContain("opacity-0");
+    expect(dark!.getAttribute("alt")).toBe("Site logosu");
+    expect(light!.getAttribute("aria-hidden")).toBe("true");
+    for (const img of [light!, dark!]) {
+      expect(img.className).toContain("col-start-1");
+      expect(img.className).toContain("row-start-1");
+      expect(img.className).toContain("md:h-16");
+    }
+  });
+
+  it("2c) footer_logo yoksa ana sayfada tek logo (site_logo) — kırılmaz", () => {
+    usePathnameMock.mockReturnValue("/");
+    const { container } = render(<Header menu={MENU} siteLogo={SITE_LOGO} footerLogo={null} />);
+    const imgs = container.querySelectorAll("header img");
+    expect(imgs).toHaveLength(1);
+    expect(imgs[0].getAttribute("src")).toBe(SITE_LOGO);
+  });
+
+  it("3) TR/EN/DE ana sayfaları aynı logo + sticky beyaz temayı kullanır", () => {
+    for (const p of ["/", "/tr", "/en", "/de"]) {
+      const { shell, light, dark, unmount } = renderAt(p);
+      expect(light!.className, p).toContain("opacity-100");
       setScroll(200);
       expect(shell.className, p).toContain("bg-white/95");
+      expect(dark!.className, p).toContain("opacity-100");
       unmount();
       setScroll(0);
     }
@@ -101,12 +133,14 @@ describe("Header — sticky tema", () => {
   });
 
   it("5b) ana sayfa logosu büyük (h-12 / md:h-16), oran korunur — şeffaf ve sticky", () => {
-    const { logo } = renderAt("/");
-    for (const c of ["h-12", "md:h-16", "w-auto", "object-contain"]) {
-      expect(logo.className, c).toContain(c);
+    const { light, dark } = renderAt("/");
+    for (const img of [light!, dark!]) {
+      for (const c of ["h-12", "md:h-16", "w-auto", "object-contain"]) {
+        expect(img.className, c).toContain(c);
+      }
     }
     setScroll(200);
-    expect(logo.className).toContain("md:h-16");
+    expect(dark!.className).toContain("md:h-16");
   });
 
   it("5c) iç sayfa logo boyutu DEĞİŞMEDİ (h-9 / md:h-12)", () => {

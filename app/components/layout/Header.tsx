@@ -220,10 +220,20 @@ export default function Header({
           (scrolled
             ? "shadow-[0_10px_30px_-14px_rgba(0,0,0,0.45)]"
             : "shadow-none"));
-  /* Koyu (dolu) durumda açık logo varyantı; hero üzerinde ve beyaz
-     sticky zeminde asıl (koyu) site logosu. */
-  const logoSrc =
-    overHero || lightSticky ? siteLogo : footerLogo || siteLogo;
+  /* 🛡️ LOGO VARYANTLARI — mevcut iki ayar (Genel Ayarlar):
+       • site_logo   → koyu/asıl logo (açık zemin)
+       • footer_logo → beyaz/negatif logo (koyu zemin; footer'da da bu)
+     Koyu zemin (hero üzerinde şeffaf ve petrol header) → footer_logo
+     (yoksa site_logo); beyaz sticky → site_logo. İç sayfa davranışı
+     ESKİSİYLE AYNI (footer_logo || site_logo). */
+  const lightLogo = footerLogo || siteLogo;
+  const logoSrc = lightSticky ? siteLogo : lightLogo;
+  /* Ana sayfada iki varyant farklıysa İKİSİ de aynı grid hücresinde
+     üst üste basılır ve yalnız opaklık değişir → kaydırmada kaynak
+     değişimi sırasında boyut/hiza/genişlik kayması ve yükleme
+     gecikmesi olmaz (kutu = iki logonun büyüğü). */
+  const crossfadeLogos =
+    isHome && !!siteLogo && !!footerLogo && siteLogo !== footerLogo;
   /* 🛡️ LOGO BOYUTU — ana sayfada (şeffaf + beyaz sticky) ~%33 büyük:
        mobil 36→48px, masaüstü 48→64px yükseklik; genişlik sınırları da
        aynı oranda büyür (geniş/yatay logolar da büyüsün). Header
@@ -250,7 +260,34 @@ export default function Header({
               ` + (isHome ? "text-[28px] md:text-[32px] " : "text-2xl ") +
                 tone("text-white hover:text-white/85", "text-[#244C45] hover:text-[#244C45]/80")}
             >
-              {logoSrc ? (
+              {crossfadeLogos ? (
+                <span className="grid items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={lightLogo as string}
+                    alt={lightSticky ? "" : dictionary.header.logoAlt}
+                    aria-hidden={lightSticky || undefined}
+                    data-logo-variant="light"
+                    className={
+                      "col-start-1 row-start-1 transition-opacity duration-300 motion-reduce:transition-none " +
+                      logoImgClass +
+                      (lightSticky ? " opacity-0" : " opacity-100")
+                    }
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={siteLogo as string}
+                    alt={lightSticky ? dictionary.header.logoAlt : ""}
+                    aria-hidden={!lightSticky || undefined}
+                    data-logo-variant="dark"
+                    className={
+                      "col-start-1 row-start-1 transition-opacity duration-300 motion-reduce:transition-none " +
+                      logoImgClass +
+                      (lightSticky ? " opacity-100" : " opacity-0")
+                    }
+                  />
+                </span>
+              ) : logoSrc ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={logoSrc}
