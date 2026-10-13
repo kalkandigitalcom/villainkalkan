@@ -224,6 +224,15 @@ export default function Header({
      sticky zeminde asıl (koyu) site logosu. */
   const logoSrc =
     overHero || lightSticky ? siteLogo : footerLogo || siteLogo;
+  /* 🛡️ LOGO BOYUTU — ana sayfada (şeffaf + beyaz sticky) ~%33 büyük:
+       mobil 36→48px, masaüstü 48→64px yükseklik; genişlik sınırları da
+       aynı oranda büyür (geniş/yatay logolar da büyüsün). Header
+       yüksekliği (72/80px) DEĞİŞMEZ → menü/ikon hizası korunur.
+       `w-auto` + `object-contain` → oran korunur, kırpma/esneme yok.
+     İç sayfalarda boyut AYNEN eski değerler. */
+  const logoImgClass = isHome
+    ? "h-12 md:h-16 w-auto max-w-[44vw] sm:max-w-[230px] md:max-w-[280px] object-contain"
+    : "h-9 md:h-12 w-auto max-w-[32vw] sm:max-w-[170px] md:max-w-[210px] object-contain";
   return (
     <>
       <header className="w-full fixed top-0 z-50">
@@ -235,17 +244,18 @@ export default function Header({
             <Link
               href={homeHref}
               className={`
-                font-display text-2xl tracking-tight
+                font-display tracking-tight
                 flex items-center shrink-0
                 transition-colors duration-300 motion-reduce:transition-none
-              ` + tone("text-white hover:text-white/85", "text-[#244C45] hover:text-[#244C45]/80")}
+              ` + (isHome ? "text-[28px] md:text-[32px] " : "text-2xl ") +
+                tone("text-white hover:text-white/85", "text-[#244C45] hover:text-[#244C45]/80")}
             >
               {logoSrc ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={logoSrc}
                   alt={dictionary.header.logoAlt}
-                  className="h-9 md:h-12 w-auto max-w-[32vw] sm:max-w-[170px] md:max-w-[210px] object-contain"
+                  className={logoImgClass}
                 />
               ) : (
                 <>

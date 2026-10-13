@@ -100,6 +100,22 @@ describe("Header — sticky tema", () => {
     expect(shell.className).toContain("bg-[#244c45]/10");
   });
 
+  it("5b) ana sayfa logosu büyük (h-12 / md:h-16), oran korunur — şeffaf ve sticky", () => {
+    const { logo } = renderAt("/");
+    for (const c of ["h-12", "md:h-16", "w-auto", "object-contain"]) {
+      expect(logo.className, c).toContain(c);
+    }
+    setScroll(200);
+    expect(logo.className).toContain("md:h-16");
+  });
+
+  it("5c) iç sayfa logo boyutu DEĞİŞMEDİ (h-9 / md:h-12)", () => {
+    const { logo } = renderAt("/kiralik-villalar");
+    expect(logo.className).toContain("h-9");
+    expect(logo.className).toContain("md:h-12");
+    expect(logo.className).not.toContain("md:h-16");
+  });
+
   it("6) hamburger ikonu beyaz zeminde petrol renkte", () => {
     const { getByLabelText } = renderAt("/");
     setScroll(200);
