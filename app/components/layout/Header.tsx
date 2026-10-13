@@ -194,21 +194,36 @@ export default function Header({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* 🛡️ HEADER REDESIGN — ana sayfada, en üstteyken ve mobil menü
-     kapalıyken hero üzerinde şeffaf; aksi halde koyu lacivert. */
+  /* 🛡️ HEADER DURUMLARI
+       • overHero  — ana sayfa, en üstte, mobil menü kapalı → hero
+                     üzerinde şeffaf, açık metin/ikon (DEĞİŞMEDİ).
+       • lightSticky — ana sayfada aşağı kaydırılmış (sticky) → BEYAZ
+                     zemin, petrol (#244C45) metin/ikon, altın vurgu.
+       • diğer     — iç sayfalar / ana sayfada en üstte mobil menü açık
+                     → petrol zemin, açık metin (DEĞİŞMEDİ).
+     Yükseklik/padding durumlar arasında AYNI → yerleşim kayması yok;
+     renkler 300ms transition ile yumuşak geçer. */
   const normalizedPath = (pathname || "/").replace(/\/+$/, "") || "/";
   const isHome = HOME_PATHS.has(normalizedPath);
   const overHero = isHome && !scrolled && !open;
+  const lightSticky = isHome && scrolled;
+  /** Koyu zemin (şeffaf/petrol) vs. beyaz sticky zemin için sınıf seçici. */
+  const tone = (onDark: string, onLight: string) =>
+    lightSticky ? onLight : onDark;
   const headerShellClass =
     "border-b transition-[background-color,box-shadow,border-color] duration-300 motion-reduce:transition-none " +
     (overHero
       ? "bg-[#244c45]/10 !border-transparent shadow-none"
-      : "bg-[var(--color-stone-900)]/95 backdrop-blur-xl backdrop-saturate-150 !border-white/10 " +
-        (scrolled
-          ? "shadow-[0_10px_30px_-14px_rgba(0,0,0,0.45)]"
-          : "shadow-none"));
-  /* Koyu (dolu) durumda açık logo varyantı tercih edilir. */
-  const logoSrc = overHero ? siteLogo : footerLogo || siteLogo;
+      : lightSticky
+        ? "bg-white/95 backdrop-blur-xl backdrop-saturate-150 !border-[#244C45]/10 shadow-[0_10px_30px_-16px_rgba(36,76,69,0.28)]"
+        : "bg-[var(--color-stone-900)]/95 backdrop-blur-xl backdrop-saturate-150 !border-white/10 " +
+          (scrolled
+            ? "shadow-[0_10px_30px_-14px_rgba(0,0,0,0.45)]"
+            : "shadow-none"));
+  /* Koyu (dolu) durumda açık logo varyantı; hero üzerinde ve beyaz
+     sticky zeminde asıl (koyu) site logosu. */
+  const logoSrc =
+    overHero || lightSticky ? siteLogo : footerLogo || siteLogo;
   return (
     <>
       <header className="w-full fixed top-0 z-50">
@@ -219,12 +234,11 @@ export default function Header({
             {/* LOGO */}
             <Link
               href={homeHref}
-              className="
+              className={`
                 font-display text-2xl tracking-tight
                 flex items-center shrink-0
-                text-white hover:text-white/85
-                transition-colors motion-reduce:transition-none
-              "
+                transition-colors duration-300 motion-reduce:transition-none
+              ` + tone("text-white hover:text-white/85", "text-[#244C45] hover:text-[#244C45]/80")}
             >
               {logoSrc ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -244,12 +258,14 @@ export default function Header({
 
             {/* MENU — ultra clean, premium spacing */}
             <nav
-              className="
+              className={`
                 hidden md:flex flex-1 justify-center gap-6 lg:gap-9 xl:gap-11
                 text-[15px] font-medium tracking-[0.01em]
-                text-white/85
-                [text-shadow:0_1px_12px_rgba(0,0,0,0.25)]
-              "
+                transition-colors duration-300 motion-reduce:transition-none
+              ` + tone(
+                "text-white/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.25)]",
+                "text-[#244C45]/80"
+              )}
             >
               {menu.map((item) => {
                 const isActive = pathname === item.href;
@@ -271,7 +287,9 @@ export default function Header({
                       href={localeHref(item.href, locale)}
                       className={
                         "flex items-center gap-1 transition-colors motion-reduce:transition-none " +
-                        (isActive ? "text-white" : "hover:text-white")
+                        (isActive
+                          ? tone("text-white", "text-[#244C45]")
+                          : tone("hover:text-white", "hover:text-[#244C45]"))
                       }
                     >
                       {itemName}
@@ -319,21 +337,21 @@ export default function Header({
             {/* RIGHT — arama + favoriler. Dil seçici TopBar'da; "Teklif
                Al" sol kenardaki sabit CTA'da (FloatingQuoteCta). */}
             <div
-              className="
-                hidden md:flex items-center gap-2 lg:gap-3 shrink-0
-                [&_a[href$='/favoriler']]:text-white/85
-                [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white
-              "
+              className={
+                "hidden md:flex items-center gap-2 lg:gap-3 shrink-0 " +
+                tone(
+                  "[&_a[href$='/favoriler']]:text-white/85 [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white",
+                  "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
+                )
+              }
             >
               {/* SEARCH — paylaşılan VillaSearchBox (mantık AYNEN). Koyu/
                  şeffaf zemin için yalnız görsel override (descendant). */}
               <div
-                className="
-                  [&>div]:!bg-white/10 [&>div]:!border-white/20
-                  [&>div:focus-within]:!bg-white/15 [&>div:focus-within]:!border-white/40
-                  [&>div>svg]:!text-white/70
-                  [&>div>input]:!text-white [&>div>input]:placeholder:!text-white/60
-                "
+                className={tone(
+                  "[&>div]:!bg-white/10 [&>div]:!border-white/20 [&>div:focus-within]:!bg-white/15 [&>div:focus-within]:!border-white/40 [&>div>svg]:!text-white/70 [&>div>input]:!text-white [&>div>input]:placeholder:!text-white/60",
+                  "[&>div]:!bg-[#F6F8FB] [&>div]:!border-[#244C45]/15 [&>div:focus-within]:!bg-white [&>div:focus-within]:!border-[#244C45]/40 [&>div>svg]:!text-[#244C45]/60 [&>div>input]:!text-[#244C45] [&>div>input]:placeholder:!text-[#244C45]/50"
+                )}
               >
                 <VillaSearchBox variant="desktop" locale={locale} />
               </div>
@@ -352,11 +370,13 @@ export default function Header({
                sadece DOM konumu değiştirdi. Desktop branch'e dokunulmadı
                (`md:hidden` mobil-only). */}
             <div
-              className="
-                md:hidden flex items-center gap-1.5 sm:gap-2 shrink-0
-                [&_a[href$='/favoriler']]:text-white/85
-                [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white
-              "
+              className={
+                "md:hidden flex items-center gap-1.5 sm:gap-2 shrink-0 " +
+                tone(
+                  "[&_a[href$='/favoriler']]:text-white/85 [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white",
+                  "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
+                )
+              }
             >
               {/* 🛡️ MOBILE SEARCH kaldırıldı — mobilde tek villa-adı arama
                  girişi Bottom Navigation → Arama → SearchBottomSheet.
@@ -379,13 +399,10 @@ export default function Header({
                 onClick={() => (open ? closeMobileMenu() : setOpen(true))}
                 aria-label={open ? dictionary.header.menuClose : dictionary.header.menuOpen}
                 aria-expanded={open}
-                className="
-                  inline-flex items-center justify-center shrink-0
-                  p-2 sm:p-2.5 rounded-full
-                  text-white
-                  hover:bg-white/10
-                  transition-colors motion-reduce:transition-none
-                "
+                className={
+                  "inline-flex items-center justify-center shrink-0 p-2 sm:p-2.5 rounded-full transition-colors duration-300 motion-reduce:transition-none " +
+                  tone("text-white hover:bg-white/10", "text-[#244C45] hover:bg-[#244C45]/[0.06]")
+                }
               >
                 {open ? <X size={22} /> : <Menu size={22} />}
               </button>
