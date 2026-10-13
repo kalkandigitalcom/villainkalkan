@@ -17,8 +17,8 @@
      1-3)   Görünürlük: multilingual kapalı/açık/settings-null.
      4-9)   Aktif locale + hedef URL'ler (ana sayfa, villa detay, TR/EN/DE).
      10-12) Fallback-to-home (locale karşılığı olmayan route'lar).
-     13-16) Regresyon: currency seçici, sosyal ikonlar, 7/24 destek,
-            telefon/e-posta ETKİLENMEDİ.
+     13-16) Regresyon: currency seçici + telefon/e-posta ETKİLENMEDİ;
+            sosyal ikonlar ve 7/24 destek rozeti KALDIRILDI.
      17-19) Dropdown mekaniği: aç/kapa, dışa-tık, aktif locale
             tıklanamaz + aria-current.
    =============================================================== */
@@ -282,28 +282,33 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     expect(screen.queryByRole("option", { name: /USD/ })).not.toBeInTheDocument();
   });
 
-  it("15) sosyal ikonlar, 7/24 destek, telefon/e-posta — multilingual açıkken de DEĞİŞMEDİ", async () => {
+  it("15) telefon/e-posta KORUNUR; sosyal ikonlar ve 7/24 destek YOK — multilingual açık", async () => {
     usePathnameMock.mockReturnValue("/");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
-    expect(screen.getByText("7/24 Destek")).toBeInTheDocument();
-    expect(screen.getByText(BASE_SETTINGS.phone)).toBeInTheDocument();
-    expect(screen.getByText(BASE_SETTINGS.email)).toBeInTheDocument();
-    expect(screen.getByLabelText("Instagram")).toBeInTheDocument();
-    expect(screen.getByLabelText("Facebook")).toBeInTheDocument();
-    expect(screen.getByLabelText("YouTube")).toBeInTheDocument();
-    expect(screen.getByLabelText("TikTok")).toBeInTheDocument();
+    expect(screen.getByText(BASE_SETTINGS.phone).closest("a")).toHaveAttribute(
+      "href",
+      `tel:${BASE_SETTINGS.phone}`
+    );
+    expect(screen.getByText(BASE_SETTINGS.email).closest("a")).toHaveAttribute(
+      "href",
+      `mailto:${BASE_SETTINGS.email}`
+    );
+    expect(screen.queryByText("7/24 Destek")).not.toBeInTheDocument();
+    for (const label of ["Instagram", "Facebook", "WhatsApp", "YouTube", "TikTok"]) {
+      expect(screen.queryByLabelText(label), label).not.toBeInTheDocument();
+    }
   });
 
-  it("16) sosyal ikonlar, 7/24 destek, telefon/e-posta — multilingual KAPALİYKEN de DEĞİŞMEDİ (regresyon)", async () => {
+  it("16) telefon/e-posta + kur seçici KORUNUR — multilingual KAPALIYKEN de (regresyon)", async () => {
     usePathnameMock.mockReturnValue("/");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: false }));
     render(<TopBar />);
-    await screen.findByText("7/24 Destek");
+    await screen.findByText("TRY");
     expect(screen.getByText(BASE_SETTINGS.phone)).toBeInTheDocument();
     expect(screen.getByText(BASE_SETTINGS.email)).toBeInTheDocument();
-    expect(screen.getByText("TRY")).toBeInTheDocument();
+    expect(screen.queryByText("7/24 Destek")).not.toBeInTheDocument();
   });
 
   /* --- 17-19) DROPDOWN MEKANIğİ --- */
@@ -485,12 +490,10 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   /* ═══════════════════════════════════════════════════════════════
-     29-40) STATİK METİN ÇOKLU DİLİ (TR/EN/DE)
-     ═══════════════════════════════════════════════════════════════
-     TopBar'ın hardcoded TR metinleri MEVCUT `header` namespace'ine
-     taşındı (yeni namespace/provider/hook YOK). Marka adı "Costeralla
-     Travel" ÖZEL İSİM olduğu için ÇEVRİLMEZ; sosyal medya etiketleri
-     (Instagram/Facebook/...) de marka adıdır. */
+     29-36) KALDIRILAN İÇERİK — orta kurumsal alan (marka adı + TURSAB
+     belge satırı), "7/24 Destek" rozeti ve sosyal medya ikonları hiçbir
+     dilde ve hiçbir sayfada render EDİLMEZ; orta alan BOŞ kalır.
+     ═══════════════════════════════════════════════════════════════ */
 
   /** Belirtilen path + multilingual bayrağı ile TopBar'ı mount eder. */
   async function mountAt(pathname: string, multilingual = true) {
@@ -499,82 +502,39 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
       settingsWith({ multilingual_enabled: multilingual })
     );
     render(<TopBar />);
-    await screen.findByText("Costeralla Travel");
+    await screen.findByText("TRY");
   }
 
-  it("29) TR ('/') → '7/24 Destek' ve TR belge satırı BİREBİR (regresyon)", async () => {
-    await mountAt("/");
-    expect(screen.getByText("7/24 Destek")).toBeInTheDocument();
-    expect(
-      screen.getByText("TURSAB A Grubu Acenta · Belge No: 13303")
-    ).toBeInTheDocument();
-  });
+  function expectRemovedContentAbsent() {
+    for (const text of [
+      "7/24 Destek",
+      "24/7 Support",
+      "Costeralla Travel",
+    ]) {
+      expect(screen.queryByText(text), text).not.toBeInTheDocument();
+    }
+    expect(screen.queryByText(/TURSAB/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/13303/)).not.toBeInTheDocument();
+    for (const label of ["Instagram", "Facebook", "WhatsApp", "YouTube", "TikTok"]) {
+      expect(screen.queryByLabelText(label), label).not.toBeInTheDocument();
+    }
+  }
 
-  it("29b) TR alt sayfada da ('/kiralik-villalar') TR metinler", async () => {
-    await mountAt("/kiralik-villalar");
-    expect(screen.getByText("7/24 Destek")).toBeInTheDocument();
-  });
-
-  it("30) EN ('/en') → '24/7 Support' + EN belge satırı", async () => {
-    await mountAt("/en");
-    expect(screen.getByText("24/7 Support")).toBeInTheDocument();
-    expect(
-      screen.getByText("TURSAB Group A Agency · License No: 13303")
-    ).toBeInTheDocument();
-    expect(screen.queryByText("7/24 Destek")).not.toBeInTheDocument();
-  });
-
-  it("31) DE ('/de') → '24/7 Support' + DE belge satırı", async () => {
-    await mountAt("/de");
-    expect(screen.getByText("24/7 Support")).toBeInTheDocument();
-    expect(
-      screen.getByText("TURSAB Agentur der Gruppe A · Lizenznr.: 13303")
-    ).toBeInTheDocument();
-    expect(screen.queryByText("7/24 Destek")).not.toBeInTheDocument();
-  });
-
-  it("32) EN/DE alt sayfalarda da locale'e göre çözülür", async () => {
-    await mountAt("/en/kiralik-villa/test");
-    expect(screen.getByText("24/7 Support")).toBeInTheDocument();
-    cleanup();
-    await mountAt("/de/arama");
-    expect(
-      screen.getByText("TURSAB Agentur der Gruppe A · Lizenznr.: 13303")
-    ).toBeInTheDocument();
-  });
-
-  it("33) MARKA ADI hiçbir dilde çevrilmez (özel isim)", async () => {
-    for (const p of ["/", "/en", "/de"]) {
+  it("29) TR/EN/DE ana sayfa + alt sayfalarda kaldırılan içerik YOK", async () => {
+    for (const p of ["/", "/kiralik-villalar", "/en", "/en/kiralik-villa/test", "/de", "/de/arama"]) {
       await mountAt(p);
-      expect(screen.getByText("Costeralla Travel")).toBeInTheDocument();
+      expectRemovedContentAbsent();
       cleanup();
     }
   });
 
-  it("34) SOSYAL MEDYA etiketleri marka adıdır — çevrilmez", async () => {
-    await mountAt("/de");
-    for (const label of ["Instagram", "Facebook", "WhatsApp", "YouTube"]) {
-      expect(screen.getByLabelText(label)).toBeInTheDocument();
-    }
-  });
-
-  it("35) multilingual KAPALI + TR → metinler BİREBİR eskisi gibi", async () => {
+  it("30) multilingual KAPALI + TR → kaldırılan içerik YOK, telefon/e-posta VAR", async () => {
     await mountAt("/", false);
-    expect(screen.getByText("7/24 Destek")).toBeInTheDocument();
-    expect(
-      screen.getByText("TURSAB A Grubu Acenta · Belge No: 13303")
-    ).toBeInTheDocument();
+    expectRemovedContentAbsent();
+    expect(screen.getByText(BASE_SETTINGS.phone)).toBeInTheDocument();
+    expect(screen.getByText(BASE_SETTINGS.email)).toBeInTheDocument();
     /* Dil değiştirici görünmez (mevcut davranış DEĞİŞMEDİ). */
     expect(screen.queryByLabelText(LANGUAGE_LABEL.tr)).not.toBeInTheDocument();
-  });
-
-  it("36) belge NUMARASI üç dilde de AYNI (yalnız etiket çevrilir)", async () => {
-    for (const p of ["/", "/en", "/de"]) {
-      await mountAt(p);
-      expect(screen.getByText(/13303/)).toBeInTheDocument();
-      expect(screen.getByText(/TURSAB/)).toBeInTheDocument();
-      cleanup();
-    }
   });
 
   it("37) EN metinleri ile locale switch query koruması BİRLİKTE çalışır", async () => {
@@ -584,8 +544,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
       settingsWith({ multilingual_enabled: true })
     );
     render(<TopBar />);
-    await screen.findByText("24/7 Support");
-    fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
+    fireEvent.click(await screen.findByLabelText(LANGUAGE_LABEL.en));
     expect(screen.getByRole("option", { name: "DE" })).toHaveAttribute(
       "href",
       `/de/arama?${ARAMA_QUERY}`
@@ -799,14 +758,15 @@ describe("TopBar — dictionary bütünlüğü ve source-lock", () => {
     ]) {
       expect(code.includes(s), s).toBe(false);
     }
-    /* Dictionary üzerinden okunuyor. */
-    expect(code.includes("dictionary.header.supportBadge")).toBe(true);
-    expect(code.includes("dictionary.header.agencyCredential")).toBe(true);
+    /* Rozet ve belge satırı TopBar'dan KALDIRILDI — sözlükten de okunmuyor. */
+    expect(code.includes("dictionary.header.supportBadge")).toBe(false);
+    expect(code.includes("dictionary.header.agencyCredential")).toBe(false);
   });
 
-  it("43) marka adı ve belge numarası KODDA kalır (çeviri kapsamı dışı)", () => {
-    expect(code.includes("Costeralla Travel")).toBe(true);
-    expect(code.includes("13303")).toBe(true);
+  it("43) marka adı, belge numarası ve sosyal ikonlar KODDA YOK (kaldırıldı)", () => {
+    for (const s of ["Costeralla Travel", "13303", "SocialLink", "InstagramIcon", "wa.me"]) {
+      expect(code.includes(s), s).toBe(false);
+    }
   });
 
 });
