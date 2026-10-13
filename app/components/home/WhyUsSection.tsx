@@ -137,7 +137,7 @@ export default function WhyUsSection({ brandName, phone }: Props) {
             mt-14 md:mt-18
             rounded-3xl border border-[#dbe4f0]
             bg-[#F4F7FC]
-            shadow-[0_16px_40px_-28px_rgba(20,40,70,0.25)]
+            shadow-[0_16px_40px_-28px_rgba(20,44,40,0.25)]
             px-7 py-9 md:px-12 md:py-11
             flex flex-col md:flex-row md:items-center md:justify-between gap-7
           "

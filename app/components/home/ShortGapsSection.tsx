@@ -142,10 +142,10 @@ export default async function ShortGapsSection({
                 <div
                   className={
                     "group relative overflow-hidden rounded-[26px] p-5 h-full flex flex-col " +
-                    "bg-gradient-to-br from-[#0B1F3A] via-[#0F2540] to-[#132A46] " +
-                    "shadow-[0_18px_40px_-22px_rgba(11,31,58,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] " +
+                    "bg-gradient-to-br from-[#244C45] via-[#1F443D] to-[#2B5A51] " +
+                    "shadow-[0_18px_40px_-22px_rgba(36,76,69,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] " +
                     "ring-1 ring-white/10 " +
-                    "hover:shadow-[0_28px_54px_-22px_rgba(11,31,58,0.65)] hover:ring-[var(--brand-coral)]/30 " +
+                    "hover:shadow-[0_28px_54px_-22px_rgba(36,76,69,0.65)] hover:ring-[var(--brand-coral)]/30 " +
                     "hover:-translate-y-[3px] " +
                     "transition-[transform,box-shadow] duration-400 motion-reduce:transition-none motion-reduce:hover:translate-y-0 " +
                     "sg-shine"
@@ -170,7 +170,7 @@ export default async function ShortGapsSection({
                   {/* Brand accent underline — turuncu→mavi, ince */}
                   <div
                     aria-hidden="true"
-                    className="mt-3 mb-4 h-[3px] w-14 rounded-full bg-gradient-to-r from-[#ED7926] to-[#0973BA]"
+                    className="mt-3 mb-4 h-[3px] w-14 rounded-full bg-gradient-to-r from-[#C9A55A] to-[#244C45]"
                   />
 
                   {/* ── GECE LİSTESİ — mevcut veri/link/sayı BİREBİR aynı ── */}
@@ -190,7 +190,7 @@ export default async function ShortGapsSection({
                               })}
                             </span>
                             <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold tabular-nums">
-                              <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#ED7926]/20 to-[#0973BA]/20 text-white ring-1 ring-white/10 leading-none">
+                              <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#C9A55A]/20 to-[#244C45]/20 text-white ring-1 ring-white/10 leading-none">
                                 {count}
                               </span>
                               <ArrowUpRight className="w-3.5 h-3.5 text-white/40 group-hover/row:text-[var(--brand-coral)] group-hover/row:translate-x-0.5 transition-[color,transform] motion-reduce:transition-none" />

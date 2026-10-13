@@ -28,7 +28,7 @@ import type { HeroReviewStats } from "./hero/_types/hero";
        gradient (siyah) — okunabilirlik + "gece / golden hour" luxury
        atmosferi. Metin artık BEYAZ (önceki versiyon koyu metin +
        beyaz overlay kullanıyordu — bilinçli tam ters çevirme).
-     - Marka renkleri (#ED7926 turuncu / #0973BA mavi) SADECE vurgu
+     - Marka renkleri (#C9A55A altın / #244C45 petrol) SADECE vurgu
        katmanlarında: köşe glow'ları, başlık ikinci satırı (gradient
        text-clip), CTA gradient + breathing glow, arama panelindeki
        ikon/hover/odak vurguları. Başka hiçbir ana tema rengi YOK.
@@ -77,7 +77,7 @@ import type { HeroReviewStats } from "./hero/_types/hero";
    ===============================================================
    - Tam ekran (100svh) full-bleed görsel; header (TopBar + şeffaf bar)
      görselin ÜZERİNDE durur (Header ana sayfada spacer basmaz).
-   - Dengeli, düz koyu lacivert overlay + hafif üst/alt kenar koyulaşması
+   - Dengeli, düz koyu petrol (#142c28) overlay + hafif üst/alt kenar koyulaşması
      (yalnız okunabilirlik; dekoratif glow/orb YOK).
    - İçerik yatay + dikey ortalı: rozet (yıldız ikonlu, yarı saydam),
      iki satırlı başlık (merkezi başlık fontu Manrope) (1. satır beyaz, 2. satır altın), açıklama,
@@ -210,21 +210,22 @@ export default function Hero({
       )}
 
       {/* ═══════════════════════════════════════════════════════════
-          OVERLAY — dengeli, düz koyu lacivert ton (#0b1f3a). Admin
+          OVERLAY — dengeli, düz koyu petrol ton (#142c28; ana renk
+          #244C45'in koyu kademesi — fotoğrafa yeşil cast vermez). Admin
           `hero.overlayOpacity` (0..1) yoğunluğu ayarlar; metin kontrastı
           için taban 0.6'nın altına düşmez. Üst şerit (header) ve alt
           şerit (arama paneli) için çok hafif kenar koyulaşması.
           ═══════════════════════════════════════════════════════════ */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none bg-[#0b1f3a]/45"
+        className="absolute inset-0 pointer-events-none bg-[#142c28]/45"
         style={{ opacity: 0.6 + 0.4 * hero.overlayOpacity }}
       />
       <div
         aria-hidden="true"
         className="
           absolute inset-0 pointer-events-none
-          bg-[linear-gradient(180deg,rgba(11,31,58,0.45)_0%,rgba(11,31,58,0)_26%,rgba(11,31,58,0)_62%,rgba(11,31,58,0.55)_100%)]
+          bg-[linear-gradient(180deg,rgba(20,44,40,0.45)_0%,rgba(20,44,40,0)_26%,rgba(20,44,40,0)_62%,rgba(20,44,40,0.55)_100%)]
         "
         style={{ opacity: 0.6 + 0.4 * hero.overlayOpacity }}
       />
@@ -280,7 +281,7 @@ export default function Hero({
                 text-white
                 mt-7 md:mt-9
                 [text-wrap:balance]
-                [text-shadow:0_2px_28px_rgba(11,31,58,0.35)]
+                [text-shadow:0_2px_28px_rgba(20,44,40,0.35)]
               "
             >
               {titleLines.map((line, i) => (
@@ -326,7 +327,7 @@ export default function Hero({
                     hover:-translate-y-[1px]
                     transition-[transform,background-color] duration-300
                     motion-reduce:transition-none motion-reduce:hover:translate-y-0
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1f3a]
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#244c45]
                   "
                 >
                   {hero.primaryCta.text}

@@ -75,7 +75,7 @@ import { resolveTaxonomyName } from "@/lib/i18n/taxonomy-name.helper";
      Mobile: native touch swipe + snap-x snap-mandatory, sonraki kartın
      bir kısmı görünür (kart genişliği viewport'un tamamını kaplamıyor).
 
-   TASARIM: marka renkleri (#ED7926 turuncu / #0973BA mavi) SADECE
+   TASARIM: marka renkleri (#C9A55A turuncu / #244C45 mavi) SADECE
      villa sayısı badge'inde (gradient pill) — CategoryCard/LocationCard
      ile aynı premium editorial dil (rounded corner, kaliteli shadow,
      hover'da görsel zoom + kart lift), TopBar shimmer KULLANILMADI.
@@ -234,12 +234,12 @@ function VillaTypeCard({
         group block w-full
         rounded-[18px] overflow-hidden
         bg-white border border-[var(--color-stone-100)]
-        shadow-[0_14px_34px_-22px_rgba(11,31,58,0.28)]
-        hover:shadow-[0_26px_54px_-24px_rgba(11,31,58,0.36)]
+        shadow-[0_14px_34px_-22px_rgba(36,76,69,0.28)]
+        hover:shadow-[0_26px_54px_-24px_rgba(36,76,69,0.36)]
         hover:-translate-y-[3px]
         transition-[transform,box-shadow] duration-500
         motion-reduce:transition-none motion-reduce:hover:translate-y-0
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0973BA]/40 focus-visible:ring-offset-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244C45]/40 focus-visible:ring-offset-2
       "
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]">
@@ -271,8 +271,8 @@ function VillaTypeCard({
             inline-flex items-center rounded-full
             px-2.5 py-1
             text-[10.5px] font-semibold tracking-[0.02em] text-white
-            bg-gradient-to-r from-[#ED7926] to-[#0973BA]
-            shadow-[0_6px_16px_-6px_rgba(9,115,186,0.5)]
+            bg-gradient-to-r from-[#C9A55A] to-[#244C45]
+            shadow-[0_6px_16px_-6px_rgba(36,76,69,0.5)]
           "
         >
           {countLabel}
@@ -280,7 +280,7 @@ function VillaTypeCard({
       </div>
 
       <div className="px-4 py-3.5 border-t border-[var(--color-stone-100)]">
-        <h3 className="font-display text-[15px] md:text-[16px] font-medium leading-[1.2] tracking-[-0.01em] text-[var(--color-stone-900)] line-clamp-1 group-hover:text-[#0973BA] transition-colors duration-300 motion-reduce:transition-none">
+        <h3 className="font-display text-[15px] md:text-[16px] font-medium leading-[1.2] tracking-[-0.01em] text-[var(--color-stone-900)] line-clamp-1 group-hover:text-[#2f6b5f] transition-colors duration-300 motion-reduce:transition-none">
           {item.name}
         </h3>
       </div>

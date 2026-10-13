@@ -112,7 +112,7 @@ function LocaleSwitchOptions({
               role="option"
               aria-selected="true"
               aria-current="true"
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left bg-gradient-to-r from-[#ED7926]/10 to-[#0973BA]/10 text-[var(--color-stone-900)]"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left bg-gradient-to-r from-[#C9A55A]/10 to-[#244C45]/10 text-[var(--color-stone-900)]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -338,7 +338,7 @@ export default function TopBar() {
               transition-colors motion-reduce:transition-none
             "
           >
-            <Phone size={15} strokeWidth={1.85} className="text-[#ED7926]" aria-hidden />
+            <Phone size={15} strokeWidth={1.85} className="text-[#C9A55A]" aria-hidden />
             <span className="font-medium tabular-nums whitespace-nowrap">
               {settings.phone}
             </span>
@@ -354,7 +354,7 @@ export default function TopBar() {
               transition-colors motion-reduce:transition-none
             "
           >
-            <Mail size={15} strokeWidth={1.85} className="text-[#0973BA]" aria-hidden />
+            <Mail size={15} strokeWidth={1.85} className="text-[#C9A55A]" aria-hidden />
             <span className="max-w-[170px] truncate">{settings.email}</span>
           </a>
         )}
@@ -405,7 +405,7 @@ export default function TopBar() {
               text-[14px] font-medium cursor-pointer
               transition-colors
               focus:outline-none focus-visible:ring-2
-              focus-visible:ring-[#0973BA]/60
+              focus-visible:ring-white/60
             "
           >
             {/* 🔄 Seçili kurun SEMBOLÜ (₺ / $ / € / £). Yalnız görsel —
@@ -437,7 +437,7 @@ export default function TopBar() {
                     className={
                       "w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left transition-colors " +
                       (c.code === currency
-                        ? "bg-gradient-to-r from-[#ED7926]/10 to-[#0973BA]/10 text-[var(--color-stone-900)]"
+                        ? "bg-gradient-to-r from-[#C9A55A]/10 to-[#244C45]/10 text-[var(--color-stone-900)]"
                         : "text-[var(--color-stone-700)] hover:bg-[var(--color-stone-50)]")
                     }
                   >
@@ -487,7 +487,7 @@ export default function TopBar() {
                 text-[14px] font-medium cursor-pointer
                 transition-colors
                 focus:outline-none focus-visible:ring-2
-                focus-visible:ring-[#0973BA]/60
+                focus-visible:ring-white/60
               "
             >
               {/* 🔄 Seçili DİLİN bayrağı — kur seçicinin `<img>` deseniyle

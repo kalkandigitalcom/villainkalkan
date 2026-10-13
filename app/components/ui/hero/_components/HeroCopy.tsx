@@ -120,9 +120,9 @@ export default function HeroCopy({ hero }: { hero: HeroContent }) {
             px-6 py-3 rounded-full
             bg-[var(--brand-coral)] text-white
             text-[13.5px] font-medium tracking-[0.02em]
-            shadow-[0_18px_36px_-14px_rgba(255,101,63,0.55),0_4px_12px_-6px_rgba(255,101,63,0.35)]
+            shadow-[0_18px_36px_-14px_rgba(36,76,69,0.55),0_4px_12px_-6px_rgba(36,76,69,0.35)]
             hover:bg-[var(--brand-coral-deep)]
-            hover:shadow-[0_22px_44px_-14px_rgba(255,101,63,0.62),0_6px_16px_-6px_rgba(255,101,63,0.45)]
+            hover:shadow-[0_22px_44px_-14px_rgba(36,76,69,0.62),0_6px_16px_-6px_rgba(36,76,69,0.45)]
             hover:-translate-y-[1px]
             transition-[transform,box-shadow,background-color] duration-300
             motion-reduce:transition-none motion-reduce:hover:translate-y-0

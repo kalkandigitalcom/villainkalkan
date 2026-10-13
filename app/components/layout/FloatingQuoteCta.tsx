@@ -82,7 +82,7 @@ export default function FloatingQuoteCta() {
           transition-[transform,padding,filter] duration-300 ease-out
           hover:brightness-105
           motion-reduce:transition-none
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1f3a]
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#244c45]
         "
       >
         {/* Işık süpürmesi — dekoratif, tıklamayı engellemez. */}

@@ -132,13 +132,13 @@ export default function MobileBookingCta({
       </ContactAction>
 
       {/* ORTA: CTA — href ve onClick handler'ı DEĞİŞMEDİ (SADECE görsel).
-          🔄 DÜZ TURUNCU: `.btn-primary` (globals.css) turkuaz #03729c
+          🔄 DÜZ TURUNCU: `.btn-primary` (globals.css) turkuaz #244c45
           tabanı + turkuaz ambient shadow taşıyor; turuncu istendiği ve
           "ekstra efekt ekleme" dendiği için bu buton artık o class'ı
           KULLANMIYOR. Geometri BİREBİR korunuyor (globals.css:349-357
           ile aynı: inline-flex/center, gap 8px, padding 12px 22px →
           px-5 py-3, radius 999px → rounded-full, font-weight 600).
-          Renk projenin mevcut marka turuncusu #ED7926 (Hero/FaqSection/
+          Renk projenin mevcut marka turuncusu #C9A55A (Hero/FaqSection/
           HeroSearchPanel'de ZATEN kullanılan literal; CSS token'ı YOK).
           globals.css'e DOKUNULMADI → diğer tüm btn-primary'ler AYNEN. */}
       <Link
@@ -148,11 +148,11 @@ export default function MobileBookingCta({
           flex-1 min-w-0
           inline-flex items-center justify-center gap-2
           rounded-full px-5 py-3
-          bg-[#ED7926] hover:bg-[#D96B1D] active:bg-[#C25F16]
+          bg-[#C9A55A] hover:bg-[#D96B1D] active:bg-[#C25F16]
           text-white font-semibold text-[13.5px] tracking-[0.005em]
           border border-transparent
           transition-colors duration-200
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ED7926]/50
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A55A]/50
         "
       >
         {dict.booking.bookNow}

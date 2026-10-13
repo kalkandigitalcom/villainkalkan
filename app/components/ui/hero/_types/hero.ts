@@ -49,7 +49,7 @@ export const TRUST_TONE_CLASSES: Record<
     iconBox: "bg-[#ffe0d0] ring-1 ring-inset ring-[#f9b89a]",
     iconText: "text-[#c84a20]",
     hoverShadow:
-      "hover:shadow-[0_22px_44px_-22px_rgba(255,101,63,0.30)]",
+      "hover:shadow-[0_22px_44px_-22px_rgba(36,76,69,0.30)]",
   },
   emerald: {
     surface:
@@ -61,10 +61,10 @@ export const TRUST_TONE_CLASSES: Record<
   },
   sky: {
     surface:
-      "bg-[#f0f7fb] border-[#d2e6f1] hover:border-[#9cc7e0]",
-    iconBox: "bg-[#dbecf6] ring-1 ring-inset ring-[#9cc7e0]",
-    iconText: "text-[#1d6492]",
+      "bg-[#eef5f3] border-[#d6e7e3] hover:border-[#9fc4bb]",
+    iconBox: "bg-[#d6e7e3] ring-1 ring-inset ring-[#9fc4bb]",
+    iconText: "text-[#244c45]",
     hoverShadow:
-      "hover:shadow-[0_22px_44px_-22px_rgba(28,103,150,0.28)]",
+      "hover:shadow-[0_22px_44px_-22px_rgba(36,76,69,0.28)]",
   },
 };

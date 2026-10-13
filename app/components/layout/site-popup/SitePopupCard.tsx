@@ -12,7 +12,7 @@ import type { PublicSitePopup } from "@/lib/site-popup";
    • Tüm metinler React text node'u (düz metin) — HTML render YOK.
    • Görsel yalnız bu bileşen render edildiğinde istenir.
    • Renk/radius/gölge: mevcut sistem (SuccessModal gölgesi,
-     rounded-3xl, .btn-primary, marka gradyanı #ED7926→#0973BA).
+     rounded-3xl, .btn-primary, marka gradyanı #C9A55A→#244C45).
    =============================================================== */
 
 export type SitePopupCardProps = {
@@ -80,7 +80,7 @@ export default function SitePopupCard({
       <div
         className={
           "relative w-full min-h-[300px] sm:min-h-[340px] aspect-[4/5] sm:aspect-[16/10] max-h-[62vh] sm:max-h-[66vh] " +
-          (imageUrl ? "bg-[var(--color-stone-900)]" : "bg-gradient-to-br from-[#ED7926] to-[#0973BA]")
+          (imageUrl ? "bg-[var(--color-stone-900)]" : "bg-gradient-to-br from-[#C9A55A] to-[#244C45]")
         }
       >
         {imageUrl && (

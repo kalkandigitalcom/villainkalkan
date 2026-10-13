@@ -118,7 +118,7 @@ export default function VillaInfoBar({
           rounded-[28px] md:rounded-[32px]
           border border-[var(--color-stone-100)]
           bg-gradient-to-br from-white via-white to-[var(--color-sand-50)]/60
-          shadow-[0_24px_60px_-36px_rgba(11,31,58,0.22)]
+          shadow-[0_24px_60px_-36px_rgba(36,76,69,0.22)]
           px-6 py-6 md:px-9 md:py-8
         "
       >
@@ -147,7 +147,7 @@ export default function VillaInfoBar({
           className="villa-info-shimmer absolute inset-x-0 top-0 h-[3px]"
           style={{
             background:
-              "linear-gradient(90deg, transparent, #ED7926, #0973BA, transparent)",
+              "linear-gradient(90deg, transparent, #C9A55A, #244C45, transparent)",
             backgroundSize: "220% 100%",
           }}
         />
@@ -176,7 +176,7 @@ export default function VillaInfoBar({
                   bg-[var(--color-stone-50)]
                   border border-transparent
                   hover:bg-white hover:border-[var(--color-stone-100)]
-                  hover:shadow-[0_12px_28px_-18px_rgba(11,31,58,0.22)]
+                  hover:shadow-[0_12px_28px_-18px_rgba(36,76,69,0.22)]
                   hover:-translate-y-0.5
                   transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0
                   px-4 py-3.5 md:py-4
@@ -190,7 +190,7 @@ export default function VillaInfoBar({
                     <MapPin
                       size={13}
                       strokeWidth={1.8}
-                      className="text-[#ED7926] shrink-0"
+                      className="text-[#C9A55A] shrink-0"
                       aria-hidden
                     />
                     <span className="truncate">{location}</span>
@@ -204,7 +204,7 @@ export default function VillaInfoBar({
                 {guests > 0 && (
                   <InfoItem
                     icon={<Users size={15} strokeWidth={1.8} />}
-                    accentColor="#0973BA"
+                    accentColor="#244C45"
                     value={guests}
                     label={dict.card.person}
                   />
@@ -212,7 +212,7 @@ export default function VillaInfoBar({
                 {bedrooms > 0 && (
                   <InfoItem
                     icon={<BedDouble size={15} strokeWidth={1.8} />}
-                    accentColor="#ED7926"
+                    accentColor="#C9A55A"
                     value={bedrooms}
                     label={dict.card.bedroom}
                   />
@@ -220,7 +220,7 @@ export default function VillaInfoBar({
                 {bathrooms > 0 && (
                   <InfoItem
                     icon={<Bath size={15} strokeWidth={1.8} />}
-                    accentColor="#0973BA"
+                    accentColor="#244C45"
                     value={bathrooms}
                     label={dict.card.bathroom}
                   />
@@ -268,7 +268,7 @@ function InfoItem({
         bg-[var(--color-stone-50)]
         border border-transparent
         hover:bg-white hover:border-[var(--color-stone-100)]
-        hover:shadow-[0_12px_28px_-18px_rgba(11,31,58,0.22)]
+        hover:shadow-[0_12px_28px_-18px_rgba(36,76,69,0.22)]
         hover:-translate-y-0.5
         transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0
         px-3.5 py-3.5 md:py-4
@@ -278,7 +278,7 @@ function InfoItem({
         aria-hidden="true"
         className="
           inline-flex items-center justify-center w-8 h-8 rounded-xl
-          bg-white shadow-[inset_0_0_0_1px_rgba(11,31,58,0.06)]
+          bg-white shadow-[inset_0_0_0_1px_rgba(36,76,69,0.06)]
           transition-transform duration-300 motion-reduce:transition-none
           group-hover/item:scale-110
         "
@@ -317,9 +317,9 @@ function CertificateItem({
         group/cert relative overflow-hidden
         flex flex-col items-center justify-center text-center
         rounded-2xl
-        border border-[#0973BA]/15
-        bg-gradient-to-br from-[#0973BA]/[0.07] via-white to-[#ED7926]/[0.06]
-        hover:shadow-[0_12px_28px_-18px_rgba(9,115,186,0.28)]
+        border border-[#244C45]/15
+        bg-gradient-to-br from-[#244C45]/[0.07] via-white to-[#C9A55A]/[0.06]
+        hover:shadow-[0_12px_28px_-18px_rgba(36,76,69,0.28)]
         hover:-translate-y-0.5
         transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0
         px-3.5 py-3.5 md:py-4
@@ -330,7 +330,7 @@ function CertificateItem({
         aria-hidden="true"
         className="
           inline-flex items-center justify-center w-8 h-8 rounded-xl
-          bg-white shadow-[inset_0_0_0_1px_rgba(11,31,58,0.06)]
+          bg-white shadow-[inset_0_0_0_1px_rgba(36,76,69,0.06)]
           overflow-hidden
           transition-transform duration-300 motion-reduce:transition-none
           group-hover/cert:scale-110
@@ -344,7 +344,7 @@ function CertificateItem({
           className="w-4 h-4 object-contain"
         />
       </span>
-      <p className="mt-2.5 text-[9.5px] font-semibold uppercase tracking-[0.08em] text-[#0973BA] leading-snug">
+      <p className="mt-2.5 text-[9.5px] font-semibold uppercase tracking-[0.08em] text-[#244C45] leading-snug">
         {label}
       </p>
       <p className="mt-0.5 w-full text-[10.5px] md:text-[11px] font-medium text-[var(--color-stone-700)] leading-snug truncate">

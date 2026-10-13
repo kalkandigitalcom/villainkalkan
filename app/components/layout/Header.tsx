@@ -202,7 +202,7 @@ export default function Header({
   const headerShellClass =
     "border-b transition-[background-color,box-shadow,border-color] duration-300 motion-reduce:transition-none " +
     (overHero
-      ? "bg-[#0b1f3a]/10 !border-transparent shadow-none"
+      ? "bg-[#244c45]/10 !border-transparent shadow-none"
       : "bg-[var(--color-stone-900)]/95 backdrop-blur-xl backdrop-saturate-150 !border-white/10 " +
         (scrolled
           ? "shadow-[0_10px_30px_-14px_rgba(0,0,0,0.45)]"
@@ -463,7 +463,7 @@ export default function Header({
                           text-[var(--color-stone-500)]
                           hover:bg-[var(--color-sand-50)] hover:text-[var(--color-stone-900)]
                           transition-colors motion-reduce:transition-none
-                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0973BA]/40
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244C45]/40
                         "
                       >
                         <ChevronDown

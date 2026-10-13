@@ -57,7 +57,7 @@ export default function HeroImageCard({
             relative
             rounded-[32px] overflow-hidden
             bg-[var(--color-sand-100)]
-            shadow-[0_48px_96px_-32px_rgba(27,26,23,0.28),0_18px_36px_-18px_rgba(255,101,63,0.18)]
+            shadow-[0_48px_96px_-32px_rgba(27,26,23,0.28),0_18px_36px_-18px_rgba(36,76,69,0.18)]
             aspect-[4/5] sm:aspect-[5/6] lg:aspect-[4/3]
           "
         >

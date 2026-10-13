@@ -9,8 +9,13 @@
 
 @theme {
   /* 🎨 Brand */
-  /* 🌊 REBRAND — cool coastal navy/slate neutrals (warm stone → navy).
-     Lightness ramp paritesi korundu → metin kontrastı ≥ önceki. */
+  /* 🌿 REBRAND — ana renk PETROL YEŞİLİ #244C45 (eski lacivert yerine).
+     Açık nötrler (ivory, sand, stone-50..200) KORUNDU; koyu kademe
+     (stone-300..900) petrol tonlu nötrlere taşındı. stone-900 = #244C45
+     (Header/TopBar zemini, başlık metni). Accent ramp'leri (champagne/
+     aqua/bronze/coral/brand-coral — token İSİMLERİ korunur) petrol
+     tonlarından türetildi: 50 #eef5f3 … 700 #244c45 … 800 #1c3c36.
+     Altın vurgu #C9A55A bileşenlerde ayrı tutulur. */
   --color-ivory: #f6f8fb;
   --color-sand-50: #f6f8fb;
   --color-sand-100: #eaf0f6;
@@ -20,13 +25,13 @@
   --color-stone-50: #f5f7fa;
   --color-stone-100: #e9eef4;
   --color-stone-200: #d2dbe5;
-  --color-stone-300: #97a6b8;
-  --color-stone-400: #5f7187;
-  --color-stone-500: #455468;
-  --color-stone-600: #2f3e54;
-  --color-stone-700: #1d2e4d;
-  --color-stone-800: #122441;
-  --color-stone-900: #0b1f3a;
+  --color-stone-300: #9aaca8;
+  --color-stone-400: #5a716c;
+  --color-stone-500: #4d6863;
+  --color-stone-600: #3a5b55;
+  --color-stone-700: #2f554e;
+  --color-stone-800: #2a504a;
+  --color-stone-900: #244c45;
   /* ════════════════════════════════════════════════════════════
      🌊 FAZ 18 — MEDITERRANEAN RESORT PALETTE
      ════════════════════════════════════════════════════════════
@@ -49,20 +54,20 @@
      ════════════════════════════════════════════════════════════ */
 
   /* 🌊 AQUA / Mediterranean cyan — primary accent (legacy "champagne") */
-  --color-champagne-50: #e8f7fd;   /* very light turquoise, glass surface */
-  --color-champagne-100: #c4ecfb;  /* aqua mist */
-  --color-champagne-200: #90dcf8;  /* lagoon highlight */
-  --color-champagne-300: #54c8f3;  /* shallow water */
-  --color-champagne-400: #1fb2ec;  /* pool turquoise */
-  --color-champagne-500: #02aae5;  /* Mediterranean turquoise (secondary) */
-  --color-champagne-600: #0287bd;  /* deep sea */
-  --color-champagne-700: #03729c;  /* lagoon depth (eyebrow, AA on light) */
-  --color-champagne-800: #045d7e;  /* deep teal */
+  --color-champagne-50: #eef5f3;   /* very light turquoise, glass surface */
+  --color-champagne-100: #d6e7e3;  /* aqua mist */
+  --color-champagne-200: #aecfc7;  /* lagoon highlight */
+  --color-champagne-300: #7fb1a6;  /* shallow water */
+  --color-champagne-400: #4f8f82;  /* pool turquoise */
+  --color-champagne-500: #2f6b5f;  /* Mediterranean turquoise (secondary) */
+  --color-champagne-600: #295e54;  /* deep sea */
+  --color-champagne-700: #244c45;  /* lagoon depth (eyebrow, AA on light) */
+  --color-champagne-800: #1c3c36;  /* deep teal */
 
   /* 🩵 TURQUOISE — secondary accent (legacy "bronze" isimleri korundu) */
-  --color-bronze-500: #02aae5;     /* brand turquoise */
-  --color-bronze-600: #0287bd;     /* deep turquoise */
-  --color-bronze-700: #03729c;     /* deepest turquoise */
+  --color-bronze-500: #2f6b5f;     /* brand turquoise */
+  --color-bronze-600: #295e54;     /* deep turquoise */
+  --color-bronze-700: #244c45;     /* deepest turquoise */
 
   /* ════════════════════════════════════════════════════════════
      🛡️ FAZ 38 — BRAND CORAL (#FF653F)
@@ -72,38 +77,38 @@
      kullanılır. Mevcut champagne/cyan/coral token'ları DOKUNULMADI;
      bu kademe yalnız ek katman. Eski JSX class'ları davranışı korunur.
      ════════════════════════════════════════════════════════════ */
-  /* 🩵 REBRAND — brand TURQUOISE accent = logo turkuazı #02AAE5.
+  /* 🩵 REBRAND — brand TURQUOISE accent = logo turkuazı #244C45.
      Token isimleri korundu → JSX `var(--brand-coral)` otomatik turkuaz alır.
-     Tüm aqua/champagne/coral/bronze rampaları #02AAE5'ten türetilmiş tek
+     Tüm aqua/champagne/coral/bronze rampaları #244C45'ten türetilmiş tek
      ramp'e taşındı. Solid CTA white-text kontrastı için .btn-primary tabanı
-     türetilmiş 700 (#03729c) kullanır — bkz. .btn-primary. */
-  --brand-coral:      #02aae5;     /* primary brand (logo turquoise) */
-  --brand-coral-soft: #54c8f3;     /* hover/secondary (light turquoise) */
-  --brand-coral-deep: #03729c;     /* active/press (deep turquoise) */
-  --brand-coral-tint: #e8f7fd;     /* surface bg (turquoise glass) */
-  --brand-coral-ink:  #045d7e;     /* text on turquoise surface (deep teal) */
+     türetilmiş 700 (#244c45) kullanır — bkz. .btn-primary. */
+  --brand-coral:      #244c45;     /* primary brand (logo turquoise) */
+  --brand-coral-soft: #7fb1a6;     /* hover/secondary (light turquoise) */
+  --brand-coral-deep: #1c3c36;     /* active/press (deep turquoise) */
+  --brand-coral-tint: #eef5f3;     /* surface bg (turquoise glass) */
+  --brand-coral-ink:  #1c3c36;     /* text on turquoise surface (deep teal) */
 
   /* 🩵 Tertiary turquoise (legacy "terracotta" isimleri korundu) */
-  --color-terracotta-400: #54c8f3; /* light turquoise glow */
-  --color-terracotta-500: #1fb2ec; /* pool turquoise */
+  --color-terracotta-400: #7fb1a6; /* light turquoise glow */
+  --color-terracotta-500: #4f8f82; /* pool turquoise */
 
   /* Semantic aliases — yeni kod için (mevcut champagne-* legacy isimler
      korunmuştur; new dev bu semantic aliases'ı kullanabilir). */
-  --color-aqua-50: #e8f7fd;
-  --color-aqua-100: #c4ecfb;
-  --color-aqua-200: #90dcf8;
-  --color-aqua-300: #54c8f3;
-  --color-aqua-400: #1fb2ec;
-  --color-aqua-500: #02aae5;
-  --color-aqua-600: #0287bd;
-  --color-aqua-700: #03729c;
-  --color-aqua-800: #045d7e;
-  --color-coral-400: #1fb2ec;
-  --color-coral-500: #02aae5;
-  --color-coral-600: #0287bd;
-  --color-peach-300: #c4ecfb;
-  --color-peach-400: #90dcf8;
-  --color-peach-500: #54c8f3;
+  --color-aqua-50: #eef5f3;
+  --color-aqua-100: #d6e7e3;
+  --color-aqua-200: #aecfc7;
+  --color-aqua-300: #7fb1a6;
+  --color-aqua-400: #4f8f82;
+  --color-aqua-500: #2f6b5f;
+  --color-aqua-600: #295e54;
+  --color-aqua-700: #244c45;
+  --color-aqua-800: #1c3c36;
+  --color-coral-400: #4f8f82;
+  --color-coral-500: #2f6b5f;
+  --color-coral-600: #295e54;
+  --color-peach-300: #d6e7e3;
+  --color-peach-400: #aecfc7;
+  --color-peach-500: #7fb1a6;
 
   /* 🔠 Fonts */
   /* 🛡️ PUBLIC TYPOGRAPHY — İKİ STANDART FONT (app/layout.tsx, next/font):
@@ -128,27 +133,27 @@
   /* 🌅 FAZ 18 — RESORT SHADOWS (sunset coral + Mediterranean cyan) */
   /* Coral-tinted warm shadow — kart altlarında sunset glow hissi */
   --shadow-warm: 0 1px 2px rgb(27 26 23 / 0.04),
-    0 10px 28px -12px rgb(2 170 229 / 0.22);
+    0 10px 28px -12px rgb(36 76 69 / 0.22);
   --shadow-warm-hover: 0 2px 4px rgb(27 26 23 / 0.06),
-    0 22px 48px -14px rgb(2 170 229 / 0.32);
+    0 22px 48px -14px rgb(36 76 69 / 0.32);
   --shadow-elevated: 0 4px 8px rgb(27 26 23 / 0.06),
-    0 32px 64px -20px rgb(11 31 58 / 0.22);
+    0 32px 64px -20px rgb(36 76 69 / 0.22);
   /* Turquoise glow — primary accent ambient (sea highlight) */
-  --shadow-glow-champagne: 0 0 0 1px rgb(84 200 243 / 0.4),
-    0 8px 28px -6px rgb(2 170 229 / 0.42);
+  --shadow-glow-champagne: 0 0 0 1px rgb(127 177 166 / 0.4),
+    0 8px 28px -6px rgb(36 76 69 / 0.42);
   /* Turquoise glow — accent CTA/badge (rebrand: amber → turquoise) */
-  --shadow-glow-coral: 0 0 0 1px rgb(84 200 243 / 0.4),
-    0 8px 28px -6px rgb(2 170 229 / 0.42);
+  --shadow-glow-coral: 0 0 0 1px rgb(127 177 166 / 0.4),
+    0 8px 28px -6px rgb(36 76 69 / 0.42);
 
   /* 🌅 CINEMATIC HERO — tropical sunset overlay (coral → cyan):
      Üst kısımda warm sunset glow, alt kısımda deep sea darkness.
      Travel-poster Mediterranean atmosphere. */
   --gradient-hero-warm: linear-gradient(
     180deg,
-    rgb(2 170 229 / 0.10) 0%,
-    rgb(2 170 229 / 0.18) 35%,
-    rgb(11 95 91 / 0.5) 75%,
-    rgb(11 31 58 / 0.85) 100%
+    rgb(36 76 69 / 0.10) 0%,
+    rgb(36 76 69 / 0.18) 35%,
+    rgb(28 60 54 / 0.5) 75%,
+    rgb(36 76 69 / 0.85) 100%
   );
 }
 
@@ -157,19 +162,19 @@
    ---------------------------------------------------------------- */
 :root {
   --background: #f6f8fb;
-  --foreground: #16263f;
-  --muted: #455468;
+  --foreground: #1f3d38;
+  --muted: #4d6863;
   --border: #e3e9f0;
   /* 🌊 REBRAND — Focus ring turkuaz (secondary accent). Tailwind
      `ring-*` utility'leri kendi `--tw-ring-color`'ını taşır; bu token
      CSS docs/legacy reference + form focus ile tutarlı. */
-  --ring: #02aae5;
+  --ring: #244c45;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #f6f8fb;
-    --foreground: #16263f;
+    --foreground: #1f3d38;
   }
 }
 
@@ -177,7 +182,7 @@
   border-color: var(--border);
 }
 
-/* 🎨 BAŞLIK RENGİ — hero + section h1/h2 (#082060).
+/* 🎨 BAŞLIK RENGİ — hero + section h1/h2 (#244C45).
    Yalnız `text-[var(--color-stone-900)]` class'ını kullanan h1/h2'leri
    hedefler (specificity h1.class = 0,1,1 > Tailwind .class = 0,1,0 →
    override). Beyaz-on-koyu başlıklar (`text-white`, FAQ navy panel vb.)
@@ -185,7 +190,7 @@
    ve diğer non-heading stone-900 kullanımları da değişmez. */
 h1.text-\[var\(--color-stone-900\)\],
 h2.text-\[var\(--color-stone-900\)\] {
-  color: #082060;
+  color: #244C45;
 }
 
 html {
@@ -208,12 +213,12 @@ body {
   background:
     radial-gradient(
       ellipse 90% 65% at 100% 0%,
-      rgb(2 170 229 / 0.10) 0%,
+      rgb(36 76 69 / 0.10) 0%,
       transparent 55%
     ),
     radial-gradient(
       ellipse 80% 55% at 0% 100%,
-      rgb(2 170 229 / 0.08) 0%,
+      rgb(36 76 69 / 0.08) 0%,
       transparent 55%
     ),
     var(--background);
@@ -280,7 +285,7 @@ body {
      Resort kimliği taşır; tüm public section başlıklarında "Akdeniz"
      hissi. Admin shell override eder (cool slate). */
   color: var(--color-champagne-700);
-  text-shadow: 0 1px 0 rgb(84 200 243 / 0.06);
+  text-shadow: 0 1px 0 rgb(127 177 166 / 0.06);
 }
 
 /* ----------------------------------------------------------------
@@ -308,7 +313,7 @@ select:focus {
   border-color: var(--color-champagne-500);
   outline: none;
   /* 🌊 REBRAND — turkuaz focus ring */
-  box-shadow: 0 0 0 4px rgb(2 170 229 / 0.16);
+  box-shadow: 0 0 0 4px rgb(36 76 69 / 0.16);
 }
 
 .input {
@@ -325,7 +330,7 @@ select:focus {
 .input:focus {
   border-color: var(--color-champagne-500);
   /* 🌊 REBRAND — turkuaz focus ring */
-  box-shadow: 0 0 0 4px rgb(2 170 229 / 0.16);
+  box-shadow: 0 0 0 4px rgb(36 76 69 / 0.16);
 }
 
 /* Premium select chevron */
@@ -347,10 +352,9 @@ select.input {
    slate/navy diline override eder; bu blok yalnız PUBLIC surface'leri
    etkiler.
 
-   🩵 TURKUAZ REBRAND: brand accent artık logo turkuazı (#02AAE5).
-   .btn-primary tek **turkuaz solid** + multi-stop ambient shadow.
-   Beyaz metin kontrastı için CTA tabanı 700 (#03729c ≈5.4:1) →
-   hover 800 (#045d7e). Accent border/text/icon ise tam #02AAE5.
+   🌿 PETROL REBRAND: brand accent = petrol yeşili #244C45.
+   .btn-primary tek **petrol solid** + multi-stop ambient shadow.
+   Beyaz metin kontrastı: taban #244c45 ≈9.6:1 → hover #1c3c36.
 
    - `.btn-primary` → coral solid primary, white text, hover lift
    - `.btn-primary.btn-glow` → premium halo for hero/booking CTAs
@@ -368,28 +372,28 @@ select.input {
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.005em;
-  /* 🩵 Rebrand: turkuaz CTA. Brand turkuazı #02AAE5 beyaz metin için
-     fazla parlak (≈2.7:1); CTA tabanı türetilmiş 700 (#03729c) →
-     beyaz metin ≈ 5.4:1 (AA). Hover 800 (#045d7e ≈ 7.3:1). */
-  background: #03729c;
+  /* 🩵 Rebrand: turkuaz CTA. Brand turkuazı #244C45 beyaz metin için
+     fazla parlak (≈2.7:1); CTA tabanı türetilmiş 700 (#244c45) →
+     beyaz metin ≈ 5.4:1 (AA). Hover 800 (#1c3c36 ≈ 7.3:1). */
+  background: #244c45;
   color: #ffffff;
   border: 1px solid transparent;
   box-shadow:
     0 1px 2px rgb(27 26 23 / 0.08),
-    0 14px 28px -10px rgba(2, 170, 229, 0.45),
-    0 4px 12px -6px rgba(2, 170, 229, 0.30),
+    0 14px 28px -10px rgba(36, 76, 69, 0.45),
+    0 4px 12px -6px rgba(36, 76, 69, 0.30),
     inset 0 1px 0 rgb(255 255 255 / 0.18);
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 220ms ease, background-color 220ms ease;
 }
 
 .btn-primary:hover {
-  background: #045d7e;
+  background: #1c3c36;
   transform: translateY(-1px);
   box-shadow:
     0 2px 4px rgb(27 26 23 / 0.10),
-    0 22px 40px -12px rgba(2, 170, 229, 0.55),
-    0 8px 20px -8px rgba(2, 170, 229, 0.45),
+    0 22px 40px -12px rgba(36, 76, 69, 0.55),
+    0 8px 20px -8px rgba(36, 76, 69, 0.45),
     inset 0 1px 0 rgb(255 255 255 / 0.22);
 }
 
@@ -397,15 +401,15 @@ select.input {
   transform: translateY(0);
   box-shadow:
     0 1px 2px rgb(27 26 23 / 0.10),
-    0 6px 14px -6px rgba(2, 170, 229, 0.45);
+    0 6px 14px -6px rgba(36, 76, 69, 0.45);
 }
 
 .btn-primary:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 3px rgba(2, 170, 229, 0.32),
-    0 14px 28px -10px rgba(2, 170, 229, 0.45),
-    0 4px 12px -6px rgba(2, 170, 229, 0.30);
+    0 0 0 3px rgba(36, 76, 69, 0.32),
+    0 14px 28px -10px rgba(36, 76, 69, 0.45),
+    0 4px 12px -6px rgba(36, 76, 69, 0.30);
 }
 
 /* Glow modifier — hero / booking sidebar / featured CTA için
@@ -413,18 +417,18 @@ select.input {
 .btn-primary.btn-glow {
   box-shadow:
     0 1px 2px rgb(27 26 23 / 0.08),
-    0 20px 40px -10px rgba(2, 170, 229, 0.55),
-    0 10px 24px -8px rgba(2, 170, 229, 0.40),
-    0 0 0 1px rgba(2, 170, 229, 0.18),
+    0 20px 40px -10px rgba(36, 76, 69, 0.55),
+    0 10px 24px -8px rgba(36, 76, 69, 0.40),
+    0 0 0 1px rgba(36, 76, 69, 0.18),
     inset 0 1px 0 rgb(255 255 255 / 0.22);
 }
 
 .btn-primary.btn-glow:hover {
   box-shadow:
     0 2px 4px rgb(27 26 23 / 0.10),
-    0 28px 52px -10px rgba(2, 170, 229, 0.65),
-    0 14px 28px -8px rgba(2, 170, 229, 0.50),
-    0 0 0 1px rgba(2, 170, 229, 0.25),
+    0 28px 52px -10px rgba(36, 76, 69, 0.65),
+    0 14px 28px -8px rgba(36, 76, 69, 0.50),
+    0 0 0 1px rgba(36, 76, 69, 0.25),
     inset 0 1px 0 rgb(255 255 255 / 0.28);
 }
 
@@ -455,7 +459,7 @@ select.input {
 
 .btn-ghost:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(2, 170, 229, 0.22);
+  box-shadow: 0 0 0 3px rgba(36, 76, 69, 0.22);
 }
 
 /* Dark — niche stone CTA; preserved for legacy public surfaces.
@@ -508,10 +512,10 @@ select.input {
 .card-warm {
   background: linear-gradient(
     180deg,
-    #e8f7fd 0%,
+    #eef5f3 0%,
     #ffffff 100%
   );
-  border: 1px solid rgb(84 200 243 / 0.45);
+  border: 1px solid rgb(127 177 166 / 0.45);
   border-radius: 20px;
   box-shadow: var(--shadow-warm);
   transition: box-shadow 280ms ease, transform 280ms ease,
@@ -521,7 +525,7 @@ select.input {
 .card-warm:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-warm-hover);
-  border-color: var(--color-coral-400, #1fb2ec);
+  border-color: var(--color-coral-400, #4f8f82);
 }
 
 /* 🌊 FAZ 18 — `.card-aqua` variant: cool Mediterranean spotlight.
@@ -530,13 +534,13 @@ select.input {
   background: linear-gradient(
     180deg,
     #ffffff 0%,
-    #e8f7fd 100%
+    #eef5f3 100%
   );
-  border: 1px solid var(--color-aqua-200, #90dcf8);
+  border: 1px solid var(--color-aqua-200, #aecfc7);
   border-radius: 20px;
   box-shadow:
     0 1px 2px rgb(27 26 23 / 0.04),
-    0 10px 28px -12px rgb(2 170 229 / 0.18);
+    0 10px 28px -12px rgb(36 76 69 / 0.18);
   transition: box-shadow 280ms ease, transform 280ms ease,
     border-color 280ms ease;
 }
@@ -545,8 +549,8 @@ select.input {
   transform: translateY(-2px);
   box-shadow:
     0 2px 4px rgb(27 26 23 / 0.06),
-    0 22px 48px -14px rgb(2 170 229 / 0.32);
-  border-color: var(--color-aqua-400, #1fb2ec);
+    0 22px 48px -14px rgb(36 76 69 / 0.32);
+  border-color: var(--color-aqua-400, #4f8f82);
 }
 
 /* 🛡️ FAZ 17 — `.warm-glow` utility: subtle champagne ambient
@@ -564,9 +568,9 @@ select.input {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--color-coral-400, #1fb2ec) 25%,
-    var(--color-aqua-400, #1fb2ec) 50%,
-    var(--color-coral-400, #1fb2ec) 75%,
+    var(--color-coral-400, #4f8f82) 25%,
+    var(--color-aqua-400, #4f8f82) 50%,
+    var(--color-coral-400, #4f8f82) 75%,
     transparent 100%
   );
   opacity: 0.35;
@@ -708,7 +712,7 @@ select.input {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #54c8f3;
+  background: #7fb1a6;
   background-clip: padding-box;
   border: 2px solid transparent;
 }
@@ -764,7 +768,7 @@ select.input {
 
 .react-datepicker__day:hover {
   /* 🌊 REBRAND — soft turquoise hover. */
-  background: #e8f7fd !important;
+  background: #eef5f3 !important;
 }
 
 .react-datepicker__day--selected,
@@ -772,13 +776,13 @@ select.input {
 .react-datepicker__day--in-range {
   /* 🌊 REBRAND — deep turquoise selection; beyaz yazı ~4.3:1 (AA,
      eski #06b6d4 ~2.9'dan iyileşti). */
-  background: #03729c !important;
+  background: #244c45 !important;
   color: #ffffff !important;
 }
 
 .react-datepicker__day--keyboard-selected {
-  background: #c4ecfb !important;
-  color: #03729c !important;
+  background: #d6e7e3 !important;
+  color: #244c45 !important;
 }
 
 .react-datepicker__day--disabled {
@@ -893,9 +897,9 @@ select.input {
 .gradient-warm-overlay {
   background: linear-gradient(
     180deg,
-    rgb(2 170 229 / 0.06) 0%,
+    rgb(36 76 69 / 0.06) 0%,
     transparent 35%,
-    rgb(11 95 91 / 0.18) 100%
+    rgb(28 60 54 / 0.18) 100%
   );
 }
 
@@ -906,7 +910,7 @@ select.input {
     180deg,
     rgb(210 243 240 / 0.18) 0%,
     transparent 50%,
-    rgb(2 170 229 / 0.24) 100%
+    rgb(36 76 69 / 0.24) 100%
   );
 }
 
@@ -932,6 +936,124 @@ select.input {
 /* 🌊 Selection — FAZ 18: Mediterranean aqua tint (was bronze).
    Pool water highlight feeling; text seçimi resort kimliği taşır. */
 ::selection {
+  background: rgb(36 76 69 / 0.28);
+  color: #1c3c36;
+}
+
+/* ================================================================
+   🌿 ADMIN RENK PİNİ — public site petrol yeşili (#244C45) rebrand'ine
+   geçti; admin panelin KENDİ renk sistemi DEĞİŞMESİN diye eski token
+   ve eski global kural renkleri `.admin-shell` altında sabitlenir.
+   Bu blok admin bölümünün EN BAŞINDADIR → aşağıdaki admin'e özgü
+   override'lar (stone/champagne/btn/eyebrow vb.) aynen kazanır.
+   ================================================================ */
+.admin-shell {
+  --color-stone-300: #97a6b8;
+  --color-stone-400: #5f7187;
+  --color-stone-500: #455468;
+  --color-stone-600: #2f3e54;
+  --color-stone-700: #1d2e4d;
+  --color-stone-800: #122441;
+  --color-stone-900: #0b1f3a;
+  --color-champagne-50: #e8f7fd;
+  --color-champagne-100: #c4ecfb;
+  --color-champagne-200: #90dcf8;
+  --color-champagne-300: #54c8f3;
+  --color-champagne-400: #1fb2ec;
+  --color-champagne-500: #02aae5;
+  --color-champagne-600: #0287bd;
+  --color-champagne-700: #03729c;
+  --color-champagne-800: #045d7e;
+  --color-bronze-500: #02aae5;
+  --color-bronze-600: #0287bd;
+  --color-bronze-700: #03729c;
+  --brand-coral: #02aae5;
+  --brand-coral-soft: #54c8f3;
+  --brand-coral-deep: #03729c;
+  --brand-coral-tint: #e8f7fd;
+  --brand-coral-ink: #045d7e;
+  --color-terracotta-400: #54c8f3;
+  --color-terracotta-500: #1fb2ec;
+  --color-aqua-50: #e8f7fd;
+  --color-aqua-100: #c4ecfb;
+  --color-aqua-200: #90dcf8;
+  --color-aqua-300: #54c8f3;
+  --color-aqua-400: #1fb2ec;
+  --color-aqua-500: #02aae5;
+  --color-aqua-600: #0287bd;
+  --color-aqua-700: #03729c;
+  --color-aqua-800: #045d7e;
+  --color-coral-400: #1fb2ec;
+  --color-coral-500: #02aae5;
+  --color-coral-600: #0287bd;
+  --color-peach-300: #c4ecfb;
+  --color-peach-400: #90dcf8;
+  --color-peach-500: #54c8f3;
+  --shadow-warm: 0 1px 2px rgb(27 26 23 / 0.04), 0 10px 28px -12px rgb(2 170 229 / 0.22);
+  --shadow-warm-hover: 0 2px 4px rgb(27 26 23 / 0.06), 0 22px 48px -14px rgb(2 170 229 / 0.32);
+  --shadow-elevated: 0 4px 8px rgb(27 26 23 / 0.06), 0 32px 64px -20px rgb(11 31 58 / 0.22);
+  --shadow-glow-champagne: 0 0 0 1px rgb(84 200 243 / 0.4), 0 8px 28px -6px rgb(2 170 229 / 0.42);
+  --shadow-glow-coral: 0 0 0 1px rgb(84 200 243 / 0.4), 0 8px 28px -6px rgb(2 170 229 / 0.42);
+  --gradient-hero-warm: linear-gradient( 180deg, rgb(2 170 229 / 0.10) 0%, rgb(2 170 229 / 0.18) 35%, rgb(11 95 91 / 0.5) 75%, rgb(11 31 58 / 0.85) 100% );
+  --foreground: #16263f;
+  --muted: #455468;
+  --ring: #02aae5;
+}
+
+.admin-shell h1.text-\[var\(--color-stone-900\)\],
+.admin-shell h2.text-\[var\(--color-stone-900\)\] {
+  color: #082060;
+}
+
+.admin-shell input:focus,
+.admin-shell textarea:focus,
+.admin-shell select:focus {
+  border-color: var(--color-champagne-500);
+  box-shadow: 0 0 0 4px rgb(2 170 229 / 0.16);
+}
+
+.admin-shell .input:focus {
+  border-color: var(--color-champagne-500);
+  box-shadow: 0 0 0 4px rgb(2 170 229 / 0.16);
+}
+
+.admin-shell .btn-primary:active {
+  box-shadow: 0 1px 2px rgb(27 26 23 / 0.10), 0 6px 14px -6px rgba(2, 170, 229, 0.45);
+}
+
+.admin-shell .btn-primary:focus-visible {
+  box-shadow: 0 0 0 3px rgba(2, 170, 229, 0.32), 0 14px 28px -10px rgba(2, 170, 229, 0.45), 0 4px 12px -6px rgba(2, 170, 229, 0.30);
+}
+
+.admin-shell .btn-primary.btn-glow {
+  box-shadow: 0 1px 2px rgb(27 26 23 / 0.08), 0 20px 40px -10px rgba(2, 170, 229, 0.55), 0 10px 24px -8px rgba(2, 170, 229, 0.40), 0 0 0 1px rgba(2, 170, 229, 0.18), inset 0 1px 0 rgb(255 255 255 / 0.22);
+}
+
+.admin-shell .btn-primary.btn-glow:hover {
+  box-shadow: 0 2px 4px rgb(27 26 23 / 0.10), 0 28px 52px -10px rgba(2, 170, 229, 0.65), 0 14px 28px -8px rgba(2, 170, 229, 0.50), 0 0 0 1px rgba(2, 170, 229, 0.25), inset 0 1px 0 rgb(255 255 255 / 0.28);
+}
+
+.admin-shell .btn-ghost:focus-visible {
+  box-shadow: 0 0 0 3px rgba(2, 170, 229, 0.22);
+}
+
+.admin-shell .react-datepicker__day:hover {
+  background: #e8f7fd !important;
+}
+
+.admin-shell .react-datepicker__day--selected,
+.admin-shell .react-datepicker__day--in-selecting-range,
+.admin-shell .react-datepicker__day--in-range {
+  background: #03729c !important;
+  color: #ffffff !important;
+}
+
+.admin-shell .react-datepicker__day--keyboard-selected {
+  background: #c4ecfb !important;
+  color: #03729c !important;
+}
+
+.admin-shell ::selection {
   background: rgb(2 170 229 / 0.28);
   color: #045d7e;
 }

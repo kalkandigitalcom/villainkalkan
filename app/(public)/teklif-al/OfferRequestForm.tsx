@@ -404,7 +404,7 @@ export default function OfferRequestForm({
                     "motion-reduce:transition-none hover:-translate-y-[1px] " +
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-coral)]/40 " +
                     (active
-                      ? "bg-[var(--brand-coral-tint)] border-[var(--brand-coral)] shadow-[0_14px_28px_-14px_rgba(255,101,63,0.30)]"
+                      ? "bg-[var(--brand-coral-tint)] border-[var(--brand-coral)] shadow-[0_14px_28px_-14px_rgba(36,76,69,0.30)]"
                       : "bg-white border-[var(--color-stone-200)] hover:border-[var(--brand-coral)]/40")
                   }
                 >
@@ -568,7 +568,7 @@ export default function OfferRequestForm({
                   w-full !rounded-2xl !border !border-[var(--color-stone-200)] !bg-white
                   px-3 py-3 text-[14px] !text-[var(--color-stone-900)]
                   focus:!border-[var(--brand-coral)]
-                  focus:!shadow-[0_0_0_3px_rgba(255,101,63,0.18)]
+                  focus:!shadow-[0_0_0_3px_rgba(36,76,69,0.18)]
                 "
               >
                 <option value="TRY">₺ TRY</option>
@@ -633,7 +633,7 @@ export default function OfferRequestForm({
               px-4 py-3 text-[14.5px] !text-[var(--color-stone-700)]
               placeholder:!text-[var(--color-stone-400)] leading-relaxed
               focus:!border-[var(--brand-coral)]
-              focus:!shadow-[0_0_0_3px_rgba(255,101,63,0.18)]
+              focus:!shadow-[0_0_0_3px_rgba(36,76,69,0.18)]
               transition-[border-color,box-shadow] duration-200
               resize-y min-h-[110px]
             "
@@ -869,7 +869,7 @@ function BudgetField({
           px-4 py-3 text-[14.5px] !text-[var(--color-stone-900)] tabular-nums
           placeholder:!text-[var(--color-stone-400)]
           focus:!border-[var(--brand-coral)]
-          focus:!shadow-[0_0_0_3px_rgba(255,101,63,0.18)]
+          focus:!shadow-[0_0_0_3px_rgba(36,76,69,0.18)]
           transition-[border-color,box-shadow] duration-200
         "
       />
@@ -916,7 +916,7 @@ function TextField({
           px-4 py-3 text-[14.5px] !text-[var(--color-stone-900)]
           placeholder:!text-[var(--color-stone-400)]
           focus:!border-[var(--brand-coral)]
-          focus:!shadow-[0_0_0_3px_rgba(255,101,63,0.18)]
+          focus:!shadow-[0_0_0_3px_rgba(36,76,69,0.18)]
           transition-[border-color,box-shadow] duration-200
         "
       />

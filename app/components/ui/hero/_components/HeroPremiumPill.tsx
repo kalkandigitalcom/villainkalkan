@@ -24,7 +24,7 @@ export default function HeroPremiumPill() {
         text-white
         px-3.5 py-1.5
         text-[10px] tracking-[0.24em] uppercase font-medium
-        shadow-[0_14px_28px_-10px_rgba(255,101,63,0.55)]
+        shadow-[0_14px_28px_-10px_rgba(36,76,69,0.55)]
       "
       aria-hidden
     >

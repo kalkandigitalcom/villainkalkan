@@ -126,7 +126,7 @@ export default function ReviewsCarousel({
             className="mt-9 md:mt-11 h-[2px] w-full max-w-[240px] bg-[var(--color-stone-100)] rounded-full overflow-hidden"
           >
             <div
-              className="h-full bg-gradient-to-r from-[#ED7926] to-[#0973BA] transition-[width] duration-500 ease-out motion-reduce:transition-none"
+              className="h-full bg-gradient-to-r from-[#C9A55A] to-[#244C45] transition-[width] duration-500 ease-out motion-reduce:transition-none"
               style={{ width: `${((selectedIndex + 1) / total) * 100}%` }}
             />
           </div>
@@ -158,7 +158,7 @@ function ActiveTestimonial({
       <div className="grid grid-cols-[auto_1fr] gap-3 md:gap-5">
         <span
           aria-hidden="true"
-          className="font-display text-[56px] md:text-[84px] leading-[0.8] text-transparent bg-clip-text bg-gradient-to-br from-[#ED7926] to-[#0973BA] select-none"
+          className="font-display text-[56px] md:text-[84px] leading-[0.8] text-transparent bg-clip-text bg-gradient-to-br from-[#C9A55A] to-[#244C45] select-none"
         >
           &ldquo;
         </span>
@@ -186,7 +186,7 @@ function ActiveTestimonial({
               onClick={() => setExpanded((v) => !v)}
               className="
                 mt-3 text-[12.5px] font-medium
-                text-[#0973BA] hover:text-[#ED7926]
+                text-[#244C45] hover:text-[#C9A55A]
                 transition-colors motion-reduce:transition-none
                 focus:outline-none focus-visible:underline
               "

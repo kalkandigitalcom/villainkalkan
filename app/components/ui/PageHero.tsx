@@ -97,7 +97,7 @@ export default async function PageHero({
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(180deg, rgba(5,18,40,0.45), rgba(5,18,40,0.30)), linear-gradient(180deg, rgba(6,12,24,0.58) 0%, rgba(8,15,30,0.48) 35%, rgba(10,18,35,0.42) 65%, rgba(8,14,28,0.55) 100%)",
+                "linear-gradient(180deg, rgba(8,24,21,0.45), rgba(8,24,21,0.30)), linear-gradient(180deg, rgba(6,15,13,0.58) 0%, rgba(8,19,17,0.48) 35%, rgba(10,22,20,0.42) 65%, rgba(8,18,16,0.55) 100%)",
             }}
           />
         </div>

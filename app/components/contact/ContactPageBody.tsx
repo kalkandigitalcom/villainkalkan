@@ -362,7 +362,7 @@ export default async function ContactPageBody({
       ============================================================ */}
       <section className="px-5 md:px-10 lg:px-16 pb-32 md:pb-44">
         <div className="max-w-[1100px] mx-auto">
-          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-[#0B1F3A] to-[#132A46] px-8 md:px-16 py-16 md:py-24 text-center shadow-[0_40px_100px_-40px_rgba(11,31,58,0.6)]">
+          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-[#244C45] to-[#2B5A51] px-8 md:px-16 py-16 md:py-24 text-center shadow-[0_40px_100px_-40px_rgba(36,76,69,0.6)]">
             {/* dekoratif coral glow */}
             <div
               aria-hidden="true"
