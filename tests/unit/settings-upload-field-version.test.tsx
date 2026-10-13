@@ -19,10 +19,10 @@ vi.mock("@/app/services/site-asset-version.action", () => ({
 const uploadMock = vi.fn(async () => ({ ok: true }));
 vi.mock("@/lib/storage", () => ({
   storageProvider: { upload: (...a: unknown[]) => uploadMock(...(a as [])) },
-  STORAGE_BUCKETS: { SITE_ASSETS: "tatilinyeri-site-assets", VILLA_IMAGES: "tatilinyeri-villa-images" },
+  STORAGE_BUCKETS: { SITE_ASSETS: "villainkalkan-site-assets", VILLA_IMAGES: "villainkalkan-villa-images" },
 }));
 vi.mock("@/lib/storage.helpers", () => ({
-  SITE_ASSETS_BUCKET_NAME: "tatilinyeri-site-assets",
+  SITE_ASSETS_BUCKET_NAME: "villainkalkan-site-assets",
   resolveAssetUrlVersioned: (v: string | null, k?: string | null) =>
     v ? `https://cdn.test/${v}${k ? `?v=${k}` : ""}` : null,
 }));
@@ -72,7 +72,7 @@ describe("UploadField önizleme versiyonu", () => {
     });
     await waitFor(() => expect(container.querySelector("img")?.getAttribute("src")).toContain("?v=etagB"));
     expect(uploadMock).toHaveBeenCalledWith(
-      "tatilinyeri-site-assets",
+      "villainkalkan-site-assets",
       "logo/logo.webp",
       expect.anything(),
       { upsert: true, contentType: "image/webp", cacheControl: "3600" }

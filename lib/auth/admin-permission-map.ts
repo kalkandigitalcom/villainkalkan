@@ -14,6 +14,7 @@
    =============================================================== */
 
 import type { PermissionRequirement } from "@/lib/auth/action-authz";
+import { STORAGE_BUCKETS } from "@/lib/storage/storage.constants";
 
 export type AdminSection = { href: string; need: PermissionRequirement };
 
@@ -116,13 +117,15 @@ export const PAGE_LIST_READERS: PermissionRequirement = ["pages", "menu"];
                    logo/ favicon/ watermark/ hero/ seo/ popup/  settings
    Bilinmeyen önek: villa-images → villas, site-assets → settings
    (bucket'ın mevcut sahibi; yeni bir yol açılmaz).
+   Bucket anahtarları merkezi `STORAGE_BUCKETS` sabitlerinden gelir
+   (lib/storage/storage.constants.ts) → bucket adı tek yerde değişir.
 --------------------------------------------------------------- */
 const STORAGE_PREFIX_PERMISSIONS: Record<string, Array<[string, PermissionRequirement]>> = {
-  "tatilinyeri-villa-images": [
+  [STORAGE_BUCKETS.VILLA_IMAGES]: [
     ["villas/", "villas"],
     ["descriptions/", ["villas", "blog"]],
   ],
-  "tatilinyeri-site-assets": [
+  [STORAGE_BUCKETS.SITE_ASSETS]: [
     ["category-covers/", "villa_types"],
     ["location-covers/", "locations"],
     ["page-covers/", "pages"],
@@ -137,8 +140,8 @@ const STORAGE_PREFIX_PERMISSIONS: Record<string, Array<[string, PermissionRequir
   ],
 };
 const STORAGE_BUCKET_DEFAULT: Record<string, PermissionRequirement> = {
-  "tatilinyeri-villa-images": "villas",
-  "tatilinyeri-site-assets": "settings",
+  [STORAGE_BUCKETS.VILLA_IMAGES]: "villas",
+  [STORAGE_BUCKETS.SITE_ASSETS]: "settings",
 };
 
 /** Bu bucket/yol için gereken izin; bucket tanınmıyorsa null. */

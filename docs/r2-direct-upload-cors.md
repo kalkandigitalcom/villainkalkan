@@ -9,7 +9,7 @@ Browser → PUT uploadUrl  (WebP dosya — VPS'ten GEÇMEZ)
 Browser → server action addGalleryImage(villaId, key)       (key/villa + HeadObject doğrulaması → DB)
 ```
 
-## 1. R2 bucket CORS (Cloudflare panel → R2 → `tatilinyeri-villa-images` → Settings → CORS Policy)
+## 1. R2 bucket CORS (Cloudflare panel → R2 → `villainkalkan-villa-images` → Settings → CORS Policy)
 
 Tarayıcının imzalı adrese `PUT` atabilmesi için **yalnız bu bucket'a** şu kural eklenmeli
 (`ORIGIN` = admin panelinin açıldığı tam origin, örn. `https://www.alanadi.com`; birden fazla

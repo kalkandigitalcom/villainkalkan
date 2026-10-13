@@ -162,7 +162,7 @@ describe("A) /api/admin/villas/[id]/gallery/upload-url", () => {
 
     expect(presign).toHaveBeenCalledTimes(1);
     const [bucket, key, opts] = presign.mock.calls[0];
-    expect(bucket).toBe("tatilinyeri-villa-images");
+    expect(bucket).toBe("villainkalkan-villa-images");
     expect(key).toBe(json.key);
     expect(opts).toEqual({
       contentType: "image/webp",
@@ -237,7 +237,7 @@ describe("B) addGalleryImage — direct upload sonrası kayıt", () => {
   it("R2 upload başarılı ama DB başarısız → yeni nesne sunucuda temizlenir", async () => {
     addVillaImage.mockResolvedValueOnce(false);
     expect(await addGalleryImage(VILLA_ID, KEY)).toBe(false);
-    expect(removeServer).toHaveBeenCalledWith("tatilinyeri-villa-images", [KEY]);
+    expect(removeServer).toHaveBeenCalledWith("villainkalkan-villa-images", [KEY]);
     expect(invalidate).not.toHaveBeenCalled();
   });
 

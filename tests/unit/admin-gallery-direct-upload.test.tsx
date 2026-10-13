@@ -140,7 +140,7 @@ describe("AdminGallery — direct-to-R2", () => {
     const { input } = setup(onUploaded);
     fireEvent.change(input, { target: { files: [file("a.jpg")] } });
     await waitFor(() =>
-      expect(storageRemove).toHaveBeenCalledWith("tatilinyeri-villa-images", [
+      expect(storageRemove).toHaveBeenCalledWith("villainkalkan-villa-images", [
         "villas/villa-x__2f99586c/villa-x-0001-dddd.webp",
       ])
     );

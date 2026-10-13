@@ -22,14 +22,14 @@ describe("presignPutObject", () => {
     const { presignPutObject } = await import("@/lib/storage/s3-storage.provider");
     const key = "villas/villa-x__2f99586c/villa-x-0001-abcd.webp";
     const url = new URL(
-      await presignPutObject("tatilinyeri-villa-images", key, {
+      await presignPutObject("villainkalkan-villa-images", key, {
         contentType: "image/webp",
         contentLength: 12345,
         expiresIn: 120,
       })
     );
     expect(url.origin).toBe("https://acct123.r2.cloudflarestorage.com");
-    expect(url.pathname).toBe(`/tatilinyeri-villa-images/${key}`);
+    expect(url.pathname).toBe(`/villainkalkan-villa-images/${key}`);
     expect(url.searchParams.get("X-Amz-Expires")).toBe("120");
     const signed = (url.searchParams.get("X-Amz-SignedHeaders") || "").split(";");
     expect(signed).toEqual(expect.arrayContaining(["content-type", "content-length", "host"]));
