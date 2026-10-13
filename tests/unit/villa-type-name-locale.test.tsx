@@ -149,6 +149,9 @@ describe("getVillaTypeNamesByLocale — batch okuma", () => {
 const usePathnameMock = vi.fn();
 vi.mock("next/navigation", () => ({
   usePathname: () => usePathnameMock(),
+  /* Header dil çipleri (header redesign) query string'i korumak için
+     useSearchParams kullanır. */
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 /* Header'ın ağır alt component'leri — header-locale.test.tsx ile AYNI

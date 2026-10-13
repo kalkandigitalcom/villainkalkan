@@ -607,6 +607,8 @@ export type Dictionary = {
       secondaryCtaText: string;
       /** Hero arka plan görselinin alt metni (başlık boşsa kullanılır). */
       imageAlt: string;
+      /** Hero alt ortadaki kaydırma okunun erişilebilir adı. */
+      scrollDown: string;
     };
     search: {
       dateLabel: string;

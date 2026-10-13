@@ -417,6 +417,7 @@ export const en: Dictionary = {
       primaryCtaText: "Short Stay Deals",
       secondaryCtaText: "Frequently Asked Questions",
       imageAlt: "Mediterranean villa",
+      scrollDown: "Scroll down",
     },
     search: {
       dateLabel: "Dates",

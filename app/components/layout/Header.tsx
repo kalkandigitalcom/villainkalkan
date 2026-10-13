@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { Menu, X, ChevronDown, Phone } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 import TopBar from "./TopBar";
 /* 🛡️ FAZ 36 — Favorites shortcut (localStorage badge counter) */
 import HeaderFavoritesLink from "@/app/components/favorites/HeaderFavoritesLink";
@@ -25,7 +25,15 @@ import VillaSearchBox from "@/app/components/layout/VillaSearchBox";
    Header zaten "use client" olduğu ve `usePathname()`'e sahip olduğu
    için mümkün; site-wide dynamic-rendering riski YOK). */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { DEFAULT_LOCALE, localeFromPathname } from "@/lib/i18n/config";
+import {
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  localeFromPathname,
+  type Locale,
+} from "@/lib/i18n/config";
+/* 🛡️ HEADER REDESIGN — dil çipleri, TopBar dil seçicisiyle AYNI hedef
+   üreticiyi kullanır (yeni routing/i18n mantığı YOK). */
+import { getLocaleSwitchTargets } from "@/lib/i18n/locale-switch.helper";
 /* 🛡️ NAVIGATION LOCALE PERSISTENCE — iç linkler aktif locale'i taşır.
    Yeni bir routing sistemi DEĞİL; `buildLocaleAlternates` (Phase 7B)
    üzerine ince, saf sarmalayıcı (bkz. lib/i18n/locale-href.ts). */
@@ -76,6 +84,115 @@ import {
      - HeaderFavoritesLink (artık `variant="default"` sabiti)
    =============================================================== */
 
+/* ===============================================================
+   🛡️ HEADER REDESIGN (premium / referans tasarım)
+   ===============================================================
+   - Ana sayfada (/, /tr, /en, /de) header hero görselinin ÜZERİNDE
+     şeffaf durur; scroll / mobil menü açıkken ve iç sayfalarda koyu
+     lacivert zemine geçer. Spacer yalnız iç sayfalarda basılır.
+   - Sağ alan: TR/EN/DE dil çipleri (xl+), telefon (2xl+), mevcut arama
+     + favoriler, altın Rezervasyon CTA'sı (hedef AYNEN /teklif-al).
+   - Daha dar ekranlarda dil seçimi ve telefon TopBar'da kalır (TopBar
+     bu breakpoint'lerde aynı öğeleri gösterir) → hiçbir işlev kaybolmaz.
+   - Menü verisi, locale href'leri, arama, favoriler, mobil menü
+     state/accordion mantığı DEĞİŞMEDİ; yalnız görsel katman.
+   =============================================================== */
+
+/** Altın vurgu — yalnız header/hero CTA'larında kullanılır (global
+ *  tema token'larına DOKUNULMADI). */
+const GOLD_CTA_CLASS =
+  "bg-[#C9A55A] hover:bg-[#BB9649] text-white " +
+  "shadow-[0_10px_24px_-12px_rgba(201,165,90,0.75)] " +
+  "transition-colors duration-300 motion-reduce:transition-none " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1f3a]";
+
+/** TopBar ile AYNI bayrak asset'leri (public/flags). */
+const LOCALE_FLAGS: Record<Locale, string> = {
+  tr: "/flags/tr.svg",
+  en: "/flags/gb.svg",
+  de: "/flags/de.svg",
+};
+
+/** Ana sayfa yolları — header'ın hero üzerinde şeffaf durduğu yerler. */
+const HOME_PATHS = new Set<string>([
+  "/",
+  ...SUPPORTED_LOCALES.map((l) => `/${l}`),
+]);
+
+function LocaleChipLinks({
+  locale,
+  targets,
+  label,
+}: {
+  locale: Locale;
+  targets: Record<Locale, string>;
+  label: string;
+}) {
+  return (
+    <div role="group" aria-label={label} className="flex items-center gap-1.5">
+      {SUPPORTED_LOCALES.map((l) => {
+        const active = l === locale;
+        const inner = (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LOCALE_FLAGS[l]}
+              alt=""
+              className="w-[18px] h-[13px] rounded-[2px] object-cover shrink-0"
+            />
+            {l.toUpperCase()}
+          </>
+        );
+        const base =
+          "inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12.5px] font-medium tracking-[0.04em] transition-colors duration-200 motion-reduce:transition-none";
+        return active ? (
+          <span
+            key={l}
+            aria-current="true"
+            className={base + " bg-[#C9A55A] text-white"}
+          >
+            {inner}
+          </span>
+        ) : (
+          <Link
+            key={l}
+            href={targets[l]}
+            className={
+              base +
+              " border !border-white/25 bg-white/10 text-white/85 hover:bg-white/20 hover:text-white"
+            }
+          >
+            {inner}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+/* Query string'i koruyan varyant — `useSearchParams()` statik
+   prerender'da en yakın Suspense'e kadar client-render zorladığı için
+   çağrı yerinde <Suspense> ile sarılır (TopBar ile aynı desen). */
+function LocaleChipsWithQuery(props: {
+  locale: Locale;
+  pathname: string | null;
+  trHomeHref: string;
+  label: string;
+}) {
+  const searchParams = useSearchParams();
+  return (
+    <LocaleChipLinks
+      locale={props.locale}
+      label={props.label}
+      targets={getLocaleSwitchTargets(
+        props.pathname,
+        searchParams?.toString() ?? "",
+        props.trHomeHref
+      )}
+    />
+  );
+}
+
 type MenuItem = {
   id?: string;
   name: string;
@@ -91,10 +208,20 @@ export default function Header({
   menu = [],
   siteLogo = null,
   trHomeHref = "/",
+  footerLogo = null,
+  phone = null,
+  multilingualEnabled = false,
 }: {
   menu?: MenuItem[];
   /* settings.site_logo — boşsa text wordmark fallback */
   siteLogo?: string | null;
+  /* settings.footer_logo — koyu zemin için açık/negatif logo. Koyu
+     (dolu) header durumunda varsa kullanılır, yoksa site_logo. */
+  footerLogo?: string | null;
+  /* settings.phone — header telefon bağlantısı (2xl+). */
+  phone?: string | null;
+  /* settings.multilingual_enabled — dil çipleri yalnız açıkken. */
+  multilingualEnabled?: boolean;
   /* 🔄 TR ana sayfanın yolu. Varsayılan dil EN/DE iken "/" bir
      YÖNLENDİRİCİ olduğu için HeaderWrapper "/tr" geçer; aksi halde
      (ve prop hiç verilmezse) "/" → davranış BYTE-IDENTICAL. */
@@ -167,55 +294,40 @@ export default function Header({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Subtle scroll-state shadow: scrolled iken hairline shadow ekle.
-     Tek kompozit class — eski ternary çağrısı kaldırıldı. */
+  /* 🛡️ HEADER REDESIGN — ana sayfada, en üstteyken ve mobil menü
+     kapalıyken hero üzerinde şeffaf; aksi halde koyu lacivert. */
+  const normalizedPath = (pathname || "/").replace(/\/+$/, "") || "/";
+  const isHome = HOME_PATHS.has(normalizedPath);
+  const overHero = isHome && !scrolled && !open;
   const headerShellClass =
-    "transition-shadow duration-300 motion-reduce:transition-none " +
-    "bg-white/92 backdrop-blur-xl backdrop-saturate-150 " +
-    "border-b border-[var(--color-stone-100)] " +
-    (scrolled
-      ? "shadow-[0_8px_24px_-12px_rgba(27,26,23,0.08)]"
-      : "shadow-none");
+    "border-b transition-[background-color,box-shadow,border-color] duration-300 motion-reduce:transition-none " +
+    (overHero
+      ? "bg-[#0b1f3a]/10 !border-transparent shadow-none"
+      : "bg-[var(--color-stone-900)]/95 backdrop-blur-xl backdrop-saturate-150 !border-white/10 " +
+        (scrolled
+          ? "shadow-[0_10px_30px_-14px_rgba(0,0,0,0.45)]"
+          : "shadow-none"));
+  /* Koyu (dolu) durumda açık logo varyantı tercih edilir. */
+  const logoSrc = overHero ? siteLogo : footerLogo || siteLogo;
+  const phoneHref = phone?.trim() ? `tel:${phone.trim()}` : null;
+  /* Rezervasyon CTA'sı — hedef ve locale davranışı ESKİ "Teklif Al"
+     ile AYNI (/teklif-al); yalnız etiket `booking.reservation`. */
+  const reservationHref = localeHref("/teklif-al", locale);
+  const reservationLabel = dictionary.booking.reservation;
 
-  /* 🛡️ TEKLİF AL (desktop) — artık `nav` / `menu.map()` İÇİNDE DEĞİL.
-     Sağ aksiyon alanında (`hidden md:flex items-center gap-3`) sabit,
-     her zaman görünen bir action olarak render edilir; "Villa Arama"
-     ve diğer nav menü öğelerinin DB sırasına hiçbir bağımlılığı yok.
-     Marka renkleri (#ED7926 → #0973BA) ve breathing/pulse glow
-     animasyonu AYNEN korunur (TopBar shimmer'ı KULLANMAZ; Tailwind
-     `animate-pulse` ile nefes alan halo — globals.css'e dokunulmadı). */
-  const teklifAlDesktopCta = (
-    <div className="group relative">
-      <span
-        aria-hidden
-        className="
-          pointer-events-none absolute -inset-1.5 rounded-full
-          bg-gradient-to-r from-[#ED7926] to-[#0973BA]
-          opacity-40 blur-md
-          animate-pulse [animation-duration:2.8s]
-          group-hover:opacity-70 group-hover:blur-lg
-          transition-[opacity,filter] duration-300
-          motion-reduce:animate-none
-        "
-      />
-      <Link
-        href={localeHref("/teklif-al", locale)}
-        className="
-          relative inline-flex items-center justify-center
-          px-4 py-[7px] rounded-full
-          text-[12.5px] font-semibold tracking-[0.01em] text-white
-          bg-gradient-to-r from-[#ED7926] to-[#0973BA]
-          shadow-[0_6px_16px_-4px_rgba(237,121,38,0.45),0_6px_16px_-4px_rgba(9,115,186,0.35)]
-          hover:shadow-[0_10px_26px_-4px_rgba(237,121,38,0.6),0_10px_26px_-4px_rgba(9,115,186,0.5)]
-          hover:-translate-y-[1px]
-          transition-[box-shadow,transform] duration-300
-          motion-reduce:transition-none motion-reduce:hover:translate-y-0
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0973BA]/50
-        "
-      >
-        {dictionary.header.offer}
-      </Link>
-    </div>
+  /* 🛡️ REZERVASYON (desktop) — eski "Teklif Al" CTA'sının yerinde,
+     sağ aksiyon alanının sonunda; DB menü sırasından bağımsız. */
+  const reservationDesktopCta = (
+    <Link
+      href={reservationHref}
+      className={
+        "inline-flex items-center justify-center whitespace-nowrap " +
+        "h-11 px-6 rounded-full text-[14.5px] font-semibold tracking-[0.01em] " +
+        GOLD_CTA_CLASS
+      }
+    >
+      {reservationLabel}
+    </Link>
   );
 
   return (
@@ -224,30 +336,29 @@ export default function Header({
         <TopBar />
 
         <div className={headerShellClass}>
-          <div className="max-w-[1480px] mx-auto px-5 md:px-10 lg:px-16 h-[72px] md:h-[80px] flex items-center justify-between">
+          <div className="max-w-[1480px] mx-auto px-4 sm:px-5 md:px-8 lg:px-10 xl:px-16 h-[72px] md:h-[80px] flex items-center justify-between gap-3 lg:gap-6">
             {/* LOGO */}
             <Link
               href={homeHref}
               className="
                 font-display text-2xl tracking-tight
-                flex items-center
-                text-[var(--color-stone-900)]
-                hover:text-[var(--color-stone-700)]
+                flex items-center shrink-0
+                text-white hover:text-white/85
                 transition-colors motion-reduce:transition-none
               "
             >
-              {siteLogo ? (
+              {logoSrc ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
-                  src={siteLogo}
+                  src={logoSrc}
                   alt={dictionary.header.logoAlt}
-                  className="h-12 w-auto object-contain"
+                  className="h-9 md:h-12 w-auto max-w-[32vw] sm:max-w-[170px] md:max-w-[210px] object-contain"
                 />
               ) : (
                 <>
                   Villa
-                  {/* 🛡️ FAZ 39C — Coral brand accent (was cyan champagne). */}
-                  <span className="text-[var(--brand-coral)]">Kiralama</span>
+                  {/* Wordmark fallback — altın vurgu (header redesign). */}
+                  <span className="text-[#C9A55A]">Kiralama</span>
                 </>
               )}
             </Link>
@@ -255,9 +366,10 @@ export default function Header({
             {/* MENU — ultra clean, premium spacing */}
             <nav
               className="
-                hidden md:flex gap-8 lg:gap-10
+                hidden md:flex flex-1 justify-center gap-6 lg:gap-9 xl:gap-11
                 text-[15px] font-medium tracking-[0.01em]
-                text-[var(--color-stone-700)]
+                text-white/85
+                [text-shadow:0_1px_12px_rgba(0,0,0,0.25)]
               "
             >
               {menu.map((item) => {
@@ -280,9 +392,7 @@ export default function Header({
                       href={localeHref(item.href, locale)}
                       className={
                         "flex items-center gap-1 transition-colors motion-reduce:transition-none " +
-                        (isActive
-                          ? "text-[var(--color-stone-900)]"
-                          : "hover:text-[var(--color-stone-900)]")
+                        (isActive ? "text-white" : "hover:text-white")
                       }
                     >
                       {itemName}
@@ -296,7 +406,7 @@ export default function Header({
                       aria-hidden="true"
                       className={
                         "absolute left-0 right-0 -bottom-px mx-auto h-[2px] w-6 rounded-full transition-opacity duration-300 motion-reduce:transition-none " +
-                        "bg-[var(--brand-coral)] " +
+                        "bg-[#C9A55A] " +
                         (isActive
                           ? "opacity-100"
                           : "opacity-0 group-hover:opacity-100")
@@ -305,7 +415,7 @@ export default function Header({
 
                     {hasChildren && (
                       <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[999]">
-                        <div className="w-56 bg-white rounded-2xl shadow-[0_24px_48px_-16px_rgb(27_26_23/0.18)] border border-[var(--color-stone-100)] overflow-hidden">
+                        <div className="w-56 bg-white rounded-2xl [text-shadow:none] shadow-[0_24px_48px_-16px_rgb(27_26_23/0.18)] border border-[var(--color-stone-100)] overflow-hidden">
                           {item.children!.map((child) => (
                             <Link
                               key={child.id}
@@ -327,20 +437,64 @@ export default function Header({
               })}
             </nav>
 
-            {/* RIGHT — CTA + search + favorites */}
-            <div className="hidden md:flex items-center gap-3">
-              {/* 🛡️ TEKLİF AL (desktop) — sağ aksiyon alanının EN BAŞINDA,
-                 sabit konumda. Konum artık DB menü verisinden bağımsız. */}
-              {teklifAlDesktopCta}
+            {/* RIGHT — dil çipleri + telefon + arama + favoriler + CTA.
+               Dil çipleri xl+, telefon 2xl+ (daha dar ekranlarda TopBar'da). */}
+            <div
+              className="
+                hidden md:flex items-center gap-2 lg:gap-3 shrink-0
+                [&_a[href$='/favoriler']]:text-white/85
+                [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white
+              "
+            >
+              {multilingualEnabled && (
+                <div className="hidden xl:flex">
+                  <Suspense
+                    fallback={
+                      <LocaleChipLinks
+                        locale={locale}
+                        label={dictionary.common.language}
+                        targets={getLocaleSwitchTargets(pathname, "", trHomeHref)}
+                      />
+                    }
+                  >
+                    <LocaleChipsWithQuery
+                      locale={locale}
+                      pathname={pathname}
+                      trHomeHref={trHomeHref}
+                      label={dictionary.common.language}
+                    />
+                  </Suspense>
+                </div>
+              )}
 
-              {/* SEARCH — paylaşılan VillaSearchBox. Artık anasayfa dahil
-                 tüm sayfalarda görünür. */}
-              {/* 🛡️ PHASE 11 — arama kutusu metinleri locale'e göre. */}
-              <VillaSearchBox variant="desktop" locale={locale} />
+              {phoneHref && (
+                <a
+                  href={phoneHref}
+                  className="hidden 2xl:inline-flex items-center gap-2 px-1 text-[14px] text-white/85 hover:text-white tabular-nums whitespace-nowrap transition-colors motion-reduce:transition-none"
+                >
+                  <Phone size={16} strokeWidth={1.75} aria-hidden />
+                  {phone}
+                </a>
+              )}
 
-              {/* Favorites shortcut (FAZ 36).
-                 🛡️ FAZ 39C: variant prop kaldırıldı (dead). */}
+              {/* SEARCH — paylaşılan VillaSearchBox (mantık AYNEN). Koyu/
+                 şeffaf zemin için yalnız görsel override (descendant). */}
+              <div
+                className="
+                  [&>div]:!bg-white/10 [&>div]:!border-white/20
+                  [&>div:focus-within]:!bg-white/15 [&>div:focus-within]:!border-white/40
+                  [&>div>svg]:!text-white/70
+                  [&>div>input]:!text-white [&>div>input]:placeholder:!text-white/60
+                "
+              >
+                <VillaSearchBox variant="desktop" locale={locale} />
+              </div>
+
+              {/* Favorites shortcut (FAZ 36) — renk override'ı üst
+                 sarmalayıcıda (açık metin). */}
               <HeaderFavoritesLink locale={locale} />
+
+              {reservationDesktopCta}
             </div>
 
             {/* 🛡️ MOBILE ACTIONS — search input + hamburger toggle.
@@ -351,7 +505,13 @@ export default function Header({
                + debounce + outside-click handler değişmedi — input
                sadece DOM konumu değiştirdi. Desktop branch'e dokunulmadı
                (`md:hidden` mobil-only). */}
-            <div className="md:hidden flex items-center gap-2">
+            <div
+              className="
+                md:hidden flex items-center gap-1.5 sm:gap-2 shrink-0
+                [&_a[href$='/favoriler']]:text-white/85
+                [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white
+              "
+            >
               {/* 🛡️ MOBILE SEARCH kaldırıldı — mobilde tek villa-adı arama
                  girişi Bottom Navigation → Arama → SearchBottomSheet.
                  Çift arama olmaması için header mobil arama render EDİLMEZ.
@@ -364,46 +524,21 @@ export default function Header({
                  drawer içi "Favorilerim" satırı kaldırıldı. */}
               <HeaderFavoritesLink locale={locale} />
 
-              {/* 🛡️ MOBİL TEKLİF AL — eski görünür "Menü" yazısının
-                 yerini aldı. Hamburger toggle'dan TAMAMEN bağımsız ayrı
-                 bir <Link>; kendi tıklama alanı var, hamburger'ın
-                 onClick'ini tetiklemez, `open` state'ine dokunmaz.
-                 /teklif-al'a gider. Konum/boyut/davranış AYNEN korundu —
-                 yalnızca animasyon tekniği değişti: TopBar shimmer (ışık
-                 bandı) yerine, desktop CTA ile AYNI breathing/pulse glow
-                 (bkz. `renderTeklifAlDesktop` yorumu). `shrink-0` artık
-                 sarmalayıcı `div` üzerinde → küçük ekranlarda taşma/
-                 sıkışma yok. */}
-              <div className="group relative shrink-0">
-                <span
-                  aria-hidden
-                  className="
-                    pointer-events-none absolute -inset-1 rounded-full
-                    bg-gradient-to-r from-[#ED7926] to-[#0973BA]
-                    opacity-40 blur-md
-                    animate-pulse [animation-duration:2.8s]
-                    group-hover:opacity-70 group-hover:blur-lg
-                    transition-[opacity,filter] duration-300
-                    motion-reduce:animate-none
-                  "
-                />
-                <Link
-                  href={localeHref("/teklif-al", locale)}
-                  className="
-                    relative inline-flex items-center justify-center
-                    whitespace-nowrap
-                    px-3.5 py-2 rounded-full
-                    text-[12px] font-semibold text-white
-                    bg-gradient-to-r from-[#ED7926] to-[#0973BA]
-                    shadow-[0_4px_14px_-4px_rgba(237,121,38,0.5),0_4px_14px_-4px_rgba(9,115,186,0.4)]
-                    active:scale-[0.97]
-                    transition-transform duration-150 motion-reduce:transition-none
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0973BA]/50
-                  "
-                >
-                  {dictionary.header.offer}
-                </Link>
-              </div>
+              {/* 🛡️ MOBİL REZERVASYON — eski mobil "Teklif Al" CTA'sının
+                 yerinde. Hamburger toggle'dan TAMAMEN bağımsız ayrı bir
+                 <Link>; `open` state'ine dokunmaz. Hedef AYNEN /teklif-al
+                 (locale korunur); yalnız etiket + altın stil değişti. */}
+              <Link
+                href={reservationHref}
+                className={
+                  "relative inline-flex items-center justify-center shrink-0 whitespace-nowrap " +
+                  "px-3 sm:px-4 py-2 rounded-full text-[12px] sm:text-[12.5px] font-semibold " +
+                  "active:scale-[0.97] " +
+                  GOLD_CTA_CLASS
+                }
+              >
+                {reservationLabel}
+              </Link>
 
               {/* HAMBURGER — aç/kapa davranışı birebir korundu. Görünür
                  "Menü" metni kaldırıldı (yerini Teklif Al CTA'sı aldı);
@@ -416,9 +551,9 @@ export default function Header({
                 aria-expanded={open}
                 className="
                   inline-flex items-center justify-center shrink-0
-                  p-2.5 rounded-full
-                  text-[var(--color-stone-900)]
-                  hover:bg-[var(--color-sand-50)]
+                  p-2 sm:p-2.5 rounded-full
+                  text-white
+                  hover:bg-white/10
                   transition-colors motion-reduce:transition-none
                 "
               >
@@ -554,8 +689,9 @@ export default function Header({
         </div>
       </header>
 
-      {/* Spacer — header opak; her sayfada koşulsuz boşluk. */}
-      <div className="h-[108px]" />
+      {/* Spacer — iç sayfalarda header opak; ana sayfada hero header'ın
+         ALTINDAN başlar (header hero üzerinde şeffaf) → spacer YOK. */}
+      {!isHome && <div className="h-[108px]" />}
     </>
   );
 }

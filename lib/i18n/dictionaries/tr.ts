@@ -431,6 +431,7 @@ export const tr: Dictionary = {
       primaryCtaText: "Kısa Süreli Fırsatlar",
       secondaryCtaText: "Sıkça Sorulan Sorular",
       imageAlt: "Akdeniz villası",
+      scrollDown: "Aşağı kaydır",
     },
     search: {
       dateLabel: "Tarih",

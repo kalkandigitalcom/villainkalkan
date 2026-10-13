@@ -26,6 +26,16 @@ vi.mock("@/lib/i18n/public-locale-gate.server", () => ({
 vi.mock("@/lib/i18n/request-locale.server", () => ({
   setRequestLocale: (...a: unknown[]) => setRequestLocaleMock(...a),
 }));
+/* `next/font/google` yalnız Next.js SWC eklentisiyle çalışır; ham Vitest
+   ortamında fonksiyon değildir (bkz. html-lang-layout.test.ts). Hero
+   başlığı (header/hero redesign) Cormorant Garamond kullandığı için
+   HomePageBody → Hero zinciri burada YEREL olarak mock'lanır. */
+vi.mock("next/font/google", () => ({
+  Cormorant_Garamond: () => ({
+    className: "font-cormorant",
+    style: { fontFamily: "Cormorant Garamond" },
+  }),
+}));
 
 import HomePageBody from "@/app/components/home/HomePageBody";
 

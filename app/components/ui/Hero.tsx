@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ChevronDown, Star } from "lucide-react";
+/* 🛡️ HERO REDESIGN — başlık için zarif serif (yalnız bu component'te,
+   next/font self-host; global font sistemi DEĞİŞMEDİ). latin-ext →
+   Türkçe karakterler (ş, ğ, ı, İ) doğru glyph'lerle render edilir. */
+import { Cormorant_Garamond } from "next/font/google";
 
 import {
   resolveHeroContent,
@@ -71,6 +75,28 @@ import type { HeroReviewStats } from "./hero/_types/hero";
        güçlü Hero" hedefi)
      - Tek hero image fetch (AYNEN)
 =============================================================== */
+
+const heroSerif = Cormorant_Garamond({
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "600"],
+  display: "swap",
+});
+
+/* ===============================================================
+   🛡️ HERO REDESIGN (referans tasarım — premium, merkezi kompozisyon)
+   ===============================================================
+   - Tam ekran (100svh) full-bleed görsel; header (TopBar + şeffaf bar)
+     görselin ÜZERİNDE durur (Header ana sayfada spacer basmaz).
+   - Dengeli, düz koyu lacivert overlay + hafif üst/alt kenar koyulaşması
+     (yalnız okunabilirlik; dekoratif glow/orb YOK).
+   - İçerik yatay + dikey ortalı: rozet (yıldız ikonlu, yarı saydam),
+     serif iki satırlı başlık (1. satır beyaz, 2. satır altın), açıklama,
+     iki CTA (altın dolu + ince kenarlıklı şeffaf), altta kaydırma oku.
+   - İÇERİK KAYNAKLARI DEĞİŞMEDİ: rozet/başlık/açıklama/CTA metin+link
+     admin ayarlarından (`resolveHeroContent`), görsel admin upload'ı.
+   - HeroSearchPanel (tarih/misafir/tip araması) AYNEN korunur; yalnız
+     CTA'ların altına yerleşir. State/URL/portal mantığına DOKUNULMADI.
+   =============================================================== */
 
 /** Re-export caller path stability. */
 export type { HeroReviewStats };
@@ -156,17 +182,13 @@ export default function Hero({
     <section
       className="
         relative z-20
-        min-h-[60svh] lg:min-h-[78svh]
+        min-h-[100svh]
         w-full
         bg-[var(--color-stone-900)]
       "
     >
-      {/* 🛡️ Local, component-scoped animasyon tanımları — globals.css'e
-         DOKUNULMADI. Yalnızca bu Hero içinde kullanılır: çok yavaş
-         "Ken Burns" görsel zoom + dekoratif floating glow orb.
-         TopBar'daki `@keyframes shimmer` (ışık bandı) ile AYNI DEĞİL;
-         burada ışık bandı/sweep efekti YOK. prefers-reduced-motion'da
-         tamamen kapanır. */}
+      {/* 🛡️ Local, component-scoped animasyon — globals.css'e DOKUNULMADI.
+         Çok yavaş "Ken Burns" görsel zoom; prefers-reduced-motion'da kapanır. */}
       <style>{`
         @keyframes heroKenBurns {
           0% { transform: scale(1); }
@@ -176,49 +198,13 @@ export default function Hero({
         @media (prefers-reduced-motion: reduce) {
           .hero-kenburns { animation: none; }
         }
-        /* SPLIT VISUAL — sol lacivert gradient, sağ temiz fotoğraf.
-           Çok duraklı (ease benzeri) geçiş → keskin dikey çizgi yok.
-           Mobil: metin üstte + panel altta yığıldığı için gradient
-           dikey/geniş; md+: yatay soldan sağa sönümlenen gradient. */
-        .hero-split-overlay {
-          background:
-            linear-gradient(180deg,
-              rgba(11,31,58,0.90) 0%,
-              rgba(11,31,58,0.78) 30%,
-              rgba(11,31,58,0.55) 58%,
-              rgba(11,31,58,0.38) 82%,
-              rgba(11,31,58,0.30) 100%);
-        }
-        .hero-split-tint {
-          background: radial-gradient(120% 70% at 0% 0%, rgba(9,115,186,0.30), transparent 70%);
-        }
-        @media (min-width: 768px) {
-          .hero-split-overlay {
-            background:
-              linear-gradient(90deg,
-                rgba(11,31,58,0.93) 0%,
-                rgba(11,31,58,0.88) 14%,
-                rgba(11,31,58,0.76) 26%,
-                rgba(11,31,58,0.58) 36%,
-                rgba(11,31,58,0.40) 45%,
-                rgba(11,31,58,0.24) 53%,
-                rgba(11,31,58,0.12) 61%,
-                rgba(11,31,58,0.05) 69%,
-                rgba(11,31,58,0) 78%);
-          }
-          .hero-split-tint {
-            background: radial-gradient(70% 90% at 0% 45%, rgba(9,115,186,0.28), transparent 72%);
-          }
-        }
       `}</style>
 
       <div className="absolute inset-0 overflow-hidden">
       {/* ═══════════════════════════════════════════════════════════
-          FULL-BLEED BACKGROUND IMAGE — admin source-of-truth
-          sizes="100vw" → CDN responsive srcset (WebP/AVIF auto)
-          priority + fill → LCP optimize; Next preload hint otomatik.
-          Çok yavaş, sürekli Ken Burns zoom (28s) — sinematik derinlik,
-          rahatsız etmeyen hız.
+          FULL-BLEED BACKGROUND IMAGE — admin source-of-truth (AYNEN)
+          priority + fill + sizes="100vw" → LCP optimize.
+          object-[center_40%]: mobil kırpımda ufuk/deniz çizgisi görünür.
           ═══════════════════════════════════════════════════════════ */}
       {hero.backgroundImage && (
         <div className="absolute inset-0">
@@ -228,115 +214,91 @@ export default function Hero({
             fill
             priority
             sizes="100vw"
-            className="hero-kenburns object-cover object-center"
+            className="hero-kenburns object-cover object-[center_40%]"
           />
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════
-          SPLIT VISUAL OVERLAY — solda yoğun lacivert (#0b1f3a =
-          --color-stone-900), ~%35-45'te hâlâ hissedilir, ~%55-65'te
-          fotoğraf baskın, sağda fotoğraf temiz. Sağ tarafta renkli
-          glow / karartma YOK. `hero.overlayOpacity` (admin, 0..1)
-          gradient'i zayıflatabilir ama metin kontrastı için tabanı
-          0.7'nin altına düşmez.
+          OVERLAY — dengeli, düz koyu lacivert ton (#0b1f3a). Admin
+          `hero.overlayOpacity` (0..1) yoğunluğu ayarlar; metin kontrastı
+          için taban 0.6'nın altına düşmez. Üst şerit (header) ve alt
+          şerit (arama paneli) için çok hafif kenar koyulaşması.
           ═══════════════════════════════════════════════════════════ */}
       <div
         aria-hidden="true"
-        className="hero-split-overlay absolute inset-0 pointer-events-none"
-        style={{ opacity: 0.7 + 0.3 * hero.overlayOpacity }}
+        className="absolute inset-0 pointer-events-none bg-[#0b1f3a]/45"
+        style={{ opacity: 0.6 + 0.4 * hero.overlayOpacity }}
       />
-      {/* Marka mavisi ile çok hafif derinlik — yalnız sol tarafta. */}
-      <div
-        aria-hidden="true"
-        className="hero-split-tint absolute inset-0 pointer-events-none"
-        style={{ opacity: hero.overlayOpacity }}
-      />
-      {/* Alt kenar yumuşatma — arama panelini zemine oturtur; çok
-          hafif ve yalnız en alt şeritte (sağ fotoğrafı karartmaz). */}
       <div
         aria-hidden="true"
         className="
-          absolute inset-x-0 bottom-0 h-[38%] pointer-events-none
-          bg-gradient-to-t from-[#0b1f3a]/45 via-[#0b1f3a]/12 to-transparent
+          absolute inset-0 pointer-events-none
+          bg-[linear-gradient(180deg,rgba(11,31,58,0.45)_0%,rgba(11,31,58,0)_26%,rgba(11,31,58,0)_62%,rgba(11,31,58,0.55)_100%)]
         "
-        style={{ opacity: hero.overlayOpacity }}
+        style={{ opacity: 0.6 + 0.4 * hero.overlayOpacity }}
       />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════
-          CONTENT CONTAINER — merkezi hizalı (text-center) kompozisyon.
-          Yalnızca hizalama/layout; H1 font-size/weight/line-height/
-          letter-spacing DEĞİŞMEDİ.
+          CONTENT — yatay + dikey ortalı. Üst padding fixed header'ı
+          (TopBar + bar) temizler; alt kısımda arama paneli + ok.
           ═══════════════════════════════════════════════════════════ */}
       <div
         className="
           relative
           max-w-[1480px] mx-auto
           px-5 md:px-10 lg:px-[clamp(4rem,7vw,7.5rem)]
-          min-h-[60svh] lg:min-h-[78svh]
+          min-h-[100svh]
           flex flex-col
-          pt-24 md:pt-28 lg:pt-32
-          pb-5 md:pb-12
+          pt-[132px] md:pt-[148px]
+          pb-6 md:pb-8
         "
       >
-        {/* ─── COPY BLOCK — SOLA hizalı, gradient alanı üzerinde,
-            dikeyde kalan alanın ortasına yakın. ───────────────── */}
-        <div className="flex-1 flex items-center">
-        <div className="w-full max-w-[600px] text-left">
-          {/* Eyebrow — floating glass badge, turuncu→mavi gradient dot.
-             🛡️ Admin "Hero Rozet Metni" boşsa (`hero.badge === ""`)
-             HİÇ render edilmez — hardcoded default'a düşülmez. */}
+        <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-[880px] mx-auto text-center flex flex-col items-center">
+          {/* Rozet — yarı saydam, yıldız ikonlu. Admin "Hero Rozet Metni"
+             boşsa (`hero.badge === ""`) HİÇ render edilmez (AYNEN). */}
           {hero.badge && (
             <p
               className="
                 inline-flex items-center gap-2.5
-                rounded-full border border-white/25 bg-white/10 backdrop-blur-md
-                px-4 py-2
-                text-[11px] tracking-[0.28em] uppercase font-medium
-                text-white
-                shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]
+                rounded-full border !border-white/25 bg-white/10 backdrop-blur-md
+                px-4 md:px-5 py-2
+                text-[12.5px] md:text-[14px] font-medium tracking-[0.01em]
+                text-white/90
               "
             >
-              <span
-                aria-hidden="true"
-                className="relative inline-flex w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#ED7926] to-[#0973BA]"
-              >
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 rounded-full bg-[#ED7926] animate-ping opacity-60"
-                />
-              </span>
+              <Star
+                size={15}
+                aria-hidden
+                className="shrink-0 text-[#D4B25F] fill-[#D4B25F]"
+              />
               {hero.badge}
             </p>
           )}
 
-          {/* Editorial title — beyaz ilk satır, turuncu→turkuaz gradient
-             (bg-clip-text; şeftali ara durak → ara tonlar grileşmez,
-             lacivert zeminde açık turkuaz bitiş kontrastı korur) ikinci
-             satır. SOLA hizalı (ata `text-left`);
-             font-size/weight/line-height/letter-spacing DEĞİŞMEDİ.
-             🛡️ Admin "Hero Başlığı" boşsa (`hero.title === ""`) H1
-             HİÇ render edilmez — hardcoded default'a düşülmez. */}
+          {/* Başlık — serif; 1. satır beyaz, sonraki satır(lar) altın.
+             Admin "Hero Başlığı" boşsa H1 HİÇ render edilmez (AYNEN). */}
           {hero.title && (
             <h1
               className="
-                font-display
-                text-[34px] sm:text-[42px] md:text-[54px] lg:text-[54px]
-                leading-[0.98] tracking-[-0.03em]
+                text-[40px] sm:text-[52px] md:text-[64px] lg:text-[76px]
+                font-semibold
+                leading-[1.12] tracking-[-0.005em]
                 text-white
-                mt-6 md:mt-7
-                [text-shadow:0_2px_24px_rgba(11,31,58,0.25)]
+                mt-7 md:mt-9
+                [text-wrap:balance]
+                [text-shadow:0_2px_28px_rgba(11,31,58,0.35)]
               "
+              /* `.public-shell h1` global font kuralı class'tan güçlü
+                 olduğu için serif font inline style ile uygulanır. */
+              style={{ fontFamily: heroSerif.style.fontFamily }}
             >
               {titleLines.map((line, i) => (
                 <span
                   key={i}
-                  className={
-                    i === 0
-                      ? "block"
-                      : "block bg-gradient-to-r from-[#ED7926] via-[#F4A86A] via-45% to-[var(--color-champagne-200)] bg-clip-text text-transparent"
-                  }
+                  className={i === 0 ? "block" : "block text-[#D4B25F]"}
                 >
                   {line}
                 </span>
@@ -344,86 +306,57 @@ export default function Hero({
             </h1>
           )}
 
-          {/* Body subtitle */}
+          {/* Açıklama */}
           {hero.subtitle && (
             <p
               className="
-                text-[15px] md:text-[16.5px] leading-[1.75]
-                text-white/85
+                text-[16px] md:text-[19px] lg:text-[21px] leading-[1.65]
+                text-white/90
                 mt-5 md:mt-7
-                max-w-[520px] w-full text-left whitespace-pre-line
+                max-w-[620px] lg:max-w-[640px] w-full whitespace-pre-line
+                [text-wrap:pretty]
               "
             >
               {hero.subtitle}
             </p>
           )}
 
-          {/* CTA row — admin-driven (hero.primaryCta / secondaryCta).
-             Text + link admin settings'ten; href tipine göre akıllı
-             yönlendirme (HeroCta: #anchor smooth scroll / dahili route /
-             harici yeni sekme) DEĞİŞMEDİ. 🛡️ Admin "Primary/Secondary CTA
-             Metni" boşsa `resolveHeroContent` zaten `null` döner
-             (pickCta) — burada artık HERO_CTA_DEFAULTS'a düşülmüyor;
-             ilgili buton (veya metin boşsa link dolu olsa bile) HİÇ
-             render edilmez. İkisi de boşsa satırın kendisi de render
-             edilmez (boş gap kalmaz). Primary: turuncu→mavi gradient +
-             breathing/pulse glow (Header CTA ile AYNI teknik — TopBar
-             shimmer DEĞİL). Secondary: glass outline. `justify-center`
-             → merkezi hizalama (yeni), buton stilleri/davranışı AYNEN. */}
+          {/* CTA satırı — admin-driven (metin + link AYNEN); HeroCta akıllı
+             href yönlendirmesi DEĞİŞMEDİ. Boş CTA render edilmez (AYNEN).
+             Primary: altın dolu; Secondary: şeffaf, ince kenarlıklı. */}
           {(hero.primaryCta || hero.secondaryCta) && (
-            <div className="mt-8 md:mt-10 flex flex-wrap items-center justify-start gap-3">
+            <div className="mt-8 md:mt-11 flex flex-wrap items-center justify-center gap-3 md:gap-4">
               {hero.primaryCta && (
                 <HeroCta
                   href={hero.primaryCta.href}
                   className="
-                    group relative inline-flex items-center
-                    px-6 py-3 rounded-full
-                    text-white text-[13.5px] font-medium tracking-[0.02em]
-                    bg-gradient-to-r from-[#ED7926] to-[#0973BA]
-                    shadow-[0_18px_36px_-14px_rgba(237,121,38,0.5),0_10px_26px_-10px_rgba(9,115,186,0.45)]
-                    hover:shadow-[0_22px_44px_-14px_rgba(237,121,38,0.6),0_12px_30px_-10px_rgba(9,115,186,0.55)]
+                    inline-flex items-center justify-center
+                    h-12 md:h-[60px] px-7 md:px-9 rounded-full
+                    bg-[#C9A55A] hover:bg-[#BB9649]
+                    text-white text-[15px] md:text-[17px] font-semibold tracking-[0.01em]
+                    shadow-[0_16px_34px_-16px_rgba(201,165,90,0.8)]
                     hover:-translate-y-[1px]
-                    transition-[transform,box-shadow] duration-300
+                    transition-[transform,background-color] duration-300
                     motion-reduce:transition-none motion-reduce:hover:translate-y-0
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0973BA]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-stone-900)]
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1f3a]
                   "
                 >
-                  <span
-                    aria-hidden
-                    className="
-                      pointer-events-none absolute -inset-1.5 rounded-full
-                      bg-gradient-to-r from-[#ED7926] to-[#0973BA]
-                      opacity-40 blur-md
-                      animate-pulse [animation-duration:2.8s]
-                      group-hover:opacity-70 group-hover:blur-lg
-                      transition-[opacity,filter] duration-300
-                      motion-reduce:animate-none
-                    "
-                  />
-                  <span className="relative z-10 inline-flex items-center gap-2">
-                    {hero.primaryCta.text}
-                    <ArrowUpRight
-                      size={15}
-                      className="transition-transform duration-300 motion-reduce:transition-none group-hover:translate-x-[1px] group-hover:-translate-y-[1px]"
-                      aria-hidden
-                    />
-                  </span>
+                  {hero.primaryCta.text}
                 </HeroCta>
               )}
               {hero.secondaryCta && (
                 <HeroCta
                   href={hero.secondaryCta.href}
                   className="
-                    group inline-flex items-center gap-2
-                    px-5 py-3 rounded-full
-                    border border-white/30 bg-white/10 backdrop-blur-md
-                    text-white
-                    text-[13.5px] font-medium tracking-[0.02em]
-                    hover:bg-white/[0.18] hover:border-white/45
+                    inline-flex items-center justify-center
+                    h-12 md:h-[60px] px-7 md:px-9 rounded-full
+                    border !border-white/45 bg-white/[0.08] backdrop-blur-sm
+                    text-white text-[15px] md:text-[17px] font-semibold tracking-[0.01em]
+                    hover:bg-white/[0.16] hover:!border-white/70
                     hover:-translate-y-[1px]
                     transition-[transform,border-color,background-color] duration-300
                     motion-reduce:transition-none motion-reduce:hover:translate-y-0
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
                   "
                 >
                   {hero.secondaryCta.text}
@@ -434,13 +367,36 @@ export default function Hero({
         </div>
         </div>
 
-        {/* ─── FLOATING SEARCH PANEL — client island, AYNEN ───── */}
+        {/* ─── SEARCH PANEL — client island, AYNEN (mantık/state DEĞİŞMEDİ) ── */}
         <HeroSearchPanel locale={locale} />
+
+        {/* ─── KAYDIRMA OKU — hero'nun bitişine (sonraki bölüm) iner. ── */}
+        <a
+          href="#hero-sonu"
+          aria-label={dict.scrollDown}
+          className="
+            mx-auto mt-6 md:mt-8
+            inline-flex items-center justify-center
+            h-10 w-10 rounded-full
+            text-white/80 hover:text-white hover:bg-white/10
+            transition-colors motion-reduce:transition-none
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
+          "
+        >
+          <ChevronDown
+            size={26}
+            strokeWidth={1.75}
+            aria-hidden
+            className="motion-safe:animate-bounce [animation-duration:2.2s]"
+          />
+        </a>
       </div>
 
       {/* 🛡️ DATEPICKER PORTAL TARGET — HeroSearchPanel'in
          react-datepicker portalId="hero-datepicker-portal" hedefi. */}
       <div id="hero-datepicker-portal" />
+      {/* Kaydırma oku hedefi — hero'nun hemen bitişi. */}
+      <div id="hero-sonu" aria-hidden="true" className="absolute bottom-0 left-0 h-0 w-0" />
     </section>
     </>
   );

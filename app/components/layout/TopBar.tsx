@@ -415,11 +415,13 @@ export default function TopBar() {
           <span aria-hidden className="h-3 w-px bg-white/15" />
         )}
 
+        {/* 🛡️ HEADER REDESIGN — 2xl+ ekranlarda telefon header'ın sağ
+            alanında gösterilir; çift görünmesin diye burada gizlenir. */}
         {phoneHref && (
           <a
             href={phoneHref}
             className="
-              flex items-center gap-1.5
+              flex 2xl:hidden items-center gap-1.5
               text-white/75 hover:text-white
               transition-colors motion-reduce:transition-none
             "
@@ -618,8 +620,10 @@ export default function TopBar() {
             stili. State/ref TAMAMEN AYRI (`langOpen`/`langRef`).
             Yalnız `multilingualEnabled` iken render edilir — kapalı/
             null/hata durumunda hiçbir DOM eklenmez (fail-safe). */}
+        {/* 🛡️ HEADER REDESIGN — xl+ ekranlarda dil seçimi header'daki
+            TR/EN/DE çiplerinde; burada yalnız daha dar ekranlarda. */}
         {multilingualEnabled && (
-          <div className="relative shrink-0" ref={langRef}>
+          <div className="relative shrink-0 xl:hidden" ref={langRef}>
             <button
               type="button"
               onClick={() => setLangOpen((o) => !o)}

@@ -418,6 +418,7 @@ export const de: Dictionary = {
       primaryCtaText: "Kurzurlaub-Angebote",
       secondaryCtaText: "Häufig gestellte Fragen",
       imageAlt: "Villa am Mittelmeer",
+      scrollDown: "Nach unten scrollen",
     },
     search: {
       dateLabel: "Datum",

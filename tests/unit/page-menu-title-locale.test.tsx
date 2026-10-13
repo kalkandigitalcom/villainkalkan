@@ -28,6 +28,9 @@ vi.mock("@/lib/db/translation.repository.server", () => ({
 const usePathnameMock = vi.fn();
 vi.mock("next/navigation", () => ({
   usePathname: () => usePathnameMock(),
+  /* Header dil çipleri (header redesign) query string'i korumak için
+     useSearchParams kullanır. */
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock("@/app/components/layout/TopBar", () => ({ default: () => null }));
