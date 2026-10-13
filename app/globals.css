@@ -3,7 +3,8 @@
 /* ================================================================
    PREMIUM DESIGN SYSTEM — VILLA KİRALAMA
    Palette: Warm sand · deep stone · champagne gold
-   Typography: Fraunces (display) + Inter (body)
+   Typography (public): Manrope (başlık) + Montserrat (gövde/UI)
+   Typography (admin):  Fraunces (display) + Inter (body) — .admin-shell pin
    ================================================================ */
 
 @theme {
@@ -105,13 +106,16 @@
   --color-peach-500: #54c8f3;
 
   /* 🔠 Fonts */
-  /* 🛡️ PUBLIC TYPOGRAPHY — body/UI: Outfit. Başlıklar (h1-h6 + .font-display):
-     Outfit + next/font'un otomatik ürettiği metrik-eşleşen "Outfit Fallback"
-     @font-face'i, spesifikasyona göre (`'Outfit', 'Outfit Fallback', sans-serif`).
+  /* 🛡️ PUBLIC TYPOGRAPHY — İKİ STANDART FONT (app/layout.tsx, next/font):
+       • Başlıklar (h1-h6 + .font-display) → Manrope
+       • Gövde / UI (body, menü, buton, form, kart metni) → Montserrat
+     `var(--font-*)` next/font'un ürettiği aileyi + metrik-eşleşen
+     "… Fallback" @font-face'ini zaten içerir.
      Admin `.admin-shell` içinde --font-display Fraunces'e, --font-sans
      Inter'e PINLENİR (aşağıda) → admin tipografisi birebir korunur. */
-  --font-display: var(--font-outfit), "Outfit", "Outfit Fallback", sans-serif;
-  --font-sans: var(--font-outfit), "Outfit", system-ui, -apple-system,
+  --font-display: var(--font-manrope), "Manrope", system-ui, -apple-system,
+    sans-serif;
+  --font-sans: var(--font-montserrat), "Montserrat", system-ui, -apple-system,
     sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
@@ -241,7 +245,7 @@ body {
    `.public-shell` altındaki (app/(public)/layout.tsx kök wrapper'ı —
    yani TÜM public sayfalar: anasayfa, villa listeleme/arama, villa
    detay, teklif al, favoriler, public header/topbar/footer) HER h1-h6
-   otomatik olarak --font-display (Outfit + Outfit Fallback) kullanır.
+   otomatik olarak --font-display (Manrope) kullanır.
    Böylece `.font-display` class'ı olmayan başlıklar (ör. küçük eyebrow
    h2/h3 etiketleri) da kapsanır — tek tek component'e font-family
    YAZILMADI. Yalnızca `font-family`; font-size/weight/line-height/
@@ -257,6 +261,14 @@ body {
 .public-shell h5,
 .public-shell h6 {
   font-family: var(--font-display);
+}
+
+/* 🛡️ PUBLIC TİPOGRAFİ — 3. parti bileşen istisnası: leaflet.css harita
+   kapsayıcısına (popup/attribution metni) kendi "Helvetica Neue" ailesini
+   verir. Public'te gövde fontu (Montserrat) ile hizalanır; admin
+   haritaları (.admin-shell) bu kuraldan ETKİLENMEZ. */
+.public-shell .leaflet-container {
+  font-family: var(--font-sans);
 }
 
 .eyebrow {
@@ -1003,7 +1015,7 @@ select.input {
 .admin-shell {
   --admin-font-display: "General Sans", var(--font-inter), Inter, system-ui,
     -apple-system, sans-serif;
-  /* 🛡️ ADMIN PIN — public --font-sans/--font-display Outfit'e geçti.
+  /* 🛡️ ADMIN PIN — public --font-sans/--font-display Montserrat/Manrope.
      Admin gövde Inter + başlık Fraunces (admin-page-header__title,
      admin-card__title, admin-stat__value, admin-brand-name + admin datepicker)
      KORUNSUN diye token'lar admin subtree'sinde pinlenir. Admin BİREBİR aynı. */

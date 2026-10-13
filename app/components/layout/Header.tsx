@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
-import { Menu, X, ChevronDown, Phone } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import TopBar from "./TopBar";
 /* 🛡️ FAZ 36 — Favorites shortcut (localStorage badge counter) */
@@ -90,10 +90,10 @@ import {
    - Ana sayfada (/, /tr, /en, /de) header hero görselinin ÜZERİNDE
      şeffaf durur; scroll / mobil menü açıkken ve iç sayfalarda koyu
      lacivert zemine geçer. Spacer yalnız iç sayfalarda basılır.
-   - Sağ alan: TR/EN/DE dil çipleri (xl+), telefon (2xl+), mevcut arama
-     + favoriler, altın Rezervasyon CTA'sı (hedef AYNEN /teklif-al).
-   - Daha dar ekranlarda dil seçimi ve telefon TopBar'da kalır (TopBar
-     bu breakpoint'lerde aynı öğeleri gösterir) → hiçbir işlev kaybolmaz.
+   - Sağ alan: TR/EN/DE dil çipleri (xl+), mevcut arama + favoriler,
+     altın "Teklif Al" CTA'sı (hedef AYNEN /teklif-al).
+   - Daha dar ekranlarda dil seçimi TopBar'da kalır; telefon her
+     breakpoint'te YALNIZ TopBar'dadır → tekrar yok, işlev kaybı yok.
    - Menü verisi, locale href'leri, arama, favoriler, mobil menü
      state/accordion mantığı DEĞİŞMEDİ; yalnız görsel katman.
    =============================================================== */
@@ -209,7 +209,6 @@ export default function Header({
   siteLogo = null,
   trHomeHref = "/",
   footerLogo = null,
-  phone = null,
   multilingualEnabled = false,
 }: {
   menu?: MenuItem[];
@@ -218,8 +217,6 @@ export default function Header({
   /* settings.footer_logo — koyu zemin için açık/negatif logo. Koyu
      (dolu) header durumunda varsa kullanılır, yoksa site_logo. */
   footerLogo?: string | null;
-  /* settings.phone — header telefon bağlantısı (2xl+). */
-  phone?: string | null;
   /* settings.multilingual_enabled — dil çipleri yalnız açıkken. */
   multilingualEnabled?: boolean;
   /* 🔄 TR ana sayfanın yolu. Varsayılan dil EN/DE iken "/" bir
@@ -309,24 +306,23 @@ export default function Header({
           : "shadow-none"));
   /* Koyu (dolu) durumda açık logo varyantı tercih edilir. */
   const logoSrc = overHero ? siteLogo : footerLogo || siteLogo;
-  const phoneHref = phone?.trim() ? `tel:${phone.trim()}` : null;
-  /* Rezervasyon CTA'sı — hedef ve locale davranışı ESKİ "Teklif Al"
-     ile AYNI (/teklif-al); yalnız etiket `booking.reservation`. */
-  const reservationHref = localeHref("/teklif-al", locale);
-  const reservationLabel = dictionary.booking.reservation;
+  /* "Teklif Al" CTA'sı — hedef dile uygun /teklif-al; etiket sözlükten
+     (`header.offer`: Teklif Al / Get a Quote / Angebot anfordern). */
+  const offerHref = localeHref("/teklif-al", locale);
+  const offerLabel = dictionary.header.offer;
 
-  /* 🛡️ REZERVASYON (desktop) — eski "Teklif Al" CTA'sının yerinde,
-     sağ aksiyon alanının sonunda; DB menü sırasından bağımsız. */
-  const reservationDesktopCta = (
+  /* 🛡️ TEKLİF AL (desktop) — sağ aksiyon alanının sonunda; DB menü
+     sırasından bağımsız. */
+  const offerDesktopCta = (
     <Link
-      href={reservationHref}
+      href={offerHref}
       className={
         "inline-flex items-center justify-center whitespace-nowrap " +
         "h-11 px-6 rounded-full text-[14.5px] font-semibold tracking-[0.01em] " +
         GOLD_CTA_CLASS
       }
     >
-      {reservationLabel}
+      {offerLabel}
     </Link>
   );
 
@@ -437,8 +433,8 @@ export default function Header({
               })}
             </nav>
 
-            {/* RIGHT — dil çipleri + telefon + arama + favoriler + CTA.
-               Dil çipleri xl+, telefon 2xl+ (daha dar ekranlarda TopBar'da). */}
+            {/* RIGHT — dil çipleri + arama + favoriler + CTA.
+               Dil çipleri xl+ (daha dar ekranlarda TopBar'da). */}
             <div
               className="
                 hidden md:flex items-center gap-2 lg:gap-3 shrink-0
@@ -467,16 +463,6 @@ export default function Header({
                 </div>
               )}
 
-              {phoneHref && (
-                <a
-                  href={phoneHref}
-                  className="hidden 2xl:inline-flex items-center gap-2 px-1 text-[14px] text-white/85 hover:text-white tabular-nums whitespace-nowrap transition-colors motion-reduce:transition-none"
-                >
-                  <Phone size={16} strokeWidth={1.75} aria-hidden />
-                  {phone}
-                </a>
-              )}
-
               {/* SEARCH — paylaşılan VillaSearchBox (mantık AYNEN). Koyu/
                  şeffaf zemin için yalnız görsel override (descendant). */}
               <div
@@ -494,7 +480,7 @@ export default function Header({
                  sarmalayıcıda (açık metin). */}
               <HeaderFavoritesLink locale={locale} />
 
-              {reservationDesktopCta}
+              {offerDesktopCta}
             </div>
 
             {/* 🛡️ MOBILE ACTIONS — search input + hamburger toggle.
@@ -524,12 +510,11 @@ export default function Header({
                  drawer içi "Favorilerim" satırı kaldırıldı. */}
               <HeaderFavoritesLink locale={locale} />
 
-              {/* 🛡️ MOBİL REZERVASYON — eski mobil "Teklif Al" CTA'sının
-                 yerinde. Hamburger toggle'dan TAMAMEN bağımsız ayrı bir
-                 <Link>; `open` state'ine dokunmaz. Hedef AYNEN /teklif-al
-                 (locale korunur); yalnız etiket + altın stil değişti. */}
+              {/* 🛡️ MOBİL TEKLİF AL — hamburger toggle'dan TAMAMEN bağımsız
+                 ayrı bir <Link>; `open` state'ine dokunmaz. Hedef AYNEN
+                 /teklif-al (locale korunur). */}
               <Link
-                href={reservationHref}
+                href={offerHref}
                 className={
                   "relative inline-flex items-center justify-center shrink-0 whitespace-nowrap " +
                   "px-3 sm:px-4 py-2 rounded-full text-[12px] sm:text-[12.5px] font-semibold " +
@@ -537,7 +522,7 @@ export default function Header({
                   GOLD_CTA_CLASS
                 }
               >
-                {reservationLabel}
+                {offerLabel}
               </Link>
 
               {/* HAMBURGER — aç/kapa davranışı birebir korundu. Görünür

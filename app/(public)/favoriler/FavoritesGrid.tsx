@@ -417,7 +417,7 @@ export default function FavoritesGrid({
               <p className="text-[13px] font-medium text-emerald-900">
                 {shareState.copied ? dict.shareCopied : dict.shareReady}
               </p>
-              <p className="text-[12px] text-emerald-800/70 truncate font-mono mt-0.5">
+              <p className="text-[12px] text-emerald-800/70 truncate mt-0.5">
                 {shareState.url}
               </p>
             </div>

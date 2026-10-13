@@ -415,13 +415,11 @@ export default function TopBar() {
           <span aria-hidden className="h-3 w-px bg-white/15" />
         )}
 
-        {/* 🛡️ HEADER REDESIGN — 2xl+ ekranlarda telefon header'ın sağ
-            alanında gösterilir; çift görünmesin diye burada gizlenir. */}
         {phoneHref && (
           <a
             href={phoneHref}
             className="
-              flex 2xl:hidden items-center gap-1.5
+              flex items-center gap-1.5
               text-white/75 hover:text-white
               transition-colors motion-reduce:transition-none
             "

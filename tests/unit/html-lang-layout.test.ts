@@ -67,7 +67,8 @@ vi.mock("@/lib/cache.helpers", () => ({
 }));
 
 vi.mock("next/font/google", () => ({
-  Outfit: () => ({ variable: "--font-outfit" }),
+  Manrope: () => ({ variable: "--font-manrope" }),
+  Montserrat: () => ({ variable: "--font-montserrat" }),
   Inter: () => ({ variable: "--font-inter" }),
   Fraunces: () => ({ variable: "--font-fraunces" }),
   Geist_Mono: () => ({ variable: "--font-geist-mono" }),

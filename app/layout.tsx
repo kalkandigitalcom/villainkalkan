@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, Geist_Mono } from "next/font/google";
+import { Manrope, Montserrat, Geist_Mono } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -8,15 +8,23 @@ import { getCachedSettings } from "@/lib/cache.helpers";
 import { siteMetadataBase } from "@/lib/seo";
 import { resolveAssetUrlVersioned } from "@/lib/storage.helpers";
 
-/* 🛡️ PUBLIC BODY/UI + DISPLAY/HEADING FONT — Outfit. Global
-   `--font-sans` VE `--font-display` bu tek fonta bağlanır (yalnızca
-   `.admin-shell` altında Inter/Fraunces'e PINLENİR — aşağıda,
-   globals.css içinde). next/font self-host + display:swap +
-   adjustFontFallback (default) → CLS minimal. Admin gövde Inter'de
-   kalır (aşağıda pin, ayrıca korunur). */
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
+/* 🛡️ PUBLIC TİPOGRAFİ — İKİ STANDART FONT
+     • Başlık (h1-h6 + .font-display) → Manrope  (`--font-manrope`)
+     • Gövde / UI metni (font-sans)    → Montserrat (`--font-montserrat`)
+   globals.css `@theme` içinde `--font-display` / `--font-sans` bu iki
+   değişkene bağlanır. `.admin-shell` altında bu token'lar Inter /
+   Fraunces'e PINLENİR (globals.css) → admin tipografisi DEĞİŞMEZ.
+   latin-ext → Türkçe karakterler (ş, ğ, ı, İ) doğru glyph'lerle.
+   Değişken (variable) fontlar → mevcut font-weight sınıfları aynen
+   çalışır. next/font self-host + display:swap → CLS minimal. */
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+});
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
@@ -143,7 +151,7 @@ export default async function RootLayout({
   return (
     <html
       lang="tr"
-      className={`${outfit.variable} ${geistMono.variable}`}
+      className={`${manrope.variable} ${montserrat.variable} ${geistMono.variable}`}
     >
       <head />
       <body className="min-h-screen bg-[var(--color-ivory)] text-[var(--color-stone-900)] antialiased font-sans">

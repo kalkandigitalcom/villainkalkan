@@ -151,10 +151,9 @@ export default async function HeaderWrapper() {
         relative path (yeni) runtime'da getPublicUrl ile URL'e çevrilir.
      =============================================================== */
   let siteLogo: string | null = null;
-  /* 🛡️ HEADER REDESIGN — koyu header için açık logo + telefon. AYNI
+  /* 🛡️ HEADER REDESIGN — koyu header için açık logo. AYNI
      `getCachedSettings()` okumasından (EK FETCH YOK). */
   let footerLogo: string | null = null;
-  let phone: string | null = null;
   /* 🛡️ PHASE 10H — `multilingual_enabled` kapalıyken /en ve /de zaten
      404 (requirePublicLocaleEnabled) → çeviri okumak GEREKSİZ sorgu
      olur; bu bayrak o durumda okumayı tamamen atlatır. */
@@ -173,13 +172,11 @@ export default async function HeaderWrapper() {
     footerLogo =
       resolveAssetUrlVersioned(settings?.footer_logo, settings?.updated_at) ||
       null;
-    phone = settings?.phone?.trim() || null;
     multilingualEnabled = isMultilingualEnabled(settings);
     trHomeHref = resolvePublicHome(settings).trHomeHref;
   } catch {
     siteLogo = null;
     footerLogo = null;
-    phone = null;
   }
 
   /* 🔥 güvenlik: menu okunamazsa boş array (ÖNCEKİ fallback davranışı).
@@ -246,7 +243,6 @@ export default async function HeaderWrapper() {
       siteLogo={siteLogo}
       trHomeHref={trHomeHref}
       footerLogo={footerLogo}
-      phone={phone}
       multilingualEnabled={multilingualEnabled}
     />
   );

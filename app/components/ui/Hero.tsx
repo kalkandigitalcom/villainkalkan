@@ -2,10 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChevronDown, Star } from "lucide-react";
-/* 🛡️ HERO REDESIGN — başlık için zarif serif (yalnız bu component'te,
-   next/font self-host; global font sistemi DEĞİŞMEDİ). latin-ext →
-   Türkçe karakterler (ş, ğ, ı, İ) doğru glyph'lerle render edilir. */
-import { Cormorant_Garamond } from "next/font/google";
 
 import {
   resolveHeroContent,
@@ -76,12 +72,6 @@ import type { HeroReviewStats } from "./hero/_types/hero";
      - Tek hero image fetch (AYNEN)
 =============================================================== */
 
-const heroSerif = Cormorant_Garamond({
-  subsets: ["latin", "latin-ext"],
-  weight: ["500", "600"],
-  display: "swap",
-});
-
 /* ===============================================================
    🛡️ HERO REDESIGN (referans tasarım — premium, merkezi kompozisyon)
    ===============================================================
@@ -90,7 +80,7 @@ const heroSerif = Cormorant_Garamond({
    - Dengeli, düz koyu lacivert overlay + hafif üst/alt kenar koyulaşması
      (yalnız okunabilirlik; dekoratif glow/orb YOK).
    - İçerik yatay + dikey ortalı: rozet (yıldız ikonlu, yarı saydam),
-     serif iki satırlı başlık (1. satır beyaz, 2. satır altın), açıklama,
+     iki satırlı başlık (merkezi başlık fontu Manrope) (1. satır beyaz, 2. satır altın), açıklama,
      iki CTA (altın dolu + ince kenarlıklı şeffaf), altta kaydırma oku.
    - İÇERİK KAYNAKLARI DEĞİŞMEDİ: rozet/başlık/açıklama/CTA metin+link
      admin ayarlarından (`resolveHeroContent`), görsel admin upload'ı.
@@ -278,22 +268,20 @@ export default function Hero({
             </p>
           )}
 
-          {/* Başlık — serif; 1. satır beyaz, sonraki satır(lar) altın.
+          {/* Başlık — merkezi başlık fontu (Manrope, `.public-shell h1`);
+             1. satır beyaz, sonraki satır(lar) altın.
              Admin "Hero Başlığı" boşsa H1 HİÇ render edilmez (AYNEN). */}
           {hero.title && (
             <h1
               className="
                 text-[40px] sm:text-[52px] md:text-[64px] lg:text-[76px]
                 font-semibold
-                leading-[1.12] tracking-[-0.005em]
+                leading-[1.1] tracking-[-0.025em]
                 text-white
                 mt-7 md:mt-9
                 [text-wrap:balance]
                 [text-shadow:0_2px_28px_rgba(11,31,58,0.35)]
               "
-              /* `.public-shell h1` global font kuralı class'tan güçlü
-                 olduğu için serif font inline style ile uygulanır. */
-              style={{ fontFamily: heroSerif.style.fontFamily }}
             >
               {titleLines.map((line, i) => (
                 <span
