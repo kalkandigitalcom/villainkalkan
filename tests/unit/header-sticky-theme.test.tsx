@@ -2,7 +2,7 @@
    🛡️ HEADER — tüm public sayfalarda TEK görünüm
    ===============================================================
    • Her sayfada (ana sayfa dahil), kaydırmadan bağımsız: BEYAZ zemin,
-     petrol (#244C45) metin/ikon, KOYU logo (site_logo).
+     koyu metin (#24364B, text-ink) yazı/ikon, KOYU logo (site_logo).
    • Logo boyutu her sayfada aynı: h-12 (mobil) / md:h-16 (masaüstü),
      oran korunur (w-auto + object-contain).
    • footer_logo header'da KULLANILMAZ (Footer'a özgü).
@@ -57,12 +57,12 @@ describe("Header — standart beyaz görünüm", () => {
     const { shell, nav } = renderAt(p);
     const before = shell.className.split(" ").filter((c) => c.startsWith("bg-"));
     expect(before).toEqual(["bg-white"]);
-    expect(nav.className).toContain("text-[#244C45]/80");
+    expect(nav.className).toContain("text-ink/80");
     expect(nav.className).not.toContain("text-white");
     setScroll(200);
     const after = shell.className.split(" ").filter((c) => c.startsWith("bg-"));
     expect(after).toEqual(before);
-    expect(nav.className).toContain("text-[#244C45]/80");
+    expect(nav.className).toContain("text-ink/80");
   });
 
   it.each(PATHS)("2) %s → tek KOYU logo (site_logo), aynı boyut sınıfları", (p) => {
@@ -93,13 +93,13 @@ describe("Header — standart beyaz görünüm", () => {
     const { shell } = renderAt("/");
     expect(shell.className).toContain("shadow-none");
     setScroll(200);
-    expect(shell.className).toContain("shadow-[0_10px_30px_-16px_rgba(36,76,69,0.28)]");
+    expect(shell.className).toContain("shadow-[0_10px_30px_-16px_rgba(36,54,75,0.28)]");
   });
 
   it("6) hamburger ikonu beyaz zeminde petrol renkte (her sayfada)", () => {
     for (const p of ["/", "/kiralik-villalar"]) {
       const { getByLabelText, unmount } = renderAt(p);
-      expect(getByLabelText("Menüyü aç").className).toContain("text-[#244C45]");
+      expect(getByLabelText("Menüyü aç").className).toContain("text-ink");
       unmount();
     }
   });

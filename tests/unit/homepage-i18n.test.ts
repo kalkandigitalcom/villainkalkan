@@ -56,10 +56,8 @@ describe("A) TR dictionary değerleri, taşınmadan önceki hardcoded metinlerle
   it("2) Section başlıkları", () => {
     expect(h.discount.title).toBe(DISCOUNT_COLLECTION_DEFAULTS.title);
     expect(h.discount.title).toBe("İndirimli Kiralık Villalar");
-    expect(h.villaTypes.title).toBe("Villa Tiplerini Keşfedin");
-    expect(h.villaTypes.subtitle).toBe(
-      "Size en uygun villa kategorisini seçerek aramaya başlayın."
-    );
+    /* "Villa Tiplerini Keşfedin" bölümü ana sayfadan kaldırıldı. */
+    expect("villaTypes" in h).toBe(false);
     expect(h.villas.title).toBe("Sizin için seçtiklerimiz");
     expect(h.villas.ctaAll).toBe("Tüm Villaları Gör");
     expect(h.regions.title).toBe("Villa Kiralama Bölgeleri");
@@ -85,7 +83,6 @@ describe("A) TR dictionary değerleri, taşınmadan önceki hardcoded metinlerle
   });
 
   it("4) Template metinleri eski string interpolation'ı ÜRETİR", () => {
-    expect(h.villaTypes.countBadge.replace("{count}", "7")).toBe("7 Villa");
     expect(h.shortGaps.nightsLabel.replace("{n}", "3")).toBe(
       "3 gecelik villalar"
     );

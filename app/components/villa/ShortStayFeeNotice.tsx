@@ -168,7 +168,7 @@ export default function ShortStayFeeNotice({
             destek (marka imzasının bu uyarı kartındaki karşılığı). */}
         <span
           aria-hidden="true"
-          className="absolute inset-x-5 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-red-500 via-red-400/60 to-[#244C45]/50"
+          className="absolute inset-x-5 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-red-500 via-red-400/60 to-brand/50"
         />
 
         <div className="flex items-start gap-3">

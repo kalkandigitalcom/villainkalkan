@@ -47,7 +47,7 @@
        `poolHeatingTotal`, `pool_heating_fee` vb.) DEĞİŞMEDİ.
 
    🛡️ GÖRSEL REVİZYON (yalnız bu tur — data/state/handler/hesap DEĞİŞMEDİ):
-     - Kart üstünde ince turuncu→mavi (#C9A55A → #244C45) accent çizgisi
+     - Kart üstünde ince turuncu→mavi (#FF805E → #278BD0) accent çizgisi
        — PriceList.tsx / ShortStayFeeNotice.tsx'teki aynı marka imzası.
      - Toplam Tutar artık yumuşak yeşil zeminli, vurgulu bir satır
        (aynı yeşil semantik renk — yalnız daha belirgin).
@@ -55,7 +55,7 @@
        yan yana (mor / turuncu semantiği AYNEN korunuyor) — "şimdi
        ödenecek" ile "girişte ödenecek" ilk bakışta net ayrışıyor.
      - Hasar Depozitosu artık mavi tonlu, soft bordürlü ayrı bir bilgi
-       kutusu + küçük ShieldCheck rozet ikonu (marka mavisi #244C45).
+       kutusu + küçük ShieldCheck rozet ikonu (marka mavisi #278BD0).
        Açıklama METNİ BİREBİR AYNI.
      - Tüm değişiklik yalnız JSX/Tailwind class'ları; padding'ler
        mütevazı tutuldu (büyük kart/aşırı boşluk yok), sidebar genişliği
@@ -135,7 +135,7 @@ export default function BookingSummary({
           ile aynı desen). Salt dekoratif; layout/ölçüye etkisi yok. */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#C9A55A] via-[#C9A55A]/50 to-[#244C45]"
+        className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-accent via-accent/50 to-brand"
       />
 
       {/* Konaklama Tutarı — gece sayısı dinamik (Gece satırı kaldırıldı).
@@ -157,12 +157,12 @@ export default function BookingSummary({
             <span className="block text-[var(--color-stone-900)] font-medium tabular-nums">
               {formatCurrency(activeStayDiscount.discountedStay, currency, locale ?? "tr")}
             </span>
-            {/* 🛡️ Marka mavisi (#244C45) solid etiket — eski "%NN İNDİRİM" /
+            {/* 🛡️ Marka mavisi (#278BD0) solid etiket — eski "%NN İNDİRİM" /
                 "ÖZEL FİYAT" rozetinin YERİNE geçti (bkz. dosya-üstü kontrat
                 notu). Gradient YOK, sade dolgu renk. Yalnız indirim
                 gerçekten aktifse (activeStayDiscount != null) render edilir;
                 indirim yoksa bu blok hiç yok, `Row` dalı BİREBİR aynı. */}
-            <span className="mt-1 inline-block rounded-full bg-[#244C45] px-2.5 py-0.5 text-[10px] font-semibold text-white text-center whitespace-nowrap">
+            <span className="mt-1 inline-block rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-white text-center whitespace-nowrap">
               {dict.booking.discountedTotal}
             </span>
           </div>
@@ -253,10 +253,10 @@ export default function BookingSummary({
       {/* HASAR DEPOZİTOSU — ayrı, soft mavi tonlu bilgi kutusu (toplama
           dahil değil, hesap aynı). Açıklama metni BİREBİR AYNI. */}
       {deposit > 0 && (
-        <div className="rounded-xl border border-[#244C45]/15 bg-[#244C45]/[0.04] p-3">
+        <div className="rounded-xl border border-ink/15 bg-brand/[0.04] p-3">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 font-medium text-[var(--color-stone-900)]">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#244C45]/10 text-[#244C45]">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand/10 text-ink">
                 <ShieldCheck size={11} strokeWidth={2} aria-hidden />
               </span>
               {dict.booking.depositLabel}

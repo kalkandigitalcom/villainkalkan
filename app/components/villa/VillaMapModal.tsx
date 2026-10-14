@@ -98,13 +98,13 @@ export default function VillaMapModal({
           aria-expanded={isOpen}
           className="
             inline-flex items-center justify-center gap-2
-            rounded-xl bg-[#C9A55A] px-4 py-3.5
+            rounded-xl bg-brand hover:bg-brand-hover px-4 py-3.5
             text-[13.5px] font-semibold text-white
-            shadow-[0_10px_24px_-12px_rgba(201,165,90,0.55)]
-            transition-[transform,box-shadow] duration-200 motion-reduce:transition-none
-            hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-12px_rgba(201,165,90,0.65)]
+            shadow-[0_10px_24px_-12px_rgba(39,139,208,0.55)]
+            transition-[transform,box-shadow,background-color] duration-200 motion-reduce:transition-none
+            hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-12px_rgba(39,139,208,0.65)]
             motion-reduce:hover:translate-y-0
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A55A]/40
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
           "
         >
           <MapIcon size={16} strokeWidth={1.8} />
@@ -118,13 +118,13 @@ export default function VillaMapModal({
             rel="noopener noreferrer"
             className="
               inline-flex items-center justify-center gap-2
-              rounded-xl border-2 border-[#244C45] bg-white px-4 py-3.5
-              text-[13.5px] font-semibold text-[#244C45]
+              rounded-xl border-2 border-brand bg-white px-4 py-3.5
+              text-[13.5px] font-semibold text-ink
               transition-[transform,box-shadow,background-color] duration-200 motion-reduce:transition-none
-              hover:-translate-y-0.5 hover:bg-[#244C45]/5
-              hover:shadow-[0_14px_28px_-16px_rgba(36,76,69,0.45)]
+              hover:-translate-y-0.5 hover:bg-brand/5
+              hover:shadow-[0_14px_28px_-16px_rgba(36,54,75,0.45)]
               motion-reduce:hover:translate-y-0
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244C45]/40
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
             "
           >
             <Navigation size={16} strokeWidth={1.8} />
@@ -192,7 +192,7 @@ export default function VillaMapModal({
 
             <div className="relative w-full overflow-hidden rounded-3xl bg-white shadow-2xl">
               <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[var(--color-stone-100)]">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#C9A55A]/15 to-[#244C45]/15 text-[#C9A55A]">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/15 to-brand/15 text-brand">
                   <MapIcon size={15} strokeWidth={1.8} />
                 </span>
                 <h2 className="font-display text-[17px] text-[var(--color-stone-900)] tracking-[-0.01em]">

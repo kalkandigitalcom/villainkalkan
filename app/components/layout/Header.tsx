@@ -192,15 +192,15 @@ export default function Header({
   }, []);
 
   /* 🛡️ HEADER ZEMİNİ — TÜM public sayfalarda TEK görünüm: beyaz zemin,
-     petrol (#244C45) metin/ikon, altın vurgu. Ana sayfadaki "hero
+     marka mavisi (#278BD0) metin/ikon, altın vurgu. Ana sayfadaki "hero
      üzerinde şeffaf → kaydırınca beyaz" geçişi KALDIRILDI; zemin rengi
      kaydırmadan bağımsızdır (yalnız ince gölge kaydırınca belirir).
      Fixed konum, yükseklik (72/80px) ve iç sayfa boşluğu AYNEN. */
   const normalizedPath = (pathname || "/").replace(/\/+$/, "") || "/";
   const isHome = HOME_PATHS.has(normalizedPath);
   const headerShellClass =
-    "bg-white border-b !border-[#244C45]/10 transition-shadow duration-300 motion-reduce:transition-none " +
-    (scrolled ? "shadow-[0_10px_30px_-16px_rgba(36,76,69,0.28)]" : "shadow-none");
+    "bg-white border-b !border-ink/10 transition-shadow duration-300 motion-reduce:transition-none " +
+    (scrolled ? "shadow-[0_10px_30px_-16px_rgba(36,54,75,0.28)]" : "shadow-none");
   /* 🛡️ LOGO — beyaz zeminde her sayfada AYNI koyu logo: Genel Ayarlar >
      `site_logo`. `footer_logo` (beyaz/negatif) yalnız Footer'da kullanılır
      (Footer'a dokunulmadı); beyaz zeminde görünmeyeceği için header'da
@@ -226,7 +226,7 @@ export default function Header({
                 flex items-center shrink-0
                 transition-colors duration-300 motion-reduce:transition-none
               text-[28px] md:text-[32px]
-              text-[#244C45] hover:text-[#244C45]/80
+              text-ink hover:text-brand/80
               `}
             >
               {logoSrc ? (
@@ -240,7 +240,7 @@ export default function Header({
                 <>
                   Villa
                   {/* Wordmark fallback — altın vurgu (header redesign). */}
-                  <span className="text-[#C9A55A]">Kiralama</span>
+                  <span className="text-brand">Kiralama</span>
                 </>
               )}
             </Link>
@@ -251,7 +251,7 @@ export default function Header({
                 hidden md:flex flex-1 justify-center gap-6 lg:gap-9 xl:gap-11
                 text-[15px] font-medium tracking-[0.01em]
                 transition-colors duration-300 motion-reduce:transition-none
-              ` + "text-[#244C45]/80"}
+              ` + "text-ink/80"}
             >
               {menu.map((item) => {
                 const isActive = pathname === item.href;
@@ -274,8 +274,8 @@ export default function Header({
                       className={
                         "flex items-center gap-1 transition-colors motion-reduce:transition-none " +
                         (isActive
-                          ? "text-[#244C45]"
-                          : "hover:text-[#244C45]")
+                          ? "text-brand"
+                          : "hover:text-brand")
                       }
                     >
                       {itemName}
@@ -289,7 +289,7 @@ export default function Header({
                       aria-hidden="true"
                       className={
                         "absolute left-0 right-0 -bottom-px mx-auto h-[2px] w-6 rounded-full transition-opacity duration-300 motion-reduce:transition-none " +
-                        "bg-[#C9A55A] " +
+                        "bg-brand " +
                         (isActive
                           ? "opacity-100"
                           : "opacity-0 group-hover:opacity-100")
@@ -325,13 +325,13 @@ export default function Header({
             <div
               className={
                 "hidden md:flex items-center gap-2 lg:gap-3 shrink-0 " +
-                "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
+                "[&_a[href$='/favoriler']]:text-ink [&_a[href$='/favoriler']:hover]:bg-brand/[0.06] [&_a[href$='/favoriler']:hover]:text-ink"
               }
             >
               {/* SEARCH — paylaşılan VillaSearchBox (mantık AYNEN). Koyu/
                  şeffaf zemin için yalnız görsel override (descendant). */}
               <div
-                className={"[&>div]:!bg-[#F6F8FB] [&>div]:!border-[#244C45]/15 [&>div:focus-within]:!bg-white [&>div:focus-within]:!border-[#244C45]/40 [&>div>svg]:!text-[#244C45]/60 [&>div>input]:!text-[#244C45] [&>div>input]:placeholder:!text-[#244C45]/50"}
+                className={"[&>div]:!bg-[#F6F8FB] [&>div]:!border-ink/15 [&>div:focus-within]:!bg-white [&>div:focus-within]:!border-brand/60 [&>div>svg]:!text-ink/60 [&>div>input]:!text-ink [&>div>input]:placeholder:!text-ink/50"}
               >
                 <VillaSearchBox variant="desktop" locale={locale} />
               </div>
@@ -352,7 +352,7 @@ export default function Header({
             <div
               className={
                 "md:hidden flex items-center gap-1.5 sm:gap-2 shrink-0 " +
-                "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
+                "[&_a[href$='/favoriler']]:text-ink [&_a[href$='/favoriler']:hover]:bg-brand/[0.06] [&_a[href$='/favoriler']:hover]:text-ink"
               }
             >
               {/* 🛡️ MOBILE SEARCH kaldırıldı — mobilde tek villa-adı arama
@@ -378,7 +378,7 @@ export default function Header({
                 aria-expanded={open}
                 className={
                   "inline-flex items-center justify-center shrink-0 p-2 sm:p-2.5 rounded-full transition-colors duration-300 motion-reduce:transition-none " +
-                  "text-[#244C45] hover:bg-[#244C45]/[0.06]"
+                  "text-ink hover:bg-brand/[0.06]"
                 }
               >
                 {open ? <X size={22} /> : <Menu size={22} />}
@@ -457,7 +457,7 @@ export default function Header({
                           text-[var(--color-stone-500)]
                           hover:bg-[var(--color-sand-50)] hover:text-[var(--color-stone-900)]
                           transition-colors motion-reduce:transition-none
-                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244C45]/40
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
                         "
                       >
                         <ChevronDown

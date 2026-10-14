@@ -63,7 +63,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
           />
         ) : (
           <span className="absolute inset-0 flex flex-col items-center justify-center select-none">
-            <span className="font-display text-[64px] leading-none text-[#244C45]/25">{m.initial}</span>
+            <span className="font-display text-[64px] leading-none text-ink/25">{m.initial}</span>
             <span className="mt-2 text-[10px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-400)]">
               {m.dict.card.imageComing}
             </span>
@@ -71,8 +71,8 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
         )}
 
         {m.discountBadgePercent !== null && (
-          <span className="absolute left-3 top-3 md:left-4 md:top-4 z-10 inline-flex items-center gap-1.5 bg-white/95 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#244C45]">
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#C9A55A]" />
+          <span className="absolute left-3 top-3 md:left-4 md:top-4 z-10 inline-flex items-center gap-1.5 bg-white/95 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-ink">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" />
             {formatDictionaryString(m.dict.card.discountBadge, {
               percent: m.discountBadgePercent,
             })}
@@ -83,16 +83,16 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
       {/* ── BİLGİ SÜTUNU ── */}
       <div className="flex min-w-0 flex-1 flex-col justify-between px-5 py-5 md:px-8 md:py-8">
         <div>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[#A88438] truncate">
+          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-brand-hover truncate">
             {location || m.dict.card.noLocation}
           </p>
           <h3
             id={titleId}
-            className="mt-2 font-display text-[22px] md:text-[27px] font-medium leading-[1.12] tracking-[-0.025em] text-[#1F3D38]"
+            className="mt-2 font-display text-[22px] md:text-[27px] font-medium leading-[1.12] tracking-[-0.025em] text-ink"
           >
             <Link
               href={m.detailHref}
-              className="focus:outline-none focus-visible:underline focus-visible:decoration-[#C9A55A] focus-visible:underline-offset-4"
+              className="focus:outline-none focus-visible:underline focus-visible:decoration-accent focus-visible:underline-offset-4"
             >
               <span className="line-clamp-2">{title}</span>
             </Link>
@@ -101,7 +101,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
             {capacity.join(" · ")}
           </p>
 
-          <div aria-hidden="true" className="mt-5 md:mt-6 h-[2px] w-8 bg-[#C9A55A]" />
+          <div aria-hidden="true" className="mt-5 md:mt-6 h-[2px] w-8 bg-accent" />
 
           <div className="mt-5 md:mt-6">
             {m.showDiscountPricing ? (
@@ -112,7 +112,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
                 </p>
                 <p className="mt-1 flex items-baseline gap-2">
                   <span className="sr-only">{m.dict.card.discountedPriceLabel}: </span>
-                  <span className="font-display text-[30px] md:text-[34px] font-semibold leading-none tracking-[-0.03em] text-[#244C45] tabular-nums">
+                  <span className="font-display text-[30px] md:text-[34px] font-semibold leading-none tracking-[-0.03em] text-ink tabular-nums">
                     {formatCurrency(m.discountedPrice!.converted, m.currency, m.effectiveLocale)}
                   </span>
                   <span className="text-[12px] text-[var(--color-stone-500)]">
@@ -120,7 +120,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
                   </span>
                 </p>
                 {m.nightlySavingsLabel && (
-                  <p className="mt-2 text-[12.5px] font-medium text-[#A88438]">
+                  <p className="mt-2 text-[12.5px] font-medium text-accent-strong">
                     {m.nightlySavingsLabel}
                   </p>
                 )}
@@ -129,7 +129,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
                 </p>
               </>
             ) : (
-              <p className="font-display text-[28px] font-semibold leading-none tracking-[-0.03em] text-[#244C45] tabular-nums">
+              <p className="font-display text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink tabular-nums">
                 {price
                   ? formatCurrency(m.convertedPrice, m.currency, m.effectiveLocale)
                   : m.dict.card.priceOnRequest}
@@ -138,13 +138,13 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
           </div>
         </div>
 
-        <div className="mt-6 md:mt-8 border-t !border-[#244C45]/10 pt-4">
+        <div className="mt-6 md:mt-8 border-t !border-ink/10 pt-4">
           <Link
             href={m.reserveHref}
-            className="group/cta inline-flex items-center gap-2 text-[13.5px] font-semibold tracking-[0.01em] text-[#244C45] hover:text-[#1c3c36] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244C45]/40 focus-visible:ring-offset-4 focus-visible:ring-offset-[#FBF9F4]"
+            className="group/cta inline-flex items-center gap-2 text-[13.5px] font-semibold tracking-[0.01em] text-brand hover:text-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-4 focus-visible:ring-offset-[#FBF9F4]"
           >
             {m.dict.card.bookNow}
-            <ArrowRight size={16} strokeWidth={1.75} className="text-[#C9A55A] transition-transform duration-200 group-hover/cta:translate-x-1 motion-reduce:transition-none" aria-hidden />
+            <ArrowRight size={16} strokeWidth={1.75} className="text-brand transition-transform duration-200 group-hover/cta:translate-x-1 motion-reduce:transition-none" aria-hidden />
           </Link>
         </div>
       </div>

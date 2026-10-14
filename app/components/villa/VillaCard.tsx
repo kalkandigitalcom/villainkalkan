@@ -859,7 +859,7 @@ export default function VillaCard({
             Tonlar:
               - Yatak  : coral  (#FFF1EB · #c84a20)
               - Banyo  : green  (#EEF8F0 · #1f7a4d)
-              - Kişi   : blue   (#EEF5F3 · #244c45)
+              - Kişi   : blue   (#EAF4FB · #278BD0)
             Hover: subtle brighten (-translate-y-[1px]).
             CSS soup yok — tek tone map + helper component. */}
         <div
@@ -919,9 +919,9 @@ export default function VillaCard({
         data-villa-card={isDiscount ? "discount" : "default"}
         className={
           "@container relative flex h-full flex-col overflow-hidden bg-white " +
-          "rounded-[22px] border !border-[#244C45]/[0.09] " +
-          "shadow-[0_18px_40px_-28px_rgba(20,44,40,0.35)] " +
-          "group-hover:shadow-[0_30px_60px_-30px_rgba(20,44,40,0.45)] " +
+          "rounded-[22px] border !border-ink/[0.09] " +
+          "shadow-[0_18px_40px_-28px_rgba(26,40,56,0.35)] " +
+          "group-hover:shadow-[0_30px_60px_-30px_rgba(26,40,56,0.45)] " +
           "transition-[box-shadow,transform] duration-500 motion-reduce:transition-none " +
           "group-hover:-translate-y-[3px] motion-reduce:group-hover:translate-y-0"
         }
@@ -952,7 +952,7 @@ export default function VillaCard({
           ) : (
             /* PREMIUM FALLBACK — baş harf */
             <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
-              <div className="font-display text-[68px] leading-none text-[#244C45]/25 tracking-[-0.03em]">
+              <div className="font-display text-[68px] leading-none text-ink/25 tracking-[-0.03em]">
                 {initial}
               </div>
               <p className="mt-2 text-[10px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-400)]">
@@ -971,14 +971,14 @@ export default function VillaCard({
           {(badge || (isDiscount && discountBadgePercent !== null)) && (
             <div className="absolute left-0 top-4 z-10 flex max-w-[calc(100%-6.5rem)] flex-col items-start gap-2">
               {badge && !isDiscount && (
-                <span className="inline-flex max-w-full items-center gap-2 rounded-r-full bg-[#142c28]/75 backdrop-blur-md py-1.5 pl-3.5 pr-4 text-[10.5px] font-semibold uppercase leading-snug tracking-[0.1em] text-white">
-                  <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#C9A55A]" />
+                <span className="inline-flex max-w-full items-center gap-2 rounded-r-full bg-ink/75 backdrop-blur-md py-1.5 pl-3.5 pr-4 text-[10.5px] font-semibold uppercase leading-snug tracking-[0.1em] text-white">
+                  <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                   <span className="line-clamp-2">{badge}</span>
                 </span>
               )}
               {isDiscount && discountBadgePercent !== null && (
                 <span
-                  className="inline-flex items-center rounded-r-full bg-[#C9A55A] py-1.5 pl-3.5 pr-4 text-[11px] font-bold uppercase tracking-[0.08em] text-[#1c3c36] shadow-[0_8px_18px_-10px_rgba(20,44,40,0.6)]"
+                  className="inline-flex items-center rounded-r-full bg-accent py-1.5 pl-3.5 pr-4 text-[11px] font-bold uppercase tracking-[0.08em] text-ink shadow-[0_8px_18px_-10px_rgba(26,40,56,0.6)]"
                   aria-label={formatDictionaryString(
                     dict.card.discountBadgeAriaLabel,
                     { percent: discountBadgePercent }
@@ -1002,7 +1002,7 @@ export default function VillaCard({
             onFocus={preloadVillaCardBookingModal}
             aria-label={dict.card.availabilityAriaLabel}
             title={dict.card.availabilityCta}
-            className="absolute top-4 right-[3.75rem] z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-[var(--color-stone-700)] shadow-[0_2px_8px_-2px_rgb(27_26_23/0.18)] hover:bg-white transition motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A55A]/60"
+            className="absolute top-4 right-[3.75rem] z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-[var(--color-stone-700)] shadow-[0_2px_8px_-2px_rgb(27_26_23/0.18)] hover:bg-white transition motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
           >
             <CalendarRange size={15} strokeWidth={1.75} aria-hidden />
           </button>
@@ -1012,13 +1012,13 @@ export default function VillaCard({
           {typeof reviewCount === "number" && reviewCount > 0 &&
             typeof reviewAverage === "number" && reviewAverage > 0 && (
               <div
-                className="absolute bottom-3.5 left-3.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-[#1F3D38] backdrop-blur-md shadow-[0_4px_14px_-4px_rgba(0,0,0,0.28)]"
+                className="absolute bottom-3.5 left-3.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-ink backdrop-blur-md shadow-[0_4px_14px_-4px_rgba(0,0,0,0.28)]"
                 aria-label={formatDictionaryString(dict.card.ratingAriaLabel, {
                   value: reviewAverage.toFixed(1),
                   count: reviewCount,
                 })}
               >
-                <Star size={11} className="text-[#C9A55A] shrink-0" fill="currentColor" strokeWidth={1.5} aria-hidden />
+                <Star size={11} className="text-accent shrink-0" fill="currentColor" strokeWidth={1.5} aria-hidden />
                 <span className="tabular-nums">{reviewAverage.toFixed(1)}</span>
                 <span aria-hidden="true" className="text-[var(--color-stone-400)]">·</span>
                 <span className="tabular-nums">
@@ -1032,12 +1032,12 @@ export default function VillaCard({
         <div className="relative flex flex-1 flex-col @[26rem]:flex-row">
           {/* BİLGİ */}
           <div className="min-w-0 flex-1 px-5 pt-4 pb-4 @[26rem]:pb-5">
-            <h3 className="font-display text-[19px] @[26rem]:text-[21px] font-bold leading-[1.15] tracking-[-0.02em] text-[#244C45] line-clamp-1">
+            <h3 className="font-display text-[19px] @[26rem]:text-[21px] font-bold leading-[1.15] tracking-[-0.02em] text-ink line-clamp-1">
               {title}
             </h3>
-            <div aria-hidden="true" className="mt-3 h-px bg-[#244C45]/10" />
+            <div aria-hidden="true" className="mt-3 h-px bg-brand/10" />
             <p className="mt-3 flex min-w-0 items-center gap-2 text-[13px] text-[var(--color-stone-700)]">
-              <MapPin size={15} className="shrink-0 text-[#244C45]" strokeWidth={1.75} aria-hidden />
+              <MapPin size={15} className="shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
               <span className="truncate">{location || dict.card.noLocation}</span>
             </p>
             <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-[12.5px] text-[var(--color-stone-700)]">
@@ -1045,7 +1045,7 @@ export default function VillaCard({
                 className="inline-flex items-center gap-1.5"
                 aria-label={formatDictionaryString(dict.card.guestsAriaLabel, { n: guests })}
               >
-                <Users size={15} className="text-[#244C45]" strokeWidth={1.75} aria-hidden />
+                <Users size={15} className="text-brand" strokeWidth={1.75} aria-hidden />
                 <span className="tabular-nums">
                   {formatDictionaryString(dict.card.guestsValue, { n: guests })}
                 </span>
@@ -1054,7 +1054,7 @@ export default function VillaCard({
                 className="inline-flex items-center gap-1.5"
                 aria-label={formatDictionaryString(dict.card.bedroomsAriaLabel, { n: bedrooms })}
               >
-                <BedDouble size={15} className="text-[#244C45]" strokeWidth={1.75} aria-hidden />
+                <BedDouble size={15} className="text-brand" strokeWidth={1.75} aria-hidden />
                 <span className="tabular-nums">
                   {formatDictionaryString(dict.card.bedroomsValue, { n: bedrooms })}
                 </span>
@@ -1063,7 +1063,7 @@ export default function VillaCard({
                 className="inline-flex items-center gap-1.5"
                 aria-label={formatDictionaryString(dict.card.bathroomsAriaLabel, { n: bathrooms })}
               >
-                <Bath size={15} className="text-[#244C45]" strokeWidth={1.75} aria-hidden />
+                <Bath size={15} className="text-brand" strokeWidth={1.75} aria-hidden />
                 <span className="tabular-nums">
                   {formatDictionaryString(dict.card.bathroomsValue, { n: bathrooms })}
                 </span>
@@ -1071,7 +1071,7 @@ export default function VillaCard({
             </div>
             {/* Kısa-süreli tarihler — MEVCUT reserveInfo etiketi. */}
             {reserveInfo && (
-              <p className="mt-3 inline-flex rounded-full bg-[#244C45]/[0.07] px-3 py-1 text-[12px] font-medium text-[#244C45]">
+              <p className="mt-3 inline-flex rounded-full bg-brand/[0.07] px-3 py-1 text-[12px] font-medium text-ink">
                 {reserveInfo.label} ·{" "}
                 {formatDictionaryString(dict.card.reserveNights, {
                   n: reserveInfo.nights,
@@ -1085,7 +1085,7 @@ export default function VillaCard({
             data-price-panel
             className="
               relative flex shrink-0 flex-col items-stretch gap-3.5
-              rounded-tl-[44px] bg-[#244C45] px-5 pt-4 pb-4 pl-7 text-white
+              rounded-tl-[44px] bg-brand px-5 pt-4 pb-4 pl-7 text-white
               @[26rem]:w-[46%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0
               @[26rem]:rounded-tl-[96px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right
             "
@@ -1094,22 +1094,22 @@ export default function VillaCard({
               {isFlexible ? (
                 /* 🛡️ ESNEK EK SONUÇ — fiyat gösterilmez (MEVCUT kural). */
                 <>
-                  <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#E9D3A0]">
-                    <Sparkles size={12} strokeWidth={2} className="text-[#C9A55A]" aria-hidden />
+                  <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
+                    <Sparkles size={12} strokeWidth={2} className="text-white" aria-hidden />
                     {dict.card.flexibleTitle}
                   </p>
-                  <p className="mt-1 text-[12px] text-white/75">{dict.card.flexibleSubtitle}</p>
+                  <p className="mt-1 text-[12px] text-white/90">{dict.card.flexibleSubtitle}</p>
                 </>
               ) : stayTotal !== null ? (
                 /* 🛡️ TARİH SEÇİLİ — konaklama TOPLAMI (MEVCUT hesap). */
                 <>
                   {stayDateLabel && (
-                    <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/65 tabular-nums">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/90 tabular-nums">
                       {stayDateLabel}
                     </p>
                   )}
                   {stayTotalBeforeDiscount !== null && (
-                    <p className="mt-1 text-[12.5px] text-white/55 line-through tabular-nums">
+                    <p className="mt-1 text-[12.5px] text-white/85 line-through tabular-nums">
                       {formatCurrency(stayTotalBeforeDiscount, currency, effectiveLocale)}
                     </p>
                   )}
@@ -1119,12 +1119,12 @@ export default function VillaCard({
                   {/* "N gece" gösterilmez (tarih üst satırda — MEVCUT karar);
                       "Temizlik dahil" MEVCUT koşuluyla. */}
                   {hasCleaning && (
-                    <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] text-white/60">
+                    <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] text-white/85">
                       {dict.card.cleaningIncluded}
                     </p>
                   )}
                   {stayDiscountSavings !== null && (
-                    <p data-price-savings className="mt-1 text-[12px] font-semibold text-[#E9D3A0] tabular-nums">
+                    <p data-price-savings className="mt-1 text-[12px] font-semibold text-white tabular-nums">
                       {formatDictionaryString(dict.card.totalSavings, {
                         amount: formatCurrency(stayDiscountSavings, currency, effectiveLocale),
                       })}
@@ -1134,10 +1134,10 @@ export default function VillaCard({
               ) : isDiscount && showDiscountPricing ? (
                 /* 🛡️ İNDİRİM — computeDiscountCardPricing çıktıları. */
                 <>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/65">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/90">
                     {dict.card.nightly}
                   </p>
-                  <p className="mt-1 text-[12.5px] text-white/55 line-through tabular-nums">
+                  <p className="mt-1 text-[12.5px] text-white/85 line-through tabular-nums">
                     <span className="sr-only">{dict.card.originalPriceLabel}: </span>
                     {formatCurrency(convertedPrice, currency, effectiveLocale)}
                   </p>
@@ -1146,22 +1146,22 @@ export default function VillaCard({
                     {formatCurrency(discountedPrice!.converted, currency, effectiveLocale)}
                   </p>
                   {nightlySavingsLabel && (
-                    <p className="mt-1.5 text-[12px] font-semibold text-[#E9D3A0]">
+                    <p className="mt-1.5 text-[12px] font-semibold text-white">
                       {nightlySavingsLabel}
                     </p>
                   )}
-                  <p className="mt-1 text-[11px] text-white/65">{discountDateRangeLabel}</p>
+                  <p className="mt-1 text-[11px] text-white/90">{discountDateRangeLabel}</p>
                 </>
               ) : price ? (
                 /* Tarih seçilmemiş — gecelik başlangıç fiyatı (MEVCUT). */
                 <>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/65">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/90">
                     {dict.card.nightly}
                   </p>
                   <p data-price-amount className="mt-0.5 font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
                     {formatCurrency(convertedPrice, currency, effectiveLocale)}
                   </p>
-                  <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-white/55">
+                  <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-white/85">
                     {dict.card.startingFromUpper}
                   </p>
                 </>
@@ -1198,11 +1198,11 @@ export default function VillaCard({
               onFocus={isDiscount || reserveInfo ? undefined : preloadVillaCardBookingModal}
               className="
                 shrink-0 inline-flex w-full items-center justify-center whitespace-nowrap
-                h-10 rounded-full bg-[#C9A55A] px-5 @[26rem]:mt-4 @[26rem]:w-auto
-                text-[12px] font-bold uppercase tracking-[0.1em] text-[#1c3c36]
+                h-10 rounded-full bg-white px-5 @[26rem]:mt-4 @[26rem]:w-auto
+                text-[12px] font-bold uppercase tracking-[0.1em] text-brand
                 shadow-[0_10px_22px_-12px_rgba(0,0,0,0.55)]
-                hover:bg-[#D4B25F] transition-colors duration-200 motion-reduce:transition-none
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#244C45]
+                hover:bg-brand-soft transition-colors duration-200 motion-reduce:transition-none
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-brand
               "
             >
               {dict.card.reserve}
@@ -1292,7 +1292,7 @@ function CardOuter({
       className="
         block group h-full rounded-[22px]
         focus:outline-none focus-visible:ring-2
-        focus-visible:ring-[#244C45]/45 focus-visible:ring-offset-2
+        focus-visible:ring-brand/45 focus-visible:ring-offset-2
       "
     >
       {children}

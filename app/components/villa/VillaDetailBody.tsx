@@ -356,21 +356,21 @@ export default function VillaDetailBody({
               mt-6 rounded-2xl
               border border-[var(--color-stone-100)]
               bg-gradient-to-b from-[var(--color-sand-50)]/70 to-white
-              shadow-[0_10px_28px_-20px_rgba(36,76,69,0.18)]
+              shadow-[0_10px_28px_-20px_rgba(36,54,75,0.18)]
               px-5 py-5
             "
               >
                 <span className="inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--color-stone-400)]">
                   <span
                     aria-hidden="true"
-                    className="inline-block w-3 h-px bg-gradient-to-r from-[#C9A55A] to-[#244C45]"
+                    className="inline-block w-3 h-px bg-gradient-to-r from-accent to-brand"
                   />
                   {dict.villa.checkInOutTitle}
                 </span>
 
                 <div className="mt-4 flex items-center">
                   <div className="flex flex-1 items-center gap-3 min-w-0">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#C9A55A]/10 text-[#C9A55A]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
                       <Clock size={16} strokeWidth={1.8} />
                     </span>
                     <div className="min-w-0">
@@ -389,7 +389,7 @@ export default function VillaDetailBody({
                   />
 
                   <div className="flex flex-1 items-center gap-3 min-w-0">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#244C45]/10 text-[#244C45]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-ink">
                       <Clock size={16} strokeWidth={1.8} />
                     </span>
                     <div className="min-w-0">
@@ -410,7 +410,7 @@ export default function VillaDetailBody({
               mt-6 rounded-2xl
               border border-[var(--color-stone-100)]
               bg-white
-              shadow-[0_10px_28px_-20px_rgba(36,76,69,0.18)]
+              shadow-[0_10px_28px_-20px_rgba(36,54,75,0.18)]
               px-5 py-5
             "
               >

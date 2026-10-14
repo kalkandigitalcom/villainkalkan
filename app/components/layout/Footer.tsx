@@ -144,8 +144,8 @@ function SocialLink({
         w-10 h-10 rounded-full
         border border-[var(--color-stone-200)] bg-white/5
         text-[var(--color-stone-500)]
-        hover:border-[#C9A55A]/45 hover:bg-gradient-to-br hover:from-[#C9A55A]/10 hover:to-[#244C45]/10
-        hover:text-[#C9A55A]
+        hover:border-brand/45 hover:bg-gradient-to-br hover:from-accent/10 hover:to-brand/10
+        hover:text-accent
         transition-[color,background-color,border-color,transform]
         duration-300 motion-reduce:transition-none
         hover:scale-[1.05]
@@ -171,7 +171,7 @@ function FooterLink({
       className="
         inline-flex items-center
         text-[14px] text-[var(--color-stone-500)]
-        hover:text-[#C9A55A]
+        hover:text-accent
         hover:translate-x-[2px]
         transition-[color,transform] duration-300
         motion-reduce:transition-none motion-reduce:hover:translate-x-0
@@ -254,22 +254,22 @@ export default function Footer({
     <footer
       aria-label={dictionary.footer.ariaLabel}
       className="relative mt-20 md:mt-28 overflow-hidden text-[var(--color-stone-700)]"
-      /* 🌿 Sitenin ana rengi petrol yeşili (#244C45 = --color-stone-900), düz
+      /* 🎨 Footer zemini: koyu metin rengi #24364B (--color-ink), düz
          zemin; gradient/glow yok. Footer içindeki metin/çizgi renkleri
          `--color-stone-*` değişkenleriyle tanımlı → değişkenler YALNIZ bu
          elemanda açık tonlara yeniden eşlenir (yerleşim ve sınıflar aynı;
-         site geneli ve admin ETKİLENMEZ). Kontrast (#244C45 üzerinde):
-         900 9.6 · 800 8.8 · 700 7.9 · 600 6.4 · 500 5.2 · 400 4.6. */
+         site geneli ve admin ETKİLENMEZ). Hover/vurgu: mercan (#FF805E,
+         koyu zeminde ≈5:1). footer_logo (beyaz) AYNEN kullanılır. */
       style={
         {
-          background: "#244C45",
+          background: "var(--color-ink)",
           "--color-stone-900": "#ffffff",
-          "--color-stone-800": "#f2f6f5",
-          "--color-stone-700": "#e3ebe9",
-          "--color-stone-600": "#c9d6d3",
-          "--color-stone-500": "#b2c3bf",
-          "--color-stone-400": "#a3b7b2",
-          "--color-stone-300": "#6f8a84",
+          "--color-stone-800": "#f1f4f8",
+          "--color-stone-700": "#e2e8ef",
+          "--color-stone-600": "#c8d2de",
+          "--color-stone-500": "#afbccb",
+          "--color-stone-400": "#a0afc0",
+          "--color-stone-300": "#6f8299",
           "--color-stone-200": "rgba(255, 255, 255, 0.12)",
         } as React.CSSProperties
       }
@@ -310,7 +310,7 @@ export default function Footer({
               ) : (
                 <>
                   Villaya
-                  <span className="text-[#C9A55A] ml-1">Gel</span>
+                  <span className="text-accent ml-1">Gel</span>
                 </>
               )}
             </Link>
@@ -356,7 +356,7 @@ export default function Footer({
             <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--color-stone-400)]">
               <span
                 aria-hidden="true"
-                className="inline-block w-4 h-px bg-gradient-to-r from-[#C9A55A] to-[#244C45]"
+                className="inline-block w-4 h-px bg-gradient-to-r from-accent to-brand"
               />
               {dictionary.footer.explore}
             </span>
@@ -402,7 +402,7 @@ export default function Footer({
                     ))}
                     <li className="pt-1">
                       <FooterLink href={localeHref("/arama", locale)}>
-                        <span className="text-[13px] text-[#C9A55A] inline-flex items-center gap-1">
+                        <span className="text-[13px] text-accent inline-flex items-center gap-1">
                           {dictionary.footer.allRegions}
                           <ArrowRight size={12} strokeWidth={1.75} aria-hidden />
                         </span>
@@ -424,7 +424,7 @@ export default function Footer({
         {/* ═════════════ SECTION 3 — CONTACT STRIP ═════════════
             Telefon/e-posta/adres artık ikon+liste değil, büyük tipografili
             bir "iletişim şeridi"; telefon en belirgin (birincil hover
-            #C9A55A), e-posta ikincil hover #244C45. Rezervasyon Sorgula
+            #FF805E), e-posta ikincil hover #278BD0. Rezervasyon Sorgula
             linki (mevcut href) burada, destek eylemine en yakın yerde. */}
         <div className="mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--color-stone-200)]">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
@@ -434,7 +434,7 @@ export default function Footer({
                   <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)] mb-1.5">
                     {dictionary.footer.phone}
                   </span>
-                  <span className="font-display text-[26px] md:text-[32px] tracking-[-0.01em] text-[var(--color-stone-900)] group-hover:text-[#C9A55A] transition-colors duration-300 motion-reduce:transition-none">
+                  <span className="font-display text-[26px] md:text-[32px] tracking-[-0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
                     {settings.phone}
                   </span>
                 </a>
@@ -444,7 +444,7 @@ export default function Footer({
                   <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)] mb-1.5">
                     {dictionary.footer.email}
                   </span>
-                  <span className="text-[16px] md:text-[18px] text-[var(--color-stone-700)] group-hover:text-[#C9A55A] transition-colors duration-300 motion-reduce:transition-none break-all">
+                  <span className="text-[16px] md:text-[18px] text-[var(--color-stone-700)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none break-all">
                     {settings.email}
                   </span>
                 </a>
@@ -507,7 +507,7 @@ export default function Footer({
                   <Link
                     key={p.id}
                     href={localeHref(`/p/${p.slug}`, locale)}
-                    className="hover:text-[#C9A55A] transition-colors duration-300 motion-reduce:transition-none"
+                    className="hover:text-accent transition-colors duration-300 motion-reduce:transition-none"
                   >
                     {/* 🛡️ EN/DE `page_translations.title`; yoksa/boşsa
                         canonical TR `p.title` (villa tipi satırıyla AYNI
@@ -550,7 +550,7 @@ export default function Footer({
               className="
                 group inline-flex items-center justify-center gap-2
                 text-[11.5px] tracking-[0.04em]
-                text-[var(--color-stone-500)] hover:text-[#C9A55A]
+                text-[var(--color-stone-500)] hover:text-accent
                 transition-colors duration-300 motion-reduce:transition-none
                 focus:outline-none focus-visible:ring-2
                 focus-visible:ring-white/50 rounded-full px-1
@@ -573,7 +573,7 @@ export default function Footer({
                   className="h-9 md:h-10 w-auto max-w-[160px] object-contain opacity-75 group-hover:opacity-100 transition-opacity duration-300 motion-reduce:transition-none"
                 />
               ) : (
-                <span className="font-semibold tracking-[0.02em] text-[var(--color-stone-600)] group-hover:text-[#C9A55A] transition-colors duration-300 motion-reduce:transition-none">
+                <span className="font-semibold tracking-[0.02em] text-[var(--color-stone-600)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
                   KalkanDigital
                 </span>
               )}

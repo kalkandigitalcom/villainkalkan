@@ -26,7 +26,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
      UYDURULMADI.
 
    MARKA RENKLERİ:
-     Yalnızca #C9A55A (turuncu) / #244C45 (mavi) — başka ana tema
+     Yalnızca #FF805E (turuncu) / #278BD0 (mavi) — başka ana tema
      rengi kullanılmadı. Her kart, ikisi arasında farklı bir ağırlıkla
      (turuncu-ağırlıklı / mavi-ağırlıklı / ikisi birden gradient)
      küçük bir karakter farkı taşır — kartlar birbirinin aynısı değil.
@@ -63,7 +63,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 
 type AdvantageTone = "orange" | "blue" | "duo";
 
-/* İKON KUTUSU — üç kartta da marka turuncusu (#C9A55A) dolu zemin +
+/* İKON KUTUSU — üç kartta da marka turuncusu (#FF805E) dolu zemin +
    beyaz ikon (yüksek kontrast, görsel odak). Kompakt yatay kart için
    56px mobil / 64px md+ (renk, gölge, köşe dili AYNEN).
    Kart karakteri (topBar / glow / hover border) tone'a göre AYNEN
@@ -117,25 +117,25 @@ const TONE_STYLES: Record<
   }
 > = {
   orange: {
-    border: "group-hover:border-[#C9A55A]/45",
-    iconBg: "bg-[#C9A55A] shadow-[0_14px_30px_-14px_rgba(201,165,90,0.6)]",
+    border: "group-hover:border-brand/45",
+    iconBg: "bg-brand shadow-[0_14px_30px_-14px_rgba(39,139,208,0.6)]",
     iconText: "text-white",
-    glow: "bg-[#C9A55A]/30",
-    topBar: "bg-gradient-to-r from-[#C9A55A] to-[#C9A55A]/10",
+    glow: "bg-brand/30",
+    topBar: "bg-gradient-to-r from-accent to-accent/10",
   },
   blue: {
-    border: "group-hover:border-[#244C45]/45",
-    iconBg: "bg-[#C9A55A] shadow-[0_14px_30px_-14px_rgba(201,165,90,0.6)]",
+    border: "group-hover:border-ink/45",
+    iconBg: "bg-brand shadow-[0_14px_30px_-14px_rgba(39,139,208,0.6)]",
     iconText: "text-white",
-    glow: "bg-[#244C45]/30",
-    topBar: "bg-gradient-to-r from-[#244C45] to-[#244C45]/10",
+    glow: "bg-brand/30",
+    topBar: "bg-gradient-to-r from-brand to-brand/10",
   },
   duo: {
-    border: "group-hover:border-[#C9A55A]/40",
-    iconBg: "bg-[#C9A55A] shadow-[0_14px_30px_-14px_rgba(201,165,90,0.6)]",
+    border: "group-hover:border-brand/40",
+    iconBg: "bg-brand shadow-[0_14px_30px_-14px_rgba(39,139,208,0.6)]",
     iconText: "text-white",
-    glow: "bg-gradient-to-br from-[#C9A55A]/30 to-[#244C45]/30",
-    topBar: "bg-gradient-to-r from-[#C9A55A] to-[#244C45]",
+    glow: "bg-gradient-to-br from-accent/30 to-brand/30",
+    topBar: "bg-gradient-to-r from-accent to-brand",
   },
 };
 

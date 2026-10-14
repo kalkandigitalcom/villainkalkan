@@ -111,7 +111,7 @@ function LocaleSwitchOptions({
               role="option"
               aria-selected="true"
               aria-current="true"
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left bg-gradient-to-r from-[#C9A55A]/10 to-[#244C45]/10 text-[var(--color-stone-900)]"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left bg-brand/10 text-[var(--color-stone-900)]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -183,7 +183,7 @@ function LocaleChipLinks({
             key={l}
             aria-current="true"
             title={`${label}: ${l.toUpperCase()}`}
-            className={base + " bg-[#C9A55A] text-white"}
+            className={base + " bg-brand text-white"}
           >
             {inner}
           </span>
@@ -339,7 +339,7 @@ export default function TopBar() {
               transition-colors motion-reduce:transition-none
             "
           >
-            <Phone size={15} strokeWidth={1.85} className="text-[#C9A55A]" aria-hidden />
+            <Phone size={15} strokeWidth={1.85} className="text-brand" aria-hidden />
             <span className="font-medium tabular-nums whitespace-nowrap">
               {settings.phone}
             </span>
@@ -355,7 +355,7 @@ export default function TopBar() {
               transition-colors motion-reduce:transition-none
             "
           >
-            <Mail size={15} strokeWidth={1.85} className="text-[#C9A55A]" aria-hidden />
+            <Mail size={15} strokeWidth={1.85} className="text-brand" aria-hidden />
             <span className="max-w-[170px] truncate">{settings.email}</span>
           </a>
         )}
@@ -438,7 +438,7 @@ export default function TopBar() {
                     className={
                       "w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left transition-colors " +
                       (c.code === currency
-                        ? "bg-gradient-to-r from-[#C9A55A]/10 to-[#244C45]/10 text-[var(--color-stone-900)]"
+                        ? "bg-brand/10 text-[var(--color-stone-900)]"
                         : "text-[var(--color-stone-700)] hover:bg-[var(--color-stone-50)]")
                     }
                   >

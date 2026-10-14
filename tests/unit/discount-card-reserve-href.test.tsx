@@ -198,12 +198,12 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     expect(pushSpy.mock.calls[0][0]).toBe("/kiralik-villa/ornek-villa");
   });
 
-  it("13) CTA — altın marka butonu (yeni public kart tasarımı)", () => {
+  it("13) CTA — mavi fiyat panelindeki beyaz buton (2026 paleti)", () => {
     renderDiscountCard();
     const btn = screen.getByRole("button", { name: "Hemen rezervasyon yap" });
     const cls = btn.getAttribute("class") || "";
-    /* Yeni tasarım: fiyat panelindeki altın, hap biçimli CTA. */
-    expect(cls).toContain("bg-[#C9A55A]");
+    /* Yeni tasarım: mavi fiyat panelindeki beyaz, hap biçimli CTA. */
+    expect(cls).toContain("bg-white");
     expect(cls).toContain("h-10");
     expect(cls).toContain("rounded-full");
     expect(btn.getAttribute("type")).toBe("button");
@@ -244,8 +244,8 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     renderDiscountCard({ discountAvailable: false });
     const btn = screen.getByRole("button", { name: "Hemen rezervasyon yap" });
     const cls = btn.getAttribute("class") || "";
-    /* Yeni tasarım: fiyat panelindeki altın, hap biçimli CTA. */
-    expect(cls).toContain("bg-[#C9A55A]");
+    /* Yeni tasarım: mavi fiyat panelindeki beyaz, hap biçimli CTA. */
+    expect(cls).toContain("bg-white");
     expect(cls).toContain("h-10");
     expect(cls).toContain("rounded-full");
     expect(btn.hasAttribute("disabled")).toBe(false);

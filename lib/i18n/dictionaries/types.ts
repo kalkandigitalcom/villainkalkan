@@ -655,14 +655,6 @@ export type Dictionary = {
       title: string;
       carouselAriaLabel: string;
     };
-    villaTypes: {
-      sectionAriaLabel: string;
-      title: string;
-      subtitle: string;
-      carouselAriaLabel: string;
-      /** template: {count} */
-      countBadge: string;
-    };
     villas: {
       title: string;
       ctaAll: string;

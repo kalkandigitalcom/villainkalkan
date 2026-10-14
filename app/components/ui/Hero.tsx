@@ -28,7 +28,7 @@ import type { HeroReviewStats } from "./hero/_types/hero";
        gradient (siyah) — okunabilirlik + "gece / golden hour" luxury
        atmosferi. Metin artık BEYAZ (önceki versiyon koyu metin +
        beyaz overlay kullanıyordu — bilinçli tam ters çevirme).
-     - Marka renkleri (#C9A55A altın / #244C45 petrol) SADECE vurgu
+     - Marka renkleri (#FF805E mercan / #278BD0 mavi) SADECE vurgu
        katmanlarında: köşe glow'ları, başlık ikinci satırı (gradient
        text-clip), CTA gradient + breathing glow, arama panelindeki
        ikon/hover/odak vurguları. Başka hiçbir ana tema rengi YOK.
@@ -77,7 +77,7 @@ import type { HeroReviewStats } from "./hero/_types/hero";
    ===============================================================
    - Tam ekran (100svh) full-bleed görsel; header (TopBar + şeffaf bar)
      görselin ÜZERİNDE durur (Header ana sayfada spacer basmaz).
-   - Dengeli, düz koyu petrol (#142c28) overlay + hafif üst/alt kenar koyulaşması
+   - Dengeli, düz koyu (#24364B) overlay + hafif üst/alt kenar koyulaşması
      (yalnız okunabilirlik; dekoratif glow/orb YOK).
    - İçerik yatay + dikey ortalı: rozet (yıldız ikonlu, yarı saydam),
      iki satırlı başlık (merkezi başlık fontu Manrope) (1. satır beyaz, 2. satır altın), açıklama,
@@ -210,22 +210,22 @@ export default function Hero({
       )}
 
       {/* ═══════════════════════════════════════════════════════════
-          OVERLAY — dengeli, düz koyu petrol ton (#142c28; ana renk
-          #244C45'in koyu kademesi — fotoğrafa yeşil cast vermez). Admin
+          OVERLAY — dengeli, düz koyu petrol ton (#24364B; ana renk
+          #278BD0'in koyu kademesi — fotoğrafa yeşil cast vermez). Admin
           `hero.overlayOpacity` (0..1) yoğunluğu ayarlar; metin kontrastı
           için taban 0.6'nın altına düşmez. Üst şerit (header) ve alt
           şerit (arama paneli) için çok hafif kenar koyulaşması.
           ═══════════════════════════════════════════════════════════ */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none bg-[#142c28]/45"
+        className="absolute inset-0 pointer-events-none bg-ink/45"
         style={{ opacity: 0.6 + 0.4 * hero.overlayOpacity }}
       />
       <div
         aria-hidden="true"
         className="
           absolute inset-0 pointer-events-none
-          bg-[linear-gradient(180deg,rgba(20,44,40,0.45)_0%,rgba(20,44,40,0)_26%,rgba(20,44,40,0)_62%,rgba(20,44,40,0.55)_100%)]
+          bg-[linear-gradient(180deg,rgba(26,40,56,0.45)_0%,rgba(26,40,56,0)_26%,rgba(26,40,56,0)_62%,rgba(26,40,56,0.55)_100%)]
         "
         style={{ opacity: 0.6 + 0.4 * hero.overlayOpacity }}
       />
@@ -263,7 +263,7 @@ export default function Hero({
               <Star
                 size={15}
                 aria-hidden
-                className="shrink-0 text-[#D4B25F] fill-[#D4B25F]"
+                className="shrink-0 text-accent fill-accent"
               />
               {hero.badge}
             </p>
@@ -281,13 +281,13 @@ export default function Hero({
                 text-white
                 mt-7 md:mt-9
                 [text-wrap:balance]
-                [text-shadow:0_2px_28px_rgba(20,44,40,0.35)]
+                [text-shadow:0_2px_28px_rgba(26,40,56,0.35)]
               "
             >
               {titleLines.map((line, i) => (
                 <span
                   key={i}
-                  className={i === 0 ? "block" : "block text-[#D4B25F]"}
+                  className={i === 0 ? "block" : "block text-accent"}
                 >
                   {line}
                 </span>
@@ -321,13 +321,13 @@ export default function Hero({
                   className="
                     inline-flex items-center justify-center
                     h-12 md:h-[60px] px-7 md:px-9 rounded-full
-                    bg-[#C9A55A] hover:bg-[#BB9649]
+                    bg-brand hover:bg-brand-hover
                     text-white text-[15px] md:text-[17px] font-semibold tracking-[0.01em]
-                    shadow-[0_16px_34px_-16px_rgba(201,165,90,0.8)]
+                    shadow-[0_16px_34px_-16px_rgba(39,139,208,0.8)]
                     hover:-translate-y-[1px]
                     transition-[transform,background-color] duration-300
                     motion-reduce:transition-none motion-reduce:hover:translate-y-0
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#244c45]
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-brand
                   "
                 >
                   {hero.primaryCta.text}

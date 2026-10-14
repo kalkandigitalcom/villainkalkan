@@ -54,7 +54,7 @@ export default function VillaDetailTabs({
       {/* TAB BAND — modern segmented navigation rail: klasik altı-çizili
           tab DEĞİL. Solid beyaz yüzey + ince border; active öğenin
           arka planı mevcut soft/nötr zemininde kalır, yalnız
-          metin/ikon rengi marka turuncusu (#C9A55A) ile öne çıkar
+          metin/ikon rengi marka turuncusu (#FF805E) ile öne çıkar
           (sol gradient accent çizgisi kaldırıldı). Tab switching
           state/logic'i (useState `active`, onClick) AYNEN; yalnız
           renk tasarımı değişti. */}
@@ -72,8 +72,8 @@ export default function VillaDetailTabs({
                     className={
                       "flex items-center md:w-full md:justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] tracking-[0.01em] transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-coral)]/40 " +
                       (isActive
-                        ? "bg-[var(--color-stone-50)] text-[#C9A55A] font-semibold"
-                        : "text-[var(--color-stone-500)] font-medium hover:text-[#C9A55A] hover:bg-[var(--color-stone-50)]/60")
+                        ? "bg-[var(--color-stone-50)] text-brand font-semibold"
+                        : "text-[var(--color-stone-500)] font-medium hover:text-brand hover:bg-[var(--color-stone-50)]/60")
                     }
                   >
                     {t.label}

@@ -270,11 +270,10 @@ describe("4) HorizontalCarousel prevLabel/nextLabel", () => {
     }
   });
 
-  it("4d) 🔒 4 homepage çağıranı da locale-aware label geçiriyor", () => {
+  it("4d) 🔒 3 homepage çağıranı da locale-aware label geçiriyor", () => {
     for (const f of [
       "app/components/home/DiscountCollection.tsx",
       "app/components/home/ShortGapsSection.tsx",
-      "app/components/villa/VillaTypeCarousel.tsx",
       "app/components/villa/LocationCollection.tsx",
     ]) {
       const src = readFileSync(f, "utf-8");

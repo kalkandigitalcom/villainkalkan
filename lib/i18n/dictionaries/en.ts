@@ -458,13 +458,6 @@ export const en: Dictionary = {
       title: "Discounted Villa Rentals",
       carouselAriaLabel: "Discounted villa rentals",
     },
-    villaTypes: {
-      sectionAriaLabel: "Villa Types",
-      title: "Discover Villa Types",
-      subtitle: "Start your search by picking the villa category that suits you.",
-      carouselAriaLabel: "Villa types",
-      countBadge: "{count} Villas",
-    },
     villas: {
       title: "Our picks for you",
       ctaAll: "View All Villas",

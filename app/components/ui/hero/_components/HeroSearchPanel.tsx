@@ -95,7 +95,7 @@ registerLocale("en", enUS);
    style/renk değerleri değişti. State/handler/effect/ref/prop/attribute
    mantığı yukarıdaki liste ile BİREBİR aynı kaldı:
      - Turkuaz (--brand-coral*, --color-champagne-*) vurgular →
-       SADECE #C9A55A (turuncu) / #244C45 (mavi) marka renkleri.
+       SADECE #FF805E (turuncu) / #278BD0 (mavi) marka renkleri.
      - Panel: daha yumuşak radius (28px), turuncu/mavi çok-katmanlı
        glow shadow, ince entrance animasyonu (local `<style>`,
        globals.css'e dokunulmadı, prefers-reduced-motion'da kapanır).
@@ -282,7 +282,7 @@ export default function HeroSearchPanel({
           relative isolate z-30
           grid grid-cols-[1.45fr_1fr] md:flex md:items-stretch
           rounded-[10px] md:rounded-[6px]
-          bg-[#FBF9F4]/[0.97] backdrop-blur-md
+          bg-white/[0.97] backdrop-blur-md
           shadow-[0_34px_70px_-34px_rgba(8,22,19,0.75),0_2px_0_0_rgba(255,255,255,0.6)_inset]
           p-1.5
           text-left
@@ -291,7 +291,7 @@ export default function HeroSearchPanel({
         {/* İnce altın imza çizgisi — panelin üst kenarında, sol başta. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute -top-px left-5 md:left-6 h-[2px] w-10 md:w-14 bg-[#C9A55A]"
+          className="pointer-events-none absolute -top-px left-5 md:left-6 h-[2px] w-10 md:w-14 bg-brand"
         />
 
         {/* ─── TARİH (giriş – çıkış) ─── */}
@@ -301,14 +301,14 @@ export default function HeroSearchPanel({
             flex flex-col justify-center
             px-3.5 md:px-6 py-3 md:py-[18px]
             md:rounded-[3px]
-            border-b border-r md:border-b-0 !border-[#244C45]/10
+            border-b border-r md:border-b-0 !border-ink/10
             cursor-pointer
             hover:bg-white transition-colors duration-200 motion-reduce:transition-none
             focus-within:bg-white
           "
         >
           <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
-            <CalendarDays size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
+            <CalendarDays size={13} strokeWidth={1.75} className="shrink-0 text-brand" aria-hidden />
             {dict.dateLabel}
           </span>
           <span className="mt-1.5 block">
@@ -327,7 +327,7 @@ export default function HeroSearchPanel({
               dateFormat="dd.MM.yyyy"
               minDate={new Date()}
               placeholderText={dict.datePlaceholder}
-              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 w-full font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-[#244C45] placeholder:!text-[#244C45] placeholder:!opacity-100 cursor-pointer truncate"
+              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 w-full font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-ink placeholder:!text-ink placeholder:!opacity-100 cursor-pointer truncate"
               /* 🛡️ PHASE 11 — sentinel string karşılaştırması yerine
                  DOĞRUDAN state kontrolü: `buildHeroDateLabel` sentinel'i
                  TAM OLARAK `!startDate` iken döndürür → davranış birebir
@@ -353,21 +353,21 @@ export default function HeroSearchPanel({
             flex flex-col justify-center
             px-3.5 md:px-6 py-3 md:py-[18px]
             md:rounded-[3px]
-            border-b md:border-b-0 md:border-r !border-[#244C45]/10
+            border-b md:border-b-0 md:border-r !border-ink/10
             cursor-pointer
             hover:bg-white transition-colors duration-200 motion-reduce:transition-none
             focus-within:bg-white
           "
         >
           <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
-            <Users size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
+            <Users size={13} strokeWidth={1.75} className="shrink-0 text-brand" aria-hidden />
             {dict.guestsLabel}
           </span>
           <span className="mt-1.5 flex items-center gap-1.5">
             <select
               value={guests}
               onChange={(e) => setGuests(Number(e.target.value))}
-              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 appearance-none min-w-0 flex-1 font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-[#244C45] cursor-pointer"
+              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 appearance-none min-w-0 flex-1 font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-ink cursor-pointer"
               style={{ backgroundImage: "none", paddingRight: 0 }}
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((g) => (
@@ -377,12 +377,12 @@ export default function HeroSearchPanel({
                 </option>
               ))}
             </select>
-            <ChevronDown size={14} strokeWidth={1.75} className="shrink-0 text-[#244C45]/45 pointer-events-none" aria-hidden />
+            <ChevronDown size={14} strokeWidth={1.75} className="shrink-0 text-ink/45 pointer-events-none" aria-hidden />
           </span>
         </label>
 
         {/* ─── BÖLGE ─── */}
-        <div ref={regRef} className="relative min-w-0 md:flex-1 border-r !border-[#244C45]/10">
+        <div ref={regRef} className="relative min-w-0 md:flex-1 border-r !border-ink/10">
           <button
             type="button"
             aria-expanded={openRegion}
@@ -397,15 +397,15 @@ export default function HeroSearchPanel({
               md:rounded-[3px]
               hover:bg-white transition-colors duration-200 motion-reduce:transition-none
               focus:outline-none focus-visible:bg-white
-              focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#244C45]/35
+              focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/35
             "
           >
             <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
-              <MapPin size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
+              <MapPin size={13} strokeWidth={1.75} className="shrink-0 text-brand" aria-hidden />
               {dict.regionLabel}
             </span>
             <span className="mt-1.5 flex items-center gap-1.5 w-full">
-              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-[#244C45]">
+              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-ink">
                 {regions.length
                   ? formatDictionaryString(dict.regionsSelected, {
                       n: regions.length,
@@ -416,7 +416,7 @@ export default function HeroSearchPanel({
                 size={14}
                 strokeWidth={1.75}
                 aria-hidden
-                className={`shrink-0 text-[#244C45]/45 transition-transform duration-200 motion-reduce:transition-none ${
+                className={`shrink-0 text-ink/45 transition-transform duration-200 motion-reduce:transition-none ${
                   openRegion ? "rotate-180" : ""
                 }`}
               />
@@ -437,8 +437,8 @@ export default function HeroSearchPanel({
                     key={item.id}
                     className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-[6px] cursor-pointer transition ${
                       checked
-                        ? "bg-[#244C45]/[0.08] text-[#244C45] font-medium"
-                        : "hover:bg-[#244C45]/[0.04] text-[var(--color-stone-700)]"
+                        ? "bg-brand/[0.08] text-brand font-medium"
+                        : "hover:bg-brand/[0.04] text-[var(--color-stone-700)]"
                     }`}
                   >
                     <input
@@ -448,7 +448,7 @@ export default function HeroSearchPanel({
                         toggleItem(item.id, regions, setRegions)
                       }
                       className="!w-4 !h-4 !rounded"
-                      style={{ accentColor: "#244C45" }}
+                      style={{ accentColor: "var(--color-brand)" }}
                     />
                     {item.name}
                   </label>
@@ -474,15 +474,15 @@ export default function HeroSearchPanel({
               md:rounded-[3px]
               hover:bg-white transition-colors duration-200 motion-reduce:transition-none
               focus:outline-none focus-visible:bg-white
-              focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#244C45]/35
+              focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/35
             "
           >
             <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
-              <Home size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
+              <Home size={13} strokeWidth={1.75} className="shrink-0 text-brand" aria-hidden />
               {dict.typeLabel}
             </span>
             <span className="mt-1.5 flex items-center gap-1.5 w-full">
-              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-[#244C45]">
+              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-ink">
                 {categories.length
                   ? formatDictionaryString(dict.typesSelected, {
                       n: categories.length,
@@ -493,7 +493,7 @@ export default function HeroSearchPanel({
                 size={14}
                 strokeWidth={1.75}
                 aria-hidden
-                className={`shrink-0 text-[#244C45]/45 transition-transform duration-200 motion-reduce:transition-none ${
+                className={`shrink-0 text-ink/45 transition-transform duration-200 motion-reduce:transition-none ${
                   openCat ? "rotate-180" : ""
                 }`}
               />
@@ -514,8 +514,8 @@ export default function HeroSearchPanel({
                     key={item.id}
                     className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-[6px] cursor-pointer transition ${
                       checked
-                        ? "bg-[#244C45]/[0.08] text-[#244C45] font-medium"
-                        : "hover:bg-[#244C45]/[0.04] text-[var(--color-stone-700)]"
+                        ? "bg-brand/[0.08] text-brand font-medium"
+                        : "hover:bg-brand/[0.04] text-[var(--color-stone-700)]"
                     }`}
                   >
                     <input
@@ -525,7 +525,7 @@ export default function HeroSearchPanel({
                         toggleItem(item.id, categories, setCategories)
                       }
                       className="!w-4 !h-4 !rounded"
-                      style={{ accentColor: "#244C45" }}
+                      style={{ accentColor: "var(--color-brand)" }}
                     />
                     {item.name}
                   </label>
@@ -547,15 +547,15 @@ export default function HeroSearchPanel({
             mt-1.5 md:mt-0 md:ml-1.5
             h-[52px] md:h-auto md:min-w-[176px] px-7 md:px-8
             !rounded-[6px] md:!rounded-[3px]
-            bg-[#244C45] hover:bg-[#1c3c36]
+            bg-brand hover:bg-brand-hover
             text-white font-display text-[15px] md:text-[15.5px] font-semibold tracking-[0.01em]
             shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]
             transition-colors duration-200 motion-reduce:transition-none
             focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-            focus-visible:ring-[#C9A55A] focus-visible:ring-offset-[#FBF9F4]
+            focus-visible:ring-brand focus-visible:ring-offset-white
           "
         >
-          <Search size={16} strokeWidth={2} className="shrink-0 text-[#C9A55A]" aria-hidden />
+          <Search size={16} strokeWidth={2} className="shrink-0 text-white" aria-hidden />
           <span>{dict.submit}</span>
           <ArrowRight
             size={15}
@@ -587,8 +587,8 @@ export default function HeroSearchPanel({
             focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
           "
         >
-          <SlidersHorizontal size={14} strokeWidth={1.75} className="shrink-0 text-[#D4B25F]" aria-hidden />
-          <span className="underline decoration-[#C9A55A]/70 decoration-1 underline-offset-[5px]">
+          <SlidersHorizontal size={14} strokeWidth={1.75} className="shrink-0 text-accent" aria-hidden />
+          <span className="underline decoration-accent/70 decoration-1 underline-offset-[5px]">
             {dict.advanced}
           </span>
           <ChevronDown
@@ -603,14 +603,14 @@ export default function HeroSearchPanel({
         </button>
 
         {advOpen && (
-          <div className="absolute left-1/2 md:left-auto md:right-0 top-full z-40 -translate-x-1/2 md:translate-x-0 mt-2 w-[min(92vw,420px)] rounded-[8px] bg-[#FBF9F4]/[0.98] backdrop-blur-md border border-[#244C45]/10 shadow-[0_28px_56px_-24px_rgba(8,22,19,0.5)] px-4 py-3.5">
+          <div className="absolute left-1/2 md:left-auto md:right-0 top-full z-40 -translate-x-1/2 md:translate-x-0 mt-2 w-[min(92vw,420px)] rounded-[8px] bg-white/[0.98] backdrop-blur-md border border-ink/10 shadow-[0_28px_56px_-24px_rgba(8,22,19,0.5)] px-4 py-3.5">
             <label className="flex items-start gap-2.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={flexible}
                 onChange={(e) => setFlexible(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 rounded cursor-pointer"
-                style={{ accentColor: "#C9A55A" }}
+                style={{ accentColor: "var(--color-brand)" }}
               />
               <span className="text-[13px] leading-snug text-[var(--color-stone-700)]">
                 {dict.flexibleHint}
@@ -625,13 +625,13 @@ export default function HeroSearchPanel({
                 `villa_features` tablosundan DİNAMİK gelir (hard-code YOK);
                 adlar EN'de mevcut çeviri zinciriyle çözülür.
             ═══════════════════════════════════════════════════════ */}
-            <div className="mt-3.5 border-t !border-[#244C45]/10 pt-3">
+            <div className="mt-3.5 border-t !border-ink/10 pt-3">
               <div className="flex items-baseline justify-between gap-2">
                 <div className="text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
                   {dict.featuresLabel}
                 </div>
                 {features.length > 0 && (
-                  <div className="text-[11.5px] font-medium text-[#244C45]">
+                  <div className="text-[11.5px] font-medium text-ink">
                     {formatDictionaryString(dict.featuresSelected, {
                       n: features.length,
                     })}
@@ -652,8 +652,8 @@ export default function HeroSearchPanel({
                         key={item.id}
                         className={`flex items-center gap-3 text-[13.5px] px-2.5 py-2 rounded-[6px] cursor-pointer transition ${
                           checked
-                            ? "bg-[#244C45]/[0.08] text-[#244C45] font-medium"
-                            : "hover:bg-[#244C45]/[0.04] text-[var(--color-stone-700)]"
+                            ? "bg-brand/[0.08] text-brand font-medium"
+                            : "hover:bg-brand/[0.04] text-[var(--color-stone-700)]"
                         }`}
                       >
                         <input
@@ -663,7 +663,7 @@ export default function HeroSearchPanel({
                             toggleItem(item.id, features, setFeatures)
                           }
                           className="!w-4 !h-4 !rounded"
-                          style={{ accentColor: "#244C45" }}
+                          style={{ accentColor: "var(--color-brand)" }}
                         />
                         {item.name}
                       </label>

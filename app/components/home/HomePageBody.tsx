@@ -2,7 +2,6 @@ import Hero from "@/app/components/ui/Hero";
 /* 🛡️ Hero'nun HEMEN altındaki "güven/avantaj" kartları — saf
    presentational, Hero'nun kendi kodu/prop'ları/mantığı DEĞİŞMEDİ. */
 import HeroAdvantageCards from "@/app/components/home/HeroAdvantageCards";
-import VillaTypeCarousel from "@/app/components/villa/VillaTypeCarousel";
 import LocationCollection from "@/app/components/villa/LocationCollection";
 import VillaList from "@/app/components/villa/VillaList";
 /* 🛡️ İndirimli Koleksiyon (migration 062) — VillaList paraleli, AYRI
@@ -137,9 +136,6 @@ export default async function HomePageBody({
       {/* 🛡️ "İndirimli Koleksiyon" — küratörlü fırsat villaları. Enabled
          + aktif villa yoksa null döner; Homepage Collection'ın ÜSTÜNDE. */}
       <DiscountCollection locale={locale} />
-      {/* 🛡️ "Villa Tiplerini Keşfedin" — premium carousel, VillaList
-         ("Sizin için seçtiklerimiz") bölümünün HEMEN ÜSTÜNDE. */}
-      <VillaTypeCarousel locale={locale} />
       <VillaList locale={locale} />
       {/* 🛡️ "Bölgeler" — VillaList altı, Footer üstü. Bölge ADLARI her
          dilde CANONICAL kalır (Phase 10I kararı). */}

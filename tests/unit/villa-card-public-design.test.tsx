@@ -61,14 +61,15 @@ describe("Public villa kartı — yeni tasarım", () => {
     expect(container.querySelector('[data-villa-card="default"]')!.className).toContain("@container");
   });
 
-  it("2) fiyat paneli: Gecelik + fiyat + 'Başlayan Fiyatlarla' + altın CTA", () => {
+  it("2) fiyat paneli: Gecelik + fiyat + 'Başlayan Fiyatlarla' + beyaz CTA (mavi panel)", () => {
     const { container } = render(<VillaCard {...BASE} />);
     const panel = container.querySelector("[data-price-panel]")!;
     expect(panel.textContent).toContain("Gecelik");
     expect(panel.textContent).toContain(formatCurrency(12000, "TRY", "tr"));
     expect(panel.textContent).toContain("Başlayan Fiyatlarla");
     const cta = screen.getByRole("button", { name: "Rezervasyon" });
-    expect(cta.className).toContain("bg-[#C9A55A]");
+    expect(cta.className).toContain("bg-white");
+    expect(cta.className).toContain("text-brand");
   });
 
   it("3) sağ üst: takvim (müsaitlik) + favori; olmayan rozet/puan uydurulmaz", () => {
@@ -114,7 +115,7 @@ describe("Public villa kartı — yeni tasarım", () => {
     expect(container.querySelector("[data-price-panel]")!.textContent).toContain("Starting From");
   });
 
-  it("9) discount variant aynı sistem: altın indirim şeridi + panelde indirimli fiyat", () => {
+  it("9) discount variant aynı sistem: mercan indirim şeridi + panelde indirimli fiyat", () => {
     const { container } = render(
       <VillaCard
         {...BASE}

@@ -51,8 +51,8 @@ export default function FloatingQuoteCta() {
     <>
       <style>{`
         @keyframes quoteCtaGlow {
-          0%, 100% { box-shadow: 0 10px 26px -12px rgba(201,165,90,0.75), 0 0 0 0 rgba(212,178,95,0.0); }
-          50%      { box-shadow: 0 14px 34px -12px rgba(201,165,90,0.95), 0 0 22px 2px rgba(212,178,95,0.45); }
+          0%, 100% { box-shadow: 0 10px 26px -12px rgba(255,128,94,0.75), 0 0 0 0 rgba(255,128,94,0.0); }
+          50%      { box-shadow: 0 14px 34px -12px rgba(255,128,94,0.95), 0 0 22px 2px rgba(255,128,94,0.45); }
         }
         @keyframes quoteCtaSweep {
           0%, 70% { transform: translateY(-120%); }
@@ -74,15 +74,15 @@ export default function FloatingQuoteCta() {
           flex flex-col items-center gap-2 md:gap-3
           overflow-hidden
           rounded-r-2xl border border-l-0 !border-white/25
-          bg-gradient-to-b from-[#D4B25F] via-[#C9A55A] to-[#B8923F]
-          text-white
+          bg-gradient-to-b from-accent via-accent to-accent-hover
+          text-ink
           px-1.5 py-2.5 md:pl-2.5 md:pr-3 md:py-5
           -translate-x-1.5 md:-translate-x-1 hover:translate-x-0 focus-visible:translate-x-0
           md:hover:pl-4 md:focus-visible:pl-4
           transition-[transform,padding,filter] duration-300 ease-out
           hover:brightness-105
           motion-reduce:transition-none
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#244c45]
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand
         "
       >
         {/* Işık süpürmesi — dekoratif, tıklamayı engellemez. */}

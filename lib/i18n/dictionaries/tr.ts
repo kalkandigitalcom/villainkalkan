@@ -472,13 +472,6 @@ export const tr: Dictionary = {
       title: "İndirimli Kiralık Villalar",
       carouselAriaLabel: "İndirimli kiralık villalar",
     },
-    villaTypes: {
-      sectionAriaLabel: "Villa Tipleri",
-      title: "Villa Tiplerini Keşfedin",
-      subtitle: "Size en uygun villa kategorisini seçerek aramaya başlayın.",
-      carouselAriaLabel: "Villa tipleri",
-      countBadge: "{count} Villa",
-    },
     villas: {
       title: "Sizin için seçtiklerimiz",
       ctaAll: "Tüm Villaları Gör",
