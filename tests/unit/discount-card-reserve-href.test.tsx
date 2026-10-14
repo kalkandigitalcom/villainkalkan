@@ -85,7 +85,9 @@ function renderDiscountCard(opts?: {
 }
 
 /** CTA butonunu metniyle bulur (tasarım/diğer butonlar değişmeden). */
-function clickCta(label = "Hemen Rezervasyon Yap") {
+/* 🎨 Yeni public kart tasarımı: görünen metin kısa ("Rezervasyon"),
+   erişilebilir ad `card.bookNowAriaLabel` ("Hemen rezervasyon yap"). */
+function clickCta(label = "Hemen rezervasyon yap") {
   const btn = screen.getByRole("button", { name: label });
   fireEvent.click(btn);
   return btn;
@@ -168,7 +170,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
 
   it("8) EN locale → /en/rezervasyon/...", () => {
     renderDiscountCard({ locale: "en" });
-    clickCta("Book Now");
+    clickCta("Book now");
     expect(pushSpy.mock.calls[0][0]).toBe(
       "/en/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
     );
@@ -196,13 +198,14 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     expect(pushSpy.mock.calls[0][0]).toBe("/kiralik-villa/ornek-villa");
   });
 
-  it("13) CTA tasarımı DEĞİŞMEDİ — marka butonu (altın — petrol rebrand) aynı sınıflarla duruyor", () => {
+  it("13) CTA — altın marka butonu (yeni public kart tasarımı)", () => {
     renderDiscountCard();
-    const btn = screen.getByRole("button", { name: "Hemen Rezervasyon Yap" });
+    const btn = screen.getByRole("button", { name: "Hemen rezervasyon yap" });
     const cls = btn.getAttribute("class") || "";
+    /* Yeni tasarım: fiyat panelindeki altın, hap biçimli CTA. */
     expect(cls).toContain("bg-[#C9A55A]");
-    expect(cls).toContain("h-11");
-    expect(cls).toContain("rounded-xl");
+    expect(cls).toContain("h-10");
+    expect(cls).toContain("rounded-full");
     expect(btn.getAttribute("type")).toBe("button");
   });
 
@@ -239,11 +242,12 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
 
   it("18) discountAvailable=false CTA'nın TASARIMINI değiştirmez", () => {
     renderDiscountCard({ discountAvailable: false });
-    const btn = screen.getByRole("button", { name: "Hemen Rezervasyon Yap" });
+    const btn = screen.getByRole("button", { name: "Hemen rezervasyon yap" });
     const cls = btn.getAttribute("class") || "";
+    /* Yeni tasarım: fiyat panelindeki altın, hap biçimli CTA. */
     expect(cls).toContain("bg-[#C9A55A]");
-    expect(cls).toContain("h-11");
-    expect(cls).toContain("rounded-xl");
+    expect(cls).toContain("h-10");
+    expect(cls).toContain("rounded-full");
     expect(btn.hasAttribute("disabled")).toBe(false);
   });
 
@@ -263,9 +267,9 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
         locale="tr"
       />
     );
-    // default variant'ta "Hemen Rezervasyon Yap" CTA'sı HİÇ render edilmez.
+    // default variant'ta indirim rezervasyon CTA'sı (aria: bookNowAriaLabel) HİÇ render edilmez.
     expect(
-      screen.queryByRole("button", { name: "Hemen Rezervasyon Yap" })
+      screen.queryByRole("button", { name: "Hemen rezervasyon yap" })
     ).toBeNull();
   });
 });

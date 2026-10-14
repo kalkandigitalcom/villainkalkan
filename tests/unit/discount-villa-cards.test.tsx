@@ -181,7 +181,9 @@ describe("Parite — eski VillaCard discount branch ile aynı fiyat çıktısı"
 describe("DiscountCollection kaynak kilidi", () => {
   const src = readFileSync("app/components/home/DiscountCollection.tsx", "utf-8");
   it("ana sayfada tek tasarım: varsayılan DISCOUNT_CARD_DESIGN", () => {
-    expect(["a", "b"]).toContain(DISCOUNT_CARD_DESIGN);
+    expect(["a", "b", "c"]).toContain(DISCOUNT_CARD_DESIGN);
+    /* "c" = public kart tasarım sistemi (VillaCard variant="discount"). */
+    expect(src).toMatch(/design === "c" \? \(\s*<VillaCard\s+variant="discount"/);
     expect(src).toMatch(/design = DISCOUNT_CARD_DESIGN/);
     expect(src).toMatch(/design === "b" \? DiscountVillaCardB : DiscountVillaCardA/);
   });

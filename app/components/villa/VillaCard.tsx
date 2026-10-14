@@ -486,32 +486,20 @@ export default function VillaCard({
     detailHref = `${detailHref}?${qs.toString()}`;
   }
 
-  /* 🛡️ Rezervasyon bilgi alanı + CTA — yalnız reserveInfo verilince
-     (kısa-süreli tarihler sayfası). CTA <button> (kart Link'i içinde
-     nested <a> olmasın) + preventDefault/stopPropagation → kartın detay
-     navigasyonu tetiklenmez; router.push ile /rezervasyon'a gider. */
-  const reserveBlock = reserveInfo ? (
-    <div className="mt-2.5 flex flex-col gap-2">
-      <div className="rounded-xl bg-emerald-50 px-3 py-2 text-center text-[13px] font-medium text-emerald-800">
-        {reserveInfo.label} ·{" "}
-        {formatDictionaryString(dict.card.reserveNights, {
-          n: reserveInfo.nights,
-        })}
-      </div>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          router.push(reserveInfo.href);
-        }}
-        aria-label={dict.card.bookNowAriaLabel}
-        className="w-full inline-flex items-center justify-center gap-2 h-10 rounded-xl bg-emerald-700 text-white uppercase font-medium text-[11px] tracking-[0.08em] hover:bg-emerald-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 transition-colors duration-200 motion-reduce:transition-none"
-      >
-        {dict.card.bookNow}
-      </button>
-    </div>
-  ) : null;
+  /* 🛡️ Müsaitlik / tarih seçimi modalı — ESKİ CTA handler'ının AYNISI
+     (takvim ikonu ve altın "Rezervasyon" butonu bunu çağırır). Kart
+     Link'i içinde olduğu için preventDefault/stopPropagation; pasif
+     villa (privateHref) → modal yok, özel sayfaya gider. */
+  const openAvailability = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (privateHref) {
+      router.push(detailHref);
+      return;
+    }
+    setIsBookingOpen(true);
+    ensureBookingModal();
+  };
 
   return (
     <>
@@ -902,295 +890,44 @@ export default function VillaCard({
       </article>
       ) : (
       /* ════════════════════════════════════════════════════
-         🛡️ DEFAULT (PUBLIC) — KOMPAKT KART
+         🛡️ PUBLIC KART — "PETROL FİYAT PANELİ" TASARIM SİSTEMİ
          ════════════════════════════════════════════════════
-         Yapı:
-           <article>
-             ├─ image (aspect-[16/10]) + badge/fav overlay
-             └─ content area
-                 ├─ row 1: title (sol) + price (sağ)
-                 ├─ row 2: location (📍)
-                 ├─ row 3: review meta (opsiyonel)
-                 └─ row 4: amenities ince satır (separator üstte)
-         Booking modal'a kart üzerinden erişim YOK (detail
-         sayfası BookingSidebar üzerinden açılır); modal state'i
-         hâlâ mount edilebilir ama isOpen=false sabit → 0 maliyet.
+         Tüm public yüzeyler (default variant) ve ana sayfa indirim
+         kartı (discount variant) AYNI yapıyı kullanır:
+           <article @container>
+             ├─ FOTOĞRAF (geniş, üst köşeler kartla bütünleşik)
+             │    ├─ sol üst: villa rozeti (koyu cam şerit) +
+             │    │           indirim yüzdesi (altın şerit, yalnız discount)
+             │    ├─ sağ üst: takvim (müsaitlik modalı) + favori
+             │    └─ sol alt: gerçek puan (varsa)
+             └─ GÖVDE
+                  ├─ BİLGİ: ad · ince çizgi · konum · kişi/oda/banyo
+                  │         (+ kısa-süreli tarihlerde rezervasyon aralığı)
+                  └─ FİYAT PANELİ (petrol, kavisli sol kenar)
+                       fiyat/indirim/toplam/esnek bilgisi + altın CTA
+         Kart dar ise (@container < 26rem) panel bilgi alanının ALTINA
+         iner (kavisli üst-sol köşe, tam genişlik altın CTA); geniş
+         kartta referanstaki gibi sağ tarafta durur.
+
+         MANTIK DEĞİŞMEDİ: tüm değerler yukarıdaki MEVCUT hesaplardan
+         (stayTotal / stayTotalBeforeDiscount / stayDiscountSavings /
+         convertedPrice / computeDiscountCardPricing) gelir; CTA'lar
+         MEVCUT handler'ları çağırır (müsaitlik modalı, reserveInfo
+         router.push, discountReserveHref ?? detailHref, privateHref).
          ──────────────────────────────────────────────────── */
-      isDiscount ? (
-      <div
-        className={
-          "relative rounded-[28px] p-[1.5px] overflow-hidden dc-glow-ring " +
-          "shadow-[0_14px_34px_-18px_rgba(36,76,69,0.24)] " +
-          "group-hover:shadow-[0_28px_54px_-22px_rgba(36,76,69,0.32)] " +
-          "transition-[box-shadow,transform] duration-500 motion-reduce:transition-none " +
-          "group-hover:-translate-y-[3px]"
-        }
-      >
-      <article className="relative overflow-hidden bg-white rounded-[26.5px]">
-        {/* ── IMAGE BLOCK — aspect-[4/3], premium showcase, dominant görsel ── */}
-        <div className="relative overflow-hidden aspect-[4/3] bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]">
-          {showImage ? (
-            <Image
-              src={cover}
-              alt={title || dict.card.villaAlt}
-              fill
-              sizes="(max-width: 640px) 78vw, (max-width: 1024px) 340px, 380px"
-              loading="lazy"
-              onError={() => setImgFailed(true)}
-              className="
-                object-cover object-center
-                transition-transform duration-[900ms] ease-out
-                group-hover:scale-[1.05]
-                motion-reduce:transition-none motion-reduce:group-hover:scale-100
-              "
-            />
-          ) : (
-            /* PREMIUM FALLBACK — serif initial */
-            <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
-              <div className="font-display text-[64px] leading-none text-[var(--color-stone-300)] tracking-[-0.03em]">
-                {initial}
-              </div>
-              <p className="mt-2 text-[10px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-400)]">
-                {dict.card.imageComing}
-              </p>
-            </div>
-          )}
-
-          {/* Bottom scrim — başlık/bölge legibility */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/[0.78] via-black/[0.28] to-transparent pointer-events-none"
-          />
-          {/* Top vignette — badge legibility */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/[0.24] via-black/[0.04] to-transparent pointer-events-none"
-          />
-          {/* Inner premium ring stroke */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 ring-1 ring-inset ring-white/15 pointer-events-none"
-          />
-
-          {/* 🔄 SADELEŞTİRME (bu tur): "Özel Fırsat · İndirimli" rozeti VE
-              favori kalp butonu, kullanıcı talebiyle YALNIZ bu discount
-              variant'ta kaldırıldı — normal/curation branch'lerdeki badge
-              ve FavoriteButton kullanımlarına (satır ~438, ~1005) HİÇ
-              dokunulmadı, onlar AYNEN duruyor. */}
-
-          {/* 🏷️ İNDİRİM ROZETİ (bu tur) — sağ üst köşe, kırmızı zemin +
-              beyaz yazı. Yüzde SABİT DEĞİL: discountBadgePercent (yukarıda,
-              discount_type/discount_value'den hesaplandı) null ise badge HİÇ
-              render edilmez. Kartın içine taşmaması için image bloğunun kendi
-              `relative overflow-hidden` alanına, `absolute top-3 right-3` ile
-              konumlandırıldı. */}
-          {discountBadgePercent !== null && (
-            <div
-              className="absolute top-3 right-3 z-10 inline-flex items-center rounded-full bg-red-600 px-2.5 py-1 text-[11px] font-semibold tracking-[0.02em] text-white shadow-[0_4px_10px_-2px_rgba(220,38,38,0.5)]"
-              aria-label={formatDictionaryString(
-                dict.card.discountBadgeAriaLabel,
-                { percent: discountBadgePercent }
-              )}
-            >
-              {formatDictionaryString(dict.card.discountBadge, {
-                percent: discountBadgePercent,
-              })}
-            </div>
-          )}
-
-          {/* TITLE + LOCATION — görsel üzerinde alt overlay, brand accent çizgisi.
-              Normal public karttan (VillaCard default) ayırt etmek için altina
-              turuncu→mavi ince accent çizgisi eklendi. */}
-          <div className="absolute inset-x-0 bottom-0 p-4 pointer-events-none text-center">
-            <h3 className="font-display text-[19px] md:text-[20px] font-semibold leading-[1.15] tracking-[-0.02em] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)] line-clamp-1">
-              {title}
-            </h3>
-            <p className="mt-1 inline-flex items-center gap-1 text-[11.5px] text-white/85 uppercase tracking-[0.05em]">
-              <MapPin size={11} className="shrink-0" strokeWidth={2} aria-hidden />
-              <span className="truncate">{location || dict.card.noLocation}</span>
-            </p>
-            <div
-              aria-hidden="true"
-              className="mt-2 h-[3px] w-12 rounded-full bg-gradient-to-r from-[#C9A55A] to-[#244C45] mx-auto"
-            />
-          </div>
-        </div>
-
-        {/* ── CONTENT AREA — kampanya hissi veren hafif gradient wash ── */}
-        <div className="p-3.5 md:p-4 bg-gradient-to-br from-[#FFF6F0] via-white to-[#EEF5F3]">
-          {/* 🔄 SADELEŞTİRME (bu tur): yıldız/puan/yorum sayısı bloğu
-              kullanıcı talebiyle YALNIZ bu discount variant'ta kaldırıldı
-              — default/curation branch'lerdeki review meta AYNEN duruyor
-              (bu dosyadaki diğer <Star .../> kullanımları, satır ~487 ve
-              ~1056, dokunulmadı). AMENITIES artık content area'nın İLK
-              elemanı → üst margin'e gerek yok (review varken kullanılan
-              "mt-3" koşulu da kaldırıldı, review hiç render edilmediği
-              için AYNI sonuç zaten hep margin'siz durumdu). */}
-          <div className="flex items-center justify-center gap-x-4 gap-y-1.5 flex-wrap text-[12.5px] font-medium text-[var(--color-stone-800)]">
-            <span
-              className="inline-flex items-center gap-1.5"
-              aria-label={formatDictionaryString(dict.card.guestsAriaLabel, {
-                n: guests,
-              })}
-            >
-              <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-[#244C45]/10 text-[#244C45] shrink-0" aria-hidden>
-                <Users size={17} strokeWidth={2.2} />
-              </span>
-              <span className="tabular-nums">
-                {formatDictionaryString(dict.card.guestsValue, { n: guests })}
-              </span>
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5"
-              aria-label={formatDictionaryString(dict.card.bedroomsAriaLabel, {
-                n: bedrooms,
-              })}
-            >
-              <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-[#244C45]/10 text-[#244C45] shrink-0" aria-hidden>
-                <BedDouble size={17} strokeWidth={2.2} />
-              </span>
-              <span className="tabular-nums">
-                {formatDictionaryString(dict.card.bedroomsValue, {
-                  n: bedrooms,
-                })}
-              </span>
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5"
-              aria-label={formatDictionaryString(dict.card.bathroomsAriaLabel, {
-                n: bathrooms,
-              })}
-            >
-              <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-[#244C45]/10 text-[#244C45] shrink-0" aria-hidden>
-                <Bath size={17} strokeWidth={2.2} />
-              </span>
-              <span className="tabular-nums">
-                {formatDictionaryString(dict.card.bathroomsValue, {
-                  n: bathrooms,
-                })}
-              </span>
-            </span>
-          </div>
-
-          {/* Divider */}
-          <div aria-hidden="true" className="mt-3.5 h-px bg-[var(--color-stone-200)]/70" />
-
-          {/* BOTTOM ROW — yalnız fiyat gösterimi (CTA kaldırıldı: kart
-              artık booking modalı açmıyor, yalnız fiyat/indirim bilgisi
-              gösteriyor). Fiyat hesabı (stayTotal / convertedPrice /
-              showDiscountPricing) BİREBİR mevcut price.engine reuse'u —
-              yeni bir hesaplama mantığı YOK. */}
-          <div className="mt-3.5">
-            <div className="min-w-0 text-center">
-              {stayTotal !== null ? (
-                <>
-                  <div className="font-display font-bold text-[18px] md:text-[19px] text-[#C9A55A] tracking-[-0.015em] tabular-nums leading-none">
-                    {formatCurrency(stayTotal, currency, effectiveLocale)}
-                  </div>
-                  <div className="mt-1 text-[10.5px] tracking-[0.04em] uppercase text-[var(--color-stone-500)] tabular-nums">
-                    {formatDictionaryString(dict.card.nights, { n: stayNights })}
-                    {hasCleaning ? dict.card.cleaningIncludedSuffix : ""}
-                  </div>
-                </>
-              ) : showDiscountPricing ? (
-                <>
-                  {/* İndirim tarih aralığı — villa_discounts kaydından
-                      DİNAMİK (bkz. formatDiscountDateRangeTr). Sabit
-                      metin YOK. */}
-                  <p className="text-[13px] font-semibold text-red-600 tracking-[0.01em] text-center">
-                    {discountDateRangeLabel}
-                  </p>
-                  {/* İnce yatay ayırıcı — tam genişlik, nötr (mevcut
-                      kart divider'larıyla AYNI dil: h-px + stone-200). */}
-                  <div
-                    aria-hidden="true"
-                    className="mt-1.5 mb-1.5 h-px w-full bg-[var(--color-stone-200)]"
-                  />
-                  {/* Üstü çizili normal fiyat + vurgulu indirimli fiyat +
-                      indirimli fiyatın SAĞINDA küçük/zarif "GECELİK" etiketi
-                      — kullanıcı talebiyle bu turda eklendi. Fiyat hesabı
-                      (convertedPrice / discountedPrice) DEĞİŞMEDİ, yalnız
-                      görsel bir etiket eklendi. */}
-                  <div className="flex items-baseline gap-2 justify-center">
-                    <span className="text-[13px] text-[var(--color-stone-400)] line-through tabular-nums">
-                      {formatCurrency(convertedPrice, currency, effectiveLocale)}
-                    </span>
-                    <span className="inline-flex items-baseline gap-1">
-                      <span className="font-display font-bold text-[18px] md:text-[19px] text-green-600 tracking-[-0.015em] tabular-nums leading-none">
-                        {formatCurrency(discountedPrice!.converted, currency, effectiveLocale)}
-                      </span>
-                      <span className="text-[10px] font-medium uppercase tracking-[0.06em] text-[var(--color-stone-500)]">
-                        {dict.card.nightly}
-                      </span>
-                    </span>
-                  </div>
-                  {/* 💰 GECELİK TASARRUF SATIRI (bu tur) — fiyat satırının
-                      HEMEN ALTINDA, marka mavisi (#244C45), fiyat satırından
-                      daha küçük punto. Tutar SABİT DEĞİL: nightlySavingsLabel
-                      (yukarıda hesaplandı) null ise satır HİÇ render edilmez. */}
-                  {nightlySavingsLabel && (
-                    <p className="mt-1 text-[11.5px] font-medium text-[#244C45] text-center">
-                      {nightlySavingsLabel}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <div className="font-display font-bold text-[18px] md:text-[19px] text-[#C9A55A] tracking-[-0.015em] tabular-nums leading-none">
-                  {price
-                    ? formatCurrency(convertedPrice, currency, effectiveLocale)
-                    : dict.card.priceOnRequest}
-                </div>
-              )}
-            </div>
-          </div>
-          {/* 🛡️ CTA — "Hemen Rezervasyon Yap" (kullanıcı referans tasarımı:
-              her indirim kartında KORUNACAK, sabit/koşulsuz CTA). Kart zaten
-              CardOuter üzerinden <Link href={detailHref}> ile sarmalı;
-              nested <button> + preventDefault/stopPropagation +
-              router.push (reserveBlock ile AYNI, mevcut, kanıtlanmış desen)
-              kartın kendi navigasyonuyla ÇAKIŞMAZ. reserveInfo verilmişse
-              (kısa-süreli tarihler sayfası) mevcut reserveBlock (gece bilgisi
-              + CTA) AYNEN kullanılır — yeni bir CTA/route mantığı YOK. */}
-          {reserveInfo ? (
-            reserveBlock
-          ) : (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                /* 🛡️ Fırsat tarihleri varsa /rezervasyon'a ÖN-SEÇİLİ
-                   tarihlerle; yoksa MEVCUT davranış (villa detayı). */
-                router.push(discountReserveHref ?? detailHref);
-              }}
-              className="mt-3 w-full inline-flex items-center justify-center h-11 rounded-xl bg-[#C9A55A] hover:bg-[#D96A1F] text-white uppercase font-semibold text-[11.5px] tracking-[0.08em] shadow-[0_10px_24px_-8px_rgba(201,165,90,0.45)] hover:shadow-[0_14px_30px_-10px_rgba(201,165,90,0.55)] hover:-translate-y-px active:translate-y-0 transition-[box-shadow,transform,background-color] duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A55A]/40"
-            >
-              {dict.card.bookNow}
-            </button>
-          )}
-        </div>
-      </article>
-      </div>
-      ) : (
       <article
+        data-villa-card={isDiscount ? "discount" : "default"}
         className={
-          "relative overflow-hidden bg-white " +
-          "rounded-[22px] border border-[var(--color-stone-100)] " +
-          "shadow-[0_14px_34px_-22px_rgba(36,76,69,0.22)] " +
-          "group-hover:shadow-[0_28px_56px_-24px_rgba(36,76,69,0.32),0_0_0_1px_rgba(36,76,69,0.14)] " +
-          "group-hover:border-[#244C45]/25 " +
-          "transition-[box-shadow,transform,border-color] duration-500 motion-reduce:transition-none " +
-          "group-hover:-translate-y-[3px]"
+          "@container relative flex h-full flex-col overflow-hidden bg-white " +
+          "rounded-[22px] border !border-[#244C45]/[0.09] " +
+          "shadow-[0_18px_40px_-28px_rgba(20,44,40,0.35)] " +
+          "group-hover:shadow-[0_30px_60px_-30px_rgba(20,44,40,0.45)] " +
+          "transition-[box-shadow,transform] duration-500 motion-reduce:transition-none " +
+          "group-hover:-translate-y-[3px] motion-reduce:group-hover:translate-y-0"
         }
       >
-        {/* ── IMAGE BLOCK — aspect-[4/3] (büyük, premium) ── */}
-        <div
-          className={
-            "relative overflow-hidden " +
-            "aspect-[4/3] " +
-            "bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]"
-          }
-        >
+        {/* ── FOTOĞRAF ── */}
+        <div className="relative aspect-[16/11] overflow-hidden bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]">
           {showImage ? (
             <Image
               src={cover}
@@ -1198,7 +935,9 @@ export default function VillaCard({
               fill
               sizes={
                 imageSizes ??
-                "(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                (isDiscount
+                  ? "(max-width: 640px) 86vw, 360px"
+                  : "(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw")
               }
               loading={isLcp ? "eager" : "lazy"}
               fetchPriority={isLcp ? "high" : undefined}
@@ -1206,14 +945,14 @@ export default function VillaCard({
               className="
                 object-cover object-center
                 transition-transform duration-[1000ms] ease-out
-                group-hover:scale-[1.06]
+                group-hover:scale-[1.05]
                 motion-reduce:transition-none motion-reduce:group-hover:scale-100
               "
             />
           ) : (
-            /* PREMIUM FALLBACK — serif initial */
+            /* PREMIUM FALLBACK — baş harf */
             <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
-              <div className="font-display text-[72px] leading-none text-[var(--color-stone-300)] tracking-[-0.03em]">
+              <div className="font-display text-[68px] leading-none text-[#244C45]/25 tracking-[-0.03em]">
                 {initial}
               </div>
               <p className="mt-2 text-[10px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-400)]">
@@ -1222,309 +961,255 @@ export default function VillaCard({
             </div>
           )}
 
-          {/* Top vignette — badge/fav buton legibility */}
+          {/* Üst vinyet — rozet ve aksiyon okunurluğu */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/[0.22] via-black/[0.05] to-transparent pointer-events-none"
-          />
-          {/* Inner premium ring stroke */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 ring-1 ring-inset ring-white/15 pointer-events-none"
+            className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/[0.28] via-black/[0.06] to-transparent pointer-events-none"
           />
 
-          {/* BADGE — glass pill + turuncu→mavi gradient indicator dot. */}
-          {badge && (
-            <span className="absolute top-3.5 left-3.5 z-10 inline-flex items-center gap-1.5 bg-white/95 backdrop-blur-md text-[var(--color-stone-900)] text-[10px] tracking-[0.16em] uppercase font-semibold px-2.5 py-1.5 rounded-full shadow-[0_6px_18px_-6px_rgb(27_26_23/0.28)] ring-1 ring-white/50">
-              <span
-                aria-hidden="true"
-                className="inline-block w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#C9A55A] to-[#244C45]"
-              />
-              {badge}
-            </span>
+          {/* SOL ÜST — rozetler (yalnız gerçek veri). */}
+          {(badge || (isDiscount && discountBadgePercent !== null)) && (
+            <div className="absolute left-0 top-4 z-10 flex max-w-[calc(100%-6.5rem)] flex-col items-start gap-2">
+              {badge && !isDiscount && (
+                <span className="inline-flex max-w-full items-center gap-2 rounded-r-full bg-[#142c28]/75 backdrop-blur-md py-1.5 pl-3.5 pr-4 text-[10.5px] font-semibold uppercase leading-snug tracking-[0.1em] text-white">
+                  <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#C9A55A]" />
+                  <span className="line-clamp-2">{badge}</span>
+                </span>
+              )}
+              {isDiscount && discountBadgePercent !== null && (
+                <span
+                  className="inline-flex items-center rounded-r-full bg-[#C9A55A] py-1.5 pl-3.5 pr-4 text-[11px] font-bold uppercase tracking-[0.08em] text-[#1c3c36] shadow-[0_8px_18px_-10px_rgba(20,44,40,0.6)]"
+                  aria-label={formatDictionaryString(
+                    dict.card.discountBadgeAriaLabel,
+                    { percent: discountBadgePercent }
+                  )}
+                >
+                  {formatDictionaryString(dict.card.discountBadge, {
+                    percent: discountBadgePercent,
+                  })}
+                </span>
+              )}
+            </div>
           )}
 
-          {/* FAV BUTTON — top-right (mevcut FavoriteButton, davranış/API AYNEN) */}
+          {/* SAĞ ÜST — takvim (müsaitlik / tarih seçimi modalı; MEVCUT
+              handler) + favori (MEVCUT FavoriteButton, top-4 right-4). */}
+          <button
+            type="button"
+            onClick={openAvailability}
+            onPointerEnter={preloadVillaCardBookingModal}
+            onPointerDown={preloadVillaCardBookingModal}
+            onFocus={preloadVillaCardBookingModal}
+            aria-label={dict.card.availabilityAriaLabel}
+            title={dict.card.availabilityCta}
+            className="absolute top-4 right-[3.75rem] z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-[var(--color-stone-700)] shadow-[0_2px_8px_-2px_rgb(27_26_23/0.18)] hover:bg-white transition motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A55A]/60"
+          >
+            <CalendarRange size={15} strokeWidth={1.75} aria-hidden />
+          </button>
           {id && <FavoriteButton villaId={id} variant="card" alwaysVisible />}
 
-          {/* ════════════════════════════════════════════════
-              🛡️ OVERLAY — villa adı + bölge, görselin sol altında.
-              Public kart redesign: eskiden CONTENT AREA'nın (beyaz
-              panel) en üstünde ayrı satırlardı; şimdi görsel üzerinde,
-              okunabilirlik için zarif koyu gradient scrim üzerinde.
-              Diğer her şey (review/amenities/fiyat/CTA/favori) AYNEN
-              CONTENT AREA'da kalmaya devam ediyor — yalnız bu iki alan
-              taşındı. Discount/curation variant'ları ETKİLENMEDİ. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-black/75 via-black/30 to-transparent pointer-events-none"
-          />
-          <div className="absolute inset-x-0 bottom-0 z-10 p-3.5 md:p-4 pr-20 md:pr-24">
-            <h3
-              className={
-                "font-display text-white font-semibold " +
-                "text-[17px] md:text-[19px] leading-[1.15] tracking-[-0.02em] " +
-                "line-clamp-1 group-hover:text-white/90 " +
-                "transition-colors duration-300 motion-reduce:transition-none " +
-                "drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]"
-              }
-            >
-              {title}
-            </h3>
-            <p className="mt-1 flex items-center gap-1.5 text-[10.5px] tracking-[0.14em] uppercase font-medium text-white/80 min-w-0">
-              <MapPin
-                size={11}
-                className="text-white/75 shrink-0"
-                strokeWidth={1.9}
-                aria-hidden
-              />
-              <span className="truncate">{location || dict.card.noLocation}</span>
-            </p>
-          </div>
-
-          {/* REVIEW BADGE — görselin sağ altı (villa adı/bölge sol altta
-              olduğu için ayrık köşe). Zarif glass pill; format birebir
-              korunur ("X.X · N yorum"), gerçek reviewAverage/reviewCount —
-              0/undefined'da render edilmez (eski davranışla aynı guard).
-              CONTENT AREA'daki eski REVIEW META bloğunun YERİNE bu geldi
-              (aşağıda o blok kaldırılıp price satırına dönüştürüldü). */}
+          {/* SOL ALT — gerçek puan (0/undefined → render YOK). */}
           {typeof reviewCount === "number" && reviewCount > 0 &&
             typeof reviewAverage === "number" && reviewAverage > 0 && (
               <div
-                className="absolute bottom-3.5 md:bottom-4 right-3.5 md:right-4 z-10 inline-flex items-center gap-1 bg-white/90 backdrop-blur-md text-[var(--color-stone-900)] text-[11px] font-medium px-2.5 py-1 rounded-full shadow-[0_4px_14px_-4px_rgba(0,0,0,0.28)] ring-1 ring-white/50"
-                aria-label={formatDictionaryString(
-                  dict.card.ratingAriaLabel,
-                  {
-                    value: reviewAverage.toFixed(1),
-                    count: reviewCount,
-                  }
-                )}
+                className="absolute bottom-3.5 left-3.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-medium text-[#1F3D38] backdrop-blur-md shadow-[0_4px_14px_-4px_rgba(0,0,0,0.28)]"
+                aria-label={formatDictionaryString(dict.card.ratingAriaLabel, {
+                  value: reviewAverage.toFixed(1),
+                  count: reviewCount,
+                })}
               >
-                <Star
-                  size={11}
-                  className="text-amber-500 shrink-0"
-                  fill="currentColor"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
+                <Star size={11} className="text-[#C9A55A] shrink-0" fill="currentColor" strokeWidth={1.5} aria-hidden />
                 <span className="tabular-nums">{reviewAverage.toFixed(1)}</span>
                 <span aria-hidden="true" className="text-[var(--color-stone-400)]">·</span>
                 <span className="tabular-nums">
-                  {formatDictionaryString(dict.card.reviewCount, {
-                    n: reviewCount,
-                  })}
+                  {formatDictionaryString(dict.card.reviewCount, { n: reviewCount })}
                 </span>
               </div>
             )}
         </div>
 
-        {/* ── CONTENT AREA ── */}
-        <div className="p-4 md:p-5">
-          {/* PRICE — "X başlayan fiyatlarla" sade satırı; REVIEW META'nın
-              eski konumu (review artık görsel üzerinde sağ altta, bkz.
-              yukarıdaki REVIEW BADGE). Aynı convertedPrice/formatCurrency/
-              currency BOTTOM ROW'daki mevcut hesaptan reuse edilir — yeni
-              fiyat hesabı YOK. Yalnız stayTotal===null (tarih aralığı
-              seçilmemiş "başlangıç fiyatı" senaryosu) VE isFlexible===false
-              iken render edilir; BOTTOM ROW'daki aynı metin ÇİFT gösterim
-              olmasın diye oradan kaldırıldı (stayTotal!==null tarih-seçili
-              toplam ve isFlexible esnek-sonuç senaryoları BOTTOM ROW'da
-              AYNEN kalmaya devam ediyor — mutually exclusive, çakışma yok). */}
-          {!isFlexible &&
-            (stayTotal !== null ? (
-              /* 🛡️ TARİH SEÇİLİ — konaklama TOPLAMI artık BU alanda
-                 gösterilir (eskiden BOTTOM ROW'da, müsaitlik CTA'sının
-                 solundaydı; çift gösterim olmasın diye oradan kaldırıldı).
-                 SADECE KONUM DEĞİŞTİ: aynı `stayTotal` / `stayNights` /
-                 `hasCleaning` değerleri, aynı `formatCurrency`, aynı
-                 currency ve aynı sözlük anahtarları. calculateGrandTotal
-                 çağrısına, indirim/kur/temizlik hesabına DOKUNULMADI. */
-              <div className="mt-2">
-                {/* ÜST SATIR — seçilen giriş/çıkış tarihleri. */}
-                {stayDateLabel && (
-                  <p className="text-[11.5px] tracking-[0.04em] text-[var(--color-stone-500)] tabular-nums">
-                    {stayDateLabel}
-                  </p>
-                )}
-
-                {/* ORTA SATIR — fiyat. "N gece" KALDIRILDI (tarih artık
-                    üst satırda); "Temizlik dahil" MEVCUT koşuluyla
-                    (hasCleaning) ve MEVCUT sözlük metniyle aynen kalır. */}
-                <p className="mt-0.5 text-[13px] text-[var(--color-stone-500)]">
-                  {/* 🛡️ İNDİRİMSİZ TOPLAM — yalnız gerçek bir fark varsa
-                      render edilir (bkz. stayTotalBeforeDiscount). Üstü
-                      çizili stil villa detaydaki BookingSummary ile aynı
-                      dil: küçük punto + stone-400 + line-through. */}
-                  {stayTotalBeforeDiscount !== null && (
-                    <>
-                      <span className="text-[12px] text-[var(--color-stone-400)] line-through tabular-nums">
-                        {formatCurrency(
-                          stayTotalBeforeDiscount,
-                          currency,
-                          effectiveLocale
-                        )}
-                      </span>{" "}
-                    </>
-                  )}
-                  <span className="font-display text-[15px] font-semibold text-[#C9A55A] tabular-nums">
-                    {formatCurrency(stayTotal, currency, effectiveLocale)}
-                  </span>
-                  {hasCleaning ? (
-                    <span>{dict.card.cleaningIncludedSuffix}</span>
-                  ) : null}
-                </p>
-
-                {/* ALT SATIR — indirim tutarı. Yalnız gerçek indirim
-                    varsa; yoksa bu satır HİÇ render edilmez. */}
-                {stayDiscountSavings !== null && (
-                  <p className="mt-0.5 text-[12px] font-medium text-red-600 tabular-nums">
-                    {formatDictionaryString(dict.card.totalSavings, {
-                      amount: formatCurrency(
-                        stayDiscountSavings,
-                        currency,
-                        effectiveLocale
-                      ),
-                    })}
-                  </p>
-                )}
-              </div>
-            ) : (
-              /* Tarih seçilmemiş — MEVCUT davranış BİREBİR:
-                 "X başlayan fiyatlarla" veya "Fiyat sorunuz". */
-              <p className="mt-2 text-[13px] text-[var(--color-stone-500)]">
-                {price ? (
-                  <>
-                    <span className="font-display text-[15px] font-semibold text-[#C9A55A] tabular-nums">
-                      {formatCurrency(convertedPrice, currency, effectiveLocale)}
-                    </span>{" "}
-                    {dict.card.startingFromLower}
-                  </>
-                ) : (
-                  dict.card.priceOnRequest
-                )}
+        {/* ── GÖVDE: bilgi + fiyat paneli ── */}
+        <div className="relative flex flex-1 flex-col @[26rem]:flex-row">
+          {/* BİLGİ */}
+          <div className="min-w-0 flex-1 px-5 pt-4 pb-4 @[26rem]:pb-5">
+            <h3 className="font-display text-[19px] @[26rem]:text-[21px] font-bold leading-[1.15] tracking-[-0.02em] text-[#244C45] line-clamp-1">
+              {title}
+            </h3>
+            <div aria-hidden="true" className="mt-3 h-px bg-[#244C45]/10" />
+            <p className="mt-3 flex min-w-0 items-center gap-2 text-[13px] text-[var(--color-stone-700)]">
+              <MapPin size={15} className="shrink-0 text-[#244C45]" strokeWidth={1.75} aria-hidden />
+              <span className="truncate">{location || dict.card.noLocation}</span>
+            </p>
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-[12.5px] text-[var(--color-stone-700)]">
+              <span
+                className="inline-flex items-center gap-1.5"
+                aria-label={formatDictionaryString(dict.card.guestsAriaLabel, { n: guests })}
+              >
+                <Users size={15} className="text-[#244C45]" strokeWidth={1.75} aria-hidden />
+                <span className="tabular-nums">
+                  {formatDictionaryString(dict.card.guestsValue, { n: guests })}
+                </span>
+              </span>
+              <span
+                className="inline-flex items-center gap-1.5"
+                aria-label={formatDictionaryString(dict.card.bedroomsAriaLabel, { n: bedrooms })}
+              >
+                <BedDouble size={15} className="text-[#244C45]" strokeWidth={1.75} aria-hidden />
+                <span className="tabular-nums">
+                  {formatDictionaryString(dict.card.bedroomsValue, { n: bedrooms })}
+                </span>
+              </span>
+              <span
+                className="inline-flex items-center gap-1.5"
+                aria-label={formatDictionaryString(dict.card.bathroomsAriaLabel, { n: bathrooms })}
+              >
+                <Bath size={15} className="text-[#244C45]" strokeWidth={1.75} aria-hidden />
+                <span className="tabular-nums">
+                  {formatDictionaryString(dict.card.bathroomsValue, { n: bathrooms })}
+                </span>
+              </span>
+            </div>
+            {/* Kısa-süreli tarihler — MEVCUT reserveInfo etiketi. */}
+            {reserveInfo && (
+              <p className="mt-3 inline-flex rounded-full bg-[#244C45]/[0.07] px-3 py-1 text-[12px] font-medium text-[#244C45]">
+                {reserveInfo.label} ·{" "}
+                {formatDictionaryString(dict.card.reserveNights, {
+                  n: reserveInfo.nights,
+                })}
               </p>
-            ))}
-
-          {/* Divider — üst bilgi bloğu ↔ özellikler */}
-          <div aria-hidden="true" className="mt-3.5 h-px bg-[var(--color-stone-100)]" />
-
-          {/* AMENITIES — guests / bedrooms / bathrooms, marka rengi ikon vurgusu */}
-          <div className="mt-3.5 flex items-center gap-x-4 gap-y-1.5 flex-wrap text-[12.5px] font-medium text-[var(--color-stone-800)]">
-            <span
-              className="inline-flex items-center gap-1.5"
-              aria-label={formatDictionaryString(dict.card.guestsAriaLabel, {
-                n: guests,
-              })}
-            >
-              <Users size={15} className="text-[#244C45]" strokeWidth={1.9} aria-hidden />
-              <span className="tabular-nums">
-                {formatDictionaryString(dict.card.guestsValue, { n: guests })}
-              </span>
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5"
-              aria-label={formatDictionaryString(dict.card.bedroomsAriaLabel, {
-                n: bedrooms,
-              })}
-            >
-              <BedDouble size={15} className="text-[#244C45]" strokeWidth={1.9} aria-hidden />
-              <span className="tabular-nums">
-                {formatDictionaryString(dict.card.bedroomsValue, {
-                  n: bedrooms,
-                })}
-              </span>
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5"
-              aria-label={formatDictionaryString(dict.card.bathroomsAriaLabel, {
-                n: bathrooms,
-              })}
-            >
-              <Bath size={15} className="text-[#244C45]" strokeWidth={1.9} aria-hidden />
-              <span className="tabular-nums">
-                {formatDictionaryString(dict.card.bathroomsValue, {
-                  n: bathrooms,
-                })}
-              </span>
-            </span>
+            )}
           </div>
 
-          {/* Marka rengi imza çizgisi — küçük vurgu */}
+          {/* FİYAT PANELİ — petrol, kavisli sol/üst kenar. */}
           <div
-            aria-hidden="true"
-            className="mt-3.5 h-[2px] w-10 rounded-full bg-gradient-to-r from-[#C9A55A] to-[#244C45]"
-          />
+            data-price-panel
+            className="
+              relative flex shrink-0 flex-col items-stretch gap-3.5
+              rounded-tl-[44px] bg-[#244C45] px-5 pt-4 pb-4 pl-7 text-white
+              @[26rem]:w-[46%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0
+              @[26rem]:rounded-tl-[96px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right
+            "
+          >
+            <div className="min-w-0">
+              {isFlexible ? (
+                /* 🛡️ ESNEK EK SONUÇ — fiyat gösterilmez (MEVCUT kural). */
+                <>
+                  <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#E9D3A0]">
+                    <Sparkles size={12} strokeWidth={2} className="text-[#C9A55A]" aria-hidden />
+                    {dict.card.flexibleTitle}
+                  </p>
+                  <p className="mt-1 text-[12px] text-white/75">{dict.card.flexibleSubtitle}</p>
+                </>
+              ) : stayTotal !== null ? (
+                /* 🛡️ TARİH SEÇİLİ — konaklama TOPLAMI (MEVCUT hesap). */
+                <>
+                  {stayDateLabel && (
+                    <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/65 tabular-nums">
+                      {stayDateLabel}
+                    </p>
+                  )}
+                  {stayTotalBeforeDiscount !== null && (
+                    <p className="mt-1 text-[12.5px] text-white/55 line-through tabular-nums">
+                      {formatCurrency(stayTotalBeforeDiscount, currency, effectiveLocale)}
+                    </p>
+                  )}
+                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
+                    {formatCurrency(stayTotal, currency, effectiveLocale)}
+                  </p>
+                  {/* "N gece" gösterilmez (tarih üst satırda — MEVCUT karar);
+                      "Temizlik dahil" MEVCUT koşuluyla. */}
+                  {hasCleaning && (
+                    <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] text-white/60">
+                      {dict.card.cleaningIncluded}
+                    </p>
+                  )}
+                  {stayDiscountSavings !== null && (
+                    <p data-price-savings className="mt-1 text-[12px] font-semibold text-[#E9D3A0] tabular-nums">
+                      {formatDictionaryString(dict.card.totalSavings, {
+                        amount: formatCurrency(stayDiscountSavings, currency, effectiveLocale),
+                      })}
+                    </p>
+                  )}
+                </>
+              ) : isDiscount && showDiscountPricing ? (
+                /* 🛡️ İNDİRİM — computeDiscountCardPricing çıktıları. */
+                <>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/65">
+                    {dict.card.nightly}
+                  </p>
+                  <p className="mt-1 text-[12.5px] text-white/55 line-through tabular-nums">
+                    <span className="sr-only">{dict.card.originalPriceLabel}: </span>
+                    {formatCurrency(convertedPrice, currency, effectiveLocale)}
+                  </p>
+                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
+                    <span className="sr-only">{dict.card.discountedPriceLabel}: </span>
+                    {formatCurrency(discountedPrice!.converted, currency, effectiveLocale)}
+                  </p>
+                  {nightlySavingsLabel && (
+                    <p className="mt-1.5 text-[12px] font-semibold text-[#E9D3A0]">
+                      {nightlySavingsLabel}
+                    </p>
+                  )}
+                  <p className="mt-1 text-[11px] text-white/65">{discountDateRangeLabel}</p>
+                </>
+              ) : price ? (
+                /* Tarih seçilmemiş — gecelik başlangıç fiyatı (MEVCUT). */
+                <>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/65">
+                    {dict.card.nightly}
+                  </p>
+                  <p data-price-amount className="mt-0.5 font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
+                    {formatCurrency(convertedPrice, currency, effectiveLocale)}
+                  </p>
+                  <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-white/55">
+                    {dict.card.startingFromUpper}
+                  </p>
+                </>
+              ) : (
+                <p className="font-display text-[17px] font-bold leading-tight">
+                  {dict.card.priceOnRequest}
+                </p>
+              )}
+            </div>
 
-          {/* BOTTOM ROW — fiyat (sol, varsa) + booking CTA. Handler/aria-label/
-              lazy modal mantığı AYNEN; fiyat hesabı (stayTotal / convertedPrice)
-              üst tanımdan BİREBİR reuse — yeni hesap YOK.
-              🛡️ CTA HİZALAMA — justify-between kaldırıldı; buton `mx-auto`
-              ile fiyat/chip bloğunun (varsa) SAĞINDAKİ boşlukta ortalanır.
-              Fiyat/chip bloğu solda AYNI konumunda kalır (taşınmadı); boş
-              olduğu yaygın durumda (stayTotal===null, isFlexible=false)
-              satırın tamamı boş kaldığı için buton satırın tam ortasına
-              gelir. Buton genişlik/yükseklik/renk/hover/metin AYNEN. */}
-          <div className="mt-3.5 flex items-end gap-3">
-            {isFlexible ? (
-              /* 🛡️ ESNEK EK SONUÇ — fiyat gösterilmez; fiyat motoru
-                 çağrılmaz, ana tarih/href akışı korunur. */
-              <div className="min-w-0">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#C9A55A]/10 to-[#244C45]/10 ring-1 ring-[#244C45]/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-[#244C45]">
-                  <Sparkles size={11} strokeWidth={2} className="text-[#C9A55A]" aria-hidden />
-                  {dict.card.flexibleTitle}
-                </div>
-                <div className="mt-1 text-[11px] font-medium text-[var(--color-stone-600)]">
-                  {dict.card.flexibleSubtitle}
-                </div>
-              </div>
-            ) : (
-              /* 🛡️ FİYAT ARTIK BURADA GÖSTERİLMİYOR (bu tur): hem
-                 tarihsiz "başlayan fiyatlarla" hem de tarih seçili
-                 KONAKLAMA TOPLAMI artık CONTENT AREA'nın üstündeki tek
-                 fiyat alanında gösterilir → müsaitlik CTA'sının yanında
-                 ÇİFT fiyat yok. Sarmalayıcı `div` KORUNDU: CTA'nın
-                 `mx-auto` hizalaması ve satır yüksekliği DEĞİŞMESİN.
-                 Fiyat hesabı (stayTotal/hasCleaning/stayNights) YUKARIDA
-                 AYNEN duruyor — motor ve değerler DEĞİŞMEDİ. */
-              <div className="min-w-0" />
-            )}
-
+            {/* ALTIN CTA — MEVCUT hedefler:
+                  discount  → discountReserveHref ?? detailHref
+                  reserveInfo → reserveInfo.href
+                  diğer     → müsaitlik/rezervasyon modalı (privateHref → detay) */}
             <button
               type="button"
               onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                /* Pasif villa → rezervasyon modalı yok; özel sayfaya git. */
-                if (privateHref) {
-                  router.push(detailHref);
+                if (isDiscount && !reserveInfo) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push(discountReserveHref ?? detailHref);
                   return;
                 }
-                setIsBookingOpen(true);
-                ensureBookingModal();
+                if (reserveInfo) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push(reserveInfo.href);
+                  return;
+                }
+                openAvailability(e);
               }}
-              onPointerEnter={preloadVillaCardBookingModal}
-              onPointerDown={preloadVillaCardBookingModal}
-              onFocus={preloadVillaCardBookingModal}
-              aria-label={dict.card.availabilityAriaLabel}
-              className={
-                "shrink-0 mx-auto inline-flex items-center justify-center gap-1.5 whitespace-nowrap " +
-                "h-9 px-4 rounded-full " +
-                "text-white uppercase font-medium text-[11px] tracking-[0.06em] " +
-                "bg-gradient-to-r from-[#C9A55A] to-[#244C45] " +
-                "shadow-[0_10px_22px_-10px_rgba(36,76,69,0.45)] " +
-                "hover:shadow-[0_14px_28px_-10px_rgba(36,76,69,0.55)] hover:-translate-y-[1px] " +
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244C45]/40 focus-visible:ring-offset-1 " +
-                "transition-[box-shadow,transform] duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-              }
+              aria-label={isDiscount || reserveInfo ? dict.card.bookNowAriaLabel : undefined}
+              onPointerEnter={isDiscount || reserveInfo ? undefined : preloadVillaCardBookingModal}
+              onFocus={isDiscount || reserveInfo ? undefined : preloadVillaCardBookingModal}
+              className="
+                shrink-0 inline-flex w-full items-center justify-center whitespace-nowrap
+                h-10 rounded-full bg-[#C9A55A] px-5 @[26rem]:mt-4 @[26rem]:w-auto
+                text-[12px] font-bold uppercase tracking-[0.1em] text-[#1c3c36]
+                shadow-[0_10px_22px_-12px_rgba(0,0,0,0.55)]
+                hover:bg-[#D4B25F] transition-colors duration-200 motion-reduce:transition-none
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#244C45]
+              "
             >
-              <CalendarRange size={13} strokeWidth={1.9} aria-hidden />
-              {dict.card.availabilityCta}
+              {dict.card.reserve}
             </button>
           </div>
-          {reserveBlock}
         </div>
       </article>
-      )
       )}
 
     </CardOuter>
@@ -1605,9 +1290,9 @@ function CardOuter({
     <Link
       href={href}
       className="
-        block group rounded-[28px]
+        block group h-full rounded-[22px]
         focus:outline-none focus-visible:ring-2
-        focus-visible:ring-[var(--brand-coral)]/40
+        focus-visible:ring-[#244C45]/45 focus-visible:ring-offset-2
       "
     >
       {children}

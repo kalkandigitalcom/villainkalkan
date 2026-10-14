@@ -371,6 +371,7 @@ export const tr: Dictionary = {
     totalSavings: "{amount} indirimli",
     bookNow: "Hemen Rezervasyon Yap",
     bookNowAriaLabel: "Hemen rezervasyon yap",
+    reserve: "Rezervasyon",
     viewVilla: "Villayı İncele",
     originalPriceLabel: "İndirimsiz fiyat",
     discountedPriceLabel: "İndirimli fiyat",

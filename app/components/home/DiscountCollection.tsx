@@ -1,5 +1,6 @@
 import { getCachedDiscountCollectionVillas } from "@/lib/cache.helpers";
 import HorizontalCarousel from "../villa/HorizontalCarousel";
+import VillaCard from "../villa/VillaCard";
 /* 🛡️ PHASE 11 — section başlığı dictionary'den; villa ADI ve BÖLGESİ
    CANONICAL kalır. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
@@ -27,6 +28,7 @@ import {
      tasarımı hazırlandı; ana sayfada YALNIZ biri görünür:
        - "a" → DiscountVillaCardA (Premium Yatay Kart)
        - "b" → DiscountVillaCardB (Editoryal Lüks Kart)
+       - "c" → VillaCard variant="discount" (public kart tasarım sistemi)
      Varsayılan: `DISCOUNT_CARD_DESIGN` (discount-cards/
      discount-card-design.ts). `design` prop'u yalnız geliştirme
      önizleme sayfası (/onizleme/indirimli-villalar) içindir.
@@ -48,6 +50,12 @@ const LAYOUT: Record<
     item: "w-[84vw] max-w-[400px] md:max-w-none md:w-[720px] lg:w-[780px]",
     gap: "gap-5 md:gap-10",
     scrollStep: 820,
+  },
+  /* Geniş kart → fiyat paneli referanstaki gibi sağda (@container ≥ 26rem). */
+  c: {
+    item: "w-[86vw] max-w-[380px] md:max-w-none md:w-[440px]",
+    gap: "gap-5 md:gap-6",
+    scrollStep: 464,
   },
 };
 
@@ -80,7 +88,27 @@ export default async function DiscountCollection({
   const layout = LAYOUT[design];
 
   /* Prop eşlemesi ve fallback değerleri eski VillaCard çağrısıyla AYNI. */
-  const renderCard = (c: (typeof collection)[number]) => (
+  const renderCard = (c: (typeof collection)[number]) =>
+    design === "c" ? (
+      <VillaCard
+        variant="discount"
+        id={c.id}
+        slug={c.slug}
+        title={c.display_title}
+        location={c.location}
+        price={c.price ?? 0}
+        currency={c.currency || "TRY"}
+        images={c.images}
+        bedrooms={c.bedrooms || 1}
+        bathrooms={c.bathrooms || 1}
+        guests={c.guests || 2}
+        reviewAverage={c.review_average}
+        reviewCount={c.review_count}
+        discount={c.discount}
+        discountAvailable={c.discount_available}
+        locale={locale}
+      />
+    ) : (
     <Card
       id={c.id}
       slug={c.slug}
@@ -100,7 +128,7 @@ export default async function DiscountCollection({
       discountAvailable={c.discount_available}
       locale={locale}
     />
-  );
+    );
 
   return (
     <section

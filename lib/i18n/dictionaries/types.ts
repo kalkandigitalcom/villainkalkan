@@ -502,6 +502,8 @@ export type Dictionary = {
     totalSavings: string;
     bookNow: string;
     bookNowAriaLabel: string;
+    /** Public kart fiyat panelindeki kısa altın CTA etiketi. */
+    reserve: string;
     /** İndirim kartı — villa detayına giden ikincil CTA. */
     viewVilla: string;
     /** İndirim kartı — ekran okuyucu için üstü çizili fiyat etiketi. */

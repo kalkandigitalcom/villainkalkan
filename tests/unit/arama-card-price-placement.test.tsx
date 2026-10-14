@@ -102,21 +102,26 @@ function availabilityRowText(): string {
   return btn.parentElement?.textContent || "";
 }
 
-/** Fiyat SATIRI = turuncu tutarı (font-display span) içeren `<p>`. */
+/* 🎨 PUBLIC KART YENİ TASARIM — fiyat bilgisi artık petrol FİYAT
+   PANELİNDE (`[data-price-panel]`). Ana tutar `[data-price-amount]`,
+   indirim tutarı `[data-price-savings]`. Assertion'ların anlamı AYNI:
+   değerler motorun çıktısı, yerleri yalnız görsel olarak değişti. */
+
+/** Fiyat SATIRI = ana tutarı taşıyan öğe. */
 function priceLine(container: HTMLElement): HTMLElement | null {
-  const span = Array.from(
-    container.querySelectorAll("span.font-display")
-  ).find((el) => /\d/.test(el.textContent || ""));
-  return (span?.closest("p") as HTMLElement | null) ?? null;
+  return container.querySelector("[data-price-amount]");
 }
 
+/** Fiyat ALANI = fiyat paneli (CTA hariç metin). */
 function priceAreaText(container: HTMLElement): string {
-  return priceLine(container)?.textContent || "";
+  const panel = container.querySelector("[data-price-panel]");
+  const info = panel?.firstElementChild;
+  return info?.textContent || "";
 }
 
 /** Fiyat BLOĞU = tarih satırı + fiyat satırı + indirim satırı. */
 function priceBlockText(container: HTMLElement): string {
-  return priceLine(container)?.parentElement?.textContent || "";
+  return priceAreaText(container);
 }
 
 describe("A) tarih seçili — toplam YALNIZ fiyat alanında", () => {
@@ -150,7 +155,7 @@ describe("B) tarih yok — mevcut davranış BİREBİR", () => {
     const { container } = renderCard({ withDates: false });
     const text = priceAreaText(container);
     expect(text).toMatch(/10\.000/);
-    expect(text).toContain(tr.card.startingFromLower);
+    expect(text).toContain(tr.card.startingFromUpper);
   });
 
   it("6) fiyat yoksa 'Fiyat sorunuz' aynen", () => {
@@ -179,7 +184,7 @@ describe("C/D) indirim ve hesaplanamayan fiyat", () => {
        davranışına düşer; YENİ bir fallback ÜRETİLMEDİ. */
     const { container } = renderCard({ prices: [] });
     const text = priceAreaText(container);
-    expect(text).toContain(tr.card.startingFromLower);
+    expect(text).toContain(tr.card.startingFromUpper);
     expect(availabilityRowText()).not.toMatch(/\d/);
   });
 
@@ -217,7 +222,7 @@ describe("F) indirimli toplam gösterimi", () => {
     expect(struckTexts(container).join(" ")).not.toMatch(/24\.000/);
   });
 
-  it("15) iki tutar da AYNI fiyat SATIRINDA gösterilir", () => {
+  it("15) iki tutar da AYNI fiyat ALANINDA (panel) gösterilir", () => {
     const { container } = renderCard({ discounts: DISCOUNTS });
     const text = priceAreaText(container);
     expect(text).toMatch(/30\.000/);
@@ -243,7 +248,7 @@ describe("F) indirimli toplam gösterimi", () => {
       discounts: DISCOUNTS,
     });
     expect(struckTexts(container)).toHaveLength(0);
-    expect(priceAreaText(container)).toContain(tr.card.startingFromLower);
+    expect(priceAreaText(container)).toContain(tr.card.startingFromUpper);
   });
 
   it("19) 🔒 müsaitlik satırına fiyat GERİ GELMEDİ", () => {
@@ -317,9 +322,8 @@ describe("E) motor dokunulmazlığı — kaynak kilidi", () => {
 =============================================================== */
 describe("G) üç satırlı fiyat alanı", () => {
   const savingsLine = (container: HTMLElement) =>
-    Array.from(container.querySelectorAll("p")).find((p) =>
-      p.className.includes("text-red-600")
-    );
+    (container.querySelector("[data-price-savings]") as HTMLElement | null) ??
+    undefined;
 
   it("21) ÜST SATIR — seçilen tarih aralığı fiyatın üstünde gösterilir", () => {
     const { container } = renderCard();
@@ -333,17 +337,19 @@ describe("G) üç satırlı fiyat alanı", () => {
     const texts = Array.from(block.querySelectorAll("p")).map(
       (p) => p.textContent || ""
     );
-    expect(texts[0]).toMatch(/Eki/);
-    expect(texts[1]).toMatch(/30\.000/);
+    const dateIdx = texts.findIndex((t) => /Eki/.test(t));
+    const amountIdx = texts.findIndex((t) => /30\.000/.test(t));
+    expect(dateIdx).toBeGreaterThanOrEqual(0);
+    expect(amountIdx).toBeGreaterThan(dateIdx);
   });
 
   it("23) tarih seçilmemişse tarih satırı YOK (mevcut davranış)", () => {
     const { container } = renderCard({ withDates: false });
     expect(container.textContent).not.toMatch(/Eki/);
-    expect(priceAreaText(container)).toContain(tr.card.startingFromLower);
+    expect(priceAreaText(container)).toContain(tr.card.startingFromUpper);
   });
 
-  it("24) ALT SATIR — indirim tutarı (₺6.000) KIRMIZI gösterilir", () => {
+  it("24) ALT SATIR — indirim tutarı (₺6.000) vurgulu gösterilir", () => {
     /* 30.000 − 24.000 = 6.000 (iki mevcut toplamın farkı). */
     const { container } = renderCard({ discounts: DISCOUNTS });
     const line = savingsLine(container);
