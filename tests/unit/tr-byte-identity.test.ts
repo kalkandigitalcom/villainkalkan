@@ -59,8 +59,9 @@ describe("TR byte-identity — villa detay sayfası (kiralik-villa/[slug])", () 
 describe("TR byte-identity — VillaDetailTabs", () => {
   it("sekme etiketleri değişmedi", () => {
     expect(tr.villaTabs.prices).toBe("Fiyatlar");
-    expect(tr.villaTabs.location).toBe("Konum & Mesafeler");
+    expect(tr.villaTabs.distances).toBe("Mesafeler");
     expect(tr.villaTabs.features).toBe("Özellikler");
+    expect(tr.villaTabs.reviews).toBe("Yorumlar");
   });
 });
 
@@ -310,7 +311,8 @@ describe("EN — Türkçe hardcoded metin kalmadı (regresyon kilidi)", () => {
     ["villa.similarVillasTitle", tr.villa.similarVillasTitle, en.villa.similarVillasTitle],
     ["villa.tourismCertificate", tr.villa.tourismCertificate, en.villa.tourismCertificate],
     ["villaTabs.prices", tr.villaTabs.prices, en.villaTabs.prices],
-    ["villaTabs.location", tr.villaTabs.location, en.villaTabs.location],
+    ["villaTabs.distances", tr.villaTabs.distances, en.villaTabs.distances],
+    ["villaTabs.reviews", tr.villaTabs.reviews, en.villaTabs.reviews],
     ["villaTabs.features", tr.villaTabs.features, en.villaTabs.features],
     ["map.openMap", tr.map.openMap, en.map.openMap],
     ["map.directions", tr.map.directions, en.map.directions],

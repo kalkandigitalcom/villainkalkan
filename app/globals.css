@@ -1982,3 +1982,21 @@ select.input {
   font-weight: 600;
   color: var(--color-stone-800);
 }
+
+/* ================================================================
+   🎨 SAYFA ZEMİNİ — `bg-[var(--color-ivory)]` (body, public kabuk,
+   404, bakım ekranı) yeni pembe-krem tonla boyanır. Tailwind'in
+   ürettiği aynı sınıfı `@layer utilities` içinde, kaynak sırasıyla
+   sonra gelerek ezer; `--color-ivory` token'ı ve onu kullanan diğer
+   bileşenler DEĞİŞMEZ.
+   🛡️ Admin korunur: admin kabuğunu içeren sayfada body zemini eski
+   değerinde kalır (`:has()` daha yüksek özgüllük).
+   ================================================================ */
+@layer utilities {
+  .bg-\[var\(--color-ivory\)\] {
+    background-color: #ffede8d1;
+  }
+  body:has(.admin-shell).bg-\[var\(--color-ivory\)\] {
+    background-color: var(--color-ivory);
+  }
+}

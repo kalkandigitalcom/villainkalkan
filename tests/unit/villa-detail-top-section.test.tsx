@@ -31,6 +31,10 @@ function Page({ locale = "tr" as "tr" | "en" }) {
         konum={<p>PANEL-KONUM</p>}
         ozellikler={<p>PANEL-OZELLIK</p>}
       />
+      {/* VillaDetailBody'deki yorum bölümü sarmalayıcısıyla aynı hedef. */}
+      <div id="villa-yorumlar" data-villa-section="yorumlar">
+        <p>PANEL-YORUM</p>
+      </div>
       <VillaAvailabilityShortcut locale={locale} />
     </>
   );
@@ -97,14 +101,19 @@ describe("İçerik bölümleri sayfada ardışık ve hep açık", () => {
     const ids = Array.from(
       container.querySelectorAll("[data-villa-section]"),
     ).map((n) => n.id);
-    expect(ids).toEqual(["villa-fiyatlar", "villa-konum", "villa-ozellikler"]);
+    expect(ids).toEqual([
+      "villa-fiyatlar",
+      "villa-konum",
+      "villa-ozellikler",
+      "villa-yorumlar",
+    ]);
     expect(document.getElementById("villa-musaitlik")).toBeNull();
   });
 
   it("şerit tıklaması içerikleri gizlemez / değiştirmez", () => {
     render(<Page />);
     fireEvent.click(navBtn(tr.villaTabs.features));
-    fireEvent.click(navBtn(tr.villaTabs.location));
+    fireEvent.click(navBtn(tr.villaTabs.distances));
     for (const p of ["PANEL-FIYAT", "PANEL-KONUM", "PANEL-OZELLIK"]) {
       expect(screen.getByText(p)).toBeInTheDocument();
     }
@@ -112,7 +121,7 @@ describe("İçerik bölümleri sayfada ardışık ve hep açık", () => {
 });
 
 describe("Üst navigasyon şeridi", () => {
-  it("Açıklama, Fiyatlar, Konum, Özellikler; Müsaitlik öğesi yok; tek navigasyon", () => {
+  it("Açıklama, Fiyatlar, Mesafeler, Özellikler, Yorumlar; Müsaitlik öğesi yok; tek navigasyon", () => {
     render(<Page />);
     const labels = within(stripNav())
       .getAllByRole("button")
@@ -120,8 +129,16 @@ describe("Üst navigasyon şeridi", () => {
     expect(labels).toEqual([
       tr.villaTabs.description,
       tr.villaTabs.prices,
-      tr.villaTabs.location,
+      tr.villaTabs.distances,
       tr.villaTabs.features,
+      tr.villaTabs.reviews,
+    ]);
+    expect(labels).toEqual([
+      "Açıklama",
+      "Fiyatlar",
+      "Mesafeler",
+      "Özellikler",
+      "Yorumlar",
     ]);
     expect(screen.getAllByRole("navigation")).toHaveLength(1);
   });
@@ -147,6 +164,7 @@ describe("Üst navigasyon şeridi", () => {
     setRect(document.getElementById("villa-fiyatlar")!, 1200);
     setRect(document.getElementById("villa-konum")!, 2400);
     setRect(document.getElementById("villa-ozellikler")!, 3000);
+    setRect(document.getElementById("villa-yorumlar")!, 3600);
     await flushScroll();
     expect(navBtn(tr.villaTabs.description)).toHaveAttribute(
       "aria-current",
@@ -157,8 +175,9 @@ describe("Üst navigasyon şeridi", () => {
   it.each([
     ["description", "villa-aciklama"],
     ["prices", "villa-fiyatlar"],
-    ["location", "villa-konum"],
+    ["distances", "villa-konum"],
     ["features", "villa-ozellikler"],
+    ["reviews", "villa-yorumlar"],
   ] as const)(
     "%s → ilgili bölüme yumuşak kaydırır (Header + şerit payı), öğe aktif olur",
     (key, anchorId) => {
@@ -209,6 +228,7 @@ describe("Üst navigasyon şeridi", () => {
     setRect(document.getElementById("villa-fiyatlar")!, 150);
     setRect(document.getElementById("villa-konum")!, 900);
     setRect(document.getElementById("villa-ozellikler")!, 1400);
+    setRect(document.getElementById("villa-yorumlar")!, 2000);
 
     await flushScroll();
     expect(navBtn(tr.villaTabs.prices)).toHaveAttribute("aria-current", "true");
@@ -216,7 +236,7 @@ describe("Üst navigasyon şeridi", () => {
     setRect(document.getElementById("villa-fiyatlar")!, -300);
     setRect(document.getElementById("villa-konum")!, 170);
     await flushScroll();
-    expect(navBtn(tr.villaTabs.location)).toHaveAttribute(
+    expect(navBtn(tr.villaTabs.distances)).toHaveAttribute(
       "aria-current",
       "true",
     );
@@ -273,6 +293,11 @@ describe("Rezervasyon kartı kısayolu", () => {
     expect(
       within(stripNav(en)).getByRole("button", { name: "Description" }),
     ).toBeInTheDocument();
+    expect(
+      within(stripNav(en))
+        .getAllByRole("button")
+        .map((b) => b.textContent),
+    ).toEqual(["Description", "Rates", "Distances", "Amenities", "Reviews"]);
     expect(
       screen.getByRole("button", { name: "Availability Calendar" }),
     ).toBeInTheDocument();

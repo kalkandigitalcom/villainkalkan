@@ -264,8 +264,9 @@ export const en: Dictionary = {
   /* 🛡️ PHASE 10G — VillaDetailTabs.tsx */
   villaTabs: {
     prices: "Rates",
-    location: "Location & Distances",
+    distances: "Distances",
     features: "Amenities",
+    reviews: "Reviews",
     description: "Description",
     sectionNavAriaLabel: "Villa sections",
   },

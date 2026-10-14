@@ -22,7 +22,7 @@ import {
      sabit Header'ın (TopBar dahil, ölçülen GERÇEK yükseklik) hemen
      altında yapışkan kalır (CSS `position: sticky`).
    - Öğeler sayfada hep açık duran bölümlere yumuşak kaydırır:
-     Açıklama · Fiyatlar · Konum & Mesafeler · Özellikler.
+     Açıklama · Fiyatlar · Mesafeler · Özellikler · Yorumlar.
      Müsaitlik takvimi sağdaki "Müsaitlik Takvimi" butonuyla popup'ta.
    - Aktif öğe: tıklanan öğe hemen; kullanıcı kendisi kaydırınca
      ekrandaki bölüm. Tek (rAF ile seyreltilmiş) scroll dinleyicisi.
@@ -39,8 +39,9 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
   const labels: Record<VillaSectionId, string> = {
     aciklama: dict.villaTabs.description,
     fiyatlar: dict.villaTabs.prices,
-    konum: dict.villaTabs.location,
+    konum: dict.villaTabs.distances,
     ozellikler: dict.villaTabs.features,
+    yorumlar: dict.villaTabs.reviews,
   };
 
   const [current, setCurrent] = useState<VillaSectionId>("aciklama");

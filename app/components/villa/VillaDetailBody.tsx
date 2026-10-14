@@ -43,7 +43,10 @@ import {
   VillaAvailabilityShortcut,
   VillaShowPhotosButton,
 } from "@/app/components/villa/VillaDetailActions";
-import { VILLA_DESCRIPTION_ANCHOR_ID } from "@/app/components/villa/villa-detail-events";
+import {
+  VILLA_DESCRIPTION_ANCHOR_ID,
+  villaSectionAnchorId,
+} from "@/app/components/villa/villa-detail-events";
 import VillaDetailTabs from "@/app/components/villa/VillaDetailTabs";
 import VillaMapModal from "@/app/components/villa/VillaMapModal";
 import VillaDistancesSection, {
@@ -407,13 +410,19 @@ export default function VillaDetailBody({
                   locale={locale}
                 />
 
-                {/* 🛡️ FAZ 33 — REVIEWS SECTION */}
-                <VillaReviewsSection
-                  villaId={villa.id}
-                  reviews={reviews}
-                  stats={reviewStats}
-                  locale={locale}
-                />
+                {/* 🛡️ FAZ 33 — REVIEWS SECTION (şeridin "Yorumlar" hedefi) */}
+                <div
+                  id={villaSectionAnchorId("yorumlar")}
+                  data-villa-section="yorumlar"
+                  className="scroll-mt-[180px]"
+                >
+                  <VillaReviewsSection
+                    villaId={villa.id}
+                    reviews={reviews}
+                    stats={reviewStats}
+                    locale={locale}
+                  />
+                </div>
               </div>
 
               {/* RIGHT (sidebar) — sticky DEĞİL, normal akış. */}

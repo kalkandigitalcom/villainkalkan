@@ -1,7 +1,7 @@
 /* ===============================================================
    🛡️ VILLA DETAIL — sayfa içi navigasyon köprüsü (yalnız görünüm)
    ===============================================================
-   Açıklama, Fiyatlar, Konum ve Özellikler bölümleri sayfada ARDIŞIK
+   Açıklama, Fiyatlar, Mesafeler, Özellikler ve Yorumlar bölümleri ARDIŞIK
    ve hep açık durur. Üst navigasyon şeridi (VillaSectionNav)
    `scrollToVillaSection` ile ilgili bölüme yumuşakça kaydırır; hedef,
    sabit Header + yapışkan şeridin ALTINDA kalır. Her kaydırma isteği
@@ -18,6 +18,7 @@ export const VILLA_SECTION_IDS = [
   "fiyatlar",
   "konum",
   "ozellikler",
+  "yorumlar",
 ] as const;
 export type VillaSectionId = (typeof VILLA_SECTION_IDS)[number];
 

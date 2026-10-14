@@ -384,8 +384,11 @@ export type Dictionary = {
   /* 🛡️ Villa detay üst navigasyon şeridi (VillaSectionNav) etiketleri. */
   villaTabs: {
     prices: string;
-    location: string;
+    /** Şerit öğesi — Mesafeler bölümü (eski "Konum & Mesafeler"). */
+    distances: string;
     features: string;
+    /** Şerit öğesi — mevcut Misafir Yorumları bölümü. */
+    reviews: string;
     /** Üst navigasyon şeridi (VillaSectionNav) — açıklama bağlantısı. */
     description: string;
     /** Üst navigasyon şeridi aria etiketi. */
