@@ -24,7 +24,7 @@
 =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 /* 🛡️ PHASE 10B — GERÇEK (mock'lanmamış) dictionary. Villa detay artık
    ComingSoon yerine gerçek locale metni render ediyor; assertion'lar
    TR hardcoded string yerine BU'ndan okunan gerçek EN/DE değerleriyle
@@ -304,7 +304,13 @@ function openVillaTab(
   tab: "prices" | "availability" | "location" | "features"
 ) {
   const dict = getDictionary(locale);
-  fireEvent.click(screen.getByRole("button", { name: dict.villaTabs[tab] }));
+  /* Üst navigasyon şeridi aynı etiketleri taşır → sekme bandı içinde ara. */
+  const tabsNav = screen.getByRole("navigation", {
+    name: dict.villaTabs.navAriaLabel,
+  });
+  fireEvent.click(
+    within(tabsNav).getByRole("button", { name: dict.villaTabs[tab] })
+  );
 }
 
 /* 🛡️ ComingSoon placeholder'ı KALAN public locale route'u YOK —
@@ -611,7 +617,9 @@ describe.each(VILLA_DETAIL_ROUTES)(
       render(element);
 
       expect(
-        screen.getByText(`Resolved ${locale} description.`)
+        within(document.getElementById("villa-aciklama")!).getByText(
+          `Resolved ${locale} description.`
+        )
       ).toBeInTheDocument();
       expect(getVillaTranslatedDescriptionMock).toHaveBeenCalledWith(
         "test-villa-id",
@@ -631,7 +639,11 @@ describe.each(VILLA_DETAIL_ROUTES)(
       });
       const { container } = render(element);
 
-      expect(screen.getByText("Safe text")).toBeInTheDocument();
+      expect(
+        within(document.getElementById("villa-aciklama")!).getByText(
+          "Safe text"
+        )
+      ).toBeInTheDocument();
       /* 🛡️ PHASE 10B, Section 10 — villa detay artık MEŞRU bir
          `<script type="application/ld+json">` (JsonLd/StructuredData)
          render ediyor; "sayfada HİÇ <script> yok" assertion'ı artık

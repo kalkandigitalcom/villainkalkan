@@ -15,6 +15,7 @@ import type { VillaYouTubeVideo } from "@/lib/youtube.helper";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import type { Locale } from "@/lib/i18n/config";
+import { VILLA_GALLERY_OPEN_EVENT } from "@/app/components/villa/villa-detail-events";
 
 type WatermarkProps = {
   logo?: string | null;
@@ -62,6 +63,7 @@ export default function Gallery({
   videos,
   actions,
   locale,
+  layout = "grid",
 }: {
   images: string[];
   watermark?: WatermarkProps;
@@ -79,6 +81,10 @@ export default function Gallery({
   /* 🛡️ PHASE 10B — opsiyonel, default "tr" (getDictionary(undefined)).
      TR call-site'ları bu prop'u hiç geçmeden BYTE-IDENTICAL çalışır. */
   locale?: Locale;
+  /* 🛡️ Villa detay üst bandı — "single": yalnız büyük ana fotoğraf
+     (yatay, hafif yuvarlak köşe). Varsayılan "grid" = önceki kolaj.
+     Lightbox / swipe / klavye / video mantığı iki modda da AYNI. */
+  layout?: "grid" | "single";
 }) {
   const dict = getDictionary(locale);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -107,6 +113,16 @@ export default function Gallery({
       document.body.style.overflow = "auto";
     }
   }, [activeIndex]);
+
+  /* 🛡️ EK — dış tetikleyici ("Fotoğrafları Göster" butonu) mevcut
+     lightbox'ı ilk fotoğraftan açar. Mevcut tıklamalar AYNEN. */
+  useEffect(() => {
+    function onOpen() {
+      if (images && images.length > 0) setActiveIndex(0);
+    }
+    window.addEventListener(VILLA_GALLERY_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(VILLA_GALLERY_OPEN_EVENT, onOpen);
+  }, [images]);
 
   // 🔥 keyboard controls
   useEffect(() => {
@@ -241,6 +257,25 @@ export default function Gallery({
           </div>
         )}
 
+        {layout === "single" && (
+          <div
+            data-gallery-single
+            className="group relative overflow-hidden rounded-xl md:rounded-2xl cursor-pointer aspect-[16/10] bg-white/5"
+            onClick={() => setActiveIndex(0)}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={images[0]}
+              alt={buildImageAlt(villaTitle, 0, images.length, dict)}
+              fetchPriority="high"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+            <WatermarkOverlay {...watermark} />
+          </div>
+        )}
+
+        {layout === "grid" && (
+          <>
         {/* 🛡️ MOBILE (<768px) — büyük hero + iki secondary; küçültülmüş
            desktop grid DEĞİL, kendine özgü kompozisyon. Tüm tıklamalar
            mevcut lightbox'ı tetikler (setActiveIndex); watermark her
@@ -357,7 +392,10 @@ export default function Gallery({
            AYNEN (yalnız yeni, görünür bir tetikleyici). Gerçek fotoğraf
            sayısı kullanılır — FAKE sayı YOK. Yalnızca collage'da
            görünenden fazlası varsa (>3) render edilir. */}
-        {images.length > 3 && (
+          </>
+        )}
+
+        {layout === "grid" && images.length > 3 && (
           <button
             type="button"
             onClick={() => setActiveIndex(0)}

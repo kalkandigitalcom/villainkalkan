@@ -282,6 +282,21 @@ export const tr: Dictionary = {
     availability: "Müsaitlik",
     location: "Konum & Mesafeler",
     features: "Özellikler",
+    description: "Açıklama",
+    sectionNavAriaLabel: "Villa bölümleri",
+  },
+  villaShare: {
+    label: "Paylaş",
+    whatsapp: "WhatsApp ile paylaş",
+    facebook: "Facebook'ta paylaş",
+    x: "X'te paylaş",
+    email: "E-posta ile paylaş",
+    copyLink: "Bağlantıyı kopyala",
+    copied: "Bağlantı kopyalandı",
+  },
+  villaHero: {
+    showPhotos: "Fotoğrafları Göster ({count})",
+    availabilityCalendar: "Müsaitlik Takvimi",
   },
   /* 🛡️ PHASE 10G — VillaMapModal.tsx'in BUGÜNKÜ hardcoded metinleri. */
   map: {

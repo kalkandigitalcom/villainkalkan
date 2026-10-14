@@ -12,7 +12,7 @@
 =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 const VILLA = {
   id: "villa-1",
@@ -156,8 +156,13 @@ describe("/v/[token] — normal villa detayıyla aynı gövde", () => {
   it("favori, sekmeler, yorumlar, benzer villalar, mobil CTA, giriş/çıkış render edilir", async () => {
     const { container } = await renderPrivate();
     expect(screen.getAllByLabelText(dict.favorites.add).length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: dict.villaTabs.prices })).toBeTruthy();
-    expect(screen.getByRole("button", { name: dict.villaTabs.features })).toBeTruthy();
+    const tabsNav = screen.getByRole("navigation", { name: dict.villaTabs.navAriaLabel });
+    expect(within(tabsNav).getByRole("button", { name: dict.villaTabs.prices })).toBeTruthy();
+    expect(within(tabsNav).getByRole("button", { name: dict.villaTabs.features })).toBeTruthy();
+    /* Üst navigasyon şeridi de render edilir. */
+    expect(
+      screen.getByRole("navigation", { name: dict.villaTabs.sectionNavAriaLabel })
+    ).toBeTruthy();
     expect(screen.getByText(dict.reviews.title)).toBeTruthy();
     expect(screen.getByTestId("similar-villas-section")).toBeTruthy();
     expect(screen.getByLabelText(dict.booking.mobileCtaAriaLabel)).toBeTruthy();
@@ -243,46 +248,45 @@ describe("DOM paritesi — /v/[token] == /kiralik-villa/[slug] (JSON-LD hariç)"
 
 describe("Turizm belge numarası görünürlüğü", () => {
   const CERT = "07-1234";
-  const certText = () => screen.queryByText(dict.villa.tourismCertificate);
   const infoGrid = (c: HTMLElement) =>
     c.querySelector("div.flex-1.min-w-0.grid") as HTMLElement | null;
 
-  it("normal detay + belge VAR → belge görünür, grid 4 kolon (eskisiyle aynı)", async () => {
+  /* Üst tanıtım bandı: belge no YALNIZ varsa "Belge No: …" satırı. */
+  const docLine = (c: HTMLElement) =>
+    c.querySelector("[data-villa-document-number]") as HTMLElement | null;
+
+  it("normal detay + belge VAR → 'Belge No' satırı görünür", async () => {
     state.villa = { ...VILLA, tourism_document_number: CERT } as typeof VILLA;
     const el = await NormalVillaDetail({
       params: Promise.resolve({ slug: VILLA.slug }),
       searchParams: Promise.resolve({}),
     });
     const { container } = render(el as React.ReactElement);
-    expect(certText()).not.toBeNull();
-    expect(screen.getByText(new RegExp(CERT))).toBeTruthy();
-    expect(infoGrid(container)!.className).toContain("grid-cols-2 md:grid-cols-4");
+    const line = docLine(container);
+    expect(line).not.toBeNull();
+    expect(line!.textContent).toContain(`Belge No: ${CERT}`);
   });
 
-  it("normal detay + belge YOK → belge yok, boş kolon yok (3 kutu → 3 kolon)", async () => {
-    const el = await NormalVillaDetail({
-      params: Promise.resolve({ slug: VILLA.slug }),
-      searchParams: Promise.resolve({}),
-    });
-    const { container } = render(el as React.ReactElement);
-    expect(certText()).toBeNull();
-    const grid = infoGrid(container)!;
-    expect(grid.children).toHaveLength(3);
-    expect(grid.className).toContain("grid-cols-3 md:grid-cols-3");
-    expect(grid.className).not.toContain("md:grid-cols-4");
-  });
+  it.each([null, "   "])(
+    "normal detay + belge=%s → satır hiç render edilmez",
+    async (doc) => {
+      state.villa = { ...VILLA, tourism_document_number: doc } as typeof VILLA;
+      const el = await NormalVillaDetail({
+        params: Promise.resolve({ slug: VILLA.slug }),
+        searchParams: Promise.resolve({}),
+      });
+      const { container } = render(el as React.ReactElement);
+      expect(docLine(container)).toBeNull();
+    }
+  );
 
   it.each([CERT, null, "   "])(
-    "/v/[token] + belge=%s → belge HİÇ gösterilmez, boş kolon yok",
+    "/v/[token] + belge=%s → belge HİÇ gösterilmez",
     async (doc) => {
       state.villa = { ...VILLA, tourism_document_number: doc } as typeof VILLA;
       const { container } = await renderPrivate();
-      expect(certText()).toBeNull();
+      expect(docLine(container)).toBeNull();
       expect(container.innerHTML).not.toContain(CERT);
-      expect(container.innerHTML).not.toContain("turizm-bakanligi.svg");
-      const grid = infoGrid(container)!;
-      expect(grid.children).toHaveLength(3);
-      expect(grid.className).toContain("grid-cols-3 md:grid-cols-3");
     }
   );
 

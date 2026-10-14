@@ -24,7 +24,7 @@
    =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 
 /* ---------------------------------------------------------------
    Ortak: en alttaki çeviri DB primitive'i (tek mock noktası)
@@ -271,8 +271,20 @@ async function renderPrivateVilla(locale?: "tr" | "en") {
 /* 🛡️ VillaDetailBody parity — özellikler ve mesafeler normal detaydaki
    gibi SEKME içinde (yalnız aktif sekme DOM'da). */
 function openTab(locale: "tr" | "en" | undefined, tab: "features" | "location") {
-  const label = getDictionary(locale ?? "tr").villaTabs[tab];
-  fireEvent.click(screen.getByRole("button", { name: label }));
+  const d = getDictionary(locale ?? "tr");
+  /* Üst navigasyon şeridi aynı etiketleri taşır → sekme bandı içinde ara. */
+  const tabsNav = screen.getByRole("navigation", {
+    name: d.villaTabs.navAriaLabel,
+  });
+  fireEvent.click(
+    within(tabsNav).getByRole("button", { name: d.villaTabs[tab] })
+  );
+}
+
+/* Açıklama metni üst bantta kısa özet olarak da göründüğünden, tam
+   açıklama bölümünün içinde aranır. */
+function descriptionSection() {
+  return within(document.getElementById("villa-aciklama") as HTMLElement);
 }
 
 async function renderShortGaps(locale?: "tr" | "en") {
@@ -298,7 +310,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
     openTab("tr", "location");
     expect(screen.getByText("Plaj")).toBeInTheDocument();
     expect(
-      screen.getByText(/canonical TR aciklama/)
+      descriptionSection().getByText(/canonical TR aciklama/)
     ).toBeInTheDocument();
   });
 
@@ -322,7 +334,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
     await renderPrivateVilla("en");
     expect(screen.getByText("No pets allowed")).toBeInTheDocument();
     expect(screen.getByText("Towels and linen")).toBeInTheDocument();
-    expect(screen.getByText(/EN description/)).toBeInTheDocument();
+    expect(descriptionSection().getByText(/EN description/)).toBeInTheDocument();
     openTab("en", "features");
     expect(screen.getByText("Private Pool")).toBeInTheDocument();
     expect(screen.queryByText("Ozel Havuz")).not.toBeInTheDocument();
@@ -351,7 +363,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
       openTab(locale, "features");
       expect(screen.getByText("Ozel Havuz")).toBeInTheDocument();
       expect(screen.getByText("Havlu ve nevresim")).toBeInTheDocument();
-      expect(screen.getByText(/canonical TR aciklama/)).toBeInTheDocument();
+      expect(descriptionSection().getByText(/canonical TR aciklama/)).toBeInTheDocument();
     }
   );
 

@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 /* 🛡️ PHASE 10G — locale-aware sekme etiketleri. `locale` OPSİYONEL,
    default "tr" → TR çıktısı BİREBİR AYNI (dictionary TR değerleri bu
    dosyanın eski hardcoded metinleriyle byte-identical). */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
+import {
+  VILLA_TABS_ANCHOR_ID,
+  VILLA_TAB_CHANGED_EVENT,
+  VILLA_TAB_OPEN_EVENT,
+  isVillaTabId,
+} from "@/app/components/villa/villa-detail-events";
 
 /* ===============================================================
    🛡️ VillaDetailTabs — tab-content switching (scroll/anchor DEĞİL)
@@ -49,8 +55,31 @@ export default function VillaDetailTabs({
   const activeContent =
     tabs.find((t) => t.id === active)?.content ?? null;
 
+  /* 🛡️ EK — üst navigasyon şeridi / kart kısayolu aynı `setActive`'i
+     tetikleyebilsin diye window olayı dinlenir. Mevcut tab tıklaması
+     DEĞİŞMEDİ; URL/hash kullanılmaz. */
+  useEffect(() => {
+    function onOpen(e: Event) {
+      const id = (e as CustomEvent<{ id?: unknown }>).detail?.id;
+      if (isVillaTabId(id)) setActive(id);
+    }
+    window.addEventListener(VILLA_TAB_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(VILLA_TAB_OPEN_EVENT, onOpen);
+  }, []);
+
+  /* 🛡️ EK — aktif sekme değişince şeridin vurgusu senkron kalsın
+     (ilk render'da yayın yapılmaz; şerit "Açıklama" ile başlar). */
+  const lastEmitted = useRef(active);
+  useEffect(() => {
+    if (lastEmitted.current === active) return;
+    lastEmitted.current = active;
+    window.dispatchEvent(
+      new CustomEvent(VILLA_TAB_CHANGED_EVENT, { detail: { id: active } })
+    );
+  }, [active]);
+
   return (
-    <div>
+    <div id={VILLA_TABS_ANCHOR_ID} className="scroll-mt-28 md:scroll-mt-32">
       {/* TAB BAND — modern segmented navigation rail: klasik altı-çizili
           tab DEĞİL. Solid beyaz yüzey + ince border; active öğenin
           arka planı mevcut soft/nötr zemininde kalır, yalnız

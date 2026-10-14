@@ -268,6 +268,21 @@ export const en: Dictionary = {
     availability: "Availability",
     location: "Location & Distances",
     features: "Amenities",
+    description: "Description",
+    sectionNavAriaLabel: "Villa sections",
+  },
+  villaShare: {
+    label: "Share",
+    whatsapp: "Share on WhatsApp",
+    facebook: "Share on Facebook",
+    x: "Share on X",
+    email: "Share by email",
+    copyLink: "Copy link",
+    copied: "Link copied",
+  },
+  villaHero: {
+    showPhotos: "Show Photos ({count})",
+    availabilityCalendar: "Availability Calendar",
   },
   /* 🛡️ PHASE 10G — VillaMapModal.tsx */
   map: {

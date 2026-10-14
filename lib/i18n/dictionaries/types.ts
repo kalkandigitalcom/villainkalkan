@@ -388,6 +388,26 @@ export type Dictionary = {
     availability: string;
     location: string;
     features: string;
+    /** Üst navigasyon şeridi (VillaSectionNav) — açıklama bağlantısı. */
+    description: string;
+    /** Üst navigasyon şeridi aria etiketi. */
+    sectionNavAriaLabel: string;
+  };
+  /* 🛡️ Villa detay üst bölüm — paylaşım şeridi (VillaShareLinks). */
+  villaShare: {
+    label: string;
+    whatsapp: string;
+    facebook: string;
+    x: string;
+    email: string;
+    copyLink: string;
+    copied: string;
+  };
+  /* 🛡️ Villa detay üst bölüm — tanıtım bandı + kart kısayolu. */
+  villaHero: {
+    /** `{count}` = fotoğraf sayısı. */
+    showPhotos: string;
+    availabilityCalendar: string;
   };
   /* 🛡️ PHASE 10G — VillaMapModal.tsx. `embedLanguage` Google Maps embed
      URL'indeki `hl=` parametresidir (UI metni DEĞİL, dil kodu). */
