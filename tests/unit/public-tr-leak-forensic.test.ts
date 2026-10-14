@@ -358,7 +358,9 @@ const BADGE_SURFACES = [
   "app/components/short-gaps/ShortGapsPageBody.tsx",
   "app/components/shared-list/SharedListPageBody.tsx",
   "app/components/villa/VillaList.tsx",
-  "app/components/home/DiscountCollection.tsx",
+  /* DiscountCollection listeden çıkarıldı: indirim kartları villa
+     rozetini GÖSTERMEZ (önceki VillaCard discount branch'i de
+     göstermiyordu); rozet çevirisi sorgusu orada artık yok. */
   "app/components/villa/SimilarVillasSection.tsx",
 ];
 

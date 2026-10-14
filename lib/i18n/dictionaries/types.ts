@@ -502,6 +502,12 @@ export type Dictionary = {
     totalSavings: string;
     bookNow: string;
     bookNowAriaLabel: string;
+    /** İndirim kartı — villa detayına giden ikincil CTA. */
+    viewVilla: string;
+    /** İndirim kartı — ekran okuyucu için üstü çizili fiyat etiketi. */
+    originalPriceLabel: string;
+    /** İndirim kartı — ekran okuyucu için indirimli fiyat etiketi. */
+    discountedPriceLabel: string;
     /** template: {n} */
     reserveNights: string;
     flexibleTitle: string;
