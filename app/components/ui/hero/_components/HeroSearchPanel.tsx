@@ -28,11 +28,13 @@ import MobileKbSafeInput from "@/app/components/ui/datepicker/MobileKbSafeInput"
 
 import {
   Search,
-  Tag,
+  Home,
   MapPin,
-  Calendar,
+  CalendarDays,
   Users,
   ChevronDown,
+  ArrowRight,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import { buildHeroSearchParams } from "../_helpers/build-search-params";
@@ -245,18 +247,24 @@ export default function HeroSearchPanel({
 
   return (
     /* ═══════════════════════════════════════════════════════
-        🛡️ MARKA REFRESH — FLOATING SEARCH PANEL (premium glass)
+        🛡️ HERO ARAMA PANELİ — "CONCIERGE BAR" (tasarım yenilemesi)
         ═══════════════════════════════════════════════════════
-        Mevcut state + handlers AYNEN korundu. Visual:
-          - Koyu hero görseli üzerinde yüzen glass panel
-          - Turuncu/mavi çok-katmanlı glow shadow stack
-          - Daha geniş radius (28px)
-          - İnce top highlight (white inner ring)
-          - Turuncu→mavi gradient CTA + breathing glow
-          - Hafif, tek seferlik entrance animasyonu (local <style>,
-            globals.css'e dokunulmadı, reduced-motion'da kapanır)
+        YALNIZ GÖRSEL KOMPOZİSYON değişti. State, handler, effect, ref,
+        DatePicker prop'ları, `buildHeroSearchParams` ve `router.push`
+        hedefi BİREBİR korunur.
+
+        Kompozisyon:
+          - Masaüstü: tek satırlık, keskin köşeli (6px) fildişi bar;
+            alanlar ince dikey çizgilerle ayrılır, sağda bara gömülü
+            petrol yeşili "Villa bul" bloğu.
+          - Mobil: bilinçli 2+2+1 ızgara → [Tarih | Kişi] · [Bölge | Tip]
+            · tam genişlik CTA. DOM sırası = görsel sıra = tab sırası.
+          - Alan hiyerarşisi: altın ince ikon + küçük harf aralıklı
+            etiket (eyebrow) → Manrope değer satırı (petrol yeşili).
+          - Gelişmiş Arama: bar altında sade metin bağlantısı.
+          - Tek seferlik giriş animasyonu (reduced-motion'da kapalı).
         ═══════════════════════════════════════════════════════ */
-    <div className="relative mt-12 md:mt-16 hero-panel-in">
+    <div className="relative mt-10 md:mt-14 w-full max-w-[1120px] mx-auto hero-panel-in">
       <style>{`
         @keyframes heroPanelIn {
           from { opacity: 0; transform: translateY(14px); }
@@ -267,362 +275,335 @@ export default function HeroSearchPanel({
           .hero-panel-in { animation: none; }
         }
       `}</style>
-      {/* 🛡️ Floating villa-adı arama (VillaSearchBox) KALDIRILDI — villa-adı
-          araması artık Desktop'ta Header, mobilde Bottom Navigation →
-          SearchBottomSheet üzerinden. Aşağıdaki FİLTRE paneli (Tip / Bölge /
-          Tarih / Kişi / Villa bul) BİREBİR korunur; hiçbir filtre davranışı
-          değişmedi. */}
+
       <div
+        data-hero-search-panel
         className="
           relative isolate z-30
-          bg-gradient-to-b from-white/30 to-white/[0.14] backdrop-blur-xl
-          border border-white/30
-          rounded-[16px]
-          shadow-[0_20px_50px_-24px_rgba(36,76,69,0.35),0_14px_38px_-26px_rgba(201,165,90,0.3)]
-          px-2 md:px-2.5 pb-2 md:pb-2.5 pt-2 md:pt-2.5
-          gap-1.5 md:gap-2
-          flex flex-col md:flex-row items-stretch
+          grid grid-cols-[1.45fr_1fr] md:flex md:items-stretch
+          rounded-[10px] md:rounded-[6px]
+          bg-[#FBF9F4]/[0.97] backdrop-blur-md
+          shadow-[0_34px_70px_-34px_rgba(8,22,19,0.75),0_2px_0_0_rgba(255,255,255,0.6)_inset]
+          p-1.5
           text-left
         "
       >
-      {/* Inner highlight — premium top edge */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute inset-0 rounded-[16px]
-          ring-1 ring-inset ring-white/50
-        "
-      />
-      {/* DATE */}
-      <div className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-white/40 border border-white/50 hover:bg-white/75 hover:border-[#C9A55A]/35 transition flex items-center gap-3">
+        {/* İnce altın imza çizgisi — panelin üst kenarında, sol başta. */}
         <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-px left-5 md:left-6 h-[2px] w-10 md:w-14 bg-[#C9A55A]"
+        />
+
+        {/* ─── TARİH (giriş – çıkış) ─── */}
+        <label
           className="
-            w-9 h-9 rounded-xl shrink-0
-            bg-[#C9A55A]/12
-            flex items-center justify-center
-            text-[#C9A55A]
+            group relative min-w-0 md:flex-[1.45]
+            flex flex-col justify-center
+            px-3.5 md:px-6 py-3 md:py-[18px]
+            md:rounded-[3px]
+            border-b border-r md:border-b-0 !border-[#244C45]/10
+            cursor-pointer
+            hover:bg-white transition-colors duration-200 motion-reduce:transition-none
+            focus-within:bg-white
           "
-          aria-hidden
         >
-          <Calendar size={16} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="text-[10.5px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-500)]">
+          <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
+            <CalendarDays size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
             {dict.dateLabel}
-          </div>
-          <DatePicker
-            selected={startDate}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onChange={(dates: any) => {
-              const [start, end] = dates;
-              setStartDate(start);
-              setEndDate(end);
-            }}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            locale={locale}
-            dateFormat="dd.MM.yyyy"
-            minDate={new Date()}
-            placeholderText={dict.datePlaceholder}
-            className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none w-full text-[14px] font-medium !text-[var(--color-stone-900)] placeholder:!text-[var(--color-stone-900)] placeholder:!opacity-100 cursor-pointer"
-            /* 🛡️ PHASE 11 — sentinel string karşılaştırması yerine
-               DOĞRUDAN state kontrolü: `buildHeroDateLabel` sentinel'i
-               TAM OLARAK `!startDate` iken döndürür → davranış birebir
-               aynı, ama locale'e bağımlı değil. */
-            value={startDate ? dateLabel : ""}
-            popperPlacement="bottom-start"
-            popperClassName="!z-[60]"
-            portalId="hero-datepicker-portal"
-            /* 🛡️ Mobil sanal klavye baskılama — customInput içinde
-               inputMode="none". Takvim popper'ı, value display,
-               selectsRange, onChange, dateFormat, locale, minDate,
-               placeholderText AYNEN korunur. Desktop davranışı
-               değişmez. Detay: MobileKbSafeInput.tsx başlığı. */
-            customInput={<MobileKbSafeInput />}
-          />
-        </div>
-      </div>
+          </span>
+          <span className="mt-1.5 block">
+            <DatePicker
+              selected={startDate}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={(dates: any) => {
+                const [start, end] = dates;
+                setStartDate(start);
+                setEndDate(end);
+              }}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              locale={locale}
+              dateFormat="dd.MM.yyyy"
+              minDate={new Date()}
+              placeholderText={dict.datePlaceholder}
+              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 w-full font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-[#244C45] placeholder:!text-[#244C45] placeholder:!opacity-100 cursor-pointer truncate"
+              /* 🛡️ PHASE 11 — sentinel string karşılaştırması yerine
+                 DOĞRUDAN state kontrolü: `buildHeroDateLabel` sentinel'i
+                 TAM OLARAK `!startDate` iken döndürür → davranış birebir
+                 aynı, ama locale'e bağımlı değil. */
+              value={startDate ? dateLabel : ""}
+              popperPlacement="bottom-start"
+              popperClassName="!z-[60]"
+              portalId="hero-datepicker-portal"
+              /* 🛡️ Mobil sanal klavye baskılama — customInput içinde
+                 inputMode="none". Takvim popper'ı, value display,
+                 selectsRange, onChange, dateFormat, locale, minDate,
+                 placeholderText AYNEN korunur. Desktop davranışı
+                 değişmez. Detay: MobileKbSafeInput.tsx başlığı. */
+              customInput={<MobileKbSafeInput />}
+            />
+          </span>
+        </label>
 
-
-      {/* GUESTS */}
-      <div className="px-4 py-3 rounded-xl bg-white/40 border border-white/50 hover:bg-white/75 hover:border-[#C9A55A]/35 transition flex items-center gap-3">
-        <span
+        {/* ─── KİŞİ ─── */}
+        <label
           className="
-            w-9 h-9 rounded-xl shrink-0
-            bg-[#C9A55A]/12
-            flex items-center justify-center
-            text-[#C9A55A]
+            group relative min-w-0 md:flex-[0.85]
+            flex flex-col justify-center
+            px-3.5 md:px-6 py-3 md:py-[18px]
+            md:rounded-[3px]
+            border-b md:border-b-0 md:border-r !border-[#244C45]/10
+            cursor-pointer
+            hover:bg-white transition-colors duration-200 motion-reduce:transition-none
+            focus-within:bg-white
           "
-          aria-hidden
         >
-          <Users size={16} />
-        </span>
-        <div className="min-w-0">
-          <div className="text-[10.5px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-500)]">
+          <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
+            <Users size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
             {dict.guestsLabel}
-          </div>
-          <select
-            value={guests}
-            onChange={(e) => setGuests(Number(e.target.value))}
-            className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none text-[14px] font-medium !text-[var(--color-stone-900)] cursor-pointer"
-            style={{ backgroundImage: "none", paddingRight: 0 }}
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((g) => (
-              <option key={g} value={g}>
-                {/* 🛡️ PHASE 11 P0 — TR'de "{n} kişi" ile BİREBİR aynı çıktı. */}
-                {formatDictionaryString(dict.guestsOption, { n: g })}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-
-      {/* CATEGORY */}
-      <div ref={catRef} className="relative flex-1 min-w-0">
-        <button
-          type="button"
-          onClick={() => {
-            setOpenCat(!openCat);
-            setOpenRegion(false);
-          }}
-          className="
-            w-full px-4 py-3 rounded-xl
-            bg-white/40 border border-white/50
-            hover:bg-white/75 hover:border-[#244C45]/35
-            transition flex items-center gap-3 text-left
-            focus:outline-none focus-visible:ring-2
-            focus-visible:ring-[#244C45]/30
-          "
-        >
-          <span
-            className="
-              w-9 h-9 rounded-xl shrink-0
-              bg-[#244C45]/10
-              flex items-center justify-center
-              text-[#244C45]
-            "
-            aria-hidden
-          >
-            <Tag size={16} />
           </span>
-          <div className="min-w-0 flex-1">
-            <div className="text-[10.5px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-500)]">
-              {dict.typeLabel}
-            </div>
-            <div className="text-[14px] font-medium text-[var(--color-stone-900)] truncate">
-              {categories.length
-                ? formatDictionaryString(dict.typesSelected, {
-                    n: categories.length,
-                  })
-                : dict.villaType}
-            </div>
-          </div>
-          <ChevronDown
-            size={14}
-            className={`text-[var(--color-stone-400)] transition ${
-              openCat ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-
-        {openCat && (
-          <div className="absolute top-full mt-2 left-0 w-full md:w-72 min-w-[16rem] max-w-[calc(100vw-2.5rem)] bg-white border border-[var(--color-stone-100)] rounded-2xl shadow-[0_24px_48px_-16px_rgb(27_26_23/0.18)] p-2 z-[60] max-h-72 overflow-auto">
-            {categoryOptions.length === 0 && (
-              <div className="text-sm text-[var(--color-stone-400)] p-3">
-                {dict.optionsLoading}
-              </div>
-            )}
-            {categoryOptions.map((item) => {
-              const checked = categories.includes(item.id);
-              return (
-                <label
-                  key={item.id}
-                  className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-xl cursor-pointer transition ${
-                    checked
-                      ? "bg-[#244C45]/10 text-[var(--color-stone-900)]"
-                      : "hover:bg-[#244C45]/5 text-[var(--color-stone-700)]"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() =>
-                      toggleItem(item.id, categories, setCategories)
-                    }
-                    className="!w-4 !h-4 !rounded"
-                    style={{ accentColor: "#244C45" }}
-                  />
-                  {item.name}
-                </label>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-
-      {/* REGION */}
-      <div ref={regRef} className="relative flex-1 min-w-0">
-        <button
-          type="button"
-          onClick={() => {
-            setOpenRegion(!openRegion);
-            setOpenCat(false);
-          }}
-          className="
-            w-full px-4 py-3 rounded-xl
-            bg-white/40 border border-white/50
-            hover:bg-white/75 hover:border-[#244C45]/35
-            transition flex items-center gap-3 text-left
-            focus:outline-none focus-visible:ring-2
-            focus-visible:ring-[#244C45]/30
-          "
-        >
-          <span
-            className="
-              w-9 h-9 rounded-xl shrink-0
-              bg-[#244C45]/10
-              flex items-center justify-center
-              text-[#244C45]
-            "
-            aria-hidden
-          >
-            <MapPin size={16} />
+          <span className="mt-1.5 flex items-center gap-1.5">
+            <select
+              value={guests}
+              onChange={(e) => setGuests(Number(e.target.value))}
+              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 appearance-none min-w-0 flex-1 font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-[#244C45] cursor-pointer"
+              style={{ backgroundImage: "none", paddingRight: 0 }}
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((g) => (
+                <option key={g} value={g}>
+                  {/* 🛡️ PHASE 11 P0 — TR'de "{n} kişi" ile BİREBİR aynı çıktı. */}
+                  {formatDictionaryString(dict.guestsOption, { n: g })}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={14} strokeWidth={1.75} className="shrink-0 text-[#244C45]/45 pointer-events-none" aria-hidden />
           </span>
-          <div className="min-w-0 flex-1">
-            <div className="text-[10.5px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-500)]">
+        </label>
+
+        {/* ─── BÖLGE ─── */}
+        <div ref={regRef} className="relative min-w-0 md:flex-1 border-r !border-[#244C45]/10">
+          <button
+            type="button"
+            aria-expanded={openRegion}
+            onClick={() => {
+              setOpenRegion(!openRegion);
+              setOpenCat(false);
+            }}
+            className="
+              w-full h-full
+              flex flex-col justify-center text-left
+              px-3.5 md:px-6 py-3 md:py-[18px]
+              md:rounded-[3px]
+              hover:bg-white transition-colors duration-200 motion-reduce:transition-none
+              focus:outline-none focus-visible:bg-white
+              focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#244C45]/35
+            "
+          >
+            <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
+              <MapPin size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
               {dict.regionLabel}
+            </span>
+            <span className="mt-1.5 flex items-center gap-1.5 w-full">
+              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-[#244C45]">
+                {regions.length
+                  ? formatDictionaryString(dict.regionsSelected, {
+                      n: regions.length,
+                    })
+                  : dict.allRegions}
+              </span>
+              <ChevronDown
+                size={14}
+                strokeWidth={1.75}
+                aria-hidden
+                className={`shrink-0 text-[#244C45]/45 transition-transform duration-200 motion-reduce:transition-none ${
+                  openRegion ? "rotate-180" : ""
+                }`}
+              />
+            </span>
+          </button>
+
+          {openRegion && (
+            <div className="absolute top-full mt-2.5 left-0 w-[calc(100vw-3.25rem)] md:w-72 bg-white border border-[var(--color-stone-100)] rounded-[8px] shadow-[0_28px_56px_-24px_rgba(8,22,19,0.45)] p-1.5 z-[60] max-h-72 overflow-auto">
+              {regionOptions.length === 0 && (
+                <div className="text-sm text-[var(--color-stone-400)] p-3">
+                  {dict.optionsLoading}
+                </div>
+              )}
+              {regionOptions.map((item) => {
+                const checked = regions.includes(item.id);
+                return (
+                  <label
+                    key={item.id}
+                    className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-[6px] cursor-pointer transition ${
+                      checked
+                        ? "bg-[#244C45]/[0.08] text-[#244C45] font-medium"
+                        : "hover:bg-[#244C45]/[0.04] text-[var(--color-stone-700)]"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        toggleItem(item.id, regions, setRegions)
+                      }
+                      className="!w-4 !h-4 !rounded"
+                      style={{ accentColor: "#244C45" }}
+                    />
+                    {item.name}
+                  </label>
+                );
+              })}
             </div>
-            <div className="text-[14px] font-medium text-[var(--color-stone-900)] truncate">
-              {regions.length
-                ? formatDictionaryString(dict.regionsSelected, {
-                    n: regions.length,
-                  })
-                : dict.allRegions}
+          )}
+        </div>
+
+        {/* ─── VİLLA TİPİ ─── */}
+        <div ref={catRef} className="relative min-w-0 md:flex-1">
+          <button
+            type="button"
+            aria-expanded={openCat}
+            onClick={() => {
+              setOpenCat(!openCat);
+              setOpenRegion(false);
+            }}
+            className="
+              w-full h-full
+              flex flex-col justify-center text-left
+              px-3.5 md:px-6 py-3 md:py-[18px]
+              md:rounded-[3px]
+              hover:bg-white transition-colors duration-200 motion-reduce:transition-none
+              focus:outline-none focus-visible:bg-white
+              focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#244C45]/35
+            "
+          >
+            <span className="flex items-center gap-1.5 text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
+              <Home size={13} strokeWidth={1.75} className="shrink-0 text-[#C9A55A]" aria-hidden />
+              {dict.typeLabel}
+            </span>
+            <span className="mt-1.5 flex items-center gap-1.5 w-full">
+              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-[#244C45]">
+                {categories.length
+                  ? formatDictionaryString(dict.typesSelected, {
+                      n: categories.length,
+                    })
+                  : dict.villaType}
+              </span>
+              <ChevronDown
+                size={14}
+                strokeWidth={1.75}
+                aria-hidden
+                className={`shrink-0 text-[#244C45]/45 transition-transform duration-200 motion-reduce:transition-none ${
+                  openCat ? "rotate-180" : ""
+                }`}
+              />
+            </span>
+          </button>
+
+          {openCat && (
+            <div className="absolute top-full mt-2.5 right-0 md:right-auto md:left-0 w-[calc(100vw-3.25rem)] md:w-72 bg-white border border-[var(--color-stone-100)] rounded-[8px] shadow-[0_28px_56px_-24px_rgba(8,22,19,0.45)] p-1.5 z-[60] max-h-72 overflow-auto">
+              {categoryOptions.length === 0 && (
+                <div className="text-sm text-[var(--color-stone-400)] p-3">
+                  {dict.optionsLoading}
+                </div>
+              )}
+              {categoryOptions.map((item) => {
+                const checked = categories.includes(item.id);
+                return (
+                  <label
+                    key={item.id}
+                    className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-[6px] cursor-pointer transition ${
+                      checked
+                        ? "bg-[#244C45]/[0.08] text-[#244C45] font-medium"
+                        : "hover:bg-[#244C45]/[0.04] text-[var(--color-stone-700)]"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        toggleItem(item.id, categories, setCategories)
+                      }
+                      className="!w-4 !h-4 !rounded"
+                      style={{ accentColor: "#244C45" }}
+                    />
+                    {item.name}
+                  </label>
+                );
+              })}
             </div>
-          </div>
-          <ChevronDown
-            size={14}
-            className={`text-[var(--color-stone-400)] transition ${
-              openRegion ? "rotate-180" : ""
-            }`}
+          )}
+        </div>
+
+        {/* ─── ANA AKSİYON — "Villa bul" (handleSearch → /arama | /en/arama).
+            Masaüstünde bara gömülü petrol yeşili blok; mobilde tam
+            genişlik, rahat dokunma alanlı (52px) buton. ─── */}
+        <button
+          type="button"
+          onClick={handleSearch}
+          className="
+            group col-span-2 md:col-span-1
+            inline-flex items-center justify-center gap-2.5
+            mt-1.5 md:mt-0 md:ml-1.5
+            h-[52px] md:h-auto md:min-w-[176px] px-7 md:px-8
+            !rounded-[6px] md:!rounded-[3px]
+            bg-[#244C45] hover:bg-[#1c3c36]
+            text-white font-display text-[15px] md:text-[15.5px] font-semibold tracking-[0.01em]
+            shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]
+            transition-colors duration-200 motion-reduce:transition-none
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+            focus-visible:ring-[#C9A55A] focus-visible:ring-offset-[#FBF9F4]
+          "
+        >
+          <Search size={16} strokeWidth={2} className="shrink-0 text-[#C9A55A]" aria-hidden />
+          <span>{dict.submit}</span>
+          <ArrowRight
+            size={15}
+            strokeWidth={2}
+            aria-hidden
+            className="shrink-0 -ml-0.5 opacity-70 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
           />
         </button>
-
-        {openRegion && (
-          <div className="absolute top-full mt-2 left-0 md:left-auto md:right-0 w-full md:w-72 min-w-[16rem] max-w-[calc(100vw-2.5rem)] bg-white border border-[var(--color-stone-100)] rounded-2xl shadow-[0_24px_48px_-16px_rgb(27_26_23/0.18)] p-2 z-[60] max-h-72 overflow-auto">
-            {regionOptions.length === 0 && (
-              <div className="text-sm text-[var(--color-stone-400)] p-3">
-                {dict.optionsLoading}
-              </div>
-            )}
-            {regionOptions.map((item) => {
-              const checked = regions.includes(item.id);
-              return (
-                <label
-                  key={item.id}
-                  className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-xl cursor-pointer transition ${
-                    checked
-                      ? "bg-[#244C45]/10 text-[var(--color-stone-900)]"
-                      : "hover:bg-[#244C45]/5 text-[var(--color-stone-700)]"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() =>
-                      toggleItem(item.id, regions, setRegions)
-                    }
-                    className="!w-4 !h-4 !rounded"
-                    style={{ accentColor: "#244C45" }}
-                  />
-                  {item.name}
-                </label>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* SEARCH CTA — filtre submit (handleSearch → /arama). Turuncu→mavi
-         gradient + hafif breathing glow → premium concierge button.
-         Floating villa-adı input'tan BAĞIMSIZ; filtre akışını tetikler. */}
-      <button
-        onClick={handleSearch}
-        className="
-          group relative inline-flex items-center justify-center gap-2
-          !rounded-xl !px-7 md:!px-8 !py-4
-          mt-1.5 md:mt-0 md:ml-1.5
-          text-white font-medium text-[14px] tracking-[0.02em]
-          bg-gradient-to-r from-[#C9A55A] to-[#244C45]
-          shadow-[0_20px_44px_-12px_rgba(201,165,90,0.5),0_10px_26px_-8px_rgba(36,76,69,0.45),inset_0_1px_0_rgba(255,255,255,0.28)]
-          hover:shadow-[0_26px_54px_-12px_rgba(201,165,90,0.6),0_12px_30px_-8px_rgba(36,76,69,0.55),inset_0_1px_0_rgba(255,255,255,0.34)]
-          hover:-translate-y-[1px]
-          transition-[transform,box-shadow] duration-300
-          motion-reduce:transition-none motion-reduce:hover:translate-y-0
-          focus:outline-none focus-visible:ring-2
-          focus-visible:ring-[#244C45]/50
-          focus-visible:ring-offset-2 focus-visible:ring-offset-white
-        "
-      >
-        <span
-          aria-hidden
-          className="
-            pointer-events-none absolute -inset-1 !rounded-xl
-            bg-gradient-to-r from-[#C9A55A] to-[#244C45]
-            opacity-30 blur-md
-            animate-pulse [animation-duration:2.8s]
-            group-hover:opacity-55
-            transition-opacity duration-300
-            motion-reduce:animate-none
-          "
-        />
-        <Search
-          size={16}
-          className="
-            relative z-10
-            transition-transform duration-300
-            motion-reduce:transition-none
-            group-hover:scale-110
-          "
-          aria-hidden
-        />
-        <span className="relative z-10">{dict.submit}</span>
-      </button>
-
       </div>
 
       {/* ═══════════════════════════════════════════════════════
-          🛡️ GELİŞMİŞ ARAMA — panel altında sade/premium expandable.
+          🛡️ GELİŞMİŞ ARAMA — bar altında sade metin bağlantısı.
           Floating (absolute) açılır → document flow'a girmez, hero
-          yüksekliği DEĞİŞMEZ; butonun hemen altında overlay olarak
-          görünür (z-40; Tip/Bölge dropdown'ları ve datepicker portal'ı
-          z-[60] ile her zaman üstte kalır). Filtre paneli tasarımına dokunmaz.
+          yüksekliği DEĞİŞMEZ (z-40; Tip/Bölge dropdown'ları ve
+          datepicker portal'ı z-[60] ile her zaman üstte kalır).
           Checkbox yalnız `flexible` state'ini set eder; Villa Bul'a
           basınca `flexible=3` param'ı eklenir (ana tarih değişmez).
           ═══════════════════════════════════════════════════════ */}
-      <div ref={advRef} className="relative mt-3 flex flex-col items-center">
+      <div ref={advRef} className="relative mt-3.5 flex flex-col items-center md:items-end">
         <button
           type="button"
           onClick={() => setAdvOpen((o) => !o)}
           aria-expanded={advOpen}
-          className="inline-flex items-center gap-1.5 rounded-full bg-white/75 backdrop-blur-md px-4 py-2 text-[12.5px] font-medium text-[var(--color-stone-700)] border border-white/60 shadow-sm hover:bg-white transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244C45]/40"
+          className="
+            inline-flex items-center gap-2 rounded-[4px] px-2 py-1.5
+            text-[12.5px] md:text-[13px] font-medium tracking-[0.02em] text-white/90
+            [text-shadow:0_1px_10px_rgba(8,22,19,0.55)]
+            hover:text-white transition-colors motion-reduce:transition-none
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
+          "
         >
+          <SlidersHorizontal size={14} strokeWidth={1.75} className="shrink-0 text-[#D4B25F]" aria-hidden />
+          <span className="underline decoration-[#C9A55A]/70 decoration-1 underline-offset-[5px]">
+            {dict.advanced}
+          </span>
           <ChevronDown
-            size={15}
+            size={14}
+            strokeWidth={1.75}
             className={
-              "transition-transform duration-200 motion-reduce:transition-none " +
+              "shrink-0 transition-transform duration-200 motion-reduce:transition-none " +
               (advOpen ? "rotate-180" : "")
             }
             aria-hidden
           />
-          {dict.advanced}
         </button>
 
         {advOpen && (
-          <div className="absolute left-1/2 top-full z-40 -translate-x-1/2 mt-2 w-[min(92vw,420px)] rounded-2xl bg-white/95 backdrop-blur-md border border-[var(--color-stone-100)] shadow-[0_20px_44px_-20px_rgba(36,76,69,0.35)] px-4 py-3.5">
+          <div className="absolute left-1/2 md:left-auto md:right-0 top-full z-40 -translate-x-1/2 md:translate-x-0 mt-2 w-[min(92vw,420px)] rounded-[8px] bg-[#FBF9F4]/[0.98] backdrop-blur-md border border-[#244C45]/10 shadow-[0_28px_56px_-24px_rgba(8,22,19,0.5)] px-4 py-3.5">
             <label className="flex items-start gap-2.5 cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -642,12 +623,11 @@ export default function HeroSearchPanel({
                 Seçim yapılmazsa `ozellikler` parametresi HİÇ yazılmaz →
                 mevcut arama davranışı BİREBİR korunur. Seçenekler
                 `villa_features` tablosundan DİNAMİK gelir (hard-code YOK);
-                adlar EN/DE'de mevcut çeviri zinciriyle çözülür.
-                Checkbox stili mevcut tip/bölge dropdown'larıyla AYNI.
+                adlar EN'de mevcut çeviri zinciriyle çözülür.
             ═══════════════════════════════════════════════════════ */}
-            <div className="mt-3.5 border-t border-[var(--color-stone-100)] pt-3">
+            <div className="mt-3.5 border-t !border-[#244C45]/10 pt-3">
               <div className="flex items-baseline justify-between gap-2">
-                <div className="text-[10.5px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-500)]">
+                <div className="text-[10.5px] tracking-[0.2em] uppercase font-semibold text-[var(--color-stone-500)]">
                   {dict.featuresLabel}
                 </div>
                 {features.length > 0 && (
@@ -670,10 +650,10 @@ export default function HeroSearchPanel({
                     return (
                       <label
                         key={item.id}
-                        className={`flex items-center gap-3 text-[13.5px] px-2.5 py-2 rounded-xl cursor-pointer transition ${
+                        className={`flex items-center gap-3 text-[13.5px] px-2.5 py-2 rounded-[6px] cursor-pointer transition ${
                           checked
-                            ? "bg-[#244C45]/10 text-[var(--color-stone-900)]"
-                            : "hover:bg-[#244C45]/5 text-[var(--color-stone-700)]"
+                            ? "bg-[#244C45]/[0.08] text-[#244C45] font-medium"
+                            : "hover:bg-[#244C45]/[0.04] text-[var(--color-stone-700)]"
                         }`}
                       >
                         <input
