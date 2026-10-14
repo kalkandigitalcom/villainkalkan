@@ -112,7 +112,7 @@ describe("İçerik bölümleri sayfada ardışık ve hep açık", () => {
 });
 
 describe("Üst navigasyon şeridi", () => {
-  it("Açıklama, Fiyatlar, Müsaitlik, Konum, Özellikler; tek navigasyon", () => {
+  it("Açıklama, Fiyatlar, Konum, Özellikler; Müsaitlik öğesi yok; tek navigasyon", () => {
     render(<Page />);
     const labels = within(stripNav())
       .getAllByRole("button")
@@ -120,7 +120,6 @@ describe("Üst navigasyon şeridi", () => {
     expect(labels).toEqual([
       tr.villaTabs.description,
       tr.villaTabs.prices,
-      tr.villaTabs.availability,
       tr.villaTabs.location,
       tr.villaTabs.features,
     ]);
@@ -183,16 +182,15 @@ describe("Üst navigasyon şeridi", () => {
     },
   );
 
-  it("Müsaitlik öğesi kaydırmaz, takvim popup'ını açar", () => {
-    const onOpen = vi.fn();
-    window.addEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
+  it("şeritte popup açan öğe yok; Müsaitlik Takvimi butonu şeridin dışında", () => {
     render(<Page />);
-    const btn = navBtn(tr.villaTabs.availability);
-    expect(btn).toHaveAttribute("aria-haspopup", "dialog");
-    fireEvent.click(btn);
-    expect(onOpen).toHaveBeenCalledTimes(1);
-    expect(scrollToSpy).not.toHaveBeenCalled();
-    window.removeEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
+    expect(
+      within(stripNav()).queryByRole("button", { name: /Müsaitlik/ }),
+    ).toBeNull();
+    expect(stripNav().querySelector("[aria-haspopup]")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: tr.villaHero.availabilityCalendar }),
+    ).toHaveAttribute("aria-haspopup", "dialog");
   });
 
   it("URL/hash değişmez", () => {

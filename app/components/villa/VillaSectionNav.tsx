@@ -10,7 +10,6 @@ import {
   getFixedHeaderHeight,
   getVillaStickyOffset,
   isVillaSectionId,
-  openVillaAvailability,
   scrollToVillaSection,
   villaSectionAnchorId,
   type VillaSectionId,
@@ -24,7 +23,7 @@ import {
      altında yapışkan kalır (CSS `position: sticky`).
    - Öğeler sayfada hep açık duran bölümlere yumuşak kaydırır:
      Açıklama · Fiyatlar · Konum & Mesafeler · Özellikler.
-     "Müsaitlik" rezervasyon kartının takvimini popup'ta açar.
+     Müsaitlik takvimi sağdaki "Müsaitlik Takvimi" butonuyla popup'ta.
    - Aktif öğe: tıklanan öğe hemen; kullanıcı kendisi kaydırınca
      ekrandaki bölüm. Tek (rAF ile seyreltilmiş) scroll dinleyicisi.
    URL/hash/query DEĞİŞMEZ.
@@ -35,22 +34,14 @@ const DEFAULT_HEADER_OFFSET = 108;
 
 export default function VillaSectionNav({ locale }: { locale?: Locale }) {
   const dict = getDictionary(locale);
-  /* "Müsaitlik" bir bölüm değil: rezervasyon kartının takvimini
-     popup'ta açar (sayfada ayrı takvim bölümü yok). */
-  const items: (
-    | { kind: "section"; id: VillaSectionId; label: string }
-    | { kind: "availability"; id: "musaitlik"; label: string }
-  )[] = [
-    { kind: "section", id: "aciklama", label: dict.villaTabs.description },
-    { kind: "section", id: "fiyatlar", label: dict.villaTabs.prices },
-    {
-      kind: "availability",
-      id: "musaitlik",
-      label: dict.villaTabs.availability,
-    },
-    { kind: "section", id: "konum", label: dict.villaTabs.location },
-    { kind: "section", id: "ozellikler", label: dict.villaTabs.features },
-  ];
+  /* Müsaitlik takvimi şeritte değil: sağdaki "Müsaitlik Takvimi"
+     butonu (rezervasyon kartı) popup'ta açar. */
+  const labels: Record<VillaSectionId, string> = {
+    aciklama: dict.villaTabs.description,
+    fiyatlar: dict.villaTabs.prices,
+    konum: dict.villaTabs.location,
+    ozellikler: dict.villaTabs.features,
+  };
 
   const [current, setCurrent] = useState<VillaSectionId>("aciklama");
   const [headerOffset, setHeaderOffset] = useState(DEFAULT_HEADER_OFFSET);
@@ -170,22 +161,15 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
               ref={listRef}
               className="flex h-14 items-stretch overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {items.map((item) => {
-                const isActive = item.kind === "section" && current === item.id;
+              {VILLA_SECTION_IDS.map((id) => {
+                const isActive = current === id;
                 return (
-                  <li key={item.id} className="flex shrink-0">
+                  <li key={id} className="flex shrink-0">
                     <button
                       type="button"
-                      data-section-id={item.id}
-                      onClick={() =>
-                        item.kind === "section"
-                          ? scrollToVillaSection(item.id)
-                          : openVillaAvailability()
-                      }
+                      data-section-id={id}
+                      onClick={() => scrollToVillaSection(id)}
                       aria-current={isActive ? "true" : undefined}
-                      aria-haspopup={
-                        item.kind === "availability" ? "dialog" : undefined
-                      }
                       className={
                         /* Turuncu zeminde koyu lacivert metin (≈5:1 kontrast).
                            Aktif öğe zemin DEĞİŞTİRMEZ: yalnız metin genişliği
@@ -199,7 +183,7 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
                           : "font-medium after:bg-transparent hover:after:bg-ink/35")
                       }
                     >
-                      {item.label}
+                      {labels[id]}
                     </button>
                   </li>
                 );

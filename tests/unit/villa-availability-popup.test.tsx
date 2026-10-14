@@ -197,3 +197,87 @@ describe("Müsaitlik Takvimi popup'ı", () => {
     expect(dialog.textContent).toContain(en.booking.checkInPillLabel);
   });
 });
+
+describe("Popup — çok aylı görünüm (yalnız görünüm)", () => {
+  function mockViewport(width: number) {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => {
+        const min = Number(/min-width:\s*(\d+)px/.exec(query)?.[1] ?? 0);
+        return {
+          matches: width >= min,
+          media: query,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          onchange: null,
+          dispatchEvent: vi.fn(),
+        };
+      }),
+    );
+  }
+
+  async function monthCount(dialog: HTMLElement) {
+    await within(dialog).findAllByRole("gridcell", {}, { timeout: 5000 });
+    return dialog.querySelectorAll(".rdp-month").length;
+  }
+
+  it.each([
+    [1440, 3],
+    [900, 2],
+    [390, 1],
+  ])("%ipx genişlikte %i ay yan yana", async (width, expected) => {
+    mockViewport(width);
+    renderSidebar();
+    const dialog = await openPopup();
+    expect(await monthCount(dialog)).toBe(expected);
+  });
+
+  it("3 ay görünümünde ileri/geri gezinme ve seçim forma aktarılır", async () => {
+    mockViewport(1440);
+    const { container } = renderSidebar();
+    const dialog = await openPopup();
+    await monthCount(dialog);
+
+    /* Açılışta bugünün ayı + 2 ay: hedef ay (bugün+2) 3. sütunda. */
+    const months = () => Array.from(dialog.querySelectorAll(".rdp-month"));
+    const captionOf = (el: Element) =>
+      el.querySelector(".rdp-caption_label")?.textContent ?? "";
+    const firstCaption = captionOf(months()[0]);
+
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: tr.availability.nextMonth }),
+    );
+    await waitFor(() => expect(captionOf(months()[0])).not.toBe(firstCaption));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: tr.availability.prevMonth }),
+    );
+    await waitFor(() => expect(captionOf(months()[0])).toBe(firstCaption));
+
+    const target = months()[2] as HTMLElement;
+    const cell = (n: number) =>
+      within(target)
+        .getAllByRole("gridcell")
+        .find((el) => new RegExp(`^${n}(?!\\d)`).test(el.textContent || ""))!;
+    fireEvent.click(cell(5));
+    fireEvent.click(cell(9));
+
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    const dateField = container.querySelector("#booking-date-field") as HTMLElement;
+    expect(dateField.textContent).toContain(pill(5));
+    expect(dateField.textContent).toContain(pill(9));
+  });
+
+  it("kartın kendi açılır takvimi tek ay kalır", async () => {
+    mockViewport(1440);
+    const { container } = renderSidebar();
+    fireEvent.click(
+      container.querySelector("#booking-date-field > div") as HTMLElement,
+    );
+    await screen.findAllByRole("gridcell", {}, { timeout: 5000 });
+    expect(container.querySelectorAll(".rdp-month")).toHaveLength(1);
+  });
+});

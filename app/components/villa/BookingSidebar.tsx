@@ -727,7 +727,7 @@ export default function BookingSidebar({
             />
             <div
               className="
-                relative w-full sm:max-w-[26rem]
+                relative w-full sm:max-w-[26rem] md:max-w-[46rem] lg:max-w-[66rem]
                 max-h-[92dvh] overflow-y-auto overscroll-contain
                 rounded-t-3xl sm:rounded-3xl bg-white
                 shadow-[0_30px_80px_-30px_rgba(36,54,75,0.55)]
@@ -780,9 +780,12 @@ export default function BookingSidebar({
                 </div>
               </div>
 
-              <div className="mt-4 min-h-[22rem]">
+              {/* Dar ekranda olası taşmada ilk ay kırpılmasın: güvenli
+                  ortalama (yalnız bu popup'ın sarmalayıcısında). */}
+              <div className="mt-4 min-h-[22rem] overflow-x-auto [&_.rdp_.rdp-months]:![justify-content:safe_center]">
                 {BookingCalendar && (
-                  <BookingCalendar
+                  <AvailabilityPopupCalendar
+                    Calendar={BookingCalendar}
                     engine={engine}
                     currentMonth={currentMonth}
                     onCurrentMonthChange={setCurrentMonth}
@@ -799,6 +802,40 @@ export default function BookingSidebar({
   );
 }
 /* ── Helpers ── */
+
+/* 🛡️ Müsaitlik popup'ı — MEVCUT BookingCalendar'ı ekran genişliğine
+   göre 1/2/3 ay yan yana gösterir (eski sayfa takvimiyle aynı düzen:
+   mobil 1, tablet 2, geniş ekran 3). Yalnız görünüm; seçim, müsaitlik
+   ve fiyat mantığı aynı `engine` üzerinden AYNEN çalışır. Dinleyiciler
+   yalnız popup açıkken (bu bileşen mount'luyken) yaşar. */
+const POPUP_TWO_MONTHS_QUERY = "(min-width: 768px)";
+const POPUP_THREE_MONTHS_QUERY = "(min-width: 1024px)";
+
+function AvailabilityPopupCalendar({
+  Calendar,
+  ...props
+}: { Calendar: LazyCalendarComponentType } & Omit<
+  React.ComponentProps<LazyCalendarComponentType>,
+  "numberOfMonths"
+>) {
+  const [months, setMonths] = useState(1);
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return;
+    }
+    const two = window.matchMedia(POPUP_TWO_MONTHS_QUERY);
+    const three = window.matchMedia(POPUP_THREE_MONTHS_QUERY);
+    const update = () => setMonths(three.matches ? 3 : two.matches ? 2 : 1);
+    update();
+    two.addEventListener("change", update);
+    three.addEventListener("change", update);
+    return () => {
+      two.removeEventListener("change", update);
+      three.removeEventListener("change", update);
+    };
+  }, []);
+  return <Calendar {...props} numberOfMonths={months} />;
+}
 
 function Counter({
   label,

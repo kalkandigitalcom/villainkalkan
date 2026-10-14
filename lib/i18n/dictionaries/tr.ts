@@ -278,7 +278,6 @@ export const tr: Dictionary = {
   /* 🛡️ PHASE 10G — VillaDetailTabs.tsx'in BUGÜNKÜ hardcoded metinleri. */
   villaTabs: {
     prices: "Fiyatlar",
-    availability: "Müsaitlik",
     location: "Konum & Mesafeler",
     features: "Özellikler",
     description: "Açıklama",

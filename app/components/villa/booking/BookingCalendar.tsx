@@ -56,6 +56,11 @@ type Props = {
   onSelectComplete?: () => void;
   /* 🛡️ PHASE 10B — opsiyonel, default "tr". */
   locale?: Locale;
+  /* 🛡️ Yalnız GÖRÜNÜM — yan yana gösterilecek ay sayısı (DayPicker'ın
+     kendi `numberOfMonths`'i). Varsayılan 1 → kart dropdown'u ve
+     VillaCardBookingModal BİREBİR aynı. Seçim / disabled / fiyat
+     mantığı ay sayısından bağımsızdır. */
+  numberOfMonths?: number;
 };
 
 export default function BookingCalendar({
@@ -64,6 +69,7 @@ export default function BookingCalendar({
   onCurrentMonthChange,
   onSelectComplete,
   locale,
+  numberOfMonths = 1,
 }: Props) {
   const { currency } = useCurrency();
   const dict = getDictionary(locale);
@@ -211,7 +217,7 @@ export default function BookingCalendar({
           labelPrevious: () => dict.availability.prevMonth,
           labelNext: () => dict.availability.nextMonth,
         }}
-        numberOfMonths={1}
+        numberOfMonths={numberOfMonths}
         disabled={[
           { before: today },
           ...mergedBlockedDates,
@@ -414,6 +420,8 @@ export default function BookingCalendar({
           "[&_.rdp]:!w-full",
           "[&_.rdp-months]:!m-0",
           "[&_.rdp-months]:!justify-center",
+          /* Çok aylı görünümde aylar arası boşluk (tek ayda etkisiz). */
+          numberOfMonths > 1 ? "[&_.rdp-months]:gap-6" : "",
           "[&_.rdp-month]:!m-0",
           "[&_.rdp-table]:!m-0",
           "[&_.rdp-table]:!mx-auto",

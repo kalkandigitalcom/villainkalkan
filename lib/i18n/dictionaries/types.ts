@@ -384,7 +384,6 @@ export type Dictionary = {
   /* 🛡️ Villa detay üst navigasyon şeridi (VillaSectionNav) etiketleri. */
   villaTabs: {
     prices: string;
-    availability: string;
     location: string;
     features: string;
     /** Üst navigasyon şeridi (VillaSectionNav) — açıklama bağlantısı. */
