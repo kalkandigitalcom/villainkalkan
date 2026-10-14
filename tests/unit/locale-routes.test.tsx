@@ -1174,7 +1174,7 @@ describe.each(VILLA_DETAIL_ROUTES)(
       expect(screen.getByText(dict.price.noPriceInfo)).toBeInTheDocument();
     });
 
-    it("21) AvailabilityInlineCalendar doğru locale aria-label'larla render edilir", async () => {
+    it("21) sayfada sürekli açık takvim yok; locale'e uygun 'Müsaitlik Takvimi' popup tetikleyicisi var", async () => {
       const dict = getDictionary(locale);
       const { default: Page } = await import(modulePath);
       const element = await Page({
@@ -1182,12 +1182,13 @@ describe.each(VILLA_DETAIL_ROUTES)(
       });
       render(element);
 
+      /* Takvim artık yalnız popup'ta (rezervasyon kartının takvimi). */
       expect(
-        screen.getByLabelText(dict.availability.prevMonth)
-      ).toBeInTheDocument();
+        screen.queryByLabelText(dict.availability.prevMonth)
+      ).not.toBeInTheDocument();
       expect(
-        screen.getByLabelText(dict.availability.nextMonth)
-      ).toBeInTheDocument();
+        screen.getByRole("button", { name: dict.villaHero.availabilityCalendar })
+      ).toHaveAttribute("aria-haspopup", "dialog");
     });
 
     it("22) JSON-LD: vacationRentalLd + breadcrumbLd 'inLanguage' alanı sayfanın locale'iyle eşleşir", async () => {

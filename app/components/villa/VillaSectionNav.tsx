@@ -10,6 +10,7 @@ import {
   getFixedHeaderHeight,
   getVillaStickyOffset,
   isVillaSectionId,
+  openVillaAvailability,
   scrollToVillaSection,
   villaSectionAnchorId,
   type VillaSectionId,
@@ -22,7 +23,8 @@ import {
      sabit Header'ın (TopBar dahil, ölçülen GERÇEK yükseklik) hemen
      altında yapışkan kalır (CSS `position: sticky`).
    - Öğeler sayfada hep açık duran bölümlere yumuşak kaydırır:
-     Açıklama · Fiyatlar · Müsaitlik · Konum & Mesafeler · Özellikler.
+     Açıklama · Fiyatlar · Konum & Mesafeler · Özellikler.
+     "Müsaitlik" rezervasyon kartının takvimini popup'ta açar.
    - Aktif öğe: tıklanan öğe hemen; kullanıcı kendisi kaydırınca
      ekrandaki bölüm. Tek (rAF ile seyreltilmiş) scroll dinleyicisi.
    URL/hash/query DEĞİŞMEZ.
@@ -33,13 +35,22 @@ const DEFAULT_HEADER_OFFSET = 108;
 
 export default function VillaSectionNav({ locale }: { locale?: Locale }) {
   const dict = getDictionary(locale);
-  const labels: Record<VillaSectionId, string> = {
-    aciklama: dict.villaTabs.description,
-    fiyatlar: dict.villaTabs.prices,
-    musaitlik: dict.villaTabs.availability,
-    konum: dict.villaTabs.location,
-    ozellikler: dict.villaTabs.features,
-  };
+  /* "Müsaitlik" bir bölüm değil: rezervasyon kartının takvimini
+     popup'ta açar (sayfada ayrı takvim bölümü yok). */
+  const items: (
+    | { kind: "section"; id: VillaSectionId; label: string }
+    | { kind: "availability"; id: "musaitlik"; label: string }
+  )[] = [
+    { kind: "section", id: "aciklama", label: dict.villaTabs.description },
+    { kind: "section", id: "fiyatlar", label: dict.villaTabs.prices },
+    {
+      kind: "availability",
+      id: "musaitlik",
+      label: dict.villaTabs.availability,
+    },
+    { kind: "section", id: "konum", label: dict.villaTabs.location },
+    { kind: "section", id: "ozellikler", label: dict.villaTabs.features },
+  ];
 
   const [current, setCurrent] = useState<VillaSectionId>("aciklama");
   const [headerOffset, setHeaderOffset] = useState(DEFAULT_HEADER_OFFSET);
@@ -139,10 +150,14 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
       data-stuck={stuck ? "true" : undefined}
       style={{ top: headerOffset }}
       className={
-        "sticky bg-white border-b border-[var(--color-stone-100)] shadow-[0_10px_24px_-22px_rgba(36,54,75,0.45)] px-5 md:px-10 lg:px-16 " +
-        /* Doğal konumda rezervasyon kartı (z-10) şeridin üstüne taşar;
-           yapışınca şerit içeriğin üstünde kalır (Header z-50 altında). */
-        (stuck ? "z-30" : "z-[5]")
+        /* Sitenin mevcut turuncu marka rengi (`--color-accent`, #FF805E)
+           — şeridin tamamı; ayrı beyaz kap yok. */
+        "sticky bg-accent shadow-[0_10px_24px_-22px_rgba(36,54,75,0.45)] px-5 md:px-10 lg:px-16 " +
+        /* Doğal konumda z-index YOK → DOM'da sonra gelen rezervasyon
+           kartı şeridin üstüne taşar (kart kendi stacking context'ini
+           kurmaz; içindeki popup'lar Header'ın üstüne çıkabilir).
+           Yapışınca şerit içeriğin üstünde kalır (Header z-50 altında). */
+        (stuck ? "z-30" : "")
       }
     >
       <div className="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-10 lg:gap-10">
@@ -155,23 +170,36 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
               ref={listRef}
               className="flex h-14 items-stretch overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {VILLA_SECTION_IDS.map((id) => {
-                const isActive = current === id;
+              {items.map((item) => {
+                const isActive = item.kind === "section" && current === item.id;
                 return (
-                  <li key={id} className="flex shrink-0">
+                  <li key={item.id} className="flex shrink-0">
                     <button
                       type="button"
-                      data-section-id={id}
-                      onClick={() => scrollToVillaSection(id)}
+                      data-section-id={item.id}
+                      onClick={() =>
+                        item.kind === "section"
+                          ? scrollToVillaSection(item.id)
+                          : openVillaAvailability()
+                      }
                       aria-current={isActive ? "true" : undefined}
+                      aria-haspopup={
+                        item.kind === "availability" ? "dialog" : undefined
+                      }
                       className={
-                        "relative flex items-center whitespace-nowrap px-4 md:px-5 text-[13.5px] tracking-[0.01em] transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/50 " +
+                        /* Turuncu zeminde koyu lacivert metin (≈5:1 kontrast).
+                           Aktif öğe zemin DEĞİŞTİRMEZ: yalnız metin genişliği
+                           boyunca alttan ince çizgi; hover'da aynı çizgi
+                           yarı saydam önizleme olarak belirir. */
+                        "relative flex items-center whitespace-nowrap px-4 md:px-5 text-[13.5px] tracking-[0.01em] text-ink " +
+                        "after:pointer-events-none after:absolute after:inset-x-4 md:after:inset-x-5 after:bottom-0 after:h-[3px] after:rounded-t-full after:transition-colors after:duration-200 motion-reduce:after:transition-none " +
+                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink/60 " +
                         (isActive
-                          ? "bg-brand text-white font-semibold"
-                          : "text-ink font-medium hover:bg-brand-soft hover:text-brand")
+                          ? "font-semibold after:bg-ink"
+                          : "font-medium after:bg-transparent hover:after:bg-ink/35")
                       }
                     >
-                      {labels[id]}
+                      {item.label}
                     </button>
                   </li>
                 );

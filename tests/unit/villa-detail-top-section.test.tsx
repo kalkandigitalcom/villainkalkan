@@ -1,8 +1,8 @@
 /* ===============================================================
-   🛡️ Villa detay üst bölüm — paylaşım şeridi, yapışkan navigasyon
-   şeridi, "Fotoğrafları Göster" ve kart "Müsaitlik Takvimi" kısayolu.
-   Bölümler sayfada hep açık; şerit yalnız kaydırır ve ekrandaki
-   bölümü aktif gösterir. URL/hash değişmez.
+   🛡️ Villa detay üst bölüm — paylaşım şeridi, yapışkan turuncu
+   navigasyon şeridi, "Fotoğrafları Göster" ve "Müsaitlik Takvimi"
+   popup tetikleyicileri. Bölümler sayfada hep açık; şerit yalnız
+   kaydırır ve ekrandaki bölümü aktif gösterir. URL/hash değişmez.
    =============================================================== */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, within, act } from "@testing-library/react";
@@ -15,6 +15,7 @@ import {
   VillaAvailabilityShortcut,
   VillaShowPhotosButton,
 } from "@/app/components/villa/VillaDetailActions";
+import { VILLA_AVAILABILITY_OPEN_EVENT } from "@/app/components/villa/villa-detail-events";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
 const tr = getDictionary("tr");
@@ -27,7 +28,6 @@ function Page({ locale = "tr" as "tr" | "en" }) {
       <section id="villa-aciklama">desc</section>
       <VillaDetailTabs
         fiyatlar={<p>PANEL-FIYAT</p>}
-        musaitlik={<p>PANEL-MUSAIT</p>}
         konum={<p>PANEL-KONUM</p>}
         ozellikler={<p>PANEL-OZELLIK</p>}
       />
@@ -89,44 +89,30 @@ afterEach(() => {
 });
 
 describe("İçerik bölümleri sayfada ardışık ve hep açık", () => {
-  it("Fiyatlar, Müsaitlik, Konum, Özellikler aynı anda görünür, bu sırayla", () => {
+  it("Fiyatlar, Konum, Özellikler aynı anda görünür; sayfada takvim bölümü yok", () => {
     const { container } = render(<Page />);
-    for (const p of [
-      "PANEL-FIYAT",
-      "PANEL-MUSAIT",
-      "PANEL-KONUM",
-      "PANEL-OZELLIK",
-    ]) {
+    for (const p of ["PANEL-FIYAT", "PANEL-KONUM", "PANEL-OZELLIK"]) {
       expect(screen.getByText(p)).toBeInTheDocument();
     }
     const ids = Array.from(
       container.querySelectorAll("[data-villa-section]"),
     ).map((n) => n.id);
-    expect(ids).toEqual([
-      "villa-fiyatlar",
-      "villa-musaitlik",
-      "villa-konum",
-      "villa-ozellikler",
-    ]);
+    expect(ids).toEqual(["villa-fiyatlar", "villa-konum", "villa-ozellikler"]);
+    expect(document.getElementById("villa-musaitlik")).toBeNull();
   });
 
   it("şerit tıklaması içerikleri gizlemez / değiştirmez", () => {
     render(<Page />);
     fireEvent.click(navBtn(tr.villaTabs.features));
-    fireEvent.click(navBtn(tr.villaTabs.availability));
-    for (const p of [
-      "PANEL-FIYAT",
-      "PANEL-MUSAIT",
-      "PANEL-KONUM",
-      "PANEL-OZELLIK",
-    ]) {
+    fireEvent.click(navBtn(tr.villaTabs.location));
+    for (const p of ["PANEL-FIYAT", "PANEL-KONUM", "PANEL-OZELLIK"]) {
       expect(screen.getByText(p)).toBeInTheDocument();
     }
   });
 });
 
 describe("Üst navigasyon şeridi", () => {
-  it("Açıklama + 4 mevcut bölümü listeler; tek navigasyon", () => {
+  it("Açıklama, Fiyatlar, Müsaitlik, Konum, Özellikler; tek navigasyon", () => {
     render(<Page />);
     const labels = within(stripNav())
       .getAllByRole("button")
@@ -141,13 +127,25 @@ describe("Üst navigasyon şeridi", () => {
     expect(screen.getAllByRole("navigation")).toHaveLength(1);
   });
 
+  it("turuncu marka rengi (bg-accent), ayrı beyaz kap yok; aktif öğe zemin değil alt çizgi", () => {
+    render(<Page />);
+    expect(bar().className).toContain("bg-accent");
+    expect(bar().className).not.toContain("bg-white");
+    expect(bar().querySelector(".bg-white")).toBeNull();
+    const active = navBtn(tr.villaTabs.description);
+    expect(active.className).toContain("after:bg-ink");
+    expect(active.className).not.toMatch(/(^|\s)bg-(brand|ink|white)\b/);
+    expect(navBtn(tr.villaTabs.prices).className).toContain(
+      "hover:after:bg-ink/35",
+    );
+  });
+
   it("sayfanın başında Açıklama aktif", async () => {
     mountHeader(108);
     render(<Page />);
     setRect(bar(), 640, 56);
     setRect(document.getElementById("villa-aciklama")!, 760);
     setRect(document.getElementById("villa-fiyatlar")!, 1200);
-    setRect(document.getElementById("villa-musaitlik")!, 1800);
     setRect(document.getElementById("villa-konum")!, 2400);
     setRect(document.getElementById("villa-ozellikler")!, 3000);
     await flushScroll();
@@ -160,7 +158,6 @@ describe("Üst navigasyon şeridi", () => {
   it.each([
     ["description", "villa-aciklama"],
     ["prices", "villa-fiyatlar"],
-    ["availability", "villa-musaitlik"],
     ["location", "villa-konum"],
     ["features", "villa-ozellikler"],
   ] as const)(
@@ -186,6 +183,18 @@ describe("Üst navigasyon şeridi", () => {
     },
   );
 
+  it("Müsaitlik öğesi kaydırmaz, takvim popup'ını açar", () => {
+    const onOpen = vi.fn();
+    window.addEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
+    render(<Page />);
+    const btn = navBtn(tr.villaTabs.availability);
+    expect(btn).toHaveAttribute("aria-haspopup", "dialog");
+    fireEvent.click(btn);
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    expect(scrollToSpy).not.toHaveBeenCalled();
+    window.removeEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
+  });
+
   it("URL/hash değişmez", () => {
     const before = window.location.href;
     render(<Page />);
@@ -199,27 +208,21 @@ describe("Üst navigasyon şeridi", () => {
     render(<Page />);
     setRect(bar(), 108, 56);
     setRect(document.getElementById("villa-aciklama")!, -900);
-    setRect(document.getElementById("villa-fiyatlar")!, -400);
-    setRect(document.getElementById("villa-musaitlik")!, 150);
+    setRect(document.getElementById("villa-fiyatlar")!, 150);
     setRect(document.getElementById("villa-konum")!, 900);
     setRect(document.getElementById("villa-ozellikler")!, 1400);
 
     await flushScroll();
-    expect(navBtn(tr.villaTabs.availability)).toHaveAttribute(
-      "aria-current",
-      "true",
-    );
+    expect(navBtn(tr.villaTabs.prices)).toHaveAttribute("aria-current", "true");
 
-    setRect(document.getElementById("villa-musaitlik")!, -300);
+    setRect(document.getElementById("villa-fiyatlar")!, -300);
     setRect(document.getElementById("villa-konum")!, 170);
     await flushScroll();
     expect(navBtn(tr.villaTabs.location)).toHaveAttribute(
       "aria-current",
       "true",
     );
-    expect(navBtn(tr.villaTabs.availability)).not.toHaveAttribute(
-      "aria-current",
-    );
+    expect(navBtn(tr.villaTabs.prices)).not.toHaveAttribute("aria-current");
   });
 });
 
@@ -232,13 +235,13 @@ describe("Yapışkan şerit", () => {
     expect(bar().style.top).toBe("120px");
   });
 
-  it("doğal konumda kartın altında (z-[5]); yapışınca içeriğin üstünde (z-30)", async () => {
+  it("doğal konumda z-index yok (kart üstüne taşar); yapışınca z-30", async () => {
     mountHeader(108);
     render(<Page />);
     setRect(bar(), 640, 56);
     await flushScroll();
     expect(bar()).not.toHaveAttribute("data-stuck");
-    expect(bar().className).toContain("z-[5]");
+    expect(bar().className).not.toMatch(/(^|\s)z-/);
 
     setRect(bar(), 108, 56);
     await flushScroll();
@@ -253,23 +256,18 @@ describe("Yapışkan şerit", () => {
 });
 
 describe("Rezervasyon kartı kısayolu", () => {
-  it("'Müsaitlik Takvimi' açık Müsaitlik bölümüne kaydırır, şerit vurgusu senkron", () => {
-    mountHeader(108);
+  it("'Müsaitlik Takvimi' kaydırmaz, popup açma olayını yayınlar", () => {
+    const onOpen = vi.fn();
+    window.addEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
     render(<Page />);
-    setRect(bar(), 108, 56);
-    setRect(document.getElementById("villa-musaitlik")!, 800);
-    Object.defineProperty(window, "scrollY", { value: 0, configurable: true });
-
-    fireEvent.click(
-      screen.getByRole("button", { name: tr.villaHero.availabilityCalendar }),
-    );
-
-    expect(scrollToSpy).toHaveBeenCalledWith({ top: 620, behavior: "smooth" });
-    expect(navBtn(tr.villaTabs.availability)).toHaveAttribute(
-      "aria-current",
-      "true",
-    );
-    expect(screen.getByText("PANEL-FIYAT")).toBeInTheDocument();
+    const btn = screen.getByRole("button", {
+      name: tr.villaHero.availabilityCalendar,
+    });
+    expect(btn).toHaveAttribute("aria-haspopup", "dialog");
+    fireEvent.click(btn);
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    expect(scrollToSpy).not.toHaveBeenCalled();
+    window.removeEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
   });
 
   it("EN etiketleri", () => {

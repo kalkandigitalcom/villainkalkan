@@ -34,9 +34,10 @@
    Yalnız JSX/className; state/handler/prop kontratı DEĞİŞMEDİ.
    =============================================================== */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 
 import { type VillaPriceEmbed } from "@/lib/villa-row.types";
 import type { DiscountRange } from "@/lib/price.engine";
@@ -63,6 +64,8 @@ import BookingMinStayWarning from "@/app/components/villa/booking/BookingMinStay
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import { LOCALE_BCP47, type Locale } from "@/lib/i18n/config";
+/* 🛡️ Villa detay "Müsaitlik Takvimi" popup'ı — yalnız açma olayı. */
+import { VILLA_AVAILABILITY_OPEN_EVENT } from "@/app/components/villa/villa-detail-events";
 
 /* 🛡️ HAVUZ ISITMA — yerleşim turu. Satır BookingSummary'nin içine
    taşındı (bkz. o dosyadaki yorum); bu dosyada artık formatCurrency/
@@ -279,6 +282,59 @@ export default function BookingSidebar({
      resetler (selectedDay yeni `from` olur). Pill açılışında özel state
      gerekmiyor — kullanıcı önceki range'i görür, yeni güne tıklayınca
      reset olur (Booking.com/Airbnb davranışı). */
+
+  /* === MÜSAİTLİK POPUP — EK UI state ===
+     Villa detaydaki "Müsaitlik Takvimi" butonu / şerit öğesi
+     `villa-detail:availability-open` olayını yayınlar. Popup, dropdown
+     ile AYNI `BookingCalendar` + AYNI `engine` (tarih state'i) ile
+     açılır → seçilen tarihler bu formda anında görünür. Seçim,
+     fiyat, müsaitlik ve rezervasyon mantığı DEĞİŞMEZ. */
+  const [openAvailabilityModal, setOpenAvailabilityModal] = useState(false);
+  const availabilityTitleId = useId();
+  const availabilityCloseRef = useRef<HTMLButtonElement>(null);
+  /* Güncel tarih state'ini gören açılış fonksiyonu; dinleyici tek
+     sefer kurulur ve her zaman en güncel fonksiyonu çağırır. */
+  const openAvailabilityRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    openAvailabilityRef.current = () => {
+      /* Pill tıklamasıyla AYNI ay seçimi. */
+      const targetMonth =
+        endDate ||
+        startDate ||
+        (initialRangeConflict && initialStart
+          ? parseLocalDate(initialStart)
+          : new Date());
+      setCurrentMonth(targetMonth);
+      setOpenCalendar(false);
+      setOpenAvailabilityModal(true);
+      ensureBookingCalendar();
+    };
+  });
+  useEffect(() => {
+    const onOpen = () => openAvailabilityRef.current();
+    window.addEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
+    return () =>
+      window.removeEventListener(VILLA_AVAILABILITY_OPEN_EVENT, onOpen);
+  }, []);
+
+  /* Escape ile kapat + arka plan kaydırma kilidi (VillaMapModal /
+     VillaCardBookingModal ile aynı desen; kaydırma konumu korunur). */
+  useEffect(() => {
+    if (!openAvailabilityModal) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenAvailabilityModal(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    availabilityCloseRef.current?.focus({ preventScroll: true });
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+      previouslyFocused?.focus?.({ preventScroll: true });
+    };
+  }, [openAvailabilityModal]);
 
   /* === CLICK-OUTSIDE — UI dropdown close === */
   useEffect(() => {
@@ -651,6 +707,94 @@ export default function BookingSidebar({
           </div>
         </div>
       )}
+
+      {/* 🛡️ MÜSAİTLİK TAKVİMİ POPUP — dropdown'daki takvimin aynısı
+          (aynı BookingCalendar + aynı engine). body'ye portal edilir. */}
+      {openAvailabilityModal &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={availabilityTitleId}
+            data-villa-availability-modal
+            className="fade-in fixed inset-0 z-[1100] flex items-end sm:items-center justify-center sm:p-4"
+          >
+            <div
+              aria-hidden="true"
+              data-villa-availability-backdrop
+              onClick={() => setOpenAvailabilityModal(false)}
+              className="absolute inset-0 bg-ink/60 backdrop-blur-[2px]"
+            />
+            <div
+              className="
+                relative w-full sm:max-w-[26rem]
+                max-h-[92dvh] overflow-y-auto overscroll-contain
+                rounded-t-3xl sm:rounded-3xl bg-white
+                shadow-[0_30px_80px_-30px_rgba(36,54,75,0.55)]
+                px-5 pt-5 pb-6 md:px-6 md:pt-6
+              "
+            >
+              <div className="flex items-start justify-between gap-4">
+                <h2
+                  id={availabilityTitleId}
+                  className="font-display text-[21px] md:text-[23px] leading-tight tracking-[-0.02em] text-[var(--color-stone-900)]"
+                >
+                  {dict.villaHero.availabilityCalendar}
+                </h2>
+                <button
+                  ref={availabilityCloseRef}
+                  type="button"
+                  onClick={() => setOpenAvailabilityModal(false)}
+                  aria-label={dict.common.close}
+                  className="-mr-1 -mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[var(--color-stone-500)] hover:bg-[var(--color-stone-50)] hover:text-[var(--color-stone-900)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+                >
+                  <X size={18} strokeWidth={1.8} aria-hidden />
+                </button>
+              </div>
+
+              {/* Formdaki seçili tarihler — aynı state, yalnız gösterim. */}
+              <div className="mt-4 flex items-center gap-4 rounded-2xl border border-[var(--color-stone-100)] px-4 py-3">
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-400)]">
+                    {dict.booking.checkInPillLabel}
+                  </div>
+                  <div className="mt-1 text-[14px] font-medium text-[var(--color-stone-900)] truncate">
+                    {startDate
+                      ? formatDatePillLabel(startDate, bcp47)
+                      : dict.booking.selectDatePlaceholder}
+                  </div>
+                </div>
+                <span
+                  aria-hidden="true"
+                  className="w-px h-8 bg-[var(--color-stone-100)] shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-400)]">
+                    {dict.booking.checkOutPillLabel}
+                  </div>
+                  <div className="mt-1 text-[14px] font-medium text-[var(--color-stone-900)] truncate">
+                    {endDate
+                      ? formatDatePillLabel(endDate, bcp47)
+                      : dict.booking.selectDatePlaceholder}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 min-h-[22rem]">
+                {BookingCalendar && (
+                  <BookingCalendar
+                    engine={engine}
+                    currentMonth={currentMonth}
+                    onCurrentMonthChange={setCurrentMonth}
+                    onSelectComplete={() => setOpenAvailabilityModal(false)}
+                    locale={locale}
+                  />
+                )}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

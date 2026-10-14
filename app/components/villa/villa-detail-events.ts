@@ -1,20 +1,21 @@
 /* ===============================================================
    🛡️ VILLA DETAIL — sayfa içi navigasyon köprüsü (yalnız görünüm)
    ===============================================================
-   Açıklama, Fiyatlar, Müsaitlik, Konum ve Özellikler bölümleri
-   sayfada ARDIŞIK ve hep açık durur. Üst navigasyon şeridi
-   (VillaSectionNav) ve rezervasyon kartının "Müsaitlik Takvimi"
-   kısayolu `scrollToVillaSection` ile ilgili bölüme yumuşakça
-   kaydırır; hedef, sabit Header + yapışkan şeridin ALTINDA kalır.
-   Her kaydırma isteği tek bir window olayıyla duyurulur → şerit
-   tıklanan / hedeflenen öğeyi hemen aktif gösterir.
+   Açıklama, Fiyatlar, Konum ve Özellikler bölümleri sayfada ARDIŞIK
+   ve hep açık durur. Üst navigasyon şeridi (VillaSectionNav)
+   `scrollToVillaSection` ile ilgili bölüme yumuşakça kaydırır; hedef,
+   sabit Header + yapışkan şeridin ALTINDA kalır. Her kaydırma isteği
+   tek bir window olayıyla duyurulur → şerit tıklanan öğeyi hemen
+   aktif gösterir.
+   Müsaitlik takvimi sayfada değil, popup'ta: `openVillaAvailability`
+   olayı, rezervasyon kartının (BookingSidebar) MEVCUT takvimini aynı
+   rezervasyon state'iyle modal içinde açar.
    Hiçbir URL/hash/query değişmez, veri çekilmez.
    =============================================================== */
 
 export const VILLA_SECTION_IDS = [
   "aciklama",
   "fiyatlar",
-  "musaitlik",
   "konum",
   "ozellikler",
 ] as const;
@@ -30,6 +31,8 @@ export const VILLA_DESCRIPTION_ANCHOR_ID = villaSectionAnchorId("aciklama");
 
 /** Bir bölüme kaydırma isteği yapıldı (detail: { id }). */
 export const VILLA_SECTION_SCROLL_EVENT = "villa-detail:section-scroll";
+/** Rezervasyon kartının müsaitlik takvimini popup'ta açma isteği. */
+export const VILLA_AVAILABILITY_OPEN_EVENT = "villa-detail:availability-open";
 /** Gallery lightbox'ını ilk fotoğraftan açma isteği. */
 export const VILLA_GALLERY_OPEN_EVENT = "villa-detail:gallery-open";
 
@@ -89,4 +92,10 @@ export function scrollToVillaSection(id: VillaSectionId) {
 export function openVillaGallery() {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(VILLA_GALLERY_OPEN_EVENT));
+}
+
+/** Müsaitlik takvimini (rezervasyon kartının takvimi) popup'ta açar. */
+export function openVillaAvailability() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(VILLA_AVAILABILITY_OPEN_EVENT));
 }

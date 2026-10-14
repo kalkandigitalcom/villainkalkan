@@ -34,7 +34,6 @@ import VillaPoolSection from "@/app/components/villa/VillaPoolSection";
 import VillaReviewsSection from "@/app/components/villa/VillaReviewsSection";
 import SimilarVillasSection from "@/app/components/villa/SimilarVillasSection";
 import FavoriteButton from "@/app/components/favorites/FavoriteButton";
-import AvailabilityInlineCalendar from "@/app/components/villa/AvailabilityInlineCalendar";
 import Gallery from "@/app/components/villa/Gallery";
 import BookingSidebar from "@/app/components/villa/BookingSidebar";
 import MobileBookingCta from "@/app/components/villa/MobileBookingCta";
@@ -378,26 +377,6 @@ export default function VillaDetailBody({
                       />
                     </section>
                   }
-                  musaitlik={
-                    <section>
-                      <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
-                        {dict.villa.calendarTitle}
-                      </h2>
-                      <div className="mt-5 overflow-x-auto">
-                        <AvailabilityInlineCalendar
-                          villaId={villa.id}
-                          prices={prices}
-                          externalBlocks={externalBlocks}
-                          /* 🛡️ ADDITIVE — sayfa `getVillaDiscounts` ile
-                           ZATEN çekilen public indirim kayıtları; takvim
-                           günlük indirimli fiyatı bunlarla gösterir.
-                           Yeni veri kaynağı/sorgu YOK. */
-                          discounts={discounts}
-                          locale={locale}
-                        />
-                      </div>
-                    </section>
-                  }
                   konum={
                     <div className="space-y-10">
                       <VillaDistancesSection
@@ -442,7 +421,7 @@ export default function VillaDetailBody({
                 taşar (yalnız lg+). Mobilde normal akış. */}
               <aside
                 id={bookingSidebarId}
-                className="min-w-0 lg:col-span-3 relative z-10 pt-0 lg:-mt-14"
+                className="min-w-0 lg:col-span-3 relative pt-0 lg:-mt-14"
               >
                 <VillaAvailabilityShortcut locale={locale} />
                 <div className="mt-3 rounded-[28px] lg:shadow-[0_28px_60px_-32px_rgba(36,54,75,0.45)]">

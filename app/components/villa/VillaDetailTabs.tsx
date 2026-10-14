@@ -8,10 +8,12 @@ import {
 /* ===============================================================
    🛡️ VillaDetailTabs — villa detay içerik bölümleri (ardışık)
    ===============================================================
-   Fiyatlar, Müsaitlik, Konum ve Özellikler artık sekme içinde
-   GİZLENMEZ: dördü de sayfada aynı anda, bu sırayla açık durur.
-   Her bölüm, üst navigasyon şeridinin (VillaSectionNav) kaydırma
-   hedefi olan bir id taşır (`villa-fiyatlar`, `villa-musaitlik`, …).
+   Fiyatlar, Konum ve Özellikler sekme içinde GİZLENMEZ: üçü de
+   sayfada aynı anda, bu sırayla açık durur. Her bölüm, üst navigasyon
+   şeridinin (VillaSectionNav) kaydırma hedefi olan bir id taşır
+   (`villa-fiyatlar`, `villa-konum`, `villa-ozellikler`).
+   Müsaitlik takvimi sayfada değil, "Müsaitlik Takvimi" popup'ında
+   (rezervasyon kartının mevcut takvimi).
 
    ⚠️ Section'lar PROP olarak gelir (page'deki mevcut JSX aynen —
    yeniden oluşturulmaz). Bu component yalnız yerleşimi yönetir;
@@ -20,7 +22,6 @@ import {
 
 type Props = {
   fiyatlar: ReactNode;
-  musaitlik: ReactNode;
   /** Konum paneli — Mesafeler (Yakındaki Noktalar). */
   konum: ReactNode;
   ozellikler: ReactNode;
@@ -28,13 +29,11 @@ type Props = {
 
 export default function VillaDetailTabs({
   fiyatlar,
-  musaitlik,
   konum,
   ozellikler,
 }: Props) {
   const sections: { id: VillaSectionId; content: ReactNode }[] = [
     { id: "fiyatlar", content: fiyatlar },
-    { id: "musaitlik", content: musaitlik },
     { id: "konum", content: konum },
     { id: "ozellikler", content: ozellikler },
   ];
