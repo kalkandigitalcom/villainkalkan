@@ -188,6 +188,12 @@ describe("DiscountCollection kaynak kilidi", () => {
     expect(src).toMatch(/design = DISCOUNT_CARD_DESIGN/);
     expect(src).toMatch(/design === "b" \? DiscountVillaCardB : DiscountVillaCardA/);
   });
+  it("bölüm beyaz, yuvarlatılmış bir panel içinde; başlık ve carousel panelde", () => {
+    const panel = src.slice(src.indexOf("data-discount-panel"));
+    expect(panel).toMatch(/className="max-w-site mx-auto rounded-\[24px\][^"]*bg-white/);
+    expect(panel.indexOf("<h2")).toBeGreaterThan(-1);
+    expect(panel.indexOf("<HorizontalCarousel")).toBeGreaterThan(panel.indexOf("<h2"));
+  });
   it("veri kaynağı, carousel ve card_key korunur", () => {
     expect(src).toMatch(/getCachedDiscountCollectionVillas\(\)/);
     expect(src).toMatch(/<HorizontalCarousel/);

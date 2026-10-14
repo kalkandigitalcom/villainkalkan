@@ -134,9 +134,14 @@ export default async function DiscountCollection({
   return (
     <section
       data-discount-design={design}
-      className="px-5 md:px-10 lg:px-16 py-14 md:py-20"
+      className="px-5 md:px-10 lg:px-16 py-10 md:py-14"
     >
-      <div className="max-w-site mx-auto">
+      {/* 🤍 Beyaz panel — bölümü sayfa zemininden ayırır. Yalnız kapsayıcı;
+          başlık, kartlar, kart ölçüleri/aralıkları ve kaydırma AYNEN. */}
+      <div
+        data-discount-panel
+        className="max-w-site mx-auto rounded-[24px] md:rounded-[28px] bg-white border border-[var(--color-stone-100)] shadow-[0_18px_44px_-30px_rgba(36,54,75,0.28)] px-4 py-8 sm:px-6 md:px-8 md:py-12"
+      >
         <div className="text-center mb-8 md:mb-12">
           <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
             {title}
