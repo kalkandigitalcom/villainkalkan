@@ -927,7 +927,7 @@ export default function VillaCard({
         }
       >
         {/* ── FOTOĞRAF ── */}
-        <div className="relative aspect-[16/11] overflow-hidden bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]">
+        <div className="relative aspect-[16/11] @[30rem]:aspect-[16/9] overflow-hidden bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]">
           {showImage ? (
             <Image
               src={cover}

@@ -66,7 +66,7 @@ import {
 } from "@/lib/i18n/taxonomy-name.helper";
 
 /* 🛡️ KART GÖRSELİ `sizes` — yalnız bu sayfanın grid'ine göre (sidebar
-   md+ 260/300px; kart 1 / sm 2 / xl 3 sütun). Değerler ölçülen kart
+   md+ 260/300px; kart 1 / sm 2 / md 1 / lg+ 2 sütun). Değerler ölçülen kart
    genişliği × 1.41 güvenlik payı (16:9 cover kırpma × hover 1.06) ile
    hesaplandı; mevcut değerden daha KÜÇÜK bir görsel seçilmesi yalnız
    gereken genişliğin üstünde kalındığı yerde olur. ≤767px AYNEN.
@@ -74,10 +74,9 @@ import {
 const KIRALIK_VILLALAR_CARD_SIZES =
   "(max-width: 640px) 100vw, " +
   "(max-width: 767px) 50vw, " +
-  "(max-width: 1023px) calc(70.5vw - 287px), " +
-  "(max-width: 1279px) calc(70.5vw - 360px), " +
-  "(max-width: 1407px) calc(47vw - 256px), " +
-  "406px";
+  "(max-width: 1023px) calc(141vw - 525px), " +
+  "(max-width: 1407px) calc(70.5vw - 360px), " +
+  "634px";
 
 type ArchiveDictionary = Dictionary["villasArchive"];
 type SearchDictionary = Dictionary["search"];
@@ -468,7 +467,7 @@ export default async function KiralikVillalarPageBody({
                       {SORT_DROPDOWN_CLOSE_SCRIPT}
                     </Script>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
                       {/* 🛡️ Faz 9 hardening: `(villa: any)` → `VillaDTO`.
                          🛡️ SCALE HARDENING: `villas` yerine `villasOnPage`
                          (PAGE_SIZE'la dilimlenmiş). */}

@@ -107,7 +107,7 @@ import Script from "next/script";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /* 🛡️ KART GÖRSELİ `sizes` — yalnız /arama grid'ine göre (sidebar md+
-   260/300px; kart 1 / sm 2 / md 1 / lg 2 / xl 3 sütun). Değerler ölçülen
+   260/300px; kart 1 / sm 2 / md 1 / lg+ 2 sütun). Değerler ölçülen
    kart genişliği × 1.41 güvenlik payı (16:9 cover kırpma × hover 1.06)
    ile hesaplandı; ≤1023px mevcut değer AYNEN korunur. Ana liste ve
    esnek tarih bölümü aynı grid'i kullanır. Grid/padding sınıfları
@@ -115,9 +115,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const ARAMA_CARD_SIZES =
   "(max-width: 640px) 100vw, " +
   "(max-width: 1023px) 50vw, " +
-  "(max-width: 1279px) calc(70.5vw - 360px), " +
-  "(max-width: 1407px) calc(47vw - 256px), " +
-  "406px";
+  "(max-width: 1407px) calc(70.5vw - 360px), " +
+  "634px";
 
 /* 🛡️ Next.js 16: searchParams-bağımlı sayfalar zaten dynamic
    olmalı, ama bir caching / PPR sürprizi olmadığından emin
@@ -1487,7 +1486,7 @@ export default async function AramaPageBody({
                      lg 1024+    → 2 kart (300px sidebar + geniş)
                      xl 1280+    → 3 kart (premium)
                    Card visual'ı dokunulmadı; sadece grid sayısı. */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
                   {/* 🛡️ SCALE HARDENING — `visibleVillas` yerine
                      `villasOnPage` (PAGE_SIZE dilim). Tüm filtreleme +
                      availability semantic'i aynen `visibleVillas`'da.
@@ -1609,7 +1608,7 @@ export default async function AramaPageBody({
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
                       {flexibleVillas.map((villa) => (
                         <VillaCard
                           key={villa.id}

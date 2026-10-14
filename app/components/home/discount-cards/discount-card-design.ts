@@ -12,4 +12,6 @@
 
 export type DiscountCardDesign = "a" | "b" | "c";
 
-export const DISCOUNT_CARD_DESIGN: DiscountCardDesign = "c";
+/* Onaylı tasarım: "a". "c" yalnız önizleme sayfasında karşılaştırma
+   için tutulur; ana sayfanın varsayılanı DEĞİLDİR. */
+export const DISCOUNT_CARD_DESIGN: DiscountCardDesign = "a";

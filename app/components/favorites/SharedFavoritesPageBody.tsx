@@ -144,7 +144,7 @@ export default async function SharedFavoritesPageBody({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-12 md:gap-y-16">
             {data.villas.map((villa) => (
               <VillaCard
                 key={villa.id}

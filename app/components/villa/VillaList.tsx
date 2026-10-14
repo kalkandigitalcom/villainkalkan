@@ -14,15 +14,15 @@ import { localeHref } from "@/lib/i18n/locale-href";
 import { getVillaBadgesByLocale } from "@/lib/i18n/get-villa-badge-translations.server";
 
 /* 🛡️ KART GÖRSELİ `sizes` — yalnız ana sayfa VillaList grid'ine göre
-   (kart 1 / sm 2 / lg 4 sütun; max-w 1280). Değerler ölçülen kart
+   (kart 1 / sm+ 2 sütun; max-w 1280). Değerler ölçülen kart
    genişliği × 1.41 güvenlik payı (16:9 cover kırpma × hover 1.06) ile
    hesaplandı; ≤1023px mevcut değer AYNEN korunur. Grid/padding
    sınıfları değişirse bu değer yeniden hesaplanmalı. */
 const VILLA_LIST_CARD_SIZES =
   "(max-width: 640px) 100vw, " +
   "(max-width: 1023px) 50vw, " +
-  "(max-width: 1407px) calc(35.3vw - 81px), " +
-  "415px";
+  "(max-width: 1407px) calc(70.5vw - 113px), " +
+  "880px";
 
 export default async function VillaList({
   locale = DEFAULT_LOCALE,
@@ -110,7 +110,7 @@ export default async function VillaList({
         </div>
 
         {/* 🛡️ FAZ 39L — Grid spacing tightened (cards focus). */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 md:gap-x-8 gap-y-10 md:gap-y-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-10 md:gap-y-12">
           {villas.map((villa) => (
             <VillaCard
               key={villa.slug || villa.id}

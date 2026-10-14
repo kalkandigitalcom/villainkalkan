@@ -129,3 +129,29 @@ describe("Public villa kartı — yeni tasarım", () => {
     expect(panel.querySelector(".line-through")!.textContent).toContain(formatCurrency(12000, "TRY", "tr"));
   });
 });
+
+/* ===============================================================
+   İKİ SÜTUNLU LİSTE YERLEŞİMİ — public villa kartı grid'leri
+   ===============================================================
+   Masaüstünde en fazla 2 kart yan yana; mobilde tek sütun. Sidebar'lı
+   sayfalarda (arama / kiralık villalar) md'de tek, lg+ iki sütun. */
+import { readFileSync } from "fs";
+
+describe("Public villa listeleri — ikili düzen", () => {
+  const GRIDS: Array<[string, RegExp]> = [
+    ["app/components/search/AramaPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-6/g],
+    ["app/components/search/KiralikVillalarPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-6/g],
+    ["app/(public)/favoriler/FavoritesGrid.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-x-6/g],
+    ["app/components/villa/VillaList.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-x-6/g],
+    ["app/components/villa/SimilarVillasSection.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-6/g],
+    ["app/components/short-gaps/ShortGapsPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-6/g],
+    ["app/components/favorites/SharedFavoritesPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-x-6/g],
+    ["app/components/not-found/NotFoundContent.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-6/g],
+    ["app/components/shared-list/SharedListPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2\s/g],
+  ];
+  it.each(GRIDS)("%s → masaüstünde 2 sütun, 3/4 sütun yok", (file, re) => {
+    const src = readFileSync(file, "utf-8");
+    expect(src).toMatch(re);
+    expect(src).not.toMatch(/(lg|xl):grid-cols-[34]\b/);
+  });
+});
