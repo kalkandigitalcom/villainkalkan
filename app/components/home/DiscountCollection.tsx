@@ -42,9 +42,10 @@ const LAYOUT: Record<
   { item: string; gap: string; scrollStep: number }
 > = {
   a: {
-    item: "w-[86vw] max-w-[400px] md:max-w-none md:w-[628px]",
+    /* 2 kart = ortak site genişliği (max-w-site 1210): (1210 − 24) / 2 */
+    item: "w-[86vw] max-w-[400px] md:max-w-none md:w-[593px]",
     gap: "gap-4 md:gap-6",
-    scrollStep: 652,
+    scrollStep: 617,
   },
   b: {
     item: "w-[84vw] max-w-[400px] md:max-w-none md:w-[720px] lg:w-[780px]",
@@ -135,7 +136,7 @@ export default async function DiscountCollection({
       data-discount-design={design}
       className="px-5 md:px-10 lg:px-16 py-14 md:py-20"
     >
-      <div className="max-w-[1280px] mx-auto">
+      <div className="max-w-site mx-auto">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
             {title}

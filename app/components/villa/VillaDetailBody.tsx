@@ -176,7 +176,7 @@ export default function VillaDetailBody({
   return (
     <>
       <div className="px-5 md:px-10 lg:px-16 pt-8 md:pt-12 pb-24 md:pb-32">
-        <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-site mx-auto">
           {/* SEO — JSON-LD structured data */}
           {vacationRentalLd && <JsonLd data={vacationRentalLd} />}
           {breadcrumbLd && <JsonLd data={breadcrumbLd} />}

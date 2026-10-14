@@ -264,7 +264,7 @@ export default function HeroSearchPanel({
           - Gelişmiş Arama: bar altında sade metin bağlantısı.
           - Tek seferlik giriş animasyonu (reduced-motion'da kapalı).
         ═══════════════════════════════════════════════════════ */
-    <div className="relative mt-10 md:mt-14 w-full max-w-[1120px] mx-auto hero-panel-in">
+    <div className="relative mt-10 md:mt-14 w-full max-w-site mx-auto hero-panel-in">
       <style>{`
         @keyframes heroPanelIn {
           from { opacity: 0; transform: translateY(14px); }

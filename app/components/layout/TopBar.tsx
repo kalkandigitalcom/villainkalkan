@@ -317,14 +317,16 @@ export default function TopBar() {
      SOL alan mobilde gizli (md+), kur seçici TÜM breakpoint'lerde.
      ═══════════════════════════════════════════════════════════ */
   return (
+    /* 📐 Tam genişlik koyu şerit; içerik ortak site çizgisinde
+       (max-w-site) — Header/Hero/bölümlerle aynı hizada. */
     <div
       className="
-        flex items-center gap-2 md:gap-4 lg:gap-6
-        px-4 md:px-10 lg:px-12 py-[6px]
+        px-4 md:px-10 lg:px-16 py-[6px]
         bg-[var(--color-stone-900)]
         text-white
       "
     >
+    <div className="max-w-site mx-auto flex items-center gap-2 md:gap-4 lg:gap-6">
       {/* SOL — İletişim (Telefon + E-posta). Mobilde sıkışmayı/taşmayı
           önlemek için md+ görünür. */}
       <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0 text-[14px]">
@@ -517,6 +519,7 @@ export default function TopBar() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

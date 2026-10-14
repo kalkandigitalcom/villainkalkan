@@ -399,7 +399,7 @@ export default async function KiralikVillalarPageBody({
                  zaten kendi içinde drawer'ı render eder)
             ======================================================= */}
         <section className="px-5 md:px-10 lg:px-16 pt-8 md:pt-12 pb-24 md:pb-32">
-          <div className="max-w-[1280px] mx-auto">
+          <div className="max-w-site mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] lg:grid-cols-[300px_1fr] gap-x-8 lg:gap-x-12">
               {/* SIDEBAR — redirect mode */}
               <FilterSidebar

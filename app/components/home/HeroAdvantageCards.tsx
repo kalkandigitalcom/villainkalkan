@@ -56,7 +56,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
    RESPONSIVE:
      Mobilde tek sütun (alt alta, sıfır overflow riski), md+ ekranda
      3 sütun yan yana. Masaüstünde dengeli genişlik için mevcut
-     homepage section konteyner deseni (max-w-[1280px] + px-5 md:px-10
+     homepage section konteyner deseni (max-w-site + px-5 md:px-10
      lg:px-16) reuse edildi (VillaTypeCarousel / LocationCollection
      ile AYNI konteyner deseni).
    =============================================================== */
@@ -179,7 +179,7 @@ export default function HeroAdvantageCards({
       `}</style>
 
       <div className="px-5 md:px-10 lg:px-16">
-        <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-site mx-auto">
           <ul
             role="list"
             className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-7"

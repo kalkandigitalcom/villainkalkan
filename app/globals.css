@@ -8,6 +8,15 @@
    ================================================================ */
 
 @theme {
+  /* 📐 SİTE İÇERİK GENİŞLİĞİ — public sitenin ORTAK içerik çizgisi.
+     `max-w-site` utility'si bu token'dan üretilir (Tailwind v4
+     --container-* ad alanı). Bölümler: <section px-5 md:px-10 lg:px-16>
+     → <div max-w-site mx-auto>. Tam genişlik zeminli şeritler (Header,
+     TopBar, Hero, Footer) iç kapsayıcıda
+     `max-w-[calc(var(--container-site)+8rem)]` + `lg/xl:px-16` kullanır
+     → içerik aynı 1210px çizgisine hizalanır. */
+  --container-site: 1210px;
+
   /* 🎨 Brand */
   /* 🌿 REBRAND — ana renk PETROL YEŞİLİ #244C45 (eski lacivert yerine).
      Açık nötrler (ivory, sand, stone-50..200) KORUNDU; koyu kademe

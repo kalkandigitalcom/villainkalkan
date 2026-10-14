@@ -225,7 +225,7 @@ export default async function ContactPageBody({
 
           {/* GRID — sol iletişim/sosyal, sağ glass form */}
           <section className="px-5 md:px-10 lg:px-16 pt-12 md:pt-16 pb-24 md:pb-32">
-            <div className="max-w-[1280px] mx-auto">
+            <div className="max-w-site mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                 {/* LEFT — bilgi + sosyal kartlar */}
                 <aside className="lg:col-span-5 space-y-8">
@@ -291,7 +291,7 @@ export default async function ContactPageBody({
           MAP — modern container
       ============================================================ */}
       <section className="px-5 md:px-10 lg:px-16 pb-24 md:pb-32">
-        <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-site mx-auto">
           <div className="flex items-end justify-between gap-6 mb-8 md:mb-12">
             <div>
               <p className="text-[11px] tracking-[0.28em] uppercase font-medium text-[var(--color-stone-500)]">
@@ -326,7 +326,7 @@ export default async function ContactPageBody({
           FAQ — yeniden tasarım (numaralı premium kartlar)
       ============================================================ */}
       <section className="px-5 md:px-10 lg:px-16 pb-24 md:pb-32">
-        <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-site mx-auto">
           <div className="mb-12 md:mb-16">
             <p className="text-[11px] tracking-[0.28em] uppercase font-medium text-[var(--color-stone-500)]">
               <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />

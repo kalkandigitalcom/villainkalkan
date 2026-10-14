@@ -238,8 +238,8 @@ export default function Hero({
       <div
         className="
           relative
-          max-w-[1480px] mx-auto
-          px-5 md:px-10 lg:px-[clamp(4rem,7vw,7.5rem)]
+          max-w-[calc(var(--container-site)+8rem)] mx-auto
+          px-5 md:px-10 lg:px-16
           min-h-[100svh]
           flex flex-col
           pt-[132px] md:pt-[148px]
