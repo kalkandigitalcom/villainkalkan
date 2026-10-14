@@ -1,16 +1,17 @@
 /* ===============================================================
-   🛡️ HEADER — sticky (scroll) tema durumları
+   🛡️ HEADER — tüm public sayfalarda TEK görünüm
    ===============================================================
-   • Ana sayfa, en üstte      → şeffaf zemin, açık metin, AÇIK logo
-                                (footer_logo) görünür
-   • Ana sayfa, kaydırılmış   → BEYAZ zemin, petrol (#244C45) metin,
-                                KOYU logo (site_logo) görünür
-     (ana sayfada iki varyant aynı hücrede; yalnız opaklık değişir)
-   • İç sayfa (her durumda)   → petrol zemin, açık metin, footer logosu
+   • Her sayfada (ana sayfa dahil), kaydırmadan bağımsız: BEYAZ zemin,
+     petrol (#244C45) metin/ikon, KOYU logo (site_logo).
+   • Logo boyutu her sayfada aynı: h-12 (mobil) / md:h-16 (masaüstü),
+     oran korunur (w-auto + object-contain).
+   • footer_logo header'da KULLANILMAZ (Footer'a özgü).
+   • Spacer yalnız iç sayfalarda (hero header altından başlar).
    Ağır alt bileşenler shallow mock'lanır (header-locale.test ile aynı).
    =============================================================== */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, act } from "@testing-library/react";
+import { readFileSync } from "fs";
 
 const usePathnameMock = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -27,7 +28,7 @@ import Header from "@/app/components/layout/Header";
 
 const MENU = [{ id: "1", name: "Villalar", href: "/kiralik-villalar" }];
 const SITE_LOGO = "https://assets.example.com/logo/logo.webp";
-const FOOTER_LOGO = "https://assets.example.com/logo/footer-logo.webp";
+const PATHS = ["/", "/tr", "/en", "/kiralik-villalar", "/kiralik-villa/x", "/arama", "/blog", "/en/blog"];
 
 function setScroll(y: number) {
   Object.defineProperty(window, "scrollY", { value: y, configurable: true });
@@ -36,123 +37,88 @@ function setScroll(y: number) {
   });
 }
 
-function renderAt(pathname: string) {
+function renderAt(pathname: string, siteLogo: string | null = SITE_LOGO) {
   usePathnameMock.mockReturnValue(pathname);
-  const utils = render(
-    <Header menu={MENU} siteLogo={SITE_LOGO} footerLogo={FOOTER_LOGO} />
-  );
+  const utils = render(<Header menu={MENU} siteLogo={siteLogo} />);
   const shell = utils.container.querySelector("header > div") as HTMLElement;
   const nav = utils.container.querySelector("nav") as HTMLElement;
-  const logo = utils.container.querySelector("header img") as HTMLImageElement;
-  const light = utils.container.querySelector('img[data-logo-variant="light"]') as HTMLImageElement | null;
-  const dark = utils.container.querySelector('img[data-logo-variant="dark"]') as HTMLImageElement | null;
-  return { ...utils, shell, nav, logo, light, dark };
+  const imgs = utils.container.querySelectorAll("header img");
+  return { ...utils, shell, nav, imgs };
 }
 
-describe("Header — sticky tema", () => {
+describe("Header — standart beyaz görünüm", () => {
   beforeEach(() => {
     usePathnameMock.mockReset();
     setScroll(0);
   });
   afterEach(() => setScroll(0));
 
-  it("1) ana sayfa en üstte → şeffaf zemin + açık metin + AÇIK logo görünür", () => {
-    const { shell, nav, light, dark } = renderAt("/");
-    expect(shell.className).toContain("bg-[#244c45]/10");
-    expect(shell.className).not.toContain("bg-white/95");
-    expect(nav.className).toContain("text-white/85");
-    expect(light!.getAttribute("src")).toBe(FOOTER_LOGO);
-    expect(dark!.getAttribute("src")).toBe(SITE_LOGO);
-    expect(light!.className).toContain("opacity-100");
-    expect(dark!.className).toContain("opacity-0");
-    expect(light!.getAttribute("alt")).toBe("Site logosu");
-    expect(dark!.getAttribute("aria-hidden")).toBe("true");
-  });
-
-  it("2) ana sayfa kaydırılınca → beyaz zemin + petrol metin ", () => {
-    const { shell, nav } = renderAt("/");
-    setScroll(200);
-    expect(shell.className).toContain("bg-white/95");
-    expect(shell.className).not.toContain("bg-[var(--color-stone-900)]/95");
-    expect(shell.className).toContain("transition-[background-color,box-shadow,border-color]");
+  it.each(PATHS)("1) %s → beyaz zemin + petrol metin, kaydırınca zemin DEĞİŞMEZ", (p) => {
+    const { shell, nav } = renderAt(p);
+    const before = shell.className.split(" ").filter((c) => c.startsWith("bg-"));
+    expect(before).toEqual(["bg-white"]);
     expect(nav.className).toContain("text-[#244C45]/80");
-    expect(nav.className).not.toContain("text-white/85");
-  });
-
-  it("2b) kaydırınca KOYU logo görünür, açık logo gizlenir (aynı hücre → kayma yok)", () => {
-    const { light, dark } = renderAt("/");
+    expect(nav.className).not.toContain("text-white");
     setScroll(200);
-    expect(dark!.className).toContain("opacity-100");
-    expect(light!.className).toContain("opacity-0");
-    expect(dark!.getAttribute("alt")).toBe("Site logosu");
-    expect(light!.getAttribute("aria-hidden")).toBe("true");
-    for (const img of [light!, dark!]) {
-      expect(img.className).toContain("col-start-1");
-      expect(img.className).toContain("row-start-1");
-      expect(img.className).toContain("md:h-16");
-    }
+    const after = shell.className.split(" ").filter((c) => c.startsWith("bg-"));
+    expect(after).toEqual(before);
+    expect(nav.className).toContain("text-[#244C45]/80");
   });
 
-  it("2c) footer_logo yoksa ana sayfada tek logo (site_logo) — kırılmaz", () => {
-    usePathnameMock.mockReturnValue("/");
-    const { container } = render(<Header menu={MENU} siteLogo={SITE_LOGO} footerLogo={null} />);
-    const imgs = container.querySelectorAll("header img");
+  it.each(PATHS)("2) %s → tek KOYU logo (site_logo), aynı boyut sınıfları", (p) => {
+    const { imgs } = renderAt(p);
     expect(imgs).toHaveLength(1);
     expect(imgs[0].getAttribute("src")).toBe(SITE_LOGO);
-  });
-
-  it("3) TR/EN ana sayfaları aynı logo + sticky beyaz temayı kullanır", () => {
-    for (const p of ["/", "/tr", "/en"]) {
-      const { shell, light, dark, unmount } = renderAt(p);
-      expect(light!.className, p).toContain("opacity-100");
-      setScroll(200);
-      expect(shell.className, p).toContain("bg-white/95");
-      expect(dark!.className, p).toContain("opacity-100");
-      unmount();
-      setScroll(0);
+    expect(imgs[0].getAttribute("alt")).toMatch(p.startsWith("/en") ? /^Site logo$/ : /^Site logosu$/);
+    for (const c of ["h-12", "md:h-16", "w-auto", "object-contain"]) {
+      expect(imgs[0].className, c).toContain(c);
     }
+    expect(imgs[0].className).not.toContain("h-9");
   });
 
-  it("4) iç sayfa (en üstte ve kaydırılmış) → petrol zemin + footer logosu (DEĞİŞMEDİ)", () => {
-    const { shell, nav, logo } = renderAt("/kiralik-villalar");
-    expect(shell.className).toContain("bg-[var(--color-stone-900)]/95");
-    expect(logo.getAttribute("src")).toBe(FOOTER_LOGO);
-    setScroll(200);
-    expect(shell.className).toContain("bg-[var(--color-stone-900)]/95");
-    expect(shell.className).not.toContain("bg-white/95");
-    expect(nav.className).toContain("text-white/85");
-    expect(logo.getAttribute("src")).toBe(FOOTER_LOGO);
+  it("3) logo boyutu sayfadan bağımsız — ana sayfa ile iç sayfa birebir", () => {
+    const home = renderAt("/").imgs[0].className;
+    cleanupAll();
+    const inner = renderAt("/kiralik-villalar").imgs[0].className;
+    expect(inner).toBe(home);
   });
 
-  it("5) kaydırma geri en üste dönünce şeffaf duruma döner", () => {
+  it("4) site_logo yoksa wordmark (beyaz zeminde görünmeyen footer logosu KULLANILMAZ)", () => {
+    const { imgs, container } = renderAt("/", null);
+    expect(imgs).toHaveLength(0);
+    expect(container.querySelector("header a")!.textContent).toContain("Villa");
+  });
+
+  it("5) kaydırınca yalnız ince gölge belirir", () => {
     const { shell } = renderAt("/");
+    expect(shell.className).toContain("shadow-none");
     setScroll(200);
-    expect(shell.className).toContain("bg-white/95");
-    setScroll(0);
-    expect(shell.className).toContain("bg-[#244c45]/10");
+    expect(shell.className).toContain("shadow-[0_10px_30px_-16px_rgba(36,76,69,0.28)]");
   });
 
-  it("5b) ana sayfa logosu büyük (h-12 / md:h-16), oran korunur — şeffaf ve sticky", () => {
-    const { light, dark } = renderAt("/");
-    for (const img of [light!, dark!]) {
-      for (const c of ["h-12", "md:h-16", "w-auto", "object-contain"]) {
-        expect(img.className, c).toContain(c);
-      }
+  it("6) hamburger ikonu beyaz zeminde petrol renkte (her sayfada)", () => {
+    for (const p of ["/", "/kiralik-villalar"]) {
+      const { getByLabelText, unmount } = renderAt(p);
+      expect(getByLabelText("Menüyü aç").className).toContain("text-[#244C45]");
+      unmount();
     }
-    setScroll(200);
-    expect(dark!.className).toContain("md:h-16");
   });
 
-  it("5c) iç sayfa logo boyutu DEĞİŞMEDİ (h-9 / md:h-12)", () => {
-    const { logo } = renderAt("/kiralik-villalar");
-    expect(logo.className).toContain("h-9");
-    expect(logo.className).toContain("md:h-12");
-    expect(logo.className).not.toContain("md:h-16");
+  it("7) spacer yalnız iç sayfalarda (ana sayfada hero header altından başlar)", () => {
+    expect(renderAt("/").container.querySelector("div.h-\\[108px\\]")).toBeNull();
+    cleanupAll();
+    expect(renderAt("/kiralik-villalar").container.querySelector("div.h-\\[108px\\]")).toBeTruthy();
   });
 
-  it("6) hamburger ikonu beyaz zeminde petrol renkte", () => {
-    const { getByLabelText } = renderAt("/");
-    setScroll(200);
-    expect(getByLabelText("Menüyü aç").className).toContain("text-[#244C45]");
+  it("8) 🔒 kaynak: footer_logo header'a geçirilmiyor, şeffaf durum yok", () => {
+    const header = readFileSync("app/components/layout/Header.tsx", "utf-8");
+    const wrapper = readFileSync("app/components/layout/HeaderWrapper.tsx", "utf-8");
+    expect(header).not.toMatch(/footerLogo/);
+    expect(wrapper).not.toMatch(/footerLogo/);
+    expect(header).not.toMatch(/overHero|lightSticky|bg-\[#244c45\]\/10/);
   });
 });
+
+function cleanupAll() {
+  document.body.innerHTML = "";
+}

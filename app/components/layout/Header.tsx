@@ -83,9 +83,10 @@ import {
 /* ===============================================================
    🛡️ HEADER REDESIGN (premium / referans tasarım)
    ===============================================================
-   - Ana sayfada (/, /tr, /en, /de) header hero görselinin ÜZERİNDE
-     şeffaf durur; scroll / mobil menü açıkken ve iç sayfalarda koyu
-     lacivert zemine geçer. Spacer yalnız iç sayfalarda basılır.
+   - TÜM public sayfalarda beyaz zemin + koyu logo (site_logo) + petrol
+     metin/ikon; kaydırmayla zemin DEĞİŞMEZ (yalnız ince gölge). Ana
+     sayfada header hero görselinin üzerinde fixed durur (hero kendi üst
+     boşluğuyla altında kalır); spacer yalnız iç sayfalarda basılır.
    - Sağ alan: mevcut arama + favoriler. Dil seçici ve telefon YALNIZ
      TopBar'da; "Teklif Al" CTA'sı sol kenardaki sabit FloatingQuoteCta
      bileşeninde (public layout) → header'da tekrar yok.
@@ -93,7 +94,7 @@ import {
      state/accordion mantığı DEĞİŞMEDİ; yalnız görsel katman.
    =============================================================== */
 
-/** Ana sayfa yolları — header'ın hero üzerinde şeffaf durduğu yerler. */
+/** Ana sayfa yolları — hero header'ın ALTINDAN başladığı için spacer basılmaz. */
 const HOME_PATHS = new Set<string>([
   "/",
   ...SUPPORTED_LOCALES.map((l) => `/${l}`),
@@ -114,14 +115,10 @@ export default function Header({
   menu = [],
   siteLogo = null,
   trHomeHref = "/",
-  footerLogo = null,
 }: {
   menu?: MenuItem[];
   /* settings.site_logo — boşsa text wordmark fallback */
   siteLogo?: string | null;
-  /* settings.footer_logo — koyu zemin için açık/negatif logo. Koyu
-     (dolu) header durumunda varsa kullanılır, yoksa site_logo. */
-  footerLogo?: string | null;
   /* 🔄 TR ana sayfanın yolu. Varsayılan dil EN/DE iken "/" bir
      YÖNLENDİRİCİ olduğu için HeaderWrapper "/tr" geçer; aksi halde
      (ve prop hiç verilmezse) "/" → davranış BYTE-IDENTICAL. */
@@ -194,55 +191,26 @@ export default function Header({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* 🛡️ HEADER DURUMLARI
-       • overHero  — ana sayfa, en üstte, mobil menü kapalı → hero
-                     üzerinde şeffaf, açık metin/ikon (DEĞİŞMEDİ).
-       • lightSticky — ana sayfada aşağı kaydırılmış (sticky) → BEYAZ
-                     zemin, petrol (#244C45) metin/ikon, altın vurgu.
-       • diğer     — iç sayfalar / ana sayfada en üstte mobil menü açık
-                     → petrol zemin, açık metin (DEĞİŞMEDİ).
-     Yükseklik/padding durumlar arasında AYNI → yerleşim kayması yok;
-     renkler 300ms transition ile yumuşak geçer. */
+  /* 🛡️ HEADER ZEMİNİ — TÜM public sayfalarda TEK görünüm: beyaz zemin,
+     petrol (#244C45) metin/ikon, altın vurgu. Ana sayfadaki "hero
+     üzerinde şeffaf → kaydırınca beyaz" geçişi KALDIRILDI; zemin rengi
+     kaydırmadan bağımsızdır (yalnız ince gölge kaydırınca belirir).
+     Fixed konum, yükseklik (72/80px) ve iç sayfa boşluğu AYNEN. */
   const normalizedPath = (pathname || "/").replace(/\/+$/, "") || "/";
   const isHome = HOME_PATHS.has(normalizedPath);
-  const overHero = isHome && !scrolled && !open;
-  const lightSticky = isHome && scrolled;
-  /** Koyu zemin (şeffaf/petrol) vs. beyaz sticky zemin için sınıf seçici. */
-  const tone = (onDark: string, onLight: string) =>
-    lightSticky ? onLight : onDark;
   const headerShellClass =
-    "border-b transition-[background-color,box-shadow,border-color] duration-300 motion-reduce:transition-none " +
-    (overHero
-      ? "bg-[#244c45]/10 !border-transparent shadow-none"
-      : lightSticky
-        ? "bg-white/95 backdrop-blur-xl backdrop-saturate-150 !border-[#244C45]/10 shadow-[0_10px_30px_-16px_rgba(36,76,69,0.28)]"
-        : "bg-[var(--color-stone-900)]/95 backdrop-blur-xl backdrop-saturate-150 !border-white/10 " +
-          (scrolled
-            ? "shadow-[0_10px_30px_-14px_rgba(0,0,0,0.45)]"
-            : "shadow-none"));
-  /* 🛡️ LOGO VARYANTLARI — mevcut iki ayar (Genel Ayarlar):
-       • site_logo   → koyu/asıl logo (açık zemin)
-       • footer_logo → beyaz/negatif logo (koyu zemin; footer'da da bu)
-     Koyu zemin (hero üzerinde şeffaf ve petrol header) → footer_logo
-     (yoksa site_logo); beyaz sticky → site_logo. İç sayfa davranışı
-     ESKİSİYLE AYNI (footer_logo || site_logo). */
-  const lightLogo = footerLogo || siteLogo;
-  const logoSrc = lightSticky ? siteLogo : lightLogo;
-  /* Ana sayfada iki varyant farklıysa İKİSİ de aynı grid hücresinde
-     üst üste basılır ve yalnız opaklık değişir → kaydırmada kaynak
-     değişimi sırasında boyut/hiza/genişlik kayması ve yükleme
-     gecikmesi olmaz (kutu = iki logonun büyüğü). */
-  const crossfadeLogos =
-    isHome && !!siteLogo && !!footerLogo && siteLogo !== footerLogo;
-  /* 🛡️ LOGO BOYUTU — ana sayfada (şeffaf + beyaz sticky) ~%33 büyük:
-       mobil 36→48px, masaüstü 48→64px yükseklik; genişlik sınırları da
-       aynı oranda büyür (geniş/yatay logolar da büyüsün). Header
-       yüksekliği (72/80px) DEĞİŞMEZ → menü/ikon hizası korunur.
-       `w-auto` + `object-contain` → oran korunur, kırpma/esneme yok.
-     İç sayfalarda boyut AYNEN eski değerler. */
-  const logoImgClass = isHome
-    ? "h-12 md:h-16 w-auto max-w-[44vw] sm:max-w-[230px] md:max-w-[280px] object-contain"
-    : "h-9 md:h-12 w-auto max-w-[32vw] sm:max-w-[170px] md:max-w-[210px] object-contain";
+    "bg-white border-b !border-[#244C45]/10 transition-shadow duration-300 motion-reduce:transition-none " +
+    (scrolled ? "shadow-[0_10px_30px_-16px_rgba(36,76,69,0.28)]" : "shadow-none");
+  /* 🛡️ LOGO — beyaz zeminde her sayfada AYNI koyu logo: Genel Ayarlar >
+     `site_logo`. `footer_logo` (beyaz/negatif) yalnız Footer'da kullanılır
+     (Footer'a dokunulmadı); beyaz zeminde görünmeyeceği için header'da
+     yedek olarak da KULLANILMAZ — site_logo yoksa wordmark gösterilir.
+     BOYUT — tüm sayfalarda tek standart: mobil 48px, masaüstü (md+) 64px
+     yükseklik; `w-auto` + `object-contain` → oran korunur, kırpma/esneme
+     yok. Header yüksekliği (72/80px) DEĞİŞMEZ. */
+  const logoSrc = siteLogo;
+  const logoImgClass =
+    "h-12 md:h-16 w-auto max-w-[44vw] sm:max-w-[230px] md:max-w-[280px] object-contain";
   return (
     <>
       <header className="w-full fixed top-0 z-50">
@@ -257,37 +225,11 @@ export default function Header({
                 font-display tracking-tight
                 flex items-center shrink-0
                 transition-colors duration-300 motion-reduce:transition-none
-              ` + (isHome ? "text-[28px] md:text-[32px] " : "text-2xl ") +
-                tone("text-white hover:text-white/85", "text-[#244C45] hover:text-[#244C45]/80")}
+              text-[28px] md:text-[32px]
+              text-[#244C45] hover:text-[#244C45]/80
+              `}
             >
-              {crossfadeLogos ? (
-                <span className="grid items-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={lightLogo as string}
-                    alt={lightSticky ? "" : dictionary.header.logoAlt}
-                    aria-hidden={lightSticky || undefined}
-                    data-logo-variant="light"
-                    className={
-                      "col-start-1 row-start-1 transition-opacity duration-300 motion-reduce:transition-none " +
-                      logoImgClass +
-                      (lightSticky ? " opacity-0" : " opacity-100")
-                    }
-                  />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={siteLogo as string}
-                    alt={lightSticky ? dictionary.header.logoAlt : ""}
-                    aria-hidden={!lightSticky || undefined}
-                    data-logo-variant="dark"
-                    className={
-                      "col-start-1 row-start-1 transition-opacity duration-300 motion-reduce:transition-none " +
-                      logoImgClass +
-                      (lightSticky ? " opacity-100" : " opacity-0")
-                    }
-                  />
-                </span>
-              ) : logoSrc ? (
+              {logoSrc ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={logoSrc}
@@ -309,10 +251,7 @@ export default function Header({
                 hidden md:flex flex-1 justify-center gap-6 lg:gap-9 xl:gap-11
                 text-[15px] font-medium tracking-[0.01em]
                 transition-colors duration-300 motion-reduce:transition-none
-              ` + tone(
-                "text-white/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.25)]",
-                "text-[#244C45]/80"
-              )}
+              ` + "text-[#244C45]/80"}
             >
               {menu.map((item) => {
                 const isActive = pathname === item.href;
@@ -335,8 +274,8 @@ export default function Header({
                       className={
                         "flex items-center gap-1 transition-colors motion-reduce:transition-none " +
                         (isActive
-                          ? tone("text-white", "text-[#244C45]")
-                          : tone("hover:text-white", "hover:text-[#244C45]"))
+                          ? "text-[#244C45]"
+                          : "hover:text-[#244C45]")
                       }
                     >
                       {itemName}
@@ -386,19 +325,13 @@ export default function Header({
             <div
               className={
                 "hidden md:flex items-center gap-2 lg:gap-3 shrink-0 " +
-                tone(
-                  "[&_a[href$='/favoriler']]:text-white/85 [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white",
-                  "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
-                )
+                "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
               }
             >
               {/* SEARCH — paylaşılan VillaSearchBox (mantık AYNEN). Koyu/
                  şeffaf zemin için yalnız görsel override (descendant). */}
               <div
-                className={tone(
-                  "[&>div]:!bg-white/10 [&>div]:!border-white/20 [&>div:focus-within]:!bg-white/15 [&>div:focus-within]:!border-white/40 [&>div>svg]:!text-white/70 [&>div>input]:!text-white [&>div>input]:placeholder:!text-white/60",
-                  "[&>div]:!bg-[#F6F8FB] [&>div]:!border-[#244C45]/15 [&>div:focus-within]:!bg-white [&>div:focus-within]:!border-[#244C45]/40 [&>div>svg]:!text-[#244C45]/60 [&>div>input]:!text-[#244C45] [&>div>input]:placeholder:!text-[#244C45]/50"
-                )}
+                className={"[&>div]:!bg-[#F6F8FB] [&>div]:!border-[#244C45]/15 [&>div:focus-within]:!bg-white [&>div:focus-within]:!border-[#244C45]/40 [&>div>svg]:!text-[#244C45]/60 [&>div>input]:!text-[#244C45] [&>div>input]:placeholder:!text-[#244C45]/50"}
               >
                 <VillaSearchBox variant="desktop" locale={locale} />
               </div>
@@ -419,10 +352,7 @@ export default function Header({
             <div
               className={
                 "md:hidden flex items-center gap-1.5 sm:gap-2 shrink-0 " +
-                tone(
-                  "[&_a[href$='/favoriler']]:text-white/85 [&_a[href$='/favoriler']:hover]:bg-white/10 [&_a[href$='/favoriler']:hover]:text-white",
-                  "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
-                )
+                "[&_a[href$='/favoriler']]:text-[#244C45] [&_a[href$='/favoriler']:hover]:bg-[#244C45]/[0.06] [&_a[href$='/favoriler']:hover]:text-[#244C45]"
               }
             >
               {/* 🛡️ MOBILE SEARCH kaldırıldı — mobilde tek villa-adı arama
@@ -448,7 +378,7 @@ export default function Header({
                 aria-expanded={open}
                 className={
                   "inline-flex items-center justify-center shrink-0 p-2 sm:p-2.5 rounded-full transition-colors duration-300 motion-reduce:transition-none " +
-                  tone("text-white hover:bg-white/10", "text-[#244C45] hover:bg-[#244C45]/[0.06]")
+                  "text-[#244C45] hover:bg-[#244C45]/[0.06]"
                 }
               >
                 {open ? <X size={22} /> : <Menu size={22} />}
