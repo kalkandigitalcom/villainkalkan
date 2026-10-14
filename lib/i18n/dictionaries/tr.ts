@@ -469,18 +469,6 @@ export const tr: Dictionary = {
       featuresEmpty: "Özellik bulunamadı",
       submit: "Villa bul",
     },
-    advantages: {
-      sectionAriaLabel: "Neden bizi tercih etmelisiniz",
-      experienceTitle: "14 Yıllık Tecrübe",
-      experienceDescription:
-        "14 yıllık sektör deneyimiyle tatilinizi güvenle planlayın.",
-      priceTitle: "En Uygun Fiyat Garantisi",
-      priceDescription:
-        "En doğru villa, en avantajlı fiyat. Tatiliniz için en iyi seçimi yapın.",
-      trustTitle: "Güvenli Rezervasyon",
-      trustDescription:
-        "Rezervasyon sürecinizi güvenilir ve şeffaf bir hizmet anlayışıyla kolayca tamamlayın.",
-    },
     discount: {
       title: "İndirimli Kiralık Villalar",
       carouselAriaLabel: "İndirimli kiralık villalar",

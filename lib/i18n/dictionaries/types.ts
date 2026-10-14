@@ -660,15 +660,6 @@ export type Dictionary = {
       featuresEmpty: string;
       submit: string;
     };
-    advantages: {
-      sectionAriaLabel: string;
-      experienceTitle: string;
-      experienceDescription: string;
-      priceTitle: string;
-      priceDescription: string;
-      trustTitle: string;
-      trustDescription: string;
-    };
     discount: {
       title: string;
       carouselAriaLabel: string;

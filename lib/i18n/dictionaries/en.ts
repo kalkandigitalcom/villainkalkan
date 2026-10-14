@@ -455,18 +455,6 @@ export const en: Dictionary = {
       featuresEmpty: "No features found",
       submit: "Find a villa",
     },
-    advantages: {
-      sectionAriaLabel: "Why choose us",
-      experienceTitle: "14 Years of Experience",
-      experienceDescription:
-        "Plan your holiday with confidence, backed by 14 years in the industry.",
-      priceTitle: "Best Price Guarantee",
-      priceDescription:
-        "The right villa at the best rate. Make the smartest choice for your holiday.",
-      trustTitle: "Secure Booking",
-      trustDescription:
-        "Complete your booking easily with a reliable and transparent service.",
-    },
     discount: {
       title: "Discounted Villa Rentals",
       carouselAriaLabel: "Discounted villa rentals",

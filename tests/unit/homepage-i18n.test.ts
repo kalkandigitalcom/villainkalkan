@@ -15,6 +15,8 @@
 =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
@@ -70,12 +72,11 @@ describe("A) TR dictionary değerleri, taşınmadan önceki hardcoded metinlerle
     expect(h.reviews.title).toBe("Misafirlerimiz ne diyor?");
   });
 
-  it("3) Empty state + avantaj kartları + arama paneli", () => {
+  it("3) Empty state + arama paneli (avantaj kartları kaldırıldı)", () => {
     expect(h.villas.emptyEyebrow).toBe("Koleksiyon");
     expect(h.villas.emptyTitle).toBe("Yakında burada.");
-    expect(h.advantages.experienceTitle).toBe("14 Yıllık Tecrübe");
-    expect(h.advantages.priceTitle).toBe("En Uygun Fiyat Garantisi");
-    expect(h.advantages.trustTitle).toBe("Güvenli Rezervasyon");
+    /* "14 Yıllık Tecrübe" avantaj kartları ana sayfadan kaldırıldı. */
+    expect("advantages" in h).toBe(false);
     expect(h.search.datePlaceholder).toBe("Tarih seç");
     expect(h.search.villaType).toBe("Villa tipi");
     expect(h.search.allRegions).toBe("Tüm bölgeler");
@@ -513,5 +514,22 @@ describe("H) buildHomeMetadata", () => {
       "@/app/components/home/home-metadata"
     );
     expect(await buildHomeMetadata("en")).not.toHaveProperty("robots");
+  });
+});
+
+describe("Ana sayfa — '14 Yıllık Tecrübe' avantaj kartları kaldırıldı", () => {
+  it("HomePageBody bölümü render etmiyor; bileşen dosyası yok", () => {
+    const root = process.cwd();
+    const body = readFileSync(
+      join(root, "app/components/home/HomePageBody.tsx"),
+      "utf8",
+    );
+    expect(body).not.toContain("HeroAdvantageCards");
+    expect(
+      existsSync(join(root, "app/components/home/HeroAdvantageCards.tsx")),
+    ).toBe(false);
+    for (const locale of SUPPORTED_LOCALES) {
+      expect("advantages" in getDictionary(locale).home).toBe(false);
+    }
   });
 });
