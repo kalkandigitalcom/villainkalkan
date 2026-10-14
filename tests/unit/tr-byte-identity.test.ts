@@ -57,12 +57,11 @@ describe("TR byte-identity — villa detay sayfası (kiralik-villa/[slug])", () 
 });
 
 describe("TR byte-identity — VillaDetailTabs", () => {
-  it("sekme etiketleri ve nav aria-label'ı değişmedi", () => {
+  it("sekme etiketleri değişmedi", () => {
     expect(tr.villaTabs.prices).toBe("Fiyatlar");
     expect(tr.villaTabs.availability).toBe("Müsaitlik");
     expect(tr.villaTabs.location).toBe("Konum & Mesafeler");
     expect(tr.villaTabs.features).toBe("Özellikler");
-    expect(tr.villaTabs.navAriaLabel).toBe("Villa detay sekmeleri");
   });
 });
 

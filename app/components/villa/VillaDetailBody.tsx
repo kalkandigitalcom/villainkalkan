@@ -79,20 +79,6 @@ type VideosProp = ComponentProps<typeof Gallery>["videos"];
 type ReviewsProp = ComponentProps<typeof VillaReviewsSection>["reviews"];
 type ReviewStatsProp = ComponentProps<typeof VillaReviewsSection>["stats"];
 
-/* Üst bandın kısa açıklaması — düz metinden kelime sınırında kısaltma. */
-function buildExcerpt(text: string, max: number): string {
-  const t = text.trim();
-  if (t.length <= max) return t;
-  const cut = t.slice(0, max);
-  const lastSpace = cut.lastIndexOf(" ");
-  return (
-    (lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(
-      /[\s.,;:!?-]+$/,
-      "",
-    ) + "…"
-  );
-}
-
 export type VillaDetailBodyProps = {
   locale: Locale;
   villa: VillaDTO;
@@ -196,7 +182,6 @@ export default function VillaDetailBody({
 
   /* 🛡️ Üst tanıtım bandı — yalnız GÖRÜNÜM: mevcut prop'lardan türetilir,
      yeni veri/sorgu YOK. */
-  const heroExcerpt = buildExcerpt(stripHtml(displayDescription), 240);
   const documentNumber = villa.tourism_document_number?.trim() || "";
   const heroStats = [
     {
@@ -280,12 +265,6 @@ export default function VillaDetailBody({
                   aria-hidden
                 />
                 <span className="min-w-0 truncate">{displayLocation}</span>
-              </p>
-            )}
-
-            {heroExcerpt && (
-              <p className="mt-5 text-[15px] leading-[1.75] text-white/75 line-clamp-4">
-                {heroExcerpt}
               </p>
             )}
 
@@ -376,7 +355,6 @@ export default function VillaDetailBody({
 
                 {/* 🛡️ TAB BAND — açıklama altı tab-content switching. */}
                 <VillaDetailTabs
-                  locale={locale}
                   fiyatlar={
                     <section>
                       <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em] mb-4">

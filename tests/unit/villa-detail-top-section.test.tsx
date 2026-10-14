@@ -1,8 +1,8 @@
 /* ===============================================================
    🛡️ Villa detay üst bölüm — paylaşım şeridi, üst navigasyon şeridi,
    "Fotoğrafları Göster" ve kart "Müsaitlik Takvimi" kısayolu.
-   Yalnız EK tetikleyicilerin MEVCUT sekme / galeri state'ine ulaştığı
-   ve mevcut sekme tıklamalarının bozulmadığı doğrulanır.
+   Şerit, sayfadaki TEK sekme navigasyonudur; tetikleyicilerin MEVCUT
+   sekme paneli / galeri state'ine ulaştığı doğrulanır.
    =============================================================== */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, within, act } from "@testing-library/react";
@@ -26,7 +26,6 @@ function Page({ locale = "tr" as "tr" | "en" }) {
       <VillaSectionNav locale={locale} />
       <section id="villa-aciklama">desc</section>
       <VillaDetailTabs
-        locale={locale}
         fiyatlar={<p>PANEL-FIYAT</p>}
         musaitlik={<p>PANEL-MUSAIT</p>}
         konum={<p>PANEL-KONUM</p>}
@@ -39,8 +38,6 @@ function Page({ locale = "tr" as "tr" | "en" }) {
 
 const stripNav = (d = tr) =>
   screen.getByRole("navigation", { name: d.villaTabs.sectionNavAriaLabel });
-const tabsNav = (d = tr) =>
-  screen.getByRole("navigation", { name: d.villaTabs.navAriaLabel });
 
 let scrollSpy: ReturnType<typeof vi.fn>;
 
@@ -70,7 +67,7 @@ describe("Üst navigasyon şeridi ↔ mevcut sekmeler", () => {
     ]);
   });
 
-  it("başlangıçta Açıklama aktif, sekme bandı varsayılanı Fiyatlar (değişmedi)", () => {
+  it("başlangıçta Açıklama aktif, sekme paneli varsayılanı Fiyatlar (değişmedi)", () => {
     render(<Page />);
     expect(
       within(stripNav()).getByRole("button", {
@@ -93,9 +90,6 @@ describe("Üst navigasyon şeridi ↔ mevcut sekmeler", () => {
         within(stripNav()).getByRole("button", { name: tr.villaTabs[key] }),
       );
       expect(screen.getByText(panel)).toBeInTheDocument();
-      expect(
-        within(tabsNav()).getByRole("button", { name: tr.villaTabs[key] }),
-      ).toHaveAttribute("aria-current", "true");
       expect(scrollSpy).toHaveBeenCalled();
       expect(
         within(stripNav()).getByRole("button", { name: tr.villaTabs[key] }),
@@ -123,14 +117,25 @@ describe("Üst navigasyon şeridi ↔ mevcut sekmeler", () => {
     expect(screen.getByText("PANEL-MUSAIT")).toBeInTheDocument();
   });
 
-  it("mevcut sekme tıklaması AYNEN çalışır ve şerit vurgusu senkron kalır", () => {
+  it("eski sekme bandı yok: sayfadaki tek sekme navigasyonu üst şerit", () => {
+    render(<Page />);
+    expect(screen.getAllByRole("navigation")).toHaveLength(1);
+    expect(
+      screen.getAllByRole("button", { name: tr.villaTabs.location }),
+    ).toHaveLength(1);
+    /* Sekme içerikleri silinmedi: varsayılan panel görünür. */
+    expect(screen.getByText("PANEL-FIYAT")).toBeInTheDocument();
+  });
+
+  it("kart kısayolu sekmeyi açınca şerit vurgusu senkron kalır", () => {
     render(<Page />);
     fireEvent.click(
-      within(tabsNav()).getByRole("button", { name: tr.villaTabs.location }),
+      screen.getByRole("button", { name: tr.villaHero.availabilityCalendar }),
     );
-    expect(screen.getByText("PANEL-KONUM")).toBeInTheDocument();
     expect(
-      within(stripNav()).getByRole("button", { name: tr.villaTabs.location }),
+      within(stripNav()).getByRole("button", {
+        name: tr.villaTabs.availability,
+      }),
     ).toHaveAttribute("aria-current", "true");
   });
 

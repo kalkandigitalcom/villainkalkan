@@ -156,13 +156,16 @@ describe("/v/[token] — normal villa detayıyla aynı gövde", () => {
   it("favori, sekmeler, yorumlar, benzer villalar, mobil CTA, giriş/çıkış render edilir", async () => {
     const { container } = await renderPrivate();
     expect(screen.getAllByLabelText(dict.favorites.add).length).toBeGreaterThan(0);
-    const tabsNav = screen.getByRole("navigation", { name: dict.villaTabs.navAriaLabel });
+    /* Tek sekme navigasyonu: üst şerit (eski sekme bandı yok). */
+    const tabsNav = screen.getByRole("navigation", { name: dict.villaTabs.sectionNavAriaLabel });
     expect(within(tabsNav).getByRole("button", { name: dict.villaTabs.prices })).toBeTruthy();
     expect(within(tabsNav).getByRole("button", { name: dict.villaTabs.features })).toBeTruthy();
-    /* Üst navigasyon şeridi de render edilir. */
-    expect(
-      screen.getByRole("navigation", { name: dict.villaTabs.sectionNavAriaLabel })
-    ).toBeTruthy();
+    expect(screen.getAllByRole("button", { name: dict.villaTabs.prices })).toHaveLength(1);
+    /* Üst tanıtım bandında açıklama özeti YOK; asıl metin açıklama bölümünde. */
+    const intro = container.querySelector("[data-villa-intro]")!;
+    expect(intro.textContent).not.toContain("Aciklama.");
+    expect(intro.querySelector("h1")!.textContent).toBe(VILLA.title);
+    expect(document.getElementById("villa-aciklama")!.textContent).toContain("Aciklama.");
     expect(screen.getByText(dict.reviews.title)).toBeTruthy();
     expect(screen.getByTestId("similar-villas-section")).toBeTruthy();
     expect(screen.getByLabelText(dict.booking.mobileCtaAriaLabel)).toBeTruthy();

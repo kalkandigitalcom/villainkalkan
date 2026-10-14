@@ -272,17 +272,16 @@ async function renderPrivateVilla(locale?: "tr" | "en") {
    gibi SEKME içinde (yalnız aktif sekme DOM'da). */
 function openTab(locale: "tr" | "en" | undefined, tab: "features" | "location") {
   const d = getDictionary(locale ?? "tr");
-  /* Üst navigasyon şeridi aynı etiketleri taşır → sekme bandı içinde ara. */
+  /* Sekmeler yalnız üst navigasyon şeridinden açılır. */
   const tabsNav = screen.getByRole("navigation", {
-    name: d.villaTabs.navAriaLabel,
+    name: d.villaTabs.sectionNavAriaLabel,
   });
   fireEvent.click(
     within(tabsNav).getByRole("button", { name: d.villaTabs[tab] })
   );
 }
 
-/* Açıklama metni üst bantta kısa özet olarak da göründüğünden, tam
-   açıklama bölümünün içinde aranır. */
+/* Açıklama metni, açıklama bölümünün içinde aranır. */
 function descriptionSection() {
   return within(document.getElementById("villa-aciklama") as HTMLElement);
 }

@@ -304,9 +304,9 @@ function openVillaTab(
   tab: "prices" | "availability" | "location" | "features"
 ) {
   const dict = getDictionary(locale);
-  /* Üst navigasyon şeridi aynı etiketleri taşır → sekme bandı içinde ara. */
+  /* Sekmeler yalnız üst navigasyon şeridinden açılır. */
   const tabsNav = screen.getByRole("navigation", {
-    name: dict.villaTabs.navAriaLabel,
+    name: dict.villaTabs.sectionNavAriaLabel,
   });
   fireEvent.click(
     within(tabsNav).getByRole("button", { name: dict.villaTabs[tab] })

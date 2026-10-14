@@ -263,7 +263,6 @@ export const en: Dictionary = {
   },
   /* 🛡️ PHASE 10G — VillaDetailTabs.tsx */
   villaTabs: {
-    navAriaLabel: "Villa detail tabs",
     prices: "Rates",
     availability: "Availability",
     location: "Location & Distances",

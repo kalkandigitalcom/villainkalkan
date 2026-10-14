@@ -381,9 +381,8 @@ export type Dictionary = {
     depth: string;
     noDimensions: string;
   };
-  /* 🛡️ PHASE 10G — VillaDetailTabs.tsx (sekme etiketleri + nav aria). */
+  /* 🛡️ Villa detay üst navigasyon şeridi (VillaSectionNav) etiketleri. */
   villaTabs: {
-    navAriaLabel: string;
     prices: string;
     availability: string;
     location: string;
