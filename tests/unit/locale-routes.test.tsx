@@ -24,7 +24,7 @@
 =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 /* 🛡️ PHASE 10B — GERÇEK (mock'lanmamış) dictionary. Villa detay artık
    ComingSoon yerine gerçek locale metni render ediyor; assertion'lar
    TR hardcoded string yerine BU'ndan okunan gerçek EN/DE değerleriyle
@@ -292,26 +292,9 @@ beforeEach(() => {
    hâlâ hiç prop almıyor (PHASE 4A ile birebir). */
 const VILLA_PAGE_PROPS = { params: Promise.resolve({ slug: "test-villa" }) };
 
-/* 🛡️ PHASE 10G — villa detay gövdesi artık TR ile AYNI: sezon fiyatları,
-   takvim, mesafeler ve özellikler `VillaDetailTabs` içinde TEK AKTİF PANEL
-   olarak render ediliyor (varsayılan sekme "fiyatlar"). Aktif olmayan
-   sekmelerin içeriği DOM'da HİÇ YOKTUR (component'in kendi kontratı:
-   "tıklanan tab'ın content'i görünür, diğerleri DOM'dan kalkar") — bu TR
-   sayfasının BUGÜNKÜ davranışıdır, test için DEĞİŞTİRİLMEDİ. Bu yüzden
-   ilgili assertion'lardan önce sekme GERÇEKTEN tıklanır. */
-function openVillaTab(
-  locale: "en",
-  tab: "prices" | "availability" | "location" | "features"
-) {
-  const dict = getDictionary(locale);
-  /* Sekmeler yalnız üst navigasyon şeridinden açılır. */
-  const tabsNav = screen.getByRole("navigation", {
-    name: dict.villaTabs.sectionNavAriaLabel,
-  });
-  fireEvent.click(
-    within(tabsNav).getByRole("button", { name: dict.villaTabs[tab] })
-  );
-}
+/* 🛡️ Villa detay: sezon fiyatları, takvim, mesafeler ve özellikler
+   sayfada ARDIŞIK ve hep açık (sekme yok) — assertion'lar tıklama
+   gerektirmeden doğrudan DOM'da arar. */
 
 /* 🛡️ ComingSoon placeholder'ı KALAN public locale route'u YOK —
    `/en|de/kiralik-villalar` (ARCHIVE_GATE_ROUTES), `/en|de/arama`
@@ -799,7 +782,6 @@ describe.each(VILLA_DETAIL_ROUTES)(
         params: Promise.resolve({ slug: "test-villa" }),
       });
       render(element);
-      openVillaTab(locale, "features");
 
       expect(screen.getByText(`Sea View (${locale})`)).toBeInTheDocument();
       expect(screen.getByText("Havuz")).toBeInTheDocument();
@@ -889,7 +871,6 @@ describe.each(VILLA_DETAIL_ROUTES)(
         params: Promise.resolve({ slug: "test-villa" }),
       });
       render(element);
-      openVillaTab(locale, "location");
 
       const dict = getDictionary(locale);
       expect(
@@ -939,7 +920,6 @@ describe.each(VILLA_DETAIL_ROUTES)(
         params: Promise.resolve({ slug: "test-villa" }),
       });
       render(element);
-      openVillaTab(locale, "location");
 
       /* DB çevirisi KULLANILMAZ; canonical olmayan başlık AYNEN kalır. */
       expect(screen.queryByText("Legacy Custom Distance")).toBeNull();
@@ -989,9 +969,7 @@ describe.each(VILLA_DETAIL_ROUTES)(
          (locale-aware); TR hardcoded metin DEĞİL. Her biri kendi
          sekmesi açıldıktan sonra DOM'a gelir. */
       const dict = getDictionary(locale);
-      openVillaTab(locale, "location");
       expect(screen.getByText(dict.villa.distancesEmpty)).toBeInTheDocument();
-      openVillaTab(locale, "features");
       expect(screen.getByText(dict.villa.featuresEmpty)).toBeInTheDocument();
     });
 
@@ -1203,7 +1181,6 @@ describe.each(VILLA_DETAIL_ROUTES)(
         params: Promise.resolve({ slug: "test-villa" }),
       });
       render(element);
-      openVillaTab(locale, "availability");
 
       expect(
         screen.getByLabelText(dict.availability.prevMonth)

@@ -314,14 +314,9 @@ export default function VillaDetailBody({
         {vacationRentalLd && <JsonLd data={vacationRentalLd} />}
         {breadcrumbLd && <JsonLd data={breadcrumbLd} />}
 
-        {/* ═══ C — NAVİGASYON ŞERİDİ ═══ */}
-        <div className="bg-white border-b border-[var(--color-stone-100)] shadow-[0_10px_24px_-22px_rgba(36,54,75,0.45)] px-5 md:px-10 lg:px-16">
-          <div className="max-w-site mx-auto grid grid-cols-1 lg:grid-cols-10 lg:gap-10">
-            <div className="min-w-0 lg:col-span-7">
-              <VillaSectionNav locale={locale} />
-            </div>
-          </div>
-        </div>
+        {/* ═══ C — NAVİGASYON ŞERİDİ (doğal konumda; ulaşınca Header
+            altında yapışkan — şerit kabı VillaSectionNav içinde) ═══ */}
+        <VillaSectionNav locale={locale} />
 
         <div className="px-5 md:px-10 lg:px-16">
           <div className="max-w-site mx-auto">
@@ -331,7 +326,7 @@ export default function VillaDetailBody({
                 {/* DESCRIPTION */}
                 <section
                   id={VILLA_DESCRIPTION_ANCHOR_ID}
-                  className="scroll-mt-28 md:scroll-mt-32"
+                  className="scroll-mt-[180px]"
                 >
                   <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
                     {dict.villa.aboutTitle}
@@ -353,7 +348,8 @@ export default function VillaDetailBody({
                   )}
                 </section>
 
-                {/* 🛡️ TAB BAND — açıklama altı tab-content switching. */}
+                {/* 🛡️ İÇERİK BÖLÜMLERİ — Fiyatlar, Müsaitlik, Konum, Özellikler
+                    sayfada ardışık ve hep açık (navigasyon hedefleri). */}
                 <VillaDetailTabs
                   fiyatlar={
                     <section>

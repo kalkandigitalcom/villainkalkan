@@ -1,66 +1,88 @@
 /* ===============================================================
-   🛡️ VILLA DETAIL — sayfa içi UI olay köprüsü (yalnız görünüm)
+   🛡️ VILLA DETAIL — sayfa içi navigasyon köprüsü (yalnız görünüm)
    ===============================================================
-   Üst navigasyon şeridi, rezervasyon kartının "Müsaitlik Takvimi"
-   butonu ve "Fotoğrafları Göster" butonu; MEVCUT VillaDetailTabs
-   sekme state'ine ve Gallery lightbox'ına bu window olaylarıyla
-   ULAŞIR. Hiçbir URL/hash/query değişmez, veri çekilmez; mevcut
-   sekme tıklamaları ve galeri tıklamaları AYNEN çalışmaya devam
-   eder — bu köprü yalnız EK bir tetikleyicidir.
+   Açıklama, Fiyatlar, Müsaitlik, Konum ve Özellikler bölümleri
+   sayfada ARDIŞIK ve hep açık durur. Üst navigasyon şeridi
+   (VillaSectionNav) ve rezervasyon kartının "Müsaitlik Takvimi"
+   kısayolu `scrollToVillaSection` ile ilgili bölüme yumuşakça
+   kaydırır; hedef, sabit Header + yapışkan şeridin ALTINDA kalır.
+   Her kaydırma isteği tek bir window olayıyla duyurulur → şerit
+   tıklanan / hedeflenen öğeyi hemen aktif gösterir.
+   Hiçbir URL/hash/query değişmez, veri çekilmez.
    =============================================================== */
 
-export const VILLA_TAB_IDS = [
+export const VILLA_SECTION_IDS = [
+  "aciklama",
   "fiyatlar",
   "musaitlik",
   "konum",
   "ozellikler",
 ] as const;
-export type VillaTabId = (typeof VILLA_TAB_IDS)[number];
+export type VillaSectionId = (typeof VILLA_SECTION_IDS)[number];
 
-/** Dışarıdan sekme açma isteği (detail: { id }). */
-export const VILLA_TAB_OPEN_EVENT = "villa-detail:tab-open";
-/** VillaDetailTabs aktif sekme değiştiğinde yayınlar (detail: { id }). */
-export const VILLA_TAB_CHANGED_EVENT = "villa-detail:tab-changed";
+/** Bölümün DOM id'si (kaydırma hedefi). */
+export function villaSectionAnchorId(id: VillaSectionId): string {
+  return `villa-${id}`;
+}
+
+/** Açıklama bölümünün kaydırma hedefi. */
+export const VILLA_DESCRIPTION_ANCHOR_ID = villaSectionAnchorId("aciklama");
+
+/** Bir bölüme kaydırma isteği yapıldı (detail: { id }). */
+export const VILLA_SECTION_SCROLL_EVENT = "villa-detail:section-scroll";
 /** Gallery lightbox'ını ilk fotoğraftan açma isteği. */
 export const VILLA_GALLERY_OPEN_EVENT = "villa-detail:gallery-open";
 
-/** Sekme bandının kaydırma hedefi (VillaDetailTabs kök elemanı). */
-export const VILLA_TABS_ANCHOR_ID = "villa-detay-sekmeler";
-/** Açıklama bölümünün kaydırma hedefi. */
-export const VILLA_DESCRIPTION_ANCHOR_ID = "villa-aciklama";
+/** Yapışkan navigasyon şeridinin işaretçisi (yükseklik ölçümü için). */
+export const VILLA_SECTION_NAV_ATTR = "data-villa-section-nav-bar";
 
-export function isVillaTabId(value: unknown): value is VillaTabId {
+export function isVillaSectionId(value: unknown): value is VillaSectionId {
   return (
     typeof value === "string" &&
-    (VILLA_TAB_IDS as readonly string[]).includes(value)
+    (VILLA_SECTION_IDS as readonly string[]).includes(value)
   );
 }
 
-function scrollToAnchor(id: string) {
-  if (typeof document === "undefined") return;
-  const el = document.getElementById(id);
-  if (!el) return;
-  const reduce =
+/** Sabit Header'ın (TopBar dahil) GERÇEK yüksekliği. */
+export function getFixedHeaderHeight(): number {
+  if (typeof document === "undefined") return 0;
+  const header = document.querySelector("header");
+  if (!header) return 0;
+  const position = window.getComputedStyle(header).position;
+  if (position !== "fixed" && position !== "sticky") return 0;
+  return Math.round(header.getBoundingClientRect().height);
+}
+
+/** Bölüm başlığının duracağı üst boşluk: Header + şerit + nefes payı. */
+export function getVillaStickyOffset(): number {
+  if (typeof document === "undefined") return 0;
+  const nav = document.querySelector(`[${VILLA_SECTION_NAV_ATTR}]`);
+  const navHeight = nav ? nav.getBoundingClientRect().height : 0;
+  return getFixedHeaderHeight() + navHeight + 16;
+}
+
+function prefersReducedMotion(): boolean {
+  return (
     typeof window !== "undefined" &&
     typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (typeof el.scrollIntoView === "function") {
-    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-  }
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 }
 
-/** Mevcut sekmeyi açar ve sekme bandına kaydırır. */
-export function openVillaTab(id: VillaTabId) {
+/** İlgili bölüme yumuşak kaydırır (Header + yapışkan şerit payı ile). */
+export function scrollToVillaSection(id: VillaSectionId) {
   if (typeof window === "undefined") return;
   window.dispatchEvent(
-    new CustomEvent(VILLA_TAB_OPEN_EVENT, { detail: { id } }),
+    new CustomEvent(VILLA_SECTION_SCROLL_EVENT, { detail: { id } }),
   );
-  scrollToAnchor(VILLA_TABS_ANCHOR_ID);
-}
-
-/** Açıklama bölümüne kaydırır. */
-export function scrollToVillaDescription() {
-  scrollToAnchor(VILLA_DESCRIPTION_ANCHOR_ID);
+  const el = document.getElementById(villaSectionAnchorId(id));
+  if (!el) return;
+  const top =
+    el.getBoundingClientRect().top + window.scrollY - getVillaStickyOffset();
+  window.scrollTo({
+    top: Math.max(0, top),
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
 }
 
 /** Galeri lightbox'ını ilk fotoğraftan açar. */

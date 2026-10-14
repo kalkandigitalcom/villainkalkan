@@ -7,15 +7,15 @@ import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import type { Locale } from "@/lib/i18n/config";
 import {
   openVillaGallery,
-  openVillaTab,
+  scrollToVillaSection,
 } from "@/app/components/villa/villa-detail-events";
 
 /* ===============================================================
    🛡️ Villa detay — küçük EK tetikleyiciler (yalnız görünüm)
    ===============================================================
    - VillaShowPhotosButton: MEVCUT Gallery lightbox'ını açar.
-   - VillaAvailabilityShortcut: MEVCUT "Müsaitlik" sekmesini açar ve
-     sekme bandına kaydırır. Rezervasyon kartının mantığına dokunmaz.
+   - VillaAvailabilityShortcut: sayfada açık duran Müsaitlik bölümüne
+     yumuşak kaydırır. Rezervasyon kartının mantığına dokunmaz.
    =============================================================== */
 
 export function VillaShowPhotosButton({
@@ -53,7 +53,7 @@ export function VillaAvailabilityShortcut({ locale }: { locale?: Locale }) {
   return (
     <button
       type="button"
-      onClick={() => openVillaTab("musaitlik")}
+      onClick={() => scrollToVillaSection("musaitlik")}
       data-villa-availability-shortcut
       className="
         flex h-14 w-full items-center justify-center gap-2.5
