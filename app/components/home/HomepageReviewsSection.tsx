@@ -6,6 +6,10 @@ import ReviewsCarousel, {
    misafir adı KULLANICI ÜRETİMİDİR; villa adı özel isimdir → çevrilmez. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import {
+  HOME_PANEL_CLASS,
+  HOME_PANEL_SECTION_CLASS,
+} from "@/app/components/home/home-panel";
 
 /* ===============================================================
    🛡️ HOMEPAGE REVIEWS SECTION — sabit yükseklikli premium carousel
@@ -53,9 +57,11 @@ export default async function HomepageReviewsSection({
     <section
       id="misafir-deneyimleri"
       aria-label={dict.sectionAriaLabel}
-      className="px-5 md:px-10 lg:px-16 pt-14 md:pt-20 pb-12 md:pb-16"
+      className={HOME_PANEL_SECTION_CLASS}
     >
-      <div className="max-w-site mx-auto">
+      {/* 🤍 Beyaz panel — İndirimli Kiralık Villalar ile aynı kap
+          (home-panel.ts). Başlık, yorum kartları ve carousel AYNEN. */}
+      <div data-home-panel="reviews" className={HOME_PANEL_CLASS}>
         {/* HEADER — editorial: mikro çizgi + uppercase mikro-etiket +
                sol hizali başlık. Metinler (h2/p) BİREBİR aynı, sadece
                sunum "guest stories" diline uyacak şekilde yeniden

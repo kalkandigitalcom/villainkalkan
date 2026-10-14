@@ -41,6 +41,10 @@ import VillaCard from "@/app/components/villa/VillaCard";
 import { DISCOUNT_CARD_DESIGN } from "@/app/components/home/discount-cards/discount-card-design";
 import { formatCurrency } from "@/lib/currency";
 import type { DiscountVillaCardProps } from "@/app/components/home/discount-cards/useDiscountCardModel";
+import {
+  HOME_PANEL_CLASS,
+  HOME_PANEL_SECTION_CLASS,
+} from "@/app/components/home/home-panel";
 
 const DISCOUNT = {
   start_date: "2026-10-08",
@@ -178,6 +182,26 @@ describe("Parite — eski VillaCard discount branch ile aynı fiyat çıktısı"
   });
 });
 
+describe("Ana sayfa beyaz panelleri — ortak kap (home-panel.ts)", () => {
+  it("panel sınıfı beyaz, yuvarlak köşeli, 1210px çizgide", () => {
+    expect(HOME_PANEL_CLASS).toContain("max-w-site mx-auto");
+    expect(HOME_PANEL_CLASS).toContain("bg-white");
+    expect(HOME_PANEL_CLASS).toMatch(/rounded-\[24px\] md:rounded-\[28px\]/);
+    expect(HOME_PANEL_SECTION_CLASS).toBe("px-5 md:px-10 lg:px-16 py-10 md:py-14");
+  });
+  it.each([
+    ["app/components/home/DiscountCollection.tsx", "<HorizontalCarousel"],
+    ["app/components/villa/VillaList.tsx", "<VillaCard"],
+    ["app/components/home/HomepageReviewsSection.tsx", "<ReviewsCarousel"],
+  ])("%s ortak paneli kullanır; içerik panelin içinde", (file, inner) => {
+    const code = readFileSync(file, "utf-8");
+    expect(code).toContain("className={HOME_PANEL_SECTION_CLASS}");
+    const at = code.indexOf("className={HOME_PANEL_CLASS}");
+    expect(at).toBeGreaterThan(-1);
+    expect(code.indexOf(inner, at)).toBeGreaterThan(at);
+  });
+});
+
 describe("DiscountCollection kaynak kilidi", () => {
   const src = readFileSync("app/components/home/DiscountCollection.tsx", "utf-8");
   it("ana sayfada tek tasarım: varsayılan DISCOUNT_CARD_DESIGN", () => {
@@ -190,7 +214,7 @@ describe("DiscountCollection kaynak kilidi", () => {
   });
   it("bölüm beyaz, yuvarlatılmış bir panel içinde; başlık ve carousel panelde", () => {
     const panel = src.slice(src.indexOf("data-discount-panel"));
-    expect(panel).toMatch(/className="max-w-site mx-auto rounded-\[24px\][^"]*bg-white/);
+    expect(panel).toMatch(/className=\{HOME_PANEL_CLASS\}/);
     expect(panel.indexOf("<h2")).toBeGreaterThan(-1);
     expect(panel.indexOf("<HorizontalCarousel")).toBeGreaterThan(panel.indexOf("<h2"));
   });

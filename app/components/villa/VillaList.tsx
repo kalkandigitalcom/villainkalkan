@@ -12,6 +12,10 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
    (bkz. lib/i18n/locale-href.ts). */
 import { localeHref } from "@/lib/i18n/locale-href";
 import { getVillaBadgesByLocale } from "@/lib/i18n/get-villa-badge-translations.server";
+import {
+  HOME_PANEL_CLASS,
+  HOME_PANEL_SECTION_CLASS,
+} from "@/app/components/home/home-panel";
 
 /* 🛡️ KART GÖRSELİ `sizes` — yalnız ana sayfa VillaList grid'ine göre
    (kart 1 / sm+ 2 sütun; max-w 1280). Değerler ölçülen kart
@@ -96,8 +100,10 @@ export default async function VillaList({
   }
 
   return (
-    <section className="px-5 md:px-10 lg:px-16 py-14 md:py-20">
-      <div className="max-w-site mx-auto">
+    <section className={HOME_PANEL_SECTION_CLASS}>
+      {/* 🤍 Beyaz panel — İndirimli Kiralık Villalar ile aynı kap
+          (home-panel.ts). Başlık, kartlar, grid ve bağlantılar AYNEN. */}
+      <div data-home-panel="villas" className={HOME_PANEL_CLASS}>
         {/* 🛡️ FAZ 39L — Normalized section header.
            Hero ile yarışan 80px serif dev başlık kaldırıldı. Tek
            başlık + subtitle yapısı (CategoryCollection parity).

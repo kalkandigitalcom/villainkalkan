@@ -340,7 +340,13 @@ describe("8) UI koruması", () => {
   });
 
   it("8d) responsive sınıflar korundu (mobil/tablet/desktop)", () => {
-    expect(SECTION_SRC).toContain("px-5 md:px-10 lg:px-16");
+    /* Bölüm kabuğu ortak beyaz panel sabitinden gelir (home-panel.ts);
+       responsive yatay boşluk orada aynen duruyor. */
+    expect(SECTION_SRC).toContain("className={HOME_PANEL_SECTION_CLASS}");
+    expect(SECTION_SRC).toContain("className={HOME_PANEL_CLASS}");
+    expect(
+      readFileSync("app/components/home/home-panel.ts", "utf-8"),
+    ).toContain("px-5 md:px-10 lg:px-16");
     expect(CAROUSEL_SRC).toContain("basis-full");
     // Alt isim rail'i (overflow-x-auto) bilinçli olarak kaldırıldı;
     // desktop 2'li gösterim sınıfı kilitlenir.
