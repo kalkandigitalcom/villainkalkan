@@ -260,7 +260,7 @@ export default function ActivityLogList() {
         <div className="inline-flex items-center gap-2.5 min-w-0">
           <span
             aria-hidden
-            className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))] text-[var(--brand-coral,#C8973A)]"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))] text-[var(--brand-coral,#FF653F)]"
           >
             <Activity size={13} strokeWidth={1.75} />
           </span>
@@ -438,7 +438,7 @@ function LogRowCard({
       >
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))] text-[var(--brand-coral-ink,#74551f)] border border-[var(--brand-coral,#C8973A)]/15 px-2.5 py-0.5 text-[11px] font-medium tracking-[0.01em]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))] text-[var(--brand-coral-ink,#7a2912)] border border-[var(--brand-coral,#FF653F)]/15 px-2.5 py-0.5 text-[11px] font-medium tracking-[0.01em]">
               {row.action}
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-sand-50)] text-[var(--color-stone-700)] border border-[var(--color-stone-200)] px-2.5 py-0.5 text-[11px] font-medium">
@@ -592,7 +592,7 @@ function FilterInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
+        className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
       />
     </div>
   );
@@ -617,7 +617,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
+        className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

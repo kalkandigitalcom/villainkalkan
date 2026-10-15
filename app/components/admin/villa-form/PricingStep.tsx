@@ -295,7 +295,7 @@ export default function PricingStep({
                 <span className="text-[10.5px] tracking-[0.1em] uppercase font-semibold text-[var(--color-stone-500)]">
                   Isıtma Uygulanan Aylar
                 </span>
-                <span className="flex items-center gap-1 text-[11px] font-medium text-[#926B27] shrink-0">
+                <span className="flex items-center gap-1 text-[11px] font-medium text-[#0973BA] shrink-0">
                   {poolHeatingMonthsOpen ? "Gizle" : "Ayları Göster"}
                   <ChevronDown
                     className={`h-3.5 w-3.5 transition-transform ${
@@ -319,7 +319,7 @@ export default function PricingStep({
                           onChange={() =>
                             togglePoolHeatingMonth(month.value)
                           }
-                          className="h-3.5 w-3.5 rounded border-[var(--color-stone-300)] accent-[#C8973A]"
+                          className="h-3.5 w-3.5 rounded border-[var(--color-stone-300)] accent-[#ED7926]"
                         />
                         {month.label}
                       </label>
@@ -329,7 +329,7 @@ export default function PricingStep({
                     <button
                       type="button"
                       onClick={selectAllPoolHeatingMonths}
-                      className="text-[10px] font-semibold uppercase tracking-wide text-[#926B27]"
+                      className="text-[10px] font-semibold uppercase tracking-wide text-[#0973BA]"
                     >
                       Tümünü Seç
                     </button>

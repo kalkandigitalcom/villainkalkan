@@ -493,14 +493,14 @@ export default function AdminGallery({
       {/* 🛡️ SELECTION INDICATOR — yalnız seçim varken görünür. Seçim
          yokken galeri görünümü mevcut haliyle aynı kalır. */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center justify-between rounded-lg border border-[var(--color-champagne-200)] bg-[var(--color-champagne-50)] px-3 py-2">
-          <span className="text-[13px] font-medium text-[var(--color-champagne-700)]">
+        <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 px-3 py-2">
+          <span className="text-[13px] font-medium text-blue-700">
             {images.filter((i) => selectedIds.has(i.id)).length} görsel seçildi
           </span>
           <button
             type="button"
             onClick={clearSelection}
-            className="text-[13px] font-medium text-[var(--color-champagne-700)] hover:text-[var(--color-champagne-800)] transition"
+            className="text-[13px] font-medium text-blue-700 hover:text-blue-900 transition"
           >
             Seçimi temizle
           </button>
@@ -576,7 +576,7 @@ export default function AdminGallery({
                           className="w-full h-32 object-cover"
                         />
                         {count > 1 && (
-                          <span className="absolute top-1 right-1 bg-[var(--color-champagne-700)] text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow">
+                          <span className="absolute top-1 right-1 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow">
                             {count}
                           </span>
                         )}
@@ -641,7 +641,7 @@ function GalleryCard({
       className={
         "relative group border rounded-xl overflow-hidden cursor-move " +
         (selected
-          ? "ring-2 ring-[var(--color-champagne-500)] border-[var(--color-champagne-500)]"
+          ? "ring-2 ring-blue-500 border-blue-500"
           : "border-[var(--color-stone-200)]")
       }
     >
@@ -656,7 +656,7 @@ function GalleryCard({
           type="checkbox"
           checked={selected}
           onChange={() => onToggle(img.id)}
-          className="h-4 w-4 accent-[var(--color-champagne-600)] cursor-pointer"
+          className="h-4 w-4 accent-blue-600 cursor-pointer"
           aria-label="Görseli seç"
         />
       </label>

@@ -111,7 +111,7 @@ export default function LocationStep({
                   className={
                     "relative flex items-center min-w-0 w-full rounded-xl border " +
                     "border-[var(--color-stone-200)] bg-white " +
-                    "focus-within:border-[var(--brand-coral,#c8973a)] " +
+                    "focus-within:border-[var(--brand-coral,#ff653f)] " +
                     "transition-colors"
                   }
                   title={
@@ -208,7 +208,7 @@ export default function LocationStep({
           onClick={() =>
             setDistances([...distances, { title: "", distance: "" }])
           }
-          className="w-full mt-3 border border-dashed border-[var(--color-stone-200)] rounded-xl py-3 text-sm text-[var(--color-stone-500)] hover:bg-[var(--color-sand-50)] hover:border-[var(--brand-coral,#c8973a)] hover:text-[var(--color-stone-900)] transition inline-flex items-center justify-center gap-2"
+          className="w-full mt-3 border border-dashed border-[var(--color-stone-200)] rounded-xl py-3 text-sm text-[var(--color-stone-500)] hover:bg-[var(--color-sand-50)] hover:border-[var(--brand-coral,#ff653f)] hover:text-[var(--color-stone-900)] transition inline-flex items-center justify-center gap-2"
         >
           <Plus size={14} />
           Yeni mesafe ekle

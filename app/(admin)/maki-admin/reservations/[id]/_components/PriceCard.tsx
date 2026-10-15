@@ -138,7 +138,7 @@ export default function PriceCard({
           <div className="relative bg-[var(--color-sand-50)] border border-[var(--color-sand-100)] rounded-2xl p-5 space-y-3 text-sm">
             <span
               aria-hidden="true"
-              className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#C8973A] via-[#C8973A]/50 to-[#926B27]"
+              className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#ED7926] via-[#ED7926]/50 to-[#0973BA]"
             />
             <div className="border-t border-[var(--color-sand-100)] pt-3">
               <div className="flex items-center justify-between rounded-xl bg-green-50/70 px-3 py-2.5">
@@ -166,11 +166,11 @@ export default function PriceCard({
                   })}
                 </p>
               </div>
-              <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
+              <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
                   Kalan (toplam − ödenen)
                 </p>
-                <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
+                <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
                   ₺
                   {Math.max(
                     Number(data.total_price_try || 0) -
@@ -211,7 +211,7 @@ export default function PriceCard({
             <div className="relative bg-[var(--color-sand-50)] border border-[var(--color-sand-100)] rounded-2xl p-5 space-y-3 text-sm mt-4">
               <span
                 aria-hidden="true"
-                className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#C8973A] via-[#C8973A]/50 to-[#926B27]"
+                className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#ED7926] via-[#ED7926]/50 to-[#0973BA]"
               />
               {/* EXTRA INFO */}
               {(data.exchange_rate > 1 ||
@@ -326,7 +326,7 @@ export default function PriceCard({
                         maximumFractionDigits: 0,
                       })}
                     </span>
-                    <span className="mt-1 inline-block rounded-full bg-[#926B27] px-2.5 py-0.5 text-[10px] font-semibold text-white text-center whitespace-nowrap">
+                    <span className="mt-1 inline-block rounded-full bg-[#0973BA] px-2.5 py-0.5 text-[10px] font-semibold text-white text-center whitespace-nowrap">
                       İndirimli Tutar
                     </span>
                   </div>
@@ -418,11 +418,11 @@ export default function PriceCard({
                     })}
                   </p>
                 </div>
-                <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
+                <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
                     {paymentDisplay.isFullPayment ? "Kalan" : "Girişte ödenecek"}
                   </p>
-                  <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
+                  <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
                     ₺
                     {Number(paymentDisplay.remainingOnArrival).toLocaleString(
                       "tr-TR",

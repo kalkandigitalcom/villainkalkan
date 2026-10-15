@@ -19,9 +19,9 @@
 
   /* 🎨 Brand */
   /* 🎨 MARKA PALETİ (2026) — canlı mavi #C8973A · mercan #C8973A ·
-     koyu metin #24364B · beyaz. Açık nötrler (ivory, sand,
+     koyu metin #1B2E5E · beyaz. Açık nötrler (ivory, sand,
      stone-50..200) KORUNDU; koyu kademe (stone-300..900) koyu metin
-     #24364B tonlu nötrlere taşındı (stone-900 = #24364B). Eski accent
+     #1B2E5E tonlu nötrlere taşındı (stone-900 = #1B2E5E). Eski accent
      ramp'leri (champagne/aqua/bronze/brand-coral — token İSİMLERİ
      korunur) MAVİ ramp'e, coral/peach/terracotta MERCAN ramp'e taşındı.
      Semantik tokenlar: aşağıdaki "MARKA PALETİ" bloğu. */
@@ -40,7 +40,7 @@
   --color-stone-600: #485a6f;
   --color-stone-700: #3a4c62;
   --color-stone-800: #2e4157;
-  --color-stone-900: #24364b;
+  --color-stone-900: #1b2e5e;
   /* ════════════════════════════════════════════════════════════
      🌊 FAZ 18 — MEDITERRANEAN RESORT PALETTE
      ════════════════════════════════════════════════════════════
@@ -127,7 +127,7 @@
                   menü, link, seçili filtre, marka ikonları
      Beyaz      — #FFFFFF     → header, kart, form, içerik yüzeyleri
      Vurgu      — mercan      #C8973A → indirim/kampanya, ikincil CTA
-     Koyu metin — #24364B     → başlık, gövde, menü yazı/ikonları
+     Koyu metin — #1B2E5E     → başlık, gövde, menü yazı/ikonları
      Tailwind utility'leri: bg-brand, text-brand, border-brand,
      ring-brand, bg-accent, text-accent, text-ink …
      Durum tonları: *-hover (hover/active), *-soft (zemin tinti),
@@ -139,9 +139,9 @@
      (aşağıda) admin renklerini AYNEN korur. */
   /* 🥇 ALTIN (2026-10) — eski mavi (#278BD0) ve turuncu (#FF805E)
      vurguların TAMAMI tek altın aileye taşındı. Temel: #C8973A.
-     Altın zeminde metin KOYU (ink #24364B ≈4.7:1); beyaz metin altın
+     Altın zeminde metin KOYU (ink #1B2E5E ≈5:1); beyaz metin altın
      üzerinde yetersiz (≈2.6:1) olduğu için kullanılmaz. Hover zemini
-     bir ton AÇIK (#D4A64E, ink ≈5.5:1). Beyaz zeminde okunur altın
+     bir ton AÇIK (#D4A64E, ink ≈5.9:1). Beyaz zeminde okunur altın
      METİN için `*-strong` (#926B27 ≈4.8:1). */
   --color-brand: #c8973a;
   --color-brand-hover: #d4a64e;
@@ -152,7 +152,7 @@
   --color-accent-hover: #d4a64e;
   --color-accent-strong: #926b27;
   --color-accent-soft: #fbf6ec;
-  --color-ink: #24364b;
+  --color-ink: #1b2e5e;
   --color-ink-soft: #5b6b7e;
 
   /* 🔠 Fonts */
@@ -195,10 +195,10 @@
      Travel-poster Mediterranean atmosphere. */
   --gradient-hero-warm: linear-gradient(
     180deg,
-    rgb(36 54 75 / 0.10) 0%,
-    rgb(36 54 75 / 0.18) 35%,
-    rgb(36 54 75 / 0.5) 75%,
-    rgb(36 54 75 / 0.85) 100%
+    rgb(27 46 94 / 0.10) 0%,
+    rgb(27 46 94 / 0.18) 35%,
+    rgb(27 46 94 / 0.5) 75%,
+    rgb(27 46 94 / 0.85) 100%
   );
 }
 
@@ -207,7 +207,7 @@
    ---------------------------------------------------------------- */
 :root {
   --background: #f6f8fb;
-  --foreground: #24364b;
+  --foreground: #1b2e5e;
   --muted: #5b6b7e;
   --border: #e3e9f0;
   /* 🌊 REBRAND — Focus ring turkuaz (secondary accent). Tailwind
@@ -219,7 +219,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #f6f8fb;
-    --foreground: #24364b;
+    --foreground: #1b2e5e;
   }
 }
 
@@ -227,7 +227,7 @@
   border-color: var(--border);
 }
 
-/* 🎨 BAŞLIK RENGİ — hero + section h1/h2 (koyu metin #24364B).
+/* 🎨 BAŞLIK RENGİ — hero + section h1/h2 (koyu metin #1B2E5E).
    Yalnız `text-[var(--color-stone-900)]` class'ını kullanan h1/h2'leri
    hedefler (specificity h1.class = 0,1,1 > Tailwind .class = 0,1,0 →
    override). Beyaz-on-koyu başlıklar (`text-white`, FAQ navy panel vb.)
@@ -235,7 +235,7 @@
    ve diğer non-heading stone-900 kullanımları da değişmez. */
 h1.text-\[var\(--color-stone-900\)\],
 h2.text-\[var\(--color-stone-900\)\] {
-  color: #24364b;
+  color: #1b2e5e;
 }
 
 html {
@@ -399,7 +399,7 @@ select.input {
 
    🥇 MARKA PALETİ (2026-10): brand = altın #C8973A.
    .btn-primary tek **altın solid** + multi-stop ambient shadow.
-   Koyu metin (ink) kontrastı: taban ≈4.7:1 → hover #D4A64E ≈5.5:1.
+   Koyu metin (ink) kontrastı: taban ≈5:1 → hover #D4A64E ≈5.9:1.
 
    - `.btn-primary` → coral solid primary, white text, hover lift
    - `.btn-primary.btn-glow` → premium halo for hero/booking CTAs
@@ -417,10 +417,10 @@ select.input {
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.005em;
-  /* 🥇 Altın CTA (#C8973A) + koyu metin (ink) ≈4.7:1 (AA);
-     hover bir ton açık #D4A64E ≈5.5:1. */
+  /* 🥇 Altın CTA (#C8973A) + koyu metin (ink) ≈5:1 (AA);
+     hover bir ton açık #D4A64E ≈5.9:1. */
   background: #c8973a;
-  color: #24364b;
+  color: #1b2e5e;
   border: 1px solid transparent;
   box-shadow:
     0 1px 2px rgb(27 26 23 / 0.08),
@@ -980,7 +980,7 @@ select.input {
    Pool water highlight feeling; text seçimi resort kimliği taşır. */
 ::selection {
   background: rgb(200 151 58 / 0.24);
-  color: #24364b;
+  color: #1b2e5e;
 }
 
 /* ================================================================
@@ -998,49 +998,49 @@ select.input {
   --color-stone-700: #1d2e4d;
   --color-stone-800: #122441;
   --color-stone-900: #0b1f3a;
-  --color-champagne-50: #fbf6ec;
-  --color-champagne-100: #f5ead3;
-  --color-champagne-200: #ecd7ac;
-  --color-champagne-300: #dfbd7e;
-  --color-champagne-400: #d4aa5a;
-  --color-champagne-500: #c8973a;
-  --color-champagne-600: #b08330;
-  --color-champagne-700: #926b27;
-  --color-champagne-800: #74551f;
-  --color-bronze-500: #c8973a;
-  --color-bronze-600: #b08330;
-  --color-bronze-700: #926b27;
-  --brand-coral: #c8973a;
-  --brand-coral-soft: #dfbd7e;
-  --brand-coral-deep: #926b27;
-  --brand-coral-tint: #fbf6ec;
-  --brand-coral-ink: #74551f;
-  --color-terracotta-400: #dfbd7e;
-  --color-terracotta-500: #d4aa5a;
-  --color-aqua-50: #fbf6ec;
-  --color-aqua-100: #f5ead3;
-  --color-aqua-200: #ecd7ac;
-  --color-aqua-300: #dfbd7e;
-  --color-aqua-400: #d4aa5a;
-  --color-aqua-500: #c8973a;
-  --color-aqua-600: #b08330;
-  --color-aqua-700: #926b27;
-  --color-aqua-800: #74551f;
-  --color-coral-400: #d4aa5a;
-  --color-coral-500: #c8973a;
-  --color-coral-600: #b08330;
-  --color-peach-300: #f5ead3;
-  --color-peach-400: #ecd7ac;
-  --color-peach-500: #dfbd7e;
-  --shadow-warm: 0 1px 2px rgb(27 26 23 / 0.04), 0 10px 28px -12px rgb(200 151 58 / 0.22);
-  --shadow-warm-hover: 0 2px 4px rgb(27 26 23 / 0.06), 0 22px 48px -14px rgb(200 151 58 / 0.32);
+  --color-champagne-50: #e8f7fd;
+  --color-champagne-100: #c4ecfb;
+  --color-champagne-200: #90dcf8;
+  --color-champagne-300: #54c8f3;
+  --color-champagne-400: #1fb2ec;
+  --color-champagne-500: #02aae5;
+  --color-champagne-600: #0287bd;
+  --color-champagne-700: #03729c;
+  --color-champagne-800: #045d7e;
+  --color-bronze-500: #02aae5;
+  --color-bronze-600: #0287bd;
+  --color-bronze-700: #03729c;
+  --brand-coral: #02aae5;
+  --brand-coral-soft: #54c8f3;
+  --brand-coral-deep: #03729c;
+  --brand-coral-tint: #e8f7fd;
+  --brand-coral-ink: #045d7e;
+  --color-terracotta-400: #54c8f3;
+  --color-terracotta-500: #1fb2ec;
+  --color-aqua-50: #e8f7fd;
+  --color-aqua-100: #c4ecfb;
+  --color-aqua-200: #90dcf8;
+  --color-aqua-300: #54c8f3;
+  --color-aqua-400: #1fb2ec;
+  --color-aqua-500: #02aae5;
+  --color-aqua-600: #0287bd;
+  --color-aqua-700: #03729c;
+  --color-aqua-800: #045d7e;
+  --color-coral-400: #1fb2ec;
+  --color-coral-500: #02aae5;
+  --color-coral-600: #0287bd;
+  --color-peach-300: #c4ecfb;
+  --color-peach-400: #90dcf8;
+  --color-peach-500: #54c8f3;
+  --shadow-warm: 0 1px 2px rgb(27 26 23 / 0.04), 0 10px 28px -12px rgb(2 170 229 / 0.22);
+  --shadow-warm-hover: 0 2px 4px rgb(27 26 23 / 0.06), 0 22px 48px -14px rgb(2 170 229 / 0.32);
   --shadow-elevated: 0 4px 8px rgb(27 26 23 / 0.06), 0 32px 64px -20px rgb(11 31 58 / 0.22);
-  --shadow-glow-champagne: 0 0 0 1px rgb(223 189 126 / 0.4), 0 8px 28px -6px rgb(200 151 58 / 0.42);
-  --shadow-glow-coral: 0 0 0 1px rgb(223 189 126 / 0.4), 0 8px 28px -6px rgb(200 151 58 / 0.42);
-  --gradient-hero-warm: linear-gradient( 180deg, rgb(200 151 58 / 0.10) 0%, rgb(200 151 58 / 0.18) 35%, rgb(11 95 91 / 0.5) 75%, rgb(11 31 58 / 0.85) 100% );
+  --shadow-glow-champagne: 0 0 0 1px rgb(84 200 243 / 0.4), 0 8px 28px -6px rgb(2 170 229 / 0.42);
+  --shadow-glow-coral: 0 0 0 1px rgb(84 200 243 / 0.4), 0 8px 28px -6px rgb(2 170 229 / 0.42);
+  --gradient-hero-warm: linear-gradient( 180deg, rgb(2 170 229 / 0.10) 0%, rgb(2 170 229 / 0.18) 35%, rgb(11 95 91 / 0.5) 75%, rgb(11 31 58 / 0.85) 100% );
   --foreground: #16263f;
   --muted: #455468;
-  --ring: #c8973a;
+  --ring: #02aae5;
 }
 
 .admin-shell h1.text-\[var\(--color-stone-900\)\],
@@ -1052,53 +1052,53 @@ select.input {
 .admin-shell textarea:focus,
 .admin-shell select:focus {
   border-color: var(--color-champagne-500);
-  box-shadow: 0 0 0 4px rgb(200 151 58 / 0.16);
+  box-shadow: 0 0 0 4px rgb(2 170 229 / 0.16);
 }
 
 .admin-shell .input:focus {
   border-color: var(--color-champagne-500);
-  box-shadow: 0 0 0 4px rgb(200 151 58 / 0.16);
+  box-shadow: 0 0 0 4px rgb(2 170 229 / 0.16);
 }
 
 .admin-shell .btn-primary:active {
-  box-shadow: 0 1px 2px rgb(27 26 23 / 0.10), 0 6px 14px -6px rgba(200, 151, 58, 0.45);
+  box-shadow: 0 1px 2px rgb(27 26 23 / 0.10), 0 6px 14px -6px rgba(2, 170, 229, 0.45);
 }
 
 .admin-shell .btn-primary:focus-visible {
-  box-shadow: 0 0 0 3px rgba(200, 151, 58, 0.32), 0 14px 28px -10px rgba(200, 151, 58, 0.45), 0 4px 12px -6px rgba(200, 151, 58, 0.30);
+  box-shadow: 0 0 0 3px rgba(2, 170, 229, 0.32), 0 14px 28px -10px rgba(2, 170, 229, 0.45), 0 4px 12px -6px rgba(2, 170, 229, 0.30);
 }
 
 .admin-shell .btn-primary.btn-glow {
-  box-shadow: 0 1px 2px rgb(27 26 23 / 0.08), 0 20px 40px -10px rgba(200, 151, 58, 0.55), 0 10px 24px -8px rgba(200, 151, 58, 0.40), 0 0 0 1px rgba(200, 151, 58, 0.18), inset 0 1px 0 rgb(255 255 255 / 0.22);
+  box-shadow: 0 1px 2px rgb(27 26 23 / 0.08), 0 20px 40px -10px rgba(2, 170, 229, 0.55), 0 10px 24px -8px rgba(2, 170, 229, 0.40), 0 0 0 1px rgba(2, 170, 229, 0.18), inset 0 1px 0 rgb(255 255 255 / 0.22);
 }
 
 .admin-shell .btn-primary.btn-glow:hover {
-  box-shadow: 0 2px 4px rgb(27 26 23 / 0.10), 0 28px 52px -10px rgba(200, 151, 58, 0.65), 0 14px 28px -8px rgba(200, 151, 58, 0.50), 0 0 0 1px rgba(200, 151, 58, 0.25), inset 0 1px 0 rgb(255 255 255 / 0.28);
+  box-shadow: 0 2px 4px rgb(27 26 23 / 0.10), 0 28px 52px -10px rgba(2, 170, 229, 0.65), 0 14px 28px -8px rgba(2, 170, 229, 0.50), 0 0 0 1px rgba(2, 170, 229, 0.25), inset 0 1px 0 rgb(255 255 255 / 0.28);
 }
 
 .admin-shell .btn-ghost:focus-visible {
-  box-shadow: 0 0 0 3px rgba(200, 151, 58, 0.22);
+  box-shadow: 0 0 0 3px rgba(2, 170, 229, 0.22);
 }
 
 .admin-shell .react-datepicker__day:hover {
-  background: #fbf6ec !important;
+  background: #e8f7fd !important;
 }
 
 .admin-shell .react-datepicker__day--selected,
 .admin-shell .react-datepicker__day--in-selecting-range,
 .admin-shell .react-datepicker__day--in-range {
-  background: #926b27 !important;
+  background: #03729c !important;
   color: #ffffff !important;
 }
 
 .admin-shell .react-datepicker__day--keyboard-selected {
-  background: #f5ead3 !important;
-  color: #926b27 !important;
+  background: #c4ecfb !important;
+  color: #03729c !important;
 }
 
 .admin-shell ::selection {
-  background: rgb(200 151 58 / 0.28);
-  color: #74551f;
+  background: rgb(2 170 229 / 0.28);
+  color: #045d7e;
 }
 
 /* ================================================================
@@ -1126,9 +1126,9 @@ select.input {
   --admin-sidebar-muted: #64748b;
 
   /* brand accent — Maki Dijital (cyan / blue), used sparingly */
-  --admin-accent: #c8973a;
-  --admin-accent-strong: #b08330;
-  --admin-accent-soft: rgb(200 151 58 / 0.12);
+  --admin-accent: #06b6d4;
+  --admin-accent-strong: #0ea5e9;
+  --admin-accent-soft: rgb(6 182 212 / 0.12);
   --admin-active-bg: rgb(255 255 255 / 0.06);
 
   background: var(--admin-bg);
@@ -1166,13 +1166,13 @@ select.input {
   --color-stone-900: #0f172a;
 
   /* Champagne / gold → Maki cyan-blue */
-  --color-champagne-50: #fbf6ec;
-  --color-champagne-100: #f5ead3;
-  --color-champagne-200: #ecd7ac;
-  --color-champagne-300: #dfbd7e;
-  --color-champagne-500: #c8973a;
-  --color-champagne-600: #b08330;
-  --color-champagne-700: #926b27;
+  --color-champagne-50: #ecfeff;
+  --color-champagne-100: #cffafe;
+  --color-champagne-200: #a5f3fc;
+  --color-champagne-300: #67e8f9;
+  --color-champagne-500: #06b6d4;
+  --color-champagne-600: #0891b2;
+  --color-champagne-700: #0e7490;
 }
 
 /* Typography tone for admin — sans-serif headings (Linear/Stripe vibe).
@@ -1210,7 +1210,7 @@ select.input {
 }
 
 .admin-shell .card-premium:hover {
-  border-color: rgb(200 151 58 / 0.32);
+  border-color: rgb(6 182 212 / 0.32);
   box-shadow: 0 1px 3px rgb(15 23 42 / 0.04),
     0 12px 28px -16px rgb(15 23 42 / 0.18);
 }
@@ -1221,7 +1221,7 @@ select.input {
 .admin-shell select:focus,
 .admin-shell .input:focus {
   border-color: var(--admin-accent) !important;
-  box-shadow: 0 0 0 3px rgb(200 151 58 / 0.14) !important;
+  box-shadow: 0 0 0 3px rgb(6 182 212 / 0.14) !important;
 }
 
 /* Primary button inside admin shell → slate/navy with cyan ambient hover.
@@ -1238,7 +1238,7 @@ select.input {
 .admin-shell .btn-primary:hover {
   background: #1e293b;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.2),
-    0 8px 22px -12px rgb(200 151 58 / 0.55);
+    0 8px 22px -12px rgb(6 182 212 / 0.55);
 }
 
 /* Ghost button inside admin shell — softer slate */
@@ -1266,7 +1266,7 @@ select.input {
 /* Sidebar — premium dark navy with subtle top glow */
 .admin-sidebar {
   background:
-    radial-gradient(120% 60% at 50% -10%, rgba(223, 189, 126, 0.05), transparent 60%),
+    radial-gradient(120% 60% at 50% -10%, rgba(125, 211, 252, 0.05), transparent 60%),
     var(--admin-sidebar-bg);
   border-right: 1px solid var(--admin-sidebar-border);
   color: var(--admin-sidebar-text);
@@ -1308,14 +1308,14 @@ select.input {
   background:
     linear-gradient(
       135deg,
-      rgba(223, 189, 126, 0.12) 0%,
-      rgba(200, 151, 58, 0.06) 100%
+      rgba(125, 211, 252, 0.12) 0%,
+      rgba(6, 182, 212, 0.06) 100%
     );
   color: var(--admin-sidebar-text-strong);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 0 0 1px rgba(223, 189, 126, 0.18),
-    0 8px 24px -12px rgba(200, 151, 58, 0.4);
+    0 0 0 1px rgba(125, 211, 252, 0.18),
+    0 8px 24px -12px rgba(6, 182, 212, 0.4);
 }
 
 /* Active left rail — taller, gradient, stronger glow */
@@ -1328,8 +1328,8 @@ select.input {
   width: 3px;
   height: 22px;
   border-radius: 0 999px 999px 0;
-  background: linear-gradient(180deg, #dfbd7e 0%, #c8973a 100%);
-  box-shadow: 0 0 18px -2px rgba(223, 189, 126, 0.7);
+  background: linear-gradient(180deg, #7dd3fc 0%, #06b6d4 100%);
+  box-shadow: 0 0 18px -2px rgba(125, 211, 252, 0.7);
 }
 
 /* Icons — smooth color + subtle motion on hover/active */
@@ -1346,7 +1346,7 @@ select.input {
 }
 
 .admin-nav-item.is-active .admin-icon {
-  color: #dfbd7e;
+  color: #7dd3fc;
   transform: scale(1.06);
 }
 
@@ -1363,7 +1363,7 @@ select.input {
   transition: background 200ms ease;
 }
 .admin-sidebar nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(223, 189, 126, 0.18);
+  background: rgba(125, 211, 252, 0.18);
 }
 .admin-sidebar nav {
   scrollbar-width: thin;
@@ -1388,7 +1388,7 @@ select.input {
 .admin-search:focus-within {
   background: #fff;
   border-color: var(--admin-accent);
-  box-shadow: 0 0 0 3px rgb(200 151 58 / 0.12);
+  box-shadow: 0 0 0 3px rgb(6 182 212 / 0.12);
 }
 
 .admin-icon-btn {
@@ -1427,8 +1427,8 @@ select.input {
   border-radius: 12px;
   background: linear-gradient(
     135deg,
-    #926b27 0%,
-    #c8973a 55%,
+    #1d4ed8 0%,
+    #06b6d4 55%,
     #84cc16 100%
   );
   color: #fff;
@@ -1440,8 +1440,8 @@ select.input {
   letter-spacing: -0.02em;
   box-shadow:
     0 1px 2px rgb(0 0 0 / 0.32),
-    0 14px 32px -12px rgba(200, 151, 58, 0.55),
-    0 0 0 1px rgba(223, 189, 126, 0.16),
+    0 14px 32px -12px rgba(6, 182, 212, 0.55),
+    0 0 0 1px rgba(125, 211, 252, 0.16),
     inset 0 1px 0 rgb(255 255 255 / 0.2);
 }
 
@@ -1469,7 +1469,7 @@ select.input {
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #926b27 0%, #c8973a 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #06b6d4 100%);
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -1706,7 +1706,7 @@ select.input {
 .admin-pill-search:focus-within {
   border-color: var(--admin-accent);
   background: #fff;
-  box-shadow: 0 0 0 3px rgb(200 151 58 / 0.12);
+  box-shadow: 0 0 0 3px rgb(6 182 212 / 0.12);
 }
 
 .admin-pill-search input {
@@ -1870,7 +1870,7 @@ select.input {
 .admin-btn-primary:hover {
   background: #1e293b;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.2),
-    0 8px 22px -12px rgb(200 151 58 / 0.55);
+    0 8px 22px -12px rgb(6 182 212 / 0.55);
 }
 
 .admin-btn-ghost {

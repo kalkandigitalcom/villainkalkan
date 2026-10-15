@@ -730,7 +730,7 @@ export default function AdminUsersPage() {
                 <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold text-white shrink-0"
                   style={{
                     background:
-                      "linear-gradient(135deg,#926b27 0%,#c8973a 55%,#84cc16 100%)",
+                      "linear-gradient(135deg,#1d4ed8 0%,#06b6d4 55%,#84cc16 100%)",
                   }}>
                   {initial}
                 </div>

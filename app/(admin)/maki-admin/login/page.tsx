@@ -211,7 +211,7 @@ export default function AdminLoginPage() {
         <div
           className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full blur-[120px] animate-pulse"
           style={{
-            background: "#b08330",
+            background: "#0ea5e9",
             opacity: 0.16,
             animationDuration: "6s",
           }}
@@ -266,7 +266,7 @@ export default function AdminLoginPage() {
             >
               Premium Villa
               <br />
-              <span style={{ color: "#dfbd7e" }}>Yönetim</span>{" "}
+              <span style={{ color: "#7dd3fc" }}>Yönetim</span>{" "}
               Platformu
             </h1>
             <p className="text-[15px] text-white/60 mt-7 max-w-md leading-[1.7]">
@@ -445,7 +445,7 @@ export default function AdminLoginPage() {
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
                   style={{
-                    background: "rgba(176, 131, 48, 0.1)",
+                    background: "rgba(14, 165, 233, 0.1)",
                     color: "var(--admin-accent-strong)",
                   }}
                 >
@@ -656,7 +656,7 @@ function DesktopBrandMark() {
           WebkitBackdropFilter: "blur(14px)",
           border: "1px solid rgba(255, 255, 255, 0.14)",
           boxShadow:
-            "0 24px 48px -16px rgba(2, 6, 23, 0.6), 0 0 0 1px rgba(223, 189, 126, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+            "0 24px 48px -16px rgba(2, 6, 23, 0.6), 0 0 0 1px rgba(125, 211, 252, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
         }}
       >
         M

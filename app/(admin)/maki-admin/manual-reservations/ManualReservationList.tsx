@@ -433,7 +433,7 @@ function PaginationBar({
             className={
               "inline-flex items-center justify-center min-w-[32px] px-2.5 py-1.5 rounded-lg text-[12.5px] font-medium tabular-nums transition-colors motion-reduce:transition-none " +
               (p === page
-                ? "bg-[var(--color-champagne-600)] text-ink"
+                ? "bg-[var(--color-champagne-600)] text-white"
                 : "text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)]")
             }
           >

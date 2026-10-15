@@ -239,7 +239,7 @@ export default function BasicInfoStep({
                       "transition-colors " +
                       (isInvalid
                         ? "border-red-300 focus-within:border-red-400"
-                        : "border-[var(--color-stone-200)] focus-within:border-[var(--brand-coral,#c8973a)]")
+                        : "border-[var(--color-stone-200)] focus-within:border-[var(--brand-coral,#ff653f)]")
                     }
                   >
                     <input

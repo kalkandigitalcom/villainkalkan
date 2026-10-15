@@ -169,7 +169,7 @@ export default function ExchangeRatesCard() {
           <div className="inline-flex items-center gap-2">
             <span
               aria-hidden
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))] text-[var(--brand-coral,#C8973A)]"
+              className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))] text-[var(--brand-coral,#FF653F)]"
             >
               <TrendingUp size={14} strokeWidth={1.75} />
             </span>
@@ -190,12 +190,12 @@ export default function ExchangeRatesCard() {
           className="
             inline-flex items-center gap-1.5
             rounded-full border
-            border-[var(--brand-coral,#C8973A)]/40
-            bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))]
-            text-[var(--brand-coral-ink,#74551f)]
+            border-[var(--brand-coral,#FF653F)]/40
+            bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))]
+            text-[var(--brand-coral-ink,#7a2912)]
             px-3.5 py-1.5 text-[12.5px] font-medium
-            hover:bg-[var(--brand-coral-tint,rgba(200,151,58,0.18))]
-            hover:border-[var(--brand-coral,#C8973A)]/60
+            hover:bg-[var(--brand-coral-tint,rgba(255,101,63,0.18))]
+            hover:border-[var(--brand-coral,#FF653F)]/60
             transition-[background-color,border-color]
             disabled:opacity-60 disabled:cursor-not-allowed
             shrink-0

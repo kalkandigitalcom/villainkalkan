@@ -173,7 +173,7 @@ export default function AccommodationLayoutStep({
                       value={room.name}
                       onChange={(e) => setBedroomName(idx, e.target.value)}
                       placeholder="Oda adı (örn. Ana Yatak Odası)"
-                      className="flex-1 min-w-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[14px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--brand-coral,#c8973a)] transition-colors"
+                      className="flex-1 min-w-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[14px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--brand-coral,#ff653f)] transition-colors"
                     />
                     <div className="flex items-center gap-0.5 shrink-0">
                       <button
@@ -255,7 +255,7 @@ export default function AccommodationLayoutStep({
           <button
             type="button"
             onClick={addBedroom}
-            className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 border border-dashed border-[var(--color-stone-300)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--brand-coral,#c8973a)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+            className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 border border-dashed border-[var(--color-stone-300)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--brand-coral,#ff653f)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
           >
             <Plus size={14} /> Yatak Odası Ekle
           </button>
@@ -283,14 +283,14 @@ export default function AccommodationLayoutStep({
                     value={b.name}
                     onChange={(e) => setBathroomName(idx, e.target.value)}
                     placeholder="Banyo adı (örn. 1. Banyo)"
-                    className="flex-1 min-w-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[14px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--brand-coral,#c8973a)] transition-colors"
+                    className="flex-1 min-w-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[14px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--brand-coral,#ff653f)] transition-colors"
                   />
                   <select
                     value={b.type}
                     onChange={(e) =>
                       setBathroomType(idx, e.target.value as BathroomType)
                     }
-                    className="shrink-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[14px] text-[var(--color-stone-900)] focus:outline-none focus:border-[var(--brand-coral,#c8973a)] transition-colors"
+                    className="shrink-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[14px] text-[var(--color-stone-900)] focus:outline-none focus:border-[var(--brand-coral,#ff653f)] transition-colors"
                   >
                     {BATHROOM_TYPES.map((t) => (
                       <option key={t} value={t}>
@@ -314,7 +314,7 @@ export default function AccommodationLayoutStep({
           <button
             type="button"
             onClick={addBathroom}
-            className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 border border-dashed border-[var(--color-stone-300)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--brand-coral,#c8973a)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+            className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 border border-dashed border-[var(--color-stone-300)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--brand-coral,#ff653f)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
           >
             <Plus size={14} /> Banyo Ekle
           </button>
