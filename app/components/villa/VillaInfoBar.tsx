@@ -147,7 +147,7 @@ export default function VillaInfoBar({
           className="villa-info-shimmer absolute inset-x-0 top-0 h-[3px]"
           style={{
             background:
-              "linear-gradient(90deg, transparent, #FF805E, #278BD0, transparent)",
+              "linear-gradient(90deg, transparent, #C8973A, #C8973A, transparent)",
             backgroundSize: "220% 100%",
           }}
         />
@@ -204,7 +204,7 @@ export default function VillaInfoBar({
                 {guests > 0 && (
                   <InfoItem
                     icon={<Users size={15} strokeWidth={1.8} />}
-                    accentColor="#278BD0"
+                    accentColor="#C8973A"
                     value={guests}
                     label={dict.card.person}
                   />
@@ -212,7 +212,7 @@ export default function VillaInfoBar({
                 {bedrooms > 0 && (
                   <InfoItem
                     icon={<BedDouble size={15} strokeWidth={1.8} />}
-                    accentColor="#FF805E"
+                    accentColor="#C8973A"
                     value={bedrooms}
                     label={dict.card.bedroom}
                   />
@@ -220,7 +220,7 @@ export default function VillaInfoBar({
                 {bathrooms > 0 && (
                   <InfoItem
                     icon={<Bath size={15} strokeWidth={1.8} />}
-                    accentColor="#278BD0"
+                    accentColor="#C8973A"
                     value={bathrooms}
                     label={dict.card.bathroom}
                   />

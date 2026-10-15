@@ -50,21 +50,21 @@ export default function PrepaymentBadge({ rate }: { rate: number }) {
 
         {/* DÖNEN IŞIKLI BORDER — konik-gradient wrapper. overflow-hidden +
             p-[1.5px] ile yalnız ince kenar ışığı görünür; iç gövde üstte. */}
-        <div className="relative overflow-hidden rounded-2xl p-[1.5px] shadow-[0_12px_26px_-12px_rgba(255,128,94,0.6)]">
+        <div className="relative overflow-hidden rounded-2xl p-[1.5px] shadow-[0_12px_26px_-12px_rgba(200,151,58,0.6)]">
           {/* Dönen konik ışık (mercan → açık mercan). */}
           <div
             aria-hidden="true"
-            className="absolute left-1/2 top-1/2 h-[230%] w-[230%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,#ff805e,#ffc2b0,#fff1ec,#ffc2b0,#ff805e)] animate-spin [animation-duration:3s] motion-reduce:animate-none"
+            className="absolute left-1/2 top-1/2 h-[230%] w-[230%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,#c8973a,#ecd7ac,#fbf6ec,#ecd7ac,#c8973a)] animate-spin [animation-duration:3s] motion-reduce:animate-none"
           />
 
-          {/* İÇ GÖVDE — koyu mercan → mercan gradient (kampanya vurgusu). */}
-          <div className="relative overflow-hidden rounded-[14px] bg-gradient-to-br from-accent-strong via-accent-hover to-accent px-3 py-1.5 text-white">
+          {/* İÇ GÖVDE — koyu altın gradient (beyaz metin ≥4.5:1). */}
+          <div className="relative overflow-hidden rounded-[14px] bg-gradient-to-br from-[#74551f] via-accent-strong to-[#a5792b] px-3 py-1.5 text-white">
             {/* Üst iç highlight — cam/premium his. */}
             <span
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent"
             />
-            <p className="relative text-[12px] md:text-[13px] font-bold leading-tight tracking-tight drop-shadow-[0_1px_1px_rgba(110,35,15,0.35)]">
+            <p className="relative text-[12px] md:text-[13px] font-bold leading-tight tracking-tight drop-shadow-[0_1px_1px_rgba(116,85,31,0.35)]">
               %{pct} şimdi
             </p>
             <p className="relative text-[9.5px] md:text-[10px] font-medium leading-tight text-white/90 whitespace-nowrap">

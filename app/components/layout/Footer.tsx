@@ -258,7 +258,7 @@ export default function Footer({
          zemin; gradient/glow yok. Footer içindeki metin/çizgi renkleri
          `--color-stone-*` değişkenleriyle tanımlı → değişkenler YALNIZ bu
          elemanda açık tonlara yeniden eşlenir (yerleşim ve sınıflar aynı;
-         site geneli ve admin ETKİLENMEZ). Hover/vurgu: mercan (#FF805E,
+         site geneli ve admin ETKİLENMEZ). Hover/vurgu: mercan (#C8973A,
          koyu zeminde ≈5:1). footer_logo (beyaz) AYNEN kullanılır. */
       style={
         {
@@ -424,7 +424,7 @@ export default function Footer({
         {/* ═════════════ SECTION 3 — CONTACT STRIP ═════════════
             Telefon/e-posta/adres artık ikon+liste değil, büyük tipografili
             bir "iletişim şeridi"; telefon en belirgin (birincil hover
-            #FF805E), e-posta ikincil hover #278BD0. Rezervasyon Sorgula
+            #C8973A), e-posta ikincil hover #C8973A. Rezervasyon Sorgula
             linki (mevcut href) burada, destek eylemine en yakın yerde. */}
         <div className="mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--color-stone-200)]">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">

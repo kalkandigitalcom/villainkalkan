@@ -83,7 +83,7 @@ export default function VideoStep({ videos, setVideos }: Props) {
               "relative flex-1 min-w-0 flex items-center rounded-xl border bg-white " +
               "transition-colors " +
               (draftIsValid
-                ? "border-[var(--color-stone-200)] focus-within:border-[var(--brand-coral,#ff653f)]"
+                ? "border-[var(--color-stone-200)] focus-within:border-[var(--brand-coral,#c8973a)]"
                 : "border-red-300 focus-within:border-red-400")
             }
           >

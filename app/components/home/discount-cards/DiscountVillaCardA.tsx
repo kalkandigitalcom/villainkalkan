@@ -198,10 +198,10 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
           </Link>
           <Link
             href={m.reserveHref}
-            className="group/cta inline-flex min-w-0 items-center justify-center gap-2 h-10 whitespace-nowrap rounded-full bg-brand px-4 text-[12.5px] font-semibold text-white hover:bg-brand-hover transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+            className="group/cta inline-flex min-w-0 items-center justify-center gap-2 h-10 whitespace-nowrap rounded-full bg-brand px-4 text-[12.5px] font-semibold text-ink hover:bg-brand-hover transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             {m.dict.card.bookNow}
-            <ArrowRight size={15} strokeWidth={2} className="text-white transition-transform duration-200 group-hover/cta:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
+            <ArrowRight size={15} strokeWidth={2} className="text-ink transition-transform duration-200 group-hover/cta:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
           </Link>
         </div>
       </div>

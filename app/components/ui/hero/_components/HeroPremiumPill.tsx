@@ -21,7 +21,7 @@ export default function HeroPremiumPill() {
         items-center gap-2
         rounded-full
         bg-[var(--brand-coral)]
-        text-white
+        text-ink
         px-3.5 py-1.5
         text-[10px] tracking-[0.24em] uppercase font-medium
         shadow-[0_14px_28px_-10px_rgba(36,54,75,0.55)]

@@ -376,7 +376,7 @@ function PaginationBar({
               "text-[12.5px] font-medium tabular-nums " +
               "transition-colors motion-reduce:transition-none " +
               (p === page
-                ? "bg-[var(--brand-coral)] text-white"
+                ? "bg-[var(--brand-coral)] text-ink"
                 : "text-[var(--admin-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-bg-soft)]")
             }
           >

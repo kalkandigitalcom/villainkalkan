@@ -36,8 +36,8 @@ export function VillaShowPhotosButton({
         inline-flex items-center gap-2.5
         rounded-full bg-brand hover:bg-brand-hover active:bg-brand-active
         px-6 py-3
-        text-[14px] font-semibold text-white
-        shadow-[0_12px_28px_-14px_rgba(39,139,208,0.9)]
+        text-[14px] font-semibold text-ink
+        shadow-[0_12px_28px_-14px_rgba(200,151,58,0.9)]
         transition-colors duration-200 motion-reduce:transition-none
         focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink
       "
@@ -60,8 +60,8 @@ export function VillaAvailabilityShortcut({ locale }: { locale?: Locale }) {
         flex h-14 w-full items-center justify-center gap-2.5
         rounded-2xl bg-brand hover:bg-brand-hover active:bg-brand-active
         px-5
-        text-[14px] font-semibold tracking-[0.01em] text-white
-        shadow-[0_14px_30px_-18px_rgba(39,139,208,0.95)]
+        text-[14px] font-semibold tracking-[0.01em] text-ink
+        shadow-[0_14px_30px_-18px_rgba(200,151,58,0.95)]
         transition-colors duration-200 motion-reduce:transition-none
         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2
       "

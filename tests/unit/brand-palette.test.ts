@@ -1,26 +1,25 @@
 /* ===============================================================
-   🎨 MARKA PALETİ (2026) — kilit testi
+   🥇 MARKA PALETİ (2026-10) — kilit testi
    ===============================================================
-   Yeni palet: canlı mavi #278BD0 · beyaz · mercan #FF805E · koyu
-   metin #24364B. Eski petrol (#244C45), altın (#C9A55A), koyu petrol
-   (#1C3C36) ve lacivert (#0B1F3A) public arayüzde marka rengi olarak
-   KULLANILMAZ. Admin paneli (`maki-admin`, `components/admin`) ve
-   VillaCard'ın admin'e özgü curation tonları (AMENITY_TONE) kapsam
-   dışıdır.
+   Sitenin tüm mavi (#278BD0 ailesi, admin cyan/sky) ve turuncu
+   (#FF805E mercan ailesi) vurguları tek ALTIN aileye taşındı:
+   temel #C8973A. Nötrler (beyaz, krem, koyu lacivert #24364B, gri/
+   stone/sand) korunur. Altın zeminde metin koyu (ink) olmalıdır —
+   beyaz metin altın üzerinde ≈2.6:1 ile okunaksızdır.
    =============================================================== */
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join } from "path";
 
-const OLD = /#(244c45|c9a55a|1c3c36|0b1f3a|d4b25f|bb9649|a88438|e9d3a0|142c28|1f3d38)\b|rgba?\(\s*(36,\s*76,\s*69|201,\s*165,\s*90)\b/i;
+/* Eski mavi / turuncu / cyan vurgu değerleri (hex + rgb üçlüleri). */
+const OLD_ACCENTS =
+  /#(278bd0|1f73ad|1a6496|eaf4fb|2179b7|1c6aa1|185985|78b7e3|4aa0da|a9d1ee|d3e8f6|ff805e|f2683f|c44a26|fff1ec|ff9a7f|e8673f|ffe1d7|ffc2b0|ff9f86|ff653f|06b6d4|0ea5e9|0891b2|0e7490|ecfeff|cffafe|a5f3fc|67e8f9|02aae5|0287bd|03729c|045d7e|54c8f3|1fb2ec|90dcf8|c4ecfb|e8f7fd|7dd3fc|ed7926|0973ba|c84a20|7a2912)\b|rgba?\(\s*(39[\s,]+139[\s,]+208|255[\s,]+128[\s,]+94|255[\s,]+101[\s,]+63|6[\s,]+182[\s,]+212|14[\s,]+165[\s,]+233|2[\s,]+170[\s,]+229|125[\s,]+211[\s,]+252|9[\s,]+115[\s,]+186)\b/i;
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
-    if (statSync(p).isDirectory()) {
-      if (/maki-admin|components[\\/]admin/.test(p)) continue;
-      walk(p, out);
-    } else if (/\.(tsx?|css)$/.test(name)) out.push(p);
+    if (statSync(p).isDirectory()) walk(p, out);
+    else if (/\.(tsx?|css)$/.test(name)) out.push(p);
   }
   return out;
 }
@@ -29,33 +28,45 @@ function stripComments(src: string): string {
   return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 }
 
-describe("Marka paleti — public arayüz", () => {
-  it("globals.css semantik tokenları yeni değerlerde", () => {
-    const css = readFileSync("app/globals.css", "utf-8");
-    expect(css).toMatch(/--color-brand:\s*#278bd0;/i);
-    expect(css).toMatch(/--color-accent:\s*#ff805e;/i);
+describe("Marka paleti — altın #C8973A", () => {
+  const css = readFileSync("app/globals.css", "utf-8");
+
+  it("globals.css semantik tokenları altın ailede; nötrler korunur", () => {
+    expect(css).toMatch(/--color-brand:\s*#c8973a;/i);
+    expect(css).toMatch(/--color-accent:\s*#c8973a;/i);
+    expect(css).toMatch(/--brand-coral:\s+#c8973a;/i);
+    expect(css).toMatch(/--color-champagne-500:\s*#c8973a;/i);
+    expect(css).toMatch(/--color-brand-strong:\s*#926b27;/i);
+    expect(css).toMatch(/--admin-accent:\s*#c8973a;/i);
+    /* Nötrler DEĞİŞMEDİ. */
     expect(css).toMatch(/--color-ink:\s*#24364b;/i);
     expect(css).toMatch(/--color-stone-900:\s*#24364b;/i);
-    expect(css).toMatch(/--brand-coral:\s+#278bd0;/i);
   });
 
-  it("globals.css public bölümünde eski marka renkleri yok (admin pin bloğu hariç)", () => {
-    const css = readFileSync("app/globals.css", "utf-8");
-    const pub = stripComments(css.slice(0, css.indexOf("ADMIN RENK PİNİ")));
-    expect(pub).not.toMatch(OLD);
+  it("altın CTA'da koyu metin (beyaz değil)", () => {
+    const btn = css.slice(css.indexOf(".btn-primary {"));
+    expect(btn.slice(0, btn.indexOf("}"))).toMatch(/color:\s*#24364b;/);
   });
 
-  it("public bileşenlerde eski marka rengi kodu kalmadı", () => {
-    const files = [...walk("app/components"), ...walk("app/(public)")];
+  it("proje genelinde (public + admin) eski mavi/turuncu vurgu değeri kalmadı", () => {
+    const offenders = [...walk("app"), ...walk("lib")].filter((f) =>
+      OLD_ACCENTS.test(stripComments(readFileSync(f, "utf-8"))),
+    );
+    expect(offenders).toEqual([]);
+  });
+
+  it("düz altın zeminli sınıf dizilerinde beyaz metin yok", () => {
+    const gold =
+      /(?<![\w:-])bg-(?:brand|accent)(?:-hover|-active)?(?![\w/-])|(?<![\w:-])bg-\[var\(--brand-coral\)\](?!\/)/;
     const offenders: string[] = [];
-    for (const f of files) {
-      let src = stripComments(readFileSync(f, "utf-8"));
-      if (f.endsWith("VillaCard.tsx")) {
-        /* Admin curation varyantına özgü pastel tonlar kapsam dışı. */
-        const i = src.indexOf("const AMENITY_TONE");
-        if (i >= 0) src = src.slice(0, i);
+    for (const f of walk("app").filter((p) => p.endsWith(".tsx"))) {
+      const src = readFileSync(f, "utf-8");
+      for (const m of src.matchAll(/"[^"]*"|`[^`]*`/g)) {
+        const lit = m[0];
+        if (gold.test(lit) && /(?<![\w:-])text-white(?![\w-])/.test(lit)) {
+          offenders.push(`${f}: ${lit.replace(/\s+/g, " ").slice(0, 80)}`);
+        }
       }
-      if (OLD.test(src)) offenders.push(f);
     }
     expect(offenders).toEqual([]);
   });

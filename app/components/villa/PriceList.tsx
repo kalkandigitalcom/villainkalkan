@@ -66,7 +66,7 @@ import type { Locale } from "@/lib/i18n/config";
      - Her sezon satırı artık kendi ince border'ı + sol turuncu→mavi
        accent çubuğu olan ayrı bir "satır kartı"; hover'da hafif
        yükselir (translateY) ve iki-tonlu glow şiddetlenir.
-     - Fiyat rakamı: font-bold + `#FF805E`, bir kademe büyütüldü.
+     - Fiyat rakamı: font-bold + `#C8973A`, bir kademe büyütüldü.
      - Tarih: takvim ikonu artık mavi tonlu bir rozet içinde; tire
        ayracı turuncu tonda ince bir vurgu.
      - Bilgi butonu ve popover paneli aynı iki-tonlu palete taşındı;
@@ -302,7 +302,7 @@ export default function PriceList({
         relative mt-5 rounded-[20px]
         border border-[var(--color-stone-100)]
         bg-gradient-to-br from-white via-white to-[#FFF7F0]
-        shadow-[0_20px_48px_-30px_rgba(255,128,94,0.22),0_24px_54px_-32px_rgba(36,54,75,0.18)]
+        shadow-[0_20px_48px_-30px_rgba(200,151,58,0.22),0_24px_54px_-32px_rgba(36,54,75,0.18)]
         p-6 md:p-7
       "
     >
@@ -405,7 +405,7 @@ export default function PriceList({
               "pl-row-in group/row relative rounded-2xl border px-4 py-4 md:px-5 md:py-5 transition-[transform,box-shadow,border-color,background-color] duration-300 motion-reduce:transition-none hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 " +
               (isDiscounted
                 ? "border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/60 hover:border-green-300 hover:shadow-[0_18px_38px_-24px_rgba(22,163,74,0.4),0_16px_34px_-24px_rgba(36,54,75,0.18)] "
-                : "border-[var(--color-stone-100)] bg-white/60 hover:bg-white hover:border-[var(--color-stone-200)] hover:shadow-[0_18px_38px_-24px_rgba(255,128,94,0.4),0_16px_34px_-24px_rgba(36,54,75,0.32)] ") +
+                : "border-[var(--color-stone-100)] bg-white/60 hover:bg-white hover:border-[var(--color-stone-200)] hover:shadow-[0_18px_38px_-24px_rgba(200,151,58,0.4),0_16px_34px_-24px_rgba(36,54,75,0.32)] ") +
               /* 🛡️ Açık olan satır (isOpen) her zaman diğer satırların
                  üstünde kalsın diye EXPLICIT z-index — auto DEĞİL, bu
                  yüzden satır kendi stacking context'ini garanti kurar
@@ -484,7 +484,7 @@ export default function PriceList({
                 ) : (
                   <div className="text-left md:text-right">
                     <p
-                      className="font-display font-bold text-[19px] md:text-[17px] text-brand tracking-[-0.02em] leading-none"
+                      className="font-display font-bold text-[19px] md:text-[17px] text-brand-strong tracking-[-0.02em] leading-none"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
                       {formatCurrency(convertedPrice, currency, effectiveLocale)}
@@ -521,7 +521,7 @@ export default function PriceList({
                       className={
                         "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-semibold tracking-wide transition-all duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 " +
                         (isOpen
-                          ? "border-brand/40 bg-brand/[0.08] text-brand shadow-[0_4px_14px_-6px_rgba(36,54,75,0.35)]"
+                          ? "border-brand/40 bg-brand/[0.08] text-brand-strong shadow-[0_4px_14px_-6px_rgba(36,54,75,0.35)]"
                           : "border-[var(--color-stone-200)] text-[var(--color-stone-500)] hover:border-brand/40 hover:text-brand hover:bg-brand/[0.05]")
                       }
                     >

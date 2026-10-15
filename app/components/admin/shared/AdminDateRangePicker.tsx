@@ -55,7 +55,7 @@ export default function AdminDateRangePicker({
       className="
         rounded-xl border border-[var(--admin-border)]
         bg-white px-3 py-2 flex items-center gap-2
-        focus-within:border-[var(--admin-accent,#0ea5e9)]
+        focus-within:border-[var(--admin-accent,#b08330)]
         transition-colors
       "
     >

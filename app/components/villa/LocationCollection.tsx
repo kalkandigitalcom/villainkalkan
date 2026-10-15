@@ -40,7 +40,7 @@ import {
        Büyük gradient overlay YOK, görselin üzerine yazı bindirilmedi —
        bölge adı görselin ALTINDA, ayrı bir metin bloğunda.
      - Villa sayısı ikincil/küçük bilgi; yanında marka renkli
-       (#FF805E/#278BD0) minik gradient nokta — badge/pill DEĞİL.
+       (#C8973A/#C8973A) minik gradient nokta — badge/pill DEĞİL.
      - Hover: sadece görsel hafif zoom + dairenin çok hafif elevation'ı
        (büyük translate/scale yok, sade ve premium).
      - Server component, zero ek client JS (HorizontalCarousel hariç).

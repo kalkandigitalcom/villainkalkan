@@ -612,12 +612,12 @@ export default function BookingSidebar({
             disabled={!minimumStayValid || priceUnavailable || availabilityPending || initialRangeConflict}
             className={`
               w-full rounded-full py-4
-              text-[14px] font-semibold tracking-[0.01em] text-white
+              text-[14px] font-semibold tracking-[0.01em]
               transition-all duration-200 motion-reduce:transition-none
               ${
                 !minimumStayValid || priceUnavailable || availabilityPending || initialRangeConflict
-                  ? "bg-[var(--color-stone-300)] cursor-not-allowed"
-                  : "bg-gradient-to-r from-accent to-brand shadow-[0_16px_32px_-12px_rgba(36,54,75,0.45)] hover:shadow-[0_20px_40px_-12px_rgba(36,54,75,0.55)] hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
+                  ? "bg-[var(--color-stone-300)] text-white cursor-not-allowed"
+                  : "bg-gradient-to-r from-accent to-brand text-ink shadow-[0_16px_32px_-12px_rgba(36,54,75,0.45)] hover:shadow-[0_20px_40px_-12px_rgba(36,54,75,0.55)] hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
               }
             `}
           >
@@ -672,7 +672,7 @@ export default function BookingSidebar({
               className="pp-perk-shimmer absolute inset-x-5 top-0 h-[2px] rounded-full opacity-60"
               style={{
                 background:
-                  "linear-gradient(90deg, transparent, #FF805E, #278BD0, transparent)",
+                  "linear-gradient(90deg, transparent, #C8973A, #C8973A, transparent)",
                 backgroundSize: "220% 100%",
               }}
             />
@@ -685,7 +685,7 @@ export default function BookingSidebar({
               <span
                 className="
                   shrink-0 font-display text-[42px] md:text-[46px]
-                  leading-none tracking-[-0.02em] text-brand
+                  leading-none tracking-[-0.02em] text-brand-strong
                   animate-pulse [animation-duration:5s] motion-reduce:animate-none
                 "
               >

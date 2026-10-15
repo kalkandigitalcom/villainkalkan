@@ -254,7 +254,7 @@ export function renderVoucherDocument(
         font-size: 11px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
-        color: #06b6d4;
+        color: #c8973a;
         font-weight: 700;
       }
       .title {
@@ -533,7 +533,7 @@ export function renderVoucherEmail(
                   </tr>
                 </table>
 
-                <p style="margin:0;font-family:${E_FONT};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#06b6d4;font-weight:700;">Onaylanmış Rezervasyon</p>
+                <p style="margin:0;font-family:${E_FONT};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c8973a;font-weight:700;">Onaylanmış Rezervasyon</p>
                 <h1 style="margin:4px 0 4px;font-family:${E_FONT};font-size:28px;font-weight:800;letter-spacing:-0.02em;color:#0f172a;line-height:1.15;word-break:break-word;overflow-wrap:anywhere;">${escapeHtml(props.villaTitle)}</h1>
                 <p style="margin:0 0 16px;font-family:${E_FONT};font-size:14px;color:#475569;line-height:1.55;">Sayın <strong>${escapeHtml(props.guestName)}</strong>${LEDE_TAIL}</p>
 

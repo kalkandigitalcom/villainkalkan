@@ -12,7 +12,7 @@ import type { PublicSitePopup } from "@/lib/site-popup";
    • Tüm metinler React text node'u (düz metin) — HTML render YOK.
    • Görsel yalnız bu bileşen render edildiğinde istenir.
    • Renk/radius/gölge: mevcut sistem (SuccessModal gölgesi,
-     rounded-3xl, .btn-primary, marka gradyanı #FF805E→#278BD0).
+     rounded-3xl, .btn-primary, marka gradyanı #C8973A→#C8973A).
    =============================================================== */
 
 export type SitePopupCardProps = {

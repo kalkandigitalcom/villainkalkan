@@ -47,7 +47,7 @@
        `poolHeatingTotal`, `pool_heating_fee` vb.) DEĞİŞMEDİ.
 
    🛡️ GÖRSEL REVİZYON (yalnız bu tur — data/state/handler/hesap DEĞİŞMEDİ):
-     - Kart üstünde ince turuncu→mavi (#FF805E → #278BD0) accent çizgisi
+     - Kart üstünde ince turuncu→mavi (#C8973A → #C8973A) accent çizgisi
        — PriceList.tsx / ShortStayFeeNotice.tsx'teki aynı marka imzası.
      - Toplam Tutar artık yumuşak yeşil zeminli, vurgulu bir satır
        (aynı yeşil semantik renk — yalnız daha belirgin).
@@ -55,7 +55,7 @@
        yan yana (mor / turuncu semantiği AYNEN korunuyor) — "şimdi
        ödenecek" ile "girişte ödenecek" ilk bakışta net ayrışıyor.
      - Hasar Depozitosu artık mavi tonlu, soft bordürlü ayrı bir bilgi
-       kutusu + küçük ShieldCheck rozet ikonu (marka mavisi #278BD0).
+       kutusu + küçük ShieldCheck rozet ikonu (marka mavisi #C8973A).
        Açıklama METNİ BİREBİR AYNI.
      - Tüm değişiklik yalnız JSX/Tailwind class'ları; padding'ler
        mütevazı tutuldu (büyük kart/aşırı boşluk yok), sidebar genişliği
@@ -157,12 +157,12 @@ export default function BookingSummary({
             <span className="block text-[var(--color-stone-900)] font-medium tabular-nums">
               {formatCurrency(activeStayDiscount.discountedStay, currency, locale ?? "tr")}
             </span>
-            {/* 🛡️ Marka mavisi (#278BD0) solid etiket — eski "%NN İNDİRİM" /
+            {/* 🛡️ Marka mavisi (#C8973A) solid etiket — eski "%NN İNDİRİM" /
                 "ÖZEL FİYAT" rozetinin YERİNE geçti (bkz. dosya-üstü kontrat
                 notu). Gradient YOK, sade dolgu renk. Yalnız indirim
                 gerçekten aktifse (activeStayDiscount != null) render edilir;
                 indirim yoksa bu blok hiç yok, `Row` dalı BİREBİR aynı. */}
-            <span className="mt-1 inline-block rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-white text-center whitespace-nowrap">
+            <span className="mt-1 inline-block rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-ink text-center whitespace-nowrap">
               {dict.booking.discountedTotal}
             </span>
           </div>
@@ -240,11 +240,11 @@ export default function BookingSummary({
             {formatCurrency(prepayment, currency, locale ?? "tr")}
           </p>
         </div>
-        <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
+        <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
             {dict.booking.dueAtCheckinLabel}
           </p>
-          <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
+          <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
             {formatCurrency(result.total - prepayment, currency, locale ?? "tr")}
           </p>
         </div>

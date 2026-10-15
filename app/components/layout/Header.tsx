@@ -192,7 +192,7 @@ export default function Header({
   }, []);
 
   /* 🛡️ HEADER ZEMİNİ — TÜM public sayfalarda TEK görünüm: beyaz zemin,
-     marka mavisi (#278BD0) metin/ikon, altın vurgu. Ana sayfadaki "hero
+     marka mavisi (#C8973A) metin/ikon, altın vurgu. Ana sayfadaki "hero
      üzerinde şeffaf → kaydırınca beyaz" geçişi KALDIRILDI; zemin rengi
      kaydırmadan bağımsızdır (yalnız ince gölge kaydırınca belirir).
      Fixed konum, yükseklik (72/80px) ve iç sayfa boşluğu AYNEN. */
@@ -240,7 +240,7 @@ export default function Header({
                 <>
                   Villa
                   {/* Wordmark fallback — altın vurgu (header redesign). */}
-                  <span className="text-brand">Kiralama</span>
+                  <span className="text-brand-strong">Kiralama</span>
                 </>
               )}
             </Link>
@@ -274,7 +274,7 @@ export default function Header({
                       className={
                         "flex items-center gap-1 transition-colors motion-reduce:transition-none " +
                         (isActive
-                          ? "text-brand"
+                          ? "text-brand-strong"
                           : "hover:text-brand")
                       }
                     >

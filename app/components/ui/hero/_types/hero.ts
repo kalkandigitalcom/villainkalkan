@@ -45,9 +45,9 @@ export const TRUST_TONE_CLASSES: Record<
 > = {
   coral: {
     surface:
-      "bg-[#fff5ef] border-[#fde0d0] hover:border-[#f9b89a]",
-    iconBox: "bg-[#ffe0d0] ring-1 ring-inset ring-[#f9b89a]",
-    iconText: "text-[#c84a20]",
+      "bg-[#fbf6ec] border-[#f5ead3] hover:border-[#ecd7ac]",
+    iconBox: "bg-[#f5ead3] ring-1 ring-inset ring-[#ecd7ac]",
+    iconText: "text-[#926b27]",
     hoverShadow:
       "hover:shadow-[0_22px_44px_-22px_rgba(36,54,75,0.30)]",
   },
@@ -61,8 +61,8 @@ export const TRUST_TONE_CLASSES: Record<
   },
   sky: {
     surface:
-      "bg-brand-soft border-[#d3e8f6] hover:border-[#a9d1ee]",
-    iconBox: "bg-[#d3e8f6] ring-1 ring-inset ring-[#a9d1ee]",
+      "bg-brand-soft border-[#f5ead3] hover:border-[#ecd7ac]",
+    iconBox: "bg-[#f5ead3] ring-1 ring-inset ring-[#ecd7ac]",
     iconText: "text-brand",
     hoverShadow:
       "hover:shadow-[0_22px_44px_-22px_rgba(36,54,75,0.28)]",

@@ -142,7 +142,7 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
       data-stuck={stuck ? "true" : undefined}
       style={{ top: headerOffset }}
       className={
-        /* Sitenin mevcut turuncu marka rengi (`--color-accent`, #FF805E)
+        /* Sitenin mevcut turuncu marka rengi (`--color-accent`, #C8973A)
            — şeridin tamamı; ayrı beyaz kap yok. */
         "sticky bg-accent shadow-[0_10px_24px_-22px_rgba(36,54,75,0.45)] px-5 md:px-10 lg:px-16 " +
         /* Doğal konumda z-index YOK → DOM'da sonra gelen rezervasyon

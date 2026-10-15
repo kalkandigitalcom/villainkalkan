@@ -23,7 +23,7 @@ import type { DailyReservationPoint } from "@/app/services/analytics.service";
      - Responsive     : ResizeObserver ile container genişliği
                         canlı izlenir; SVG re-render. Tek boyutlu
                         (yükseklik sabit 260) mobile-friendly.
-     - Theme          : --admin-accent (#06b6d4 cyan) — admin layout
+     - Theme          : --admin-accent (#c8973a cyan) — admin layout
                         ile birebir uyumlu.
 
    PERFORMANS:

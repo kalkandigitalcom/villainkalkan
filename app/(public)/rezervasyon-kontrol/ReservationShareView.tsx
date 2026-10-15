@@ -105,7 +105,7 @@ function PhoneActions({
       <a
         href={`tel:${phone}`}
         aria-label={phoneAriaLabel}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--brand-coral-tint)] text-[var(--brand-coral-deep)] hover:bg-[var(--brand-coral)] hover:text-white transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-coral)]/40"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--brand-coral-tint)] text-[var(--brand-coral-deep)] hover:bg-[var(--brand-coral)] hover:text-ink transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-coral)]/40"
       >
         <Phone size={15} aria-hidden />
       </a>

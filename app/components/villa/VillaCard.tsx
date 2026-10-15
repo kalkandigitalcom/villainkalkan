@@ -678,7 +678,7 @@ export default function VillaCard({
                 >
                   <Star
                     size={11}
-                    className="text-amber-400 shrink-0"
+                    className="text-brand shrink-0"
                     fill="currentColor"
                     strokeWidth={1.5}
                     aria-hidden
@@ -785,7 +785,7 @@ export default function VillaCard({
                   "inline-flex items-center justify-center rounded-full shrink-0 " +
                   (isCuration ? "w-8 h-8 " : "w-9 h-9 ") +
                   "bg-white/10 backdrop-blur-md ring-1 ring-inset ring-white/30 text-white " +
-                  "group-hover:bg-[var(--brand-coral)] group-hover:ring-[var(--brand-coral)] " +
+                  "group-hover:bg-[var(--brand-coral)] group-hover:ring-[var(--brand-coral)] group-hover:text-ink " +
                   "transition-[background-color,color,box-shadow] duration-300 motion-reduce:transition-none"
                 }
               >
@@ -857,9 +857,9 @@ export default function VillaCard({
             Image bloğunun altında, article içinde sabit
             yükseklikli (h-24) 3-col luxury amenity strip.
             Tonlar:
-              - Yatak  : coral  (#FFF1EB · #c84a20)
+              - Yatak  : coral  (#FBF6EC · #926b27)
               - Banyo  : green  (#EEF8F0 · #1f7a4d)
-              - Kişi   : blue   (#EAF4FB · #278BD0)
+              - Kişi   : blue   (#FBF6EC · #C8973A)
             Hover: subtle brighten (-translate-y-[1px]).
             CSS soup yok — tek tone map + helper component. */}
         <div
@@ -1085,7 +1085,7 @@ export default function VillaCard({
             data-price-panel
             className="
               relative flex shrink-0 flex-col items-stretch gap-3.5
-              rounded-tl-[44px] bg-brand px-5 pt-4 pb-4 pl-7 text-white
+              rounded-tl-[44px] bg-brand px-5 pt-4 pb-4 pl-7 text-ink
               @[26rem]:w-[46%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0
               @[26rem]:rounded-tl-[96px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right
             "
@@ -1094,22 +1094,22 @@ export default function VillaCard({
               {isFlexible ? (
                 /* 🛡️ ESNEK EK SONUÇ — fiyat gösterilmez (MEVCUT kural). */
                 <>
-                  <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
-                    <Sparkles size={12} strokeWidth={2} className="text-white" aria-hidden />
+                  <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink">
+                    <Sparkles size={12} strokeWidth={2} className="text-ink" aria-hidden />
                     {dict.card.flexibleTitle}
                   </p>
-                  <p className="mt-1 text-[12px] text-white/90">{dict.card.flexibleSubtitle}</p>
+                  <p className="mt-1 text-[12px] text-ink/90">{dict.card.flexibleSubtitle}</p>
                 </>
               ) : stayTotal !== null ? (
                 /* 🛡️ TARİH SEÇİLİ — konaklama TOPLAMI (MEVCUT hesap). */
                 <>
                   {stayDateLabel && (
-                    <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/90 tabular-nums">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/90 tabular-nums">
                       {stayDateLabel}
                     </p>
                   )}
                   {stayTotalBeforeDiscount !== null && (
-                    <p className="mt-1 text-[12.5px] text-white/85 line-through tabular-nums">
+                    <p className="mt-1 text-[12.5px] text-ink/85 line-through tabular-nums">
                       {formatCurrency(stayTotalBeforeDiscount, currency, effectiveLocale)}
                     </p>
                   )}
@@ -1119,12 +1119,12 @@ export default function VillaCard({
                   {/* "N gece" gösterilmez (tarih üst satırda — MEVCUT karar);
                       "Temizlik dahil" MEVCUT koşuluyla. */}
                   {hasCleaning && (
-                    <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] text-white/85">
+                    <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] text-ink/85">
                       {dict.card.cleaningIncluded}
                     </p>
                   )}
                   {stayDiscountSavings !== null && (
-                    <p data-price-savings className="mt-1 text-[12px] font-semibold text-white tabular-nums">
+                    <p data-price-savings className="mt-1 text-[12px] font-semibold text-ink tabular-nums">
                       {formatDictionaryString(dict.card.totalSavings, {
                         amount: formatCurrency(stayDiscountSavings, currency, effectiveLocale),
                       })}
@@ -1134,10 +1134,10 @@ export default function VillaCard({
               ) : isDiscount && showDiscountPricing ? (
                 /* 🛡️ İNDİRİM — computeDiscountCardPricing çıktıları. */
                 <>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/90">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink/90">
                     {dict.card.nightly}
                   </p>
-                  <p className="mt-1 text-[12.5px] text-white/85 line-through tabular-nums">
+                  <p className="mt-1 text-[12.5px] text-ink/85 line-through tabular-nums">
                     <span className="sr-only">{dict.card.originalPriceLabel}: </span>
                     {formatCurrency(convertedPrice, currency, effectiveLocale)}
                   </p>
@@ -1146,22 +1146,22 @@ export default function VillaCard({
                     {formatCurrency(discountedPrice!.converted, currency, effectiveLocale)}
                   </p>
                   {nightlySavingsLabel && (
-                    <p className="mt-1.5 text-[12px] font-semibold text-white">
+                    <p className="mt-1.5 text-[12px] font-semibold text-ink">
                       {nightlySavingsLabel}
                     </p>
                   )}
-                  <p className="mt-1 text-[11px] text-white/90">{discountDateRangeLabel}</p>
+                  <p className="mt-1 text-[11px] text-ink/90">{discountDateRangeLabel}</p>
                 </>
               ) : price ? (
                 /* Tarih seçilmemiş — gecelik başlangıç fiyatı (MEVCUT). */
                 <>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/90">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink/90">
                     {dict.card.nightly}
                   </p>
                   <p data-price-amount className="mt-0.5 font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
                     {formatCurrency(convertedPrice, currency, effectiveLocale)}
                   </p>
-                  <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-white/85">
+                  <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink/85">
                     {dict.card.startingFromUpper}
                   </p>
                 </>
@@ -1199,7 +1199,7 @@ export default function VillaCard({
               className="
                 shrink-0 inline-flex w-full items-center justify-center whitespace-nowrap
                 h-10 rounded-full bg-white px-5 @[26rem]:mt-4 @[26rem]:w-auto
-                text-[12px] font-bold uppercase tracking-[0.1em] text-brand
+                text-[12px] font-bold uppercase tracking-[0.1em] text-brand-strong
                 shadow-[0_10px_22px_-12px_rgba(0,0,0,0.55)]
                 hover:bg-brand-soft transition-colors duration-200 motion-reduce:transition-none
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-brand
@@ -1314,10 +1314,10 @@ const AMENITY_TONE: Record<
   { surface: string; icon: string; numText: string; label: string }
 > = {
   coral: {
-    surface: "bg-[#FFF1EB] group-hover:bg-[#FFE6D9]",
-    icon: "text-[#c84a20]",
-    numText: "text-[#7a2c12]",
-    label: "text-[#c25a30]",
+    surface: "bg-[#FBF6EC] group-hover:bg-[#F5EAD3]",
+    icon: "text-[#926b27]",
+    numText: "text-[#74551f]",
+    label: "text-[#b08330]",
   },
   green: {
     surface: "bg-[#EEF8F0] group-hover:bg-[#E2F2E6]",

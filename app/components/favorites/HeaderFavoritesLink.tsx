@@ -77,7 +77,7 @@ export default function HeaderFavoritesLink({
             rounded-full
             text-[10px] font-medium tabular-nums leading-none
             flex items-center justify-center
-            bg-[var(--brand-coral)] text-white
+            bg-[var(--brand-coral)] text-ink
             shadow-[0_2px_6px_-2px_rgba(36,54,75,0.45)]
           "
         >

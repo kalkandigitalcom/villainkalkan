@@ -34,8 +34,8 @@ import FloatingSocialClient from "./FloatingSocialClient";
    TASARIM (yalnız bu dosyada scoped <style>, globals.css DEĞİŞMEDİ):
      - Buton başına yumuşak, sürekli "nefes alan" (breathe) ambient
        glow katmanı (radial-gradient + blur, kendi marka rengiyle:
-       telefon turuncu #FF805E, WhatsApp gerçek marka yeşili #25D366).
-     - İki marka renginin (#FF805E turuncu, #278BD0 mavi) ikisi de
+       telefon turuncu #C8973A, WhatsApp gerçek marka yeşili #25D366).
+     - İki marka renginin (#C8973A turuncu, #C8973A mavi) ikisi de
        butonların ambient/dual-tone shadow'unda kullanılıyor — WhatsApp
        kendi yeşil kimliğini korurken hafif mavi tonla harmanlanıyor.
      - İkon rozetinde camsı/parlak üst highlight (glass hissi).

@@ -454,9 +454,9 @@ function Chip({ children }: { children: React.ReactNode }) {
       className="
         inline-flex items-center
         rounded-full
-        bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))]
-        text-[var(--brand-coral-ink,#7a2912)]
-        border border-[var(--brand-coral,#FF653F)]/15
+        bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))]
+        text-[var(--brand-coral-ink,#74551f)]
+        border border-[var(--brand-coral,#C8973A)]/15
         px-2.5 py-0.5 text-[11.5px] font-medium
         tracking-[0.01em] whitespace-nowrap
       "

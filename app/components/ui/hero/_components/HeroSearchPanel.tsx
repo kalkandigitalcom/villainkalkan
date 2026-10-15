@@ -95,7 +95,7 @@ registerLocale("en", enUS);
    style/renk değerleri değişti. State/handler/effect/ref/prop/attribute
    mantığı yukarıdaki liste ile BİREBİR aynı kaldı:
      - Turkuaz (--brand-coral*, --color-champagne-*) vurgular →
-       SADECE #FF805E (turuncu) / #278BD0 (mavi) marka renkleri.
+       SADECE #C8973A (turuncu) / #C8973A (mavi) marka renkleri.
      - Panel: daha yumuşak radius (28px), turuncu/mavi çok-katmanlı
        glow shadow, ince entrance animasyonu (local `<style>`,
        globals.css'e dokunulmadı, prefers-reduced-motion'da kapanır).
@@ -437,7 +437,7 @@ export default function HeroSearchPanel({
                     key={item.id}
                     className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-[6px] cursor-pointer transition ${
                       checked
-                        ? "bg-brand/[0.08] text-brand font-medium"
+                        ? "bg-brand/[0.08] text-brand-strong font-medium"
                         : "hover:bg-brand/[0.04] text-[var(--color-stone-700)]"
                     }`}
                   >
@@ -514,7 +514,7 @@ export default function HeroSearchPanel({
                     key={item.id}
                     className={`flex items-center gap-3 text-sm px-3 py-2.5 rounded-[6px] cursor-pointer transition ${
                       checked
-                        ? "bg-brand/[0.08] text-brand font-medium"
+                        ? "bg-brand/[0.08] text-brand-strong font-medium"
                         : "hover:bg-brand/[0.04] text-[var(--color-stone-700)]"
                     }`}
                   >
@@ -548,14 +548,14 @@ export default function HeroSearchPanel({
             h-[52px] md:h-auto md:min-w-[176px] px-7 md:px-8
             !rounded-[6px] md:!rounded-[3px]
             bg-brand hover:bg-brand-hover
-            text-white font-display text-[15px] md:text-[15.5px] font-semibold tracking-[0.01em]
+            text-ink font-display text-[15px] md:text-[15.5px] font-semibold tracking-[0.01em]
             shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]
             transition-colors duration-200 motion-reduce:transition-none
             focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
             focus-visible:ring-brand focus-visible:ring-offset-white
           "
         >
-          <Search size={16} strokeWidth={2} className="shrink-0 text-white" aria-hidden />
+          <Search size={16} strokeWidth={2} className="shrink-0 text-ink" aria-hidden />
           <span>{dict.submit}</span>
           <ArrowRight
             size={15}
@@ -652,7 +652,7 @@ export default function HeroSearchPanel({
                         key={item.id}
                         className={`flex items-center gap-3 text-[13.5px] px-2.5 py-2 rounded-[6px] cursor-pointer transition ${
                           checked
-                            ? "bg-brand/[0.08] text-brand font-medium"
+                            ? "bg-brand/[0.08] text-brand-strong font-medium"
                             : "hover:bg-brand/[0.04] text-[var(--color-stone-700)]"
                         }`}
                       >

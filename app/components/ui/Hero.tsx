@@ -28,7 +28,7 @@ import type { HeroReviewStats } from "./hero/_types/hero";
        gradient (siyah) — okunabilirlik + "gece / golden hour" luxury
        atmosferi. Metin artık BEYAZ (önceki versiyon koyu metin +
        beyaz overlay kullanıyordu — bilinçli tam ters çevirme).
-     - Marka renkleri (#FF805E mercan / #278BD0 mavi) SADECE vurgu
+     - Marka renkleri (#C8973A mercan / #C8973A mavi) SADECE vurgu
        katmanlarında: köşe glow'ları, başlık ikinci satırı (gradient
        text-clip), CTA gradient + breathing glow, arama panelindeki
        ikon/hover/odak vurguları. Başka hiçbir ana tema rengi YOK.
@@ -211,7 +211,7 @@ export default function Hero({
 
       {/* ═══════════════════════════════════════════════════════════
           OVERLAY — dengeli, düz koyu petrol ton (#24364B; ana renk
-          #278BD0'in koyu kademesi — fotoğrafa yeşil cast vermez). Admin
+          #C8973A'in koyu kademesi — fotoğrafa yeşil cast vermez). Admin
           `hero.overlayOpacity` (0..1) yoğunluğu ayarlar; metin kontrastı
           için taban 0.6'nın altına düşmez. Üst şerit (header) ve alt
           şerit (arama paneli) için çok hafif kenar koyulaşması.
@@ -322,8 +322,8 @@ export default function Hero({
                     inline-flex items-center justify-center
                     h-12 md:h-[60px] px-7 md:px-9 rounded-full
                     bg-brand hover:bg-brand-hover
-                    text-white text-[15px] md:text-[17px] font-semibold tracking-[0.01em]
-                    shadow-[0_16px_34px_-16px_rgba(39,139,208,0.8)]
+                    text-ink text-[15px] md:text-[17px] font-semibold tracking-[0.01em]
+                    shadow-[0_16px_34px_-16px_rgba(200,151,58,0.8)]
                     hover:-translate-y-[1px]
                     transition-[transform,background-color] duration-300
                     motion-reduce:transition-none motion-reduce:hover:translate-y-0

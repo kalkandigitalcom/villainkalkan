@@ -35,7 +35,7 @@ export default function WizardStepBar({
               onClick={() => onStepClick(s.id)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
                 isActive
-                  ? "bg-[var(--color-champagne-500)] text-white border-[var(--color-champagne-500)]"
+                  ? "bg-[var(--color-champagne-500)] text-ink border-[var(--color-champagne-500)]"
                   : isDone
                     ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                     : "bg-white text-[var(--color-stone-500)] border-[var(--color-stone-100)] hover:border-[var(--color-stone-200)]"

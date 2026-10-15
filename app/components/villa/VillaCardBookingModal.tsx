@@ -746,7 +746,7 @@ function ModalContent({
           /* 🛡️ DÜZ TURUNCU CTA (UI-only): `.btn-primary`nin turkuaz
              zemini + glow shadow'ları YALNIZ BU BUTONDA ezilir (global
              sınıfa DOKUNULMADI → diğer tüm butonlar aynı). Marka
-             turuncusu #FF805E, beyaz metin; hover sade koyu ton,
+             turuncusu #C8973A, beyaz metin; hover sade koyu ton,
              gradient/glass/translate efekti yok. */
           className={`btn-primary w-full !py-3.5 !text-sm !bg-brand !bg-none !shadow-none !transform-none hover:!bg-brand-hover hover:!shadow-none ${
             !minimumStayValid || priceUnavailable || availabilityPending || initialRangeConflict ? "!opacity-50 !cursor-not-allowed" : ""

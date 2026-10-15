@@ -240,7 +240,7 @@ export default async function SharedListPageBody({
           <p className="
             inline-flex items-center gap-2
             text-[11px] tracking-[0.28em] uppercase font-medium
-            text-[var(--color-champagne-700,#a16207)]
+            text-[var(--color-champagne-700,#926b27)]
           ">
             <Sparkles
               size={12}

@@ -162,8 +162,8 @@ export default function VillaShareLinks({
               className={
                 "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 " +
                 (b.key === "copy" && copied
-                  ? "border-brand bg-brand text-white"
-                  : "border-[var(--color-stone-200)] bg-white text-ink hover:border-brand hover:bg-brand hover:text-white")
+                  ? "border-brand bg-brand text-ink"
+                  : "border-[var(--color-stone-200)] bg-white text-ink hover:border-brand hover:bg-brand hover:text-ink")
               }
             >
               {b.icon}

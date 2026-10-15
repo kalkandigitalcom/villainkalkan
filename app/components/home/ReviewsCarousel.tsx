@@ -223,7 +223,7 @@ function ActiveTestimonial({
             >
               <Star
                 size={13}
-                className="text-amber-500"
+                className="text-brand"
                 fill="currentColor"
                 strokeWidth={1.5}
                 aria-hidden

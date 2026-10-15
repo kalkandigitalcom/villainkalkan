@@ -53,7 +53,7 @@ export default function FloatingSocialClient({
           50% { opacity: 0.85; transform: scale(1.1); }
         }
         .fc-fab-glow--orange {
-          background: radial-gradient(circle, rgba(255,128,94,0.6) 0%, rgba(255,128,94,0) 72%);
+          background: radial-gradient(circle, rgba(200,151,58,0.6) 0%, rgba(200,151,58,0) 72%);
           filter: blur(11px);
         }
         .fc-fab-glow--green {
@@ -81,10 +81,10 @@ export default function FloatingSocialClient({
             className="
               fc-fab group/fab relative isolate inline-flex items-center gap-2.5
               rounded-full pl-2.5 pr-2.5 sm:pr-4 py-2.5
-              bg-gradient-to-br from-accent to-[#a8873f] text-white
+              bg-gradient-to-br from-accent to-[#a8873f] text-ink
               ring-1 ring-white/15
-              shadow-[0_16px_36px_-14px_rgba(255,128,94,0.6),0_10px_24px_-12px_rgba(36,54,75,0.32)]
-              hover:shadow-[0_22px_46px_-14px_rgba(255,128,94,0.75),0_14px_30px_-12px_rgba(36,54,75,0.42)]
+              shadow-[0_16px_36px_-14px_rgba(200,151,58,0.6),0_10px_24px_-12px_rgba(36,54,75,0.32)]
+              hover:shadow-[0_22px_46px_-14px_rgba(200,151,58,0.75),0_14px_30px_-12px_rgba(36,54,75,0.42)]
               transition-transform duration-300 motion-reduce:transition-none
               hover:scale-[1.06] hover:-translate-y-0.5
               motion-reduce:hover:scale-100 motion-reduce:hover:translate-y-0

@@ -51,8 +51,8 @@ export default function FloatingQuoteCta() {
     <>
       <style>{`
         @keyframes quoteCtaGlow {
-          0%, 100% { box-shadow: 0 10px 26px -12px rgba(255,128,94,0.75), 0 0 0 0 rgba(255,128,94,0.0); }
-          50%      { box-shadow: 0 14px 34px -12px rgba(255,128,94,0.95), 0 0 22px 2px rgba(255,128,94,0.45); }
+          0%, 100% { box-shadow: 0 10px 26px -12px rgba(200,151,58,0.75), 0 0 0 0 rgba(200,151,58,0.0); }
+          50%      { box-shadow: 0 14px 34px -12px rgba(200,151,58,0.95), 0 0 22px 2px rgba(200,151,58,0.45); }
         }
         @keyframes quoteCtaSweep {
           0%, 70% { transform: translateY(-120%); }

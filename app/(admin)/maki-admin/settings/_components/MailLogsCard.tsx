@@ -184,7 +184,7 @@ export default function MailLogsCard() {
         <div className="inline-flex items-center gap-2 shrink-0">
           <span
             aria-hidden
-            className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))] text-[var(--brand-coral,#FF653F)]"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))] text-[var(--brand-coral,#C8973A)]"
           >
             <Wrench size={13} strokeWidth={1.75} />
           </span>

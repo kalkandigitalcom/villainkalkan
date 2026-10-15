@@ -63,7 +63,7 @@ export default function LiveDatePriceSummary({
           turuncu→mavi accent çizgisi. Salt dekoratif. */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#ED7926] via-[#ED7926]/50 to-[#0973BA]"
+        className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#C8973A] via-[#C8973A]/50 to-[#926B27]"
       />
       <div className="flex items-center justify-between mb-3">
         <p className="eyebrow !text-[10px] !tracking-[0.16em] text-[var(--color-stone-500)]">
@@ -174,11 +174,11 @@ export default function LiveDatePriceSummary({
           </p>
         </div>
         {!isFullPayment && (
-          <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
+          <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
               Girişte ödenecek
             </p>
-            <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
+            <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
               {hasRange ? `₺${fmtTRY(remainingOnArrival)}` : "—"}
             </p>
           </div>

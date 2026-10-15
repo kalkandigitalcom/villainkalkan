@@ -168,7 +168,7 @@ export function emailBadge(
     success: "background:#ecfaf2;color:#176b46;border:1px solid #c8eed7;",
     warning: "background:#fff8eb;color:#92560a;border:1px solid #fde7bf;",
     danger: "background:#fdeef0;color:#9a2a36;border:1px solid #f4cfd5;",
-    info: "background:#ecfeff;color:#0e7490;border:1px solid #a5f3fc;",
+    info: "background:#fbf6ec;color:#926b27;border:1px solid #ecd7ac;",
   };
   return `<span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0;${styles[variant]}">${escapeHtml(
     text

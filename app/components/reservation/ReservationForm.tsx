@@ -784,7 +784,7 @@ export default function ReservationForm({
                     <span className="block text-[var(--color-stone-900)] font-medium tabular-nums">
                       {formatCurrency(result?.stay || 0, currency, activeLocale)}
                     </span>
-                    <span className="mt-1 inline-block rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-white text-center whitespace-nowrap">
+                    <span className="mt-1 inline-block rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-ink text-center whitespace-nowrap">
                       {bookingDict.discountedTotal}
                     </span>
                   </div>
@@ -876,11 +876,11 @@ export default function ReservationForm({
                         {formatCurrency(totalPrice, currency, activeLocale)}
                       </p>
                     </div>
-                    <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
+                    <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
                         {bookingDict.dueAtCheckinLabel}
                       </p>
-                      <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
+                      <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
                         {formatCurrency(0, currency, activeLocale)}
                       </p>
                     </div>
@@ -898,11 +898,11 @@ export default function ReservationForm({
                         {formatCurrency(prepayment, currency, activeLocale)}
                       </p>
                     </div>
-                    <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
+                    <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
                         {bookingDict.dueAtCheckinLabel}
                       </p>
-                      <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
+                      <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
                         {formatCurrency(totalPrice - prepayment, currency, activeLocale)}
                       </p>
                     </div>

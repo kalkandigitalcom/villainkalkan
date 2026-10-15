@@ -284,7 +284,7 @@ export default function IcalSyncCard({
         <div className="inline-flex items-center gap-2">
           <span
             aria-hidden
-            className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))] text-[var(--brand-coral,#FF653F)]"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))] text-[var(--brand-coral,#C8973A)]"
           >
             <Calendar size={14} strokeWidth={1.75} />
           </span>
@@ -390,7 +390,7 @@ export default function IcalSyncCard({
                   setFormPlatform(e.target.value as PlatformChoice)
                 }
                 disabled={saving}
-                className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
+                className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
               >
                 {PLATFORMS.map((p) => (
                   <option key={p} value={p}>
@@ -411,7 +411,7 @@ export default function IcalSyncCard({
                   disabled={saving}
                   placeholder="örn. Holiday Lettings"
                   maxLength={80}
-                  className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
+                  className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
                 />
               </div>
             )}
@@ -427,7 +427,7 @@ export default function IcalSyncCard({
               disabled={saving}
               placeholder="https://www.airbnb.com/calendar/ical/...ics"
               maxLength={2000}
-              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none font-mono"
+              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none font-mono"
             />
             <p className="text-[11px] text-[var(--color-stone-400)] mt-1.5">
               Platform admin paneline gidip "iCal export" linkini kopyalayın.
@@ -452,12 +452,12 @@ export default function IcalSyncCard({
               disabled={saving}
               className="
                 inline-flex items-center justify-center gap-1.5
-                rounded-full border border-[var(--brand-coral,#FF653F)]/40
-                bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))]
-                text-[var(--brand-coral-ink,#7a2912)]
+                rounded-full border border-[var(--brand-coral,#C8973A)]/40
+                bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))]
+                text-[var(--brand-coral-ink,#74551f)]
                 px-3.5 py-1.5 text-[12.5px] font-medium
-                hover:bg-[var(--brand-coral-tint,rgba(255,101,63,0.18))]
-                hover:border-[var(--brand-coral,#FF653F)]/60
+                hover:bg-[var(--brand-coral-tint,rgba(200,151,58,0.18))]
+                hover:border-[var(--brand-coral,#C8973A)]/60
                 transition-[background-color,border-color]
                 disabled:opacity-60 disabled:cursor-not-allowed
               "
@@ -480,8 +480,8 @@ export default function IcalSyncCard({
             rounded-full border border-dashed border-[var(--color-stone-300)]
             bg-white text-[var(--color-stone-700)]
             px-4 py-2 text-[13px] font-medium
-            hover:border-[var(--brand-coral,#FF653F)]/60
-            hover:text-[var(--brand-coral-ink,#7a2912)]
+            hover:border-[var(--brand-coral,#C8973A)]/60
+            hover:text-[var(--brand-coral-ink,#74551f)]
             transition-[border-color,color]
           "
         >

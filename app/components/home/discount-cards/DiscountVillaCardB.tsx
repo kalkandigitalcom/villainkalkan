@@ -83,7 +83,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
       {/* ── BİLGİ SÜTUNU ── */}
       <div className="flex min-w-0 flex-1 flex-col justify-between px-5 py-5 md:px-8 md:py-8">
         <div>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-brand-hover truncate">
+          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-brand-strong truncate">
             {location || m.dict.card.noLocation}
           </p>
           <h3

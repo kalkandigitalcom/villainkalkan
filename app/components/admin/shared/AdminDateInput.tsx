@@ -259,7 +259,7 @@ export default function AdminDateInput({
           px-3 py-2 text-[13px]
           ${displayValue ? "text-[var(--color-stone-900)]" : "text-[var(--color-stone-400)]"}
           hover:border-[var(--color-stone-300)]
-          focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none
+          focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none
           transition
         `}
       >
@@ -405,7 +405,7 @@ export default function AdminDateInput({
                     if (!Number.isFinite(n)) return;
                     handleTimeChange(n, selectedTime.mm);
                   }}
-                  className="w-12 rounded-md border border-[var(--color-stone-200)] bg-white px-2 py-1 text-[12.5px] text-center tabular-nums focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none disabled:opacity-50"
+                  className="w-12 rounded-md border border-[var(--color-stone-200)] bg-white px-2 py-1 text-[12.5px] text-center tabular-nums focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none disabled:opacity-50"
                   aria-label="Saat"
                 />
                 <span className="text-[var(--color-stone-400)] tabular-nums">:</span>
@@ -420,7 +420,7 @@ export default function AdminDateInput({
                     if (!Number.isFinite(n)) return;
                     handleTimeChange(selectedTime.hh, n);
                   }}
-                  className="w-12 rounded-md border border-[var(--color-stone-200)] bg-white px-2 py-1 text-[12.5px] text-center tabular-nums focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none disabled:opacity-50"
+                  className="w-12 rounded-md border border-[var(--color-stone-200)] bg-white px-2 py-1 text-[12.5px] text-center tabular-nums focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none disabled:opacity-50"
                   aria-label="Dakika"
                 />
               </div>

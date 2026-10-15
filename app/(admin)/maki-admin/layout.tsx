@@ -338,16 +338,16 @@ function NavBadge({ count }: { count: number }) {
     <span className="relative ml-auto shrink-0 inline-flex">
       <span
         aria-hidden="true"
-        className="admin-nav-badge-ring absolute inset-0 rounded-full bg-[#ED7926]/60"
+        className="admin-nav-badge-ring absolute inset-0 rounded-full bg-[#C8973A]/60"
       />
       <span
         className="
           relative inline-flex items-center justify-center
           min-w-[19px] h-[19px] px-1.5 rounded-full
-          text-[10.5px] font-bold leading-none text-white
-          bg-[#ED7926]
-          ring-1 ring-[#0973BA]/30
-          shadow-[0_0_8px_-1px_rgba(9,115,186,0.55)]
+          text-[10.5px] font-bold leading-none text-ink
+          bg-[#C8973A]
+          ring-1 ring-[#926B27]/30
+          shadow-[0_0_8px_-1px_rgba(146,107,39,0.55)]
         "
       >
         {label}

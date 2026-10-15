@@ -118,7 +118,7 @@ export default function HeroCopy({ hero }: { hero: HeroContent }) {
           className="
             group inline-flex items-center gap-2
             px-6 py-3 rounded-full
-            bg-[var(--brand-coral)] text-white
+            bg-[var(--brand-coral)] text-ink
             text-[13.5px] font-medium tracking-[0.02em]
             shadow-[0_18px_36px_-14px_rgba(36,54,75,0.55),0_4px_12px_-6px_rgba(36,54,75,0.35)]
             hover:bg-[var(--brand-coral-deep)]

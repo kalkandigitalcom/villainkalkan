@@ -33,7 +33,7 @@ import { Eye, EyeOff } from "lucide-react";
    TASARIM:
      Yalnız mevcut admin CSS custom property'leri (--admin-surface /
      --admin-border / --admin-text / --admin-muted) + marka renkleri
-     (#ED7926 turuncu / #0973BA mavi) kullanılır. Yeni global CSS
+     (#C8973A turuncu / #926B27 mavi) kullanılır. Yeni global CSS
      eklenmedi — tamamen Tailwind utility. Köşe yarıçapı dashboard
      kartlarıyla (admin-card-flat / admin-table: 16px) hizalı olsun
      diye `rounded-2xl`. Gereksiz/sürekli animasyon YOK — yalnız
@@ -72,7 +72,7 @@ export default function HideableSection({
           aria-label={`${label} — görüntülemek için tıklayın`}
           className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)]/80 backdrop-blur-[2px] transition-colors duration-200 hover:bg-[var(--admin-surface)]/90"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#ED7926]/15 to-[#0973BA]/15 text-[#0973BA]">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#C8973A]/15 to-[#926B27]/15 text-[#926B27]">
             <Eye size={18} strokeWidth={1.8} aria-hidden="true" />
           </span>
           <span className="text-[13px] font-medium text-[var(--admin-text)]">
@@ -87,7 +87,7 @@ export default function HideableSection({
           onClick={() => setVisible(false)}
           aria-label={`${label} — gizle`}
           title="Gizle"
-          className="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-muted)] shadow-sm transition-colors duration-200 hover:text-[#0973BA] hover:border-[#0973BA]/40"
+          className="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-muted)] shadow-sm transition-colors duration-200 hover:text-[#926B27] hover:border-[#926B27]/40"
         >
           <EyeOff size={15} strokeWidth={1.8} aria-hidden="true" />
         </button>

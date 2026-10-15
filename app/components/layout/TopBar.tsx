@@ -183,7 +183,7 @@ function LocaleChipLinks({
             key={l}
             aria-current="true"
             title={`${label}: ${l.toUpperCase()}`}
-            className={base + " bg-brand text-white"}
+            className={base + " bg-brand text-ink"}
           >
             {inner}
           </span>

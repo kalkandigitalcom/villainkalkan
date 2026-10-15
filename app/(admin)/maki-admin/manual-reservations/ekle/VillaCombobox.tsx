@@ -220,7 +220,7 @@ export default function VillaCombobox({
                 }}
                 onKeyDown={onKeyDownInput}
                 placeholder="Mülk adı veya slug ara…"
-                className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white pl-9 pr-9 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
+                className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white pl-9 pr-9 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
               />
               {query && (
                 <button

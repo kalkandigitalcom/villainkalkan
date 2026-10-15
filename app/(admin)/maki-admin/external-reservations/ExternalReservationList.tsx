@@ -56,9 +56,9 @@ function sourceBadgeTone(name: string | undefined | null): {
   const n = (name || "").toLowerCase().trim();
   if (n.includes("airbnb")) {
     return {
-      bg: "bg-[var(--brand-coral-tint,rgba(255,101,63,0.10))]",
-      text: "text-[var(--brand-coral-ink,#7a2912)]",
-      border: "border-[var(--brand-coral,#FF653F)]/30",
+      bg: "bg-[var(--brand-coral-tint,rgba(200,151,58,0.10))]",
+      text: "text-[var(--brand-coral-ink,#74551f)]",
+      border: "border-[var(--brand-coral,#C8973A)]/30",
     };
   }
   if (n.includes("booking")) {
@@ -386,10 +386,10 @@ export default function ExternalReservationList() {
   return (
     <div className="space-y-6">
       {/* NOTICE BANNER — admin gerçek reservation ile karıştırmasın */}
-      <div className="rounded-2xl border border-[var(--brand-coral,#FF653F)]/30 bg-[var(--brand-coral-tint,rgba(255,101,63,0.06))] px-5 py-3.5 flex items-start gap-3">
+      <div className="rounded-2xl border border-[var(--brand-coral,#C8973A)]/30 bg-[var(--brand-coral-tint,rgba(200,151,58,0.06))] px-5 py-3.5 flex items-start gap-3">
         <span
           aria-hidden
-          className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white text-[var(--brand-coral,#FF653F)] shrink-0"
+          className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white text-[var(--brand-coral,#C8973A)] shrink-0"
         >
           <Layers size={13} />
         </span>
@@ -504,7 +504,7 @@ export default function ExternalReservationList() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="özet…"
-                className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white pl-9 pr-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
+                className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white pl-9 pr-3 py-2 text-[13px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
               />
             </div>
           </FilterField>
@@ -512,7 +512,7 @@ export default function ExternalReservationList() {
             <select
               value={villaFilter}
               onChange={(e) => setVillaFilter(e.target.value)}
-              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
+              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
             >
               <option value="">Tümü</option>
               {villaOptions.map((v) => (
@@ -526,7 +526,7 @@ export default function ExternalReservationList() {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
+              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
             >
               <option value="">Tümü</option>
               {sourceOptions.map((s) => (
@@ -542,7 +542,7 @@ export default function ExternalReservationList() {
               onChange={(e) =>
                 setStatusFilter(e.target.value as StatusFilter)
               }
-              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(255,101,63,0.18)] outline-none"
+              className="w-full rounded-xl border border-[var(--color-stone-200)] bg-white px-3 py-2 text-[13px] focus:border-[var(--brand-coral)] focus:shadow-[0_0_0_3px_rgba(200,151,58,0.18)] outline-none"
             >
               {STATUS_FILTERS.map((s) => (
                 <option key={s.key} value={s.key}>

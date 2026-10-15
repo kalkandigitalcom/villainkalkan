@@ -154,7 +154,7 @@ export default function PriceStep({
           <div className="relative bg-[var(--color-sand-50)] border border-[var(--color-sand-100)] rounded-2xl p-5 space-y-3 text-sm mt-2">
             <span
               aria-hidden="true"
-              className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#ED7926] via-[#ED7926]/50 to-[#0973BA]"
+              className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#C8973A] via-[#C8973A]/50 to-[#926B27]"
             />
             <div className="border-t border-[var(--color-sand-100)] pt-3">
               <div className="flex items-center justify-between rounded-xl bg-green-50/70 px-3 py-2.5">
@@ -181,11 +181,11 @@ export default function PriceStep({
                   })}
                 </p>
               </div>
-              <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
+              <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
                   {payment.isFullPayment ? "Kalan" : "Girişte ödenecek"}
                 </p>
-                <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
+                <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
                   ₺
                   {Number(payment.remainingOnArrival).toLocaleString(
                     "tr-TR",
@@ -272,7 +272,7 @@ export default function PriceStep({
             <div className="relative bg-[var(--color-sand-50)] border border-[var(--color-sand-100)] rounded-2xl p-5 space-y-3 text-sm mt-4">
               <span
                 aria-hidden="true"
-                className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#ED7926] via-[#ED7926]/50 to-[#0973BA]"
+                className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#C8973A] via-[#C8973A]/50 to-[#926B27]"
               />
               {/* 🔥 EXTRA INFO — sadece dövizli rezervasyonlarda */}
               {hasForeignCurrency && (
@@ -409,11 +409,11 @@ export default function PriceStep({
                     })}
                   </p>
                 </div>
-                <div className="rounded-xl border border-orange-100 bg-orange-50/60 px-3 py-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-orange-500">
+                <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
                     {payment.isFullPayment ? "Kalan" : "Girişte ödenecek"}
                   </p>
-                  <p className="mt-0.5 font-display text-base font-bold text-orange-600 tabular-nums">
+                  <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
                     ₺
                     {Number(payment.remainingOnArrival).toLocaleString(
                       "tr-TR",
