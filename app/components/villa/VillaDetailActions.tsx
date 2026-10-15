@@ -16,6 +16,8 @@ import {
    - VillaShowPhotosButton: MEVCUT Gallery lightbox'ını açar.
    - VillaAvailabilityShortcut: rezervasyon kartının MEVCUT takvimini
      popup'ta açar (aynı tarih state'i). Kart mantığına dokunmaz.
+     Görünüm: beyaz zemin + koyu lacivert metin (altın şerit üzerinde
+     ayrışır); hover/aktif'te açık altın ton ve altın kenar.
    =============================================================== */
 
 export function VillaShowPhotosButton({
@@ -58,12 +60,14 @@ export function VillaAvailabilityShortcut({ locale }: { locale?: Locale }) {
       data-villa-availability-shortcut
       className="
         flex h-14 w-full items-center justify-center gap-2.5
-        rounded-2xl bg-brand hover:bg-brand-hover active:bg-brand-active
+        rounded-2xl bg-white ring-1 ring-inset ring-ink/10
+        hover:bg-brand-soft hover:ring-brand/45
+        active:bg-[var(--color-champagne-100)] active:ring-brand/60
         px-5
         text-[14px] font-semibold tracking-[0.01em] text-ink
-        shadow-[0_14px_30px_-18px_rgba(200,151,58,0.95)]
+        shadow-[0_14px_30px_-18px_rgba(36,54,75,0.45)]
         transition-colors duration-200 motion-reduce:transition-none
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
       "
     >
       <CalendarDays size={18} strokeWidth={1.8} aria-hidden />

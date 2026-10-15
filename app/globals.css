@@ -1991,7 +1991,7 @@ select.input {
 
 /* ================================================================
    🎨 SAYFA ZEMİNİ — `bg-[var(--color-ivory)]` (body, public kabuk,
-   404, bakım ekranı) yeni pembe-krem tonla boyanır. Tailwind'in
+   404, bakım ekranı) sıcak krem (#fffaf1) tonla boyanır. Tailwind'in
    ürettiği aynı sınıfı `@layer utilities` içinde, kaynak sırasıyla
    sonra gelerek ezer; `--color-ivory` token'ı ve onu kullanan diğer
    bileşenler DEĞİŞMEZ.
@@ -2000,7 +2000,7 @@ select.input {
    ================================================================ */
 @layer utilities {
   .bg-\[var\(--color-ivory\)\] {
-    background-color: #ffede8d1;
+    background-color: #fffaf1;
   }
   body:has(.admin-shell).bg-\[var\(--color-ivory\)\] {
     background-color: var(--color-ivory);

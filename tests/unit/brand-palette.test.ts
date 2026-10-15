@@ -43,6 +43,15 @@ describe("Marka paleti — altın #C8973A", () => {
     expect(css).toMatch(/--color-stone-900:\s*#24364b;/i);
   });
 
+  it("sayfa zemini: bg-[var(--color-ivory)] tek tanım, #fffaf1; admin istisnası ve token korunur", () => {
+    const defs = css.match(/\.bg-\\\[var\\\(--color-ivory\\\)\\\]\s*\{[^}]*\}/g) ?? [];
+    expect(defs).toHaveLength(2); /* kural + admin istisnası */
+    expect(css).toMatch(/\n  \.bg-\\\[var\\\(--color-ivory\\\)\\\] \{\n    background-color: #fffaf1;\n  \}/);
+    expect(css).toMatch(/body:has\(\.admin-shell\)\.bg-\\\[var\\\(--color-ivory\\\)\\\] \{\s*background-color: var\(--color-ivory\);/);
+    expect(css).toMatch(/--color-ivory:\s*#f6f8fb;/);
+    expect(css).not.toContain("#ffede8d1");
+  });
+
   it("altın CTA'da koyu metin (beyaz değil)", () => {
     const btn = css.slice(css.indexOf(".btn-primary {"));
     expect(btn.slice(0, btn.indexOf("}"))).toMatch(/color:\s*#24364b;/);

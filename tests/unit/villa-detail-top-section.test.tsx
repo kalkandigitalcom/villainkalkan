@@ -282,6 +282,11 @@ describe("Rezervasyon kartı kısayolu", () => {
       name: tr.villaHero.availabilityCalendar,
     });
     expect(btn).toHaveAttribute("aria-haspopup", "dialog");
+    /* Beyaz zemin + koyu lacivert metin; altın dolgu yok. */
+    expect(btn.className).toMatch(/(^|\s)bg-white(\s|$)/);
+    expect(btn.className).toMatch(/(^|\s)text-ink(\s|$)/);
+    expect(btn.className).not.toMatch(/(^|\s)bg-brand(\s|$)/);
+    expect(btn.className).toContain("hover:bg-brand-soft");
     fireEvent.click(btn);
     expect(onOpen).toHaveBeenCalledTimes(1);
     expect(scrollToSpy).not.toHaveBeenCalled();
