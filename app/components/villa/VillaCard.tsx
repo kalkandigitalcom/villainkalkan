@@ -1081,18 +1081,19 @@ export default function VillaCard({
           </div>
 
           {/* FİYAT PANELİ — kavisli sol/üst kenar (geniş kartta %41, 140px).
-              Fiyat tutarı beyaz; diğer metinler mevcut stilde. */}
+              Fiyat tutarı beyaz; diğer metinler mevcut stilde; panelin
+              tamamında 10px üst boşluk. */}
           <div
             data-price-panel
             className="
-              relative flex shrink-0 flex-col items-stretch gap-3.5
+              relative mt-[10px] flex shrink-0 flex-col items-stretch gap-3.5
               rounded-tl-[44px] bg-brand px-5 pt-4 pb-4 pl-7 text-ink
               @[26rem]:w-[41%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0
               @[26rem]:rounded-tl-[140px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right
             "
           >
-            {/* Fiyat bilgisi grubu — panel içinde 10px üst boşluk. */}
-            <div data-price-info className="min-w-0 mt-[10px]">
+            {/* Fiyat bilgisi grubu. */}
+            <div data-price-info className="min-w-0">
               {isFlexible ? (
                 /* 🛡️ ESNEK EK SONUÇ — fiyat gösterilmez (MEVCUT kural). */
                 <>

@@ -109,14 +109,15 @@ describe("Public VillaCard fiyat paneli", () => {
     expect(cls(amount)).toContain("text-white");
   });
 
-  it("fiyat grubu iç kapsayıcıda 10px üst boşluk; panelin kendisinde değil", () => {
+  it("10px üst boşluk fiyat panelinin tamamında; fiyat bilgi grubunda değil", () => {
     const { container } = renderCard();
     const panel = panelOf(container);
     const info = container.querySelector("[data-price-info]")!;
+    expect(cls(panel)).toContain("mt-[10px]");
+    expect(cls(info)).not.toContain("mt-[10px]");
+    expect(cls(info).some((x) => /^(@\[26rem\]:)?mt-/.test(x))).toBe(false);
     expect(info.parentElement).toBe(panel);
     expect(panel.firstElementChild).toBe(info);
-    expect(cls(info)).toContain("mt-[10px]");
-    expect(cls(panel).some((x) => /^(@\[26rem\]:)?mt-/.test(x))).toBe(false);
     /* CTA aynı panelde, fiyat grubunun altında. */
     expect(info.nextElementSibling?.textContent).toBe(tr.card.reserve);
   });
