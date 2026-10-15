@@ -24,6 +24,10 @@ import {
   regionLinkHref,
 } from "@/lib/taxonomy-landing";
 import HomeSectionHeading from "@/app/components/home/HomeSectionHeading";
+import {
+  HOME_PANEL_CLASS,
+  HOME_PANEL_SECTION_CLASS,
+} from "@/app/components/home/home-panel";
 
 /* ===============================================================
    🛡️ LOCATION SHOWCASE — homepage "circular avatar" carousel
@@ -197,11 +201,14 @@ export default async function LocationCollection({
   return (
     <section
       aria-label={dict.sectionAriaLabel}
-      className="px-5 md:px-10 lg:px-16 pt-14 md:pt-20 pb-4 md:pb-10"
+      className={HOME_PANEL_SECTION_CLASS}
     >
-      <div className="max-w-site mx-auto">
-        {/* 🛡️ FAZ 39M — Normalized section header (CategoryCollection parity). */}
-        <HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />
+      {/* 🤍 Beyaz panel — diğer ana sayfa bölümleriyle aynı kap
+          (home-panel.ts). Kartlar, carousel ve CTA AYNEN. */}
+      <div data-home-panel="regions" className={HOME_PANEL_CLASS}>
+        {/* 🛡️ FAZ 39M — Normalized section header (CategoryCollection parity).
+            Alt açıklama ("Özenle seçilmiş bölgeler") kaldırıldı. */}
+        <HomeSectionHeading title={dict.title} />
 
         {/* CIRCULAR AVATAR CAROUSEL — yatay kaydırma, HorizontalCarousel
             (DEĞİŞTİRİLMEDİ) üzerinden. Kartlar küçük olduğu için geniş

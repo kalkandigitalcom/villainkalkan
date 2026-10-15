@@ -88,7 +88,7 @@ export default async function ShortGapsSection({
   return (
     <section
       id="kisa-sureli-firsatlar"
-      className="scroll-mt-24 md:scroll-mt-28 px-5 md:px-10 lg:px-16 pt-14 md:pt-20 pb-14 md:pb-20 bg-gradient-to-b from-[#f5f7fa] to-[#e8eef6]"
+      className="scroll-mt-24 md:scroll-mt-28 px-5 md:px-10 lg:px-16 pt-14 md:pt-20 pb-14 md:pb-20"
     >
       {/* 🛡️ Component-scoped premium hover styles — globals.css'e
           dokunulmadı; yalnız bu section'daki .sg-* class'larını

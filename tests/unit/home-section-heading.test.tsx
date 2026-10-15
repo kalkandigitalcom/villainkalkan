@@ -99,3 +99,27 @@ describe("Ana sayfa bölümleri ortak başlığı kullanır", () => {
     expect(out).not.toMatch(/\(admin\)|components\/admin/);
   });
 });
+
+describe("Bölgeler ve Kısa Süreli bölümlerinin zemini", () => {
+  it("Villa Kiralama Bölgeleri: beyaz ortak panelde, alt açıklama yok", () => {
+    const s = src("app/components/villa/LocationCollection.tsx");
+    expect(s).toContain("className={HOME_PANEL_SECTION_CLASS}");
+    expect(s).toMatch(/data-home-panel="regions" className=\{HOME_PANEL_CLASS\}/);
+    expect(s).toContain("<HomeSectionHeading title={dict.title} />");
+    expect(s).not.toMatch(/subtitle=|dict\.subtitle/);
+    /* Kartlar ve carousel panelin içinde, başlığın altında. */
+    const panel = s.slice(s.indexOf('data-home-panel="regions"'));
+    expect(panel.indexOf("<HorizontalCarousel")).toBeGreaterThan(
+      panel.indexOf("<HomeSectionHeading"),
+    );
+  });
+
+  it("Kısa Süreli bölümü kendi renkli zeminini taşımaz (sayfa zemini görünür)", () => {
+    const s = src("app/components/home/ShortGapsSection.tsx");
+    const cls = s.match(/id="kisa-sureli-firsatlar"\s*className="([^"]*)"/)?.[1] ?? "";
+    expect(cls).toContain("px-5 md:px-10 lg:px-16");
+    expect(cls).not.toMatch(/(^|\s)(bg-|from-|to-)/);
+    expect(s).not.toContain("#e8eef6");
+    expect(s).toContain("<HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />");
+  });
+});
