@@ -32,7 +32,7 @@
 =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, within, fireEvent, waitFor } from "@testing-library/react";
 
 vi.mock("@/app/services/settings.action", () => ({
   getPublicSettingsAction: vi.fn(async () => ({ prepayment_rate: 0 })),
@@ -143,7 +143,10 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
        artık "₺1.000 / gece" (SUMMARY içindeki kompakt satır — bkz.
        BookingSummary.tsx). Yalnız görünen metin/konum değişti; oran
        değeri/kaynağı AYNEN. */
-    expect(screen.getByText(/\/ gece/)).toHaveTextContent("₺1.000");
+    /* 🎨 Panel başlığında artık gecelik fiyat ("₺4.000 / gece") da var;
+       havuz oranı yalnız fiyat dökümü (SUMMARY) içinde aranır. */
+    const summary = document.querySelector("[data-booking-summary]") as HTMLElement;
+    expect(within(summary).getByText(/\/ gece/)).toHaveTextContent("₺1.000");
   });
 
   it("4) checkbox işaretlenince seçim true olur ve çalışma toplamı görünür", async () => {
@@ -261,7 +264,9 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
     // Eski formül: stay(20.000) + cleaning(3.500) = 23.500 — pool heating katkısı YOK.
     expect(screen.getByText("₺23.500")).toBeInTheDocument();
     // Ön ödeme %20 × 20.000 (accommodationBase, cleaning hariç) = 4.000
-    expect(screen.getByText("₺4.000")).toBeInTheDocument();
+    /* Başlıktaki gecelik fiyat da ₺4.000 olduğundan döküm içinde aranır. */
+    const summary = document.querySelector("[data-booking-summary]") as HTMLElement;
+    expect(within(summary).getByText("₺4.000")).toBeInTheDocument();
     // CTA hâlâ mevcut ve etkin.
     expect(
       screen.getByRole("button", { name: "Rezervasyon Yap" })

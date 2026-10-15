@@ -129,145 +129,130 @@ export default function BookingSummary({
     { n: result.nights }
   );
 
+  const fmt = (v: number) => formatCurrency(v, currency, locale ?? "tr");
   return (
-    <div className="relative bg-[var(--color-sand-50)] border border-[var(--color-sand-100)] rounded-2xl p-4 space-y-2.5 text-sm">
-      {/* İnce üst accent çizgisi — turuncu → mavi (marka imzası, PriceList
-          ile aynı desen). Salt dekoratif; layout/ölçüye etkisi yok. */}
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-4 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-accent via-accent/50 to-brand"
-      />
+    <div className="space-y-3 text-[13.5px]">
+      {/* 🎨 PREMIUM DÖKÜM — fildişi zemin, ince ayırıcılı satırlar,
+          tipografik olarak belirgin toplam. Satırlar/koşullar/değerler
+          AYNEN (yalnız görünüm). */}
+      <div
+        data-booking-breakdown
+        className="relative rounded-2xl border border-brand/15 bg-[#FFFAF1] px-4"
+      >
+        <div className="divide-y divide-[var(--color-stone-200)]">
+          {/* Konaklama Tutarı (N Gece) — indirim aktifse eski/yeni fiyat
+              + etiket (activeStayDiscount price.engine çıktısı). */}
+          {activeStayDiscount ? (
+            <div className="flex items-start justify-between gap-3 py-3">
+              <span className="text-[var(--color-stone-600)]">
+                {accommodationLabel}
+              </span>
+              <div className="text-right">
+                <span className="block text-[11.5px] text-[var(--color-stone-400)] line-through tabular-nums">
+                  {fmt(activeStayDiscount.originalStay)}
+                </span>
+                <span className="block font-semibold text-ink tabular-nums">
+                  {fmt(activeStayDiscount.discountedStay)}
+                </span>
+                <span className="mt-1 inline-block rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-ink text-center whitespace-nowrap">
+                  {dict.booking.discountedTotal}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <Row label={accommodationLabel} value={fmt(result.stay)} />
+          )}
 
-      {/* Konaklama Tutarı — gece sayısı dinamik (Gece satırı kaldırıldı).
-          🛡️ villa_discounts — GÖRSEL GÖSTERİM (UI-only). activeStayDiscount
-          null ise (indirim yok / veri geçilmedi) satır AYNEN eskisi
-          (BYTE-IDENTICAL) — `result.stay` DEĞİŞMEDİ, yalnız render dalı
-          değişti. Değerler (originalStay/discountedStay) YENİDEN
-          hesaplanmıyor — activeStayDiscount zaten price.engine çıktısı
-          (bkz. useBookingEngine.ts). */}
-      {activeStayDiscount ? (
-        <div className="flex items-start justify-between gap-3">
-          <span className="text-[var(--color-stone-600)]">
-            {accommodationLabel}
-          </span>
-          <div className="text-right">
-            <span className="block text-[11px] text-[var(--color-stone-400)] line-through tabular-nums">
-              {formatCurrency(activeStayDiscount.originalStay, currency, locale ?? "tr")}
-            </span>
-            <span className="block text-[var(--color-stone-900)] font-medium tabular-nums">
-              {formatCurrency(activeStayDiscount.discountedStay, currency, locale ?? "tr")}
-            </span>
-            {/* 🛡️ Marka mavisi (#C8973A) solid etiket — eski "%NN İNDİRİM" /
-                "ÖZEL FİYAT" rozetinin YERİNE geçti (bkz. dosya-üstü kontrat
-                notu). Gradient YOK, sade dolgu renk. Yalnız indirim
-                gerçekten aktifse (activeStayDiscount != null) render edilir;
-                indirim yoksa bu blok hiç yok, `Row` dalı BİREBİR aynı. */}
-            <span className="mt-1 inline-block rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-ink text-center whitespace-nowrap">
-              {dict.booking.discountedTotal}
+          {result.cleaning > 0 && (
+            <Row label={dict.booking.shortStayFeeLabel} value={fmt(result.cleaning)} />
+          )}
+
+          {/* HAVUZ ISITMA — checkbox + (seçiliyse) toplam; koşul AYNEN. */}
+          {typeof poolHeatingFee === "number" &&
+            poolHeatingFee > 0 &&
+            poolHeatingActiveForRange && (
+            <div className="py-3">
+              <label className="flex items-center justify-between gap-3 cursor-pointer group">
+                <span className="flex items-center gap-2.5 min-w-0">
+                  <input
+                    type="checkbox"
+                    checked={poolHeatingSelected}
+                    onChange={(e) => onPoolHeatingChange?.(e.target.checked)}
+                    className="!w-4 !h-4 shrink-0 accent-[var(--color-champagne-500)] !rounded"
+                  />
+                  <span className="text-[var(--color-stone-600)] group-hover:text-ink transition-colors">
+                    {dict.booking.poolHeatingFeeLabel}
+                  </span>
+                </span>
+                {poolHeatingSelected && (
+                  <span className="font-semibold text-ink tabular-nums">
+                    {fmt(poolHeatingTotal)}
+                  </span>
+                )}
+              </label>
+              <p className="pl-[26px] mt-0.5 text-[11px] text-[var(--color-stone-400)]">
+                {formatCurrency(poolHeatingFee, poolHeatingCurrency || "TRY", locale ?? "tr")}{" "}
+                {dict.booking.poolHeatingPerNightSuffix}
+                {poolHeatingSelected &&
+                  ` ${formatDictionaryString(dict.booking.poolHeatingNightsMultiplier, {
+                    n: result.nights,
+                  })}`}
+              </p>
+            </div>
+          )}
+
+          {/* TOPLAM TUTAR — tipografik vurgu (lacivert, büyük). */}
+          <div data-booking-total className="flex items-baseline justify-between gap-3 py-3.5">
+            <span className="font-semibold text-ink">{dict.booking.total}</span>
+            <span className="font-display text-[22px] font-bold leading-none tracking-[-0.01em] text-ink tabular-nums">
+              {fmt(result.total)}
             </span>
           </div>
-        </div>
-      ) : (
-        <Row
-          label={accommodationLabel}
-          value={formatCurrency(result.stay, currency, locale ?? "tr")}
-        />
-      )}
-      {result.cleaning > 0 && (
-        <Row
-          label={dict.booking.shortStayFeeLabel}
-          value={formatCurrency(result.cleaning, currency, locale ?? "tr")}
-        />
-      )}
 
-      {/* HAVUZ ISITMA — normal fiyat satırı (Row ile aynı hizada);
-          ayrı bordered kart YOK. Checkbox solda label ile birlikte;
-          sağda yalnız SEÇİLİYSE toplam görünür. Görünürlük: fee sayı
-          ve >0 (result mevcut olduğu için nights>0 zaten garanti). */}
-      {typeof poolHeatingFee === "number" &&
-        poolHeatingFee > 0 &&
-        poolHeatingActiveForRange && (
-        <div>
-          <label className="flex items-center justify-between gap-3 cursor-pointer group">
-            <span className="flex items-center gap-2.5 min-w-0">
-              <input
-                type="checkbox"
-                checked={poolHeatingSelected}
-                onChange={(e) => onPoolHeatingChange?.(e.target.checked)}
-                className="!w-4 !h-4 shrink-0 accent-[var(--color-champagne-500)] !rounded"
-              />
-              <span className="text-[var(--color-stone-600)] group-hover:text-[var(--color-stone-900)] transition-colors">
-                {dict.booking.poolHeatingFeeLabel}
+          {/* ÖN ÖDEME + GİRİŞTE ÖDENECEK — sade satırlar; ön ödeme altın. */}
+          <div className="space-y-2 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 text-[var(--color-stone-600)]">
+                <span aria-hidden="true" className="h-1.5 w-1.5 rotate-45 rounded-[1px] bg-brand" />
+                {formatDictionaryString(dict.booking.prepaymentAmountLabel, {
+                  rate: prepaymentRate,
+                })}
               </span>
-            </span>
-            {poolHeatingSelected && (
-              <span className="text-[var(--color-stone-900)] font-medium tabular-nums">
-                {formatCurrency(poolHeatingTotal, currency, locale ?? "tr")}
+              <span className="font-semibold text-brand-strong tabular-nums">
+                {fmt(prepayment)}
               </span>
-            )}
-          </label>
-          <p className="pl-[26px] mt-0.5 text-[11px] text-[var(--color-stone-400)]">
-            {formatCurrency(poolHeatingFee, poolHeatingCurrency || "TRY", locale ?? "tr")}{" "}
-            {dict.booking.poolHeatingPerNightSuffix}
-            {poolHeatingSelected &&
-              ` ${formatDictionaryString(dict.booking.poolHeatingNightsMultiplier, {
-                n: result.nights,
-              })}`}
-          </p>
-        </div>
-      )}
-
-      {/* TOPLAM TUTAR — yeşil, yumuşak zeminle vurgulu */}
-      <div className="border-t border-[var(--color-sand-100)] pt-3">
-        <div className="flex items-center justify-between rounded-xl bg-green-50/70 px-3 py-2.5">
-          <span className="font-semibold text-green-800">{dict.booking.total}</span>
-          <span className="font-display text-lg font-bold text-green-700 tabular-nums">
-            {formatCurrency(result.total, currency, locale ?? "tr")}
-          </span>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 text-[var(--color-stone-600)]">
+                <span aria-hidden="true" className="h-1.5 w-1.5 rotate-45 rounded-[1px] bg-[var(--color-stone-300)]" />
+                {dict.booking.dueAtCheckinLabel}
+              </span>
+              <span className="font-semibold text-ink tabular-nums">
+                {fmt(result.total - prepayment)}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ÖN ÖDEME (mor) + GİRİŞTE ÖDENECEK (turuncu) — iki ayrı vurgu
-          kutusu, yan yana: "şimdi" ile "girişte" ilk bakışta ayrışsın. */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl border border-purple-100 bg-purple-50/60 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-purple-500">
-            {formatDictionaryString(dict.booking.prepaymentAmountLabel, {
-              rate: prepaymentRate,
-            })}
-          </p>
-          <p className="mt-0.5 font-display text-base font-bold text-purple-700 tabular-nums">
-            {formatCurrency(prepayment, currency, locale ?? "tr")}
-          </p>
-        </div>
-        <div className="rounded-xl border border-accent/20 bg-accent-soft px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
-            {dict.booking.dueAtCheckinLabel}
-          </p>
-          <p className="mt-0.5 font-display text-base font-bold text-accent-strong tabular-nums">
-            {formatCurrency(result.total - prepayment, currency, locale ?? "tr")}
-          </p>
-        </div>
-      </div>
-
-      {/* HASAR DEPOZİTOSU — ayrı, soft mavi tonlu bilgi kutusu (toplama
-          dahil değil, hesap aynı). Açıklama metni BİREBİR AYNI. */}
+      {/* HASAR DEPOZİTOSU — toplama dahil değil (hesap aynı); sade bilgi
+          notu. Açıklama metni BİREBİR AYNI. */}
       {deposit > 0 && (
-        <div className="rounded-xl border border-ink/15 bg-brand/[0.04] p-3">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 font-medium text-[var(--color-stone-900)]">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand/10 text-ink">
-                <ShieldCheck size={11} strokeWidth={2} aria-hidden />
+        <div data-booking-deposit className="flex gap-3 rounded-2xl border border-[var(--color-stone-200)] bg-white px-4 py-3">
+          <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink/[0.06] text-ink">
+            <ShieldCheck size={14} strokeWidth={1.9} aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-medium text-ink">{dict.booking.depositLabel}</span>
+              <span className="font-semibold text-ink tabular-nums">
+                {fmt(convertedDeposit)}
               </span>
-              {dict.booking.depositLabel}
-            </span>
-            <span className="font-semibold text-[var(--color-stone-900)] tabular-nums">
-              {formatCurrency(convertedDeposit, currency, locale ?? "tr")}
-            </span>
+            </div>
+            <p className="mt-1 text-[11.5px] text-[var(--color-stone-500)] leading-relaxed">
+              {dict.booking.depositNote}
+            </p>
           </div>
-          <p className="mt-1.5 text-xs text-[var(--color-stone-500)] leading-relaxed">
-            {dict.booking.depositNote}
-          </p>
         </div>
       )}
     </div>
@@ -276,11 +261,9 @@ export default function BookingSummary({
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between text-[var(--color-stone-600)]">
-      <span>{label}</span>
-      <span className="text-[var(--color-stone-900)] font-medium tabular-nums">
-        {value}
-      </span>
+    <div className="flex items-center justify-between gap-3 py-3">
+      <span className="text-[var(--color-stone-600)]">{label}</span>
+      <span className="font-semibold text-ink tabular-nums">{value}</span>
     </div>
   );
 }

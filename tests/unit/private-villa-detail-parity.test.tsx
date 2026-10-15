@@ -242,7 +242,9 @@ describe("DOM paritesi — /v/[token] == /kiralik-villa/[slug] (JSON-LD hariç)"
         /* Pasif: tek fark sidebar'daki "Rezervasyon Yap" butonu. */
         expect(privHtml).not.toBe(normalHtml);
         const stripCta = (h: string) =>
-          h.replace(/<button[^>]*>\s*Rezervasyon Yap\s*<\/button>/, "");
+          /* CTA artık ikon/yükleniyor öğeleri içerir → butonun tamamı
+             (data-booking-cta) çıkarılır; metin hâlâ doğrulanır. */
+          h.replace(/<button[^>]*data-booking-cta[^>]*>[\s\S]*?Rezervasyon Yap[\s\S]*?<\/button>/, "");
         expect(stripCta(privHtml)).toBe(stripCta(normalHtml));
       }
     }
