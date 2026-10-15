@@ -39,6 +39,8 @@ export type BlogPost = {
   noindex: boolean;
   category: string | null;
   author: string | null;
+  /** Migration 099 — ana sayfa "Neden Kalkan?" bölümü (en fazla bir yazı). */
+  show_on_homepage: boolean;
   created_at: string;
   updated_at: string | null;
 };
@@ -74,6 +76,20 @@ export const blogRepository = {
       .eq("slug", slug)
       .eq("is_active", true)
       .single();
+  },
+
+  /** Ana sayfa — YAYINDAKİ ve "Ana sayfada göster" işaretli yazı
+      (migration 099). Kısmi unique index en fazla bir satır garanti
+      eder; yine de deterministik olsun diye published_at DESC + limit 1. */
+  async findHomepageFeatured() {
+    return await db
+      .from("blog_posts")
+      .select("*")
+      .eq("is_active", true)
+      .eq("show_on_homepage", true)
+      .order("published_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
   },
 
   /** Sitemap — yayında olan slug + tarih (slim projeksiyon, FAZ 3). */

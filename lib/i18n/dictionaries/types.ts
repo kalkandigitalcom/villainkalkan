@@ -690,6 +690,10 @@ export type Dictionary = {
       managementBody: string;
       contactCta: string;
     };
+    /** "Neden Kalkan?" — içerik blog yazısından; yalnız sabit UI metni. */
+    blogFeature: {
+      cta: string;
+    };
     regions: {
       sectionAriaLabel: string;
       title: string;

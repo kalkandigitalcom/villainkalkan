@@ -17,6 +17,8 @@ type Row = {
   title: string;
   slug: string;
   is_active: boolean;
+  /** Migration 099 — ana sayfa "Neden Kalkan?" (en fazla bir yazı). */
+  show_on_homepage: boolean;
   published_at: string | null;
   category: string | null;
   created_at: string;
@@ -27,6 +29,7 @@ export default function BlogListPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [homepageBusyId, setHomepageBusyId] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -68,6 +71,47 @@ export default function BlogListPage() {
       setRows((prev) => prev.filter((r) => r.id !== id));
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  /* 🏝️ "Ana sayfada göster" — PATCH /api/admin/blog/[id]. Ana sayfa TEK
+     yazı gösterir: açılan yazı dışındakiler sunucuda kapatılır; liste de
+     aynı şekilde güncellenir (düzenleme ekranı aynı kolonu okur). */
+  const handleHomepageToggle = async (row: Row) => {
+    const next = !row.show_on_homepage;
+    setHomepageBusyId(row.id);
+    try {
+      const res = await adminFetch(`/api/admin/blog/${row.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ show_on_homepage: next }),
+      });
+      const json = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+      };
+      if (!res.ok || !json.ok) {
+        toast.error("Ana sayfa ayarı kaydedilemedi", {
+          id: "blog-homepage",
+          description: json.error,
+        });
+        return;
+      }
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id === row.id
+            ? { ...r, show_on_homepage: next }
+            : next
+              ? { ...r, show_on_homepage: false }
+              : r
+        )
+      );
+      toast.success(
+        next ? "Yazı ana sayfada gösterilecek" : "Yazı ana sayfadan kaldırıldı",
+        { id: "blog-homepage" }
+      );
+    } finally {
+      setHomepageBusyId(null);
     }
   };
 
@@ -121,6 +165,44 @@ export default function BlogListPage() {
                 >
                   {r.is_active ? "Yayında" : "Taslak"}
                 </span>
+                {/* 🏝️ Ana sayfada göster — taslakta açılamaz (kapatılabilir). */}
+                <label
+                  className={`flex shrink-0 items-center gap-2 text-[12px] text-[var(--color-stone-600)] ${
+                    !r.is_active && !r.show_on_homepage
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  title={
+                    r.is_active
+                      ? "Ana sayfadaki “Neden Kalkan?” bölümünde göster"
+                      : "Yalnız yayındaki yazılar ana sayfada gösterilebilir"
+                  }
+                >
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={r.show_on_homepage}
+                    aria-label={`Ana sayfada göster: ${r.title}`}
+                    data-homepage-toggle={r.id}
+                    disabled={
+                      homepageBusyId === r.id ||
+                      (!r.is_active && !r.show_on_homepage)
+                    }
+                    onClick={() => handleHomepageToggle(r)}
+                    className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:cursor-not-allowed ${
+                      r.show_on_homepage
+                        ? "bg-[var(--admin-accent)]"
+                        : "bg-[var(--color-stone-200)]"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                        r.show_on_homepage ? "translate-x-[18px]" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <span className="hidden sm:inline">Ana sayfada göster</span>
+                </label>
                 <Link
                   href={`/maki-admin/blog/${r.id}`}
                   className="w-9 h-9 inline-flex items-center justify-center rounded-lg border border-[var(--color-stone-200)] text-[var(--color-stone-700)] hover:bg-white"

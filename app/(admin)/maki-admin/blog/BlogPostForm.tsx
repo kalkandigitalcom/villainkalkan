@@ -33,6 +33,8 @@ export type BlogFormInitial = {
   seo_title?: string | null;
   seo_description?: string | null;
   is_active?: boolean;
+  /** Migration 099 — ana sayfa "Neden Kalkan?" bölümü. */
+  show_on_homepage?: boolean;
 };
 
 /* TR→ASCII slugify (pages/taxonomy slug paterniyle uyumlu, inline). */
@@ -78,6 +80,9 @@ export default function BlogPostForm({
     initial?.seo_description ?? ""
   );
   const [isActive, setIsActive] = useState(initial?.is_active ?? false);
+  const [showOnHomepage, setShowOnHomepage] = useState(
+    initial?.show_on_homepage ?? false
+  );
 
   const [coverUploading, setCoverUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -140,6 +145,7 @@ export default function BlogPostForm({
       seo_title: seoTitle,
       seo_description: seoDescription,
       is_active: isActive,
+      show_on_homepage: isActive && showOnHomepage,
     };
     try {
       const url =
@@ -318,6 +324,31 @@ export default function BlogPostForm({
         />
         <span className="text-[14px] text-[var(--color-stone-700)]">
           Yayında (işaretli değilse taslak)
+        </span>
+      </label>
+
+      {/* 🏝️ Ana sayfada göster — blog listesindeki anahtarla AYNI alan
+          (show_on_homepage). Ana sayfa tek yazı gösterir; bu yazı
+          işaretlenince önceki seçim kaldırılır. Yalnız yayındaki yazı. */}
+      <label
+        className={`flex items-start gap-3 ${
+          isActive ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+        }`}
+      >
+        <input
+          type="checkbox"
+          name="show_on_homepage"
+          checked={isActive && showOnHomepage}
+          disabled={!isActive}
+          onChange={(e) => setShowOnHomepage(e.target.checked)}
+          className="mt-0.5 w-4 h-4 accent-[var(--color-champagne-500)]"
+        />
+        <span className="text-[14px] text-[var(--color-stone-700)]">
+          Ana sayfada göster
+          <span className="block text-[12px] text-[var(--color-stone-500)]">
+            Ana sayfadaki “Neden Kalkan?” bölümünde bu yazı gösterilir
+            (aynı anda tek yazı). Yalnız yayındaki yazılar seçilebilir.
+          </span>
         </span>
       </label>
 

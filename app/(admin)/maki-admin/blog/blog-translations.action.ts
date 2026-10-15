@@ -12,6 +12,8 @@ import {
   type BlogTranslationResult,
 } from "@/app/services/blog-translation.service";
 import { authorizeAdminSession } from "@/lib/admin-route-auth";
+import { revalidateTag } from "next/cache";
+import { BLOG_HOMEPAGE_TAG } from "@/lib/blog-homepage.server";
 
 /* ===============================================================
    🛡️ MIGRATION 089 — Admin Blog Çeviri UI Server Actions
@@ -46,5 +48,8 @@ export async function saveBlogTranslationAction(
     return { ok: false, error: "Yetkisiz" };
   }
 
-  return upsertBlogTranslation(input);
+  const result = await upsertBlogTranslation(input);
+  /* 🏝️ Ana sayfa "Neden Kalkan?" EN/DE içeriği çeviriden gelir. */
+  if (result.ok) revalidateTag(BLOG_HOMEPAGE_TAG, { expire: 0 });
+  return result;
 }

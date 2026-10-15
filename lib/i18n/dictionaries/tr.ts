@@ -500,6 +500,9 @@ export const tr: Dictionary = {
         "Villa sahiplerine profesyonel yönetim hizmeti; yatırım ve işletme süreçlerinde yanınızda oluyoruz.",
       contactCta: "Bilgi Alın",
     },
+    blogFeature: {
+      cta: "Daha Fazla Keşfet",
+    },
     regions: {
       sectionAriaLabel: "Bölgeler",
       title: "Villa Kiralama Bölgeleri",

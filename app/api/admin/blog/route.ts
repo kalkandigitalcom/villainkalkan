@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { authorizeAdminCaller } from "@/lib/admin-route-auth";
 import {
@@ -8,6 +8,8 @@ import {
 } from "@/lib/auth/action-authz";
 import { blogServerRepository } from "@/lib/db/blog.repository.server";
 import { sanitizeHtml } from "@/lib/html-sanitize";
+import { BLOG_HOMEPAGE_TAG } from "@/lib/blog-homepage.server";
+import { HOMEPAGE_REQUIRES_ACTIVE } from "@/lib/blog-homepage";
 
 /* ===============================================================
    🛡️ /api/admin/blog — BLOG CRUD partial (admin-only)
@@ -69,6 +71,7 @@ type BlogInsertInput = {
   seo_description?: unknown;
   og_image?: unknown;
   is_active?: unknown;
+  show_on_homepage?: unknown;
 };
 
 const str = (v: unknown): string | null => {
@@ -115,6 +118,26 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   const isActive = body.is_active === true;
+  /* 🏝️ Migration 099 — "Ana sayfada göster" yalnız yayındaki yazıda. */
+  const showOnHomepage = body.show_on_homepage === true;
+  if (showOnHomepage && !isActive) {
+    return NextResponse.json(
+      { ok: false, error: HOMEPAGE_REQUIRES_ACTIVE },
+      { status: 400 }
+    );
+  }
+  if (showOnHomepage) {
+    /* Ana sayfa TEK yazı — önce diğer işaretleri kaldır. */
+    const { error: clearError } =
+      await blogServerRepository.clearHomepageExcept(null);
+    if (clearError) {
+      console.error("[admin.blog.insert] homepage clear FAILED", clearError.message);
+      return NextResponse.json(
+        { ok: false, error: clearError.message || "Eklenemedi" },
+        { status: 500 }
+      );
+    }
+  }
   const payload = {
     title,
     slug,
@@ -128,6 +151,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     og_image: str(body.og_image),
     is_active: isActive,
     published_at: isActive ? new Date().toISOString() : null,
+    show_on_homepage: showOnHomepage,
   };
 
   const { data, error } = await blogServerRepository.insert(payload);
@@ -154,6 +178,8 @@ export async function POST(req: Request): Promise<NextResponse> {
   /* 🛡️ EN/DE blog listeleri de ISR — yalnız TR tazeleniyordu; kapak
      (ve `?v=` versiyonu) EN/DE listede de hemen güncel olsun. */
   revalidatePath("/en/blog");
+  /* 🏝️ Ana sayfa "Neden Kalkan?" bölümü (migration 099). */
+  revalidateTag(BLOG_HOMEPAGE_TAG, { expire: 0 });
 
   return NextResponse.json({ ok: true, id: data?.id });
 }

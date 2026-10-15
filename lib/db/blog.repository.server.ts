@@ -44,7 +44,7 @@ export const blogServerRepository = {
     return await dbAdmin
       .from("blog_posts")
       .select(
-        "id, title, slug, is_active, published_at, category, created_at, updated_at"
+        "id, title, slug, is_active, show_on_homepage, published_at, category, created_at, updated_at"
       )
       .order("created_at", { ascending: false });
   },
@@ -63,6 +63,7 @@ export const blogServerRepository = {
     og_image: string | null;
     is_active: boolean;
     published_at: string | null;
+    show_on_homepage?: boolean;
   }) {
     return await dbAdmin
       .from("blog_posts")
@@ -78,6 +79,26 @@ export const blogServerRepository = {
       .select("*")
       .eq("id", id)
       .maybeSingle();
+  },
+
+  /** Yayın + ana sayfa durumu — PATCH kararları için (.maybeSingle()). */
+  async findPublishState(id: string) {
+    return await dbAdmin
+      .from("blog_posts")
+      .select("is_active, show_on_homepage")
+      .eq("id", id)
+      .maybeSingle();
+  },
+
+  /** Migration 099 — ana sayfa TEK yazı: verilen id DIŞINDAKİ işaretli
+      yazıların işaretini kaldırır (yeni işaretlemeden ÖNCE çağrılır;
+      kısmi unique index ile çakışmaz). `exceptId` null → hepsini kaldırır. */
+  async clearHomepageExcept(exceptId: string | null) {
+    const q = dbAdmin
+      .from("blog_posts")
+      .update({ show_on_homepage: false })
+      .eq("show_on_homepage", true);
+    return await (exceptId ? q.neq("id", exceptId) : q);
   },
 
   /** published_at lookup — PATCH ilk-yayın set kararı için (.maybeSingle()). */

@@ -13,6 +13,7 @@ import HomepageReviewsSection from "@/app/components/home/HomepageReviewsSection
    Salt-okuma; boş veride null döner. Diğer section'ları etkilemez. */
 import ShortGapsSection from "@/app/components/home/ShortGapsSection";
 import HomeServicesSection from "@/app/components/home/HomeServicesSection";
+import HomeBlogFeatureSection from "@/app/components/home/HomeBlogFeatureSection";
 
 import {
   JsonLd,
@@ -137,6 +138,9 @@ export default async function HomePageBody({
       <VillaList locale={locale} />
       {/* 🤝 Hizmetlerimiz — Öne Çıkan Villalar altı, İndirimli Koleksiyon üstü. */}
       <HomeServicesSection locale={locale} />
+      {/* 🏝️ "Neden Kalkan?" — admin'de "Ana sayfada göster" işaretli
+         yayındaki blog yazısı; yoksa null döner. */}
+      <HomeBlogFeatureSection locale={locale} />
       {/* 🛡️ "İndirimli Koleksiyon" — küratörlü fırsat villaları. Enabled
          + aktif villa yoksa null döner. */}
       <DiscountCollection locale={locale} />

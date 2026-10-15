@@ -486,6 +486,9 @@ export const en: Dictionary = {
         "Professional management for villa owners, with support throughout investment and operation.",
       contactCta: "Get in Touch",
     },
+    blogFeature: {
+      cta: "Discover More",
+    },
     regions: {
       sectionAriaLabel: "Regions",
       title: "Villa Rental Regions",
