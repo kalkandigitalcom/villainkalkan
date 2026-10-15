@@ -101,14 +101,19 @@ describe("Ana sayfa bölümleri ortak başlığı kullanır", () => {
 });
 
 describe("Bölgeler ve Kısa Süreli bölümlerinin zemini", () => {
-  it("Villa Kiralama Bölgeleri: beyaz ortak panelde, alt açıklama yok", () => {
+  it("Villa Kiralama Bölgeleri: beyaz zemin tam genişlik section'da, alt açıklama yok", () => {
     const s = src("app/components/villa/LocationCollection.tsx");
-    expect(s).toContain("className={HOME_PANEL_SECTION_CLASS}");
-    expect(s).toMatch(/data-home-panel="regions" className=\{HOME_PANEL_CLASS\}/);
+    /* Beyaz zemin section'ın kendisinde; iç kap yalnız 1210px içerik çizgisi. */
+    expect(s).toMatch(
+      /<section[^>]*data-home-section="regions"\s*className=\{`\$\{HOME_PANEL_SECTION_CLASS\} bg-white`\}/,
+    );
+    expect(s).toContain('<div className="max-w-site mx-auto">');
+    expect(s).not.toContain("HOME_PANEL_CLASS");
+    expect(s).not.toContain('data-home-panel="regions"');
     expect(s).toContain("<HomeSectionHeading title={dict.title} />");
     expect(s).not.toMatch(/subtitle=|dict\.subtitle/);
     /* Kartlar ve carousel panelin içinde, başlığın altında. */
-    const panel = s.slice(s.indexOf('data-home-panel="regions"'));
+    const panel = s.slice(s.indexOf('data-home-section="regions"'));
     expect(panel.indexOf("<HorizontalCarousel")).toBeGreaterThan(
       panel.indexOf("<HomeSectionHeading"),
     );

@@ -24,10 +24,7 @@ import {
   regionLinkHref,
 } from "@/lib/taxonomy-landing";
 import HomeSectionHeading from "@/app/components/home/HomeSectionHeading";
-import {
-  HOME_PANEL_CLASS,
-  HOME_PANEL_SECTION_CLASS,
-} from "@/app/components/home/home-panel";
+import { HOME_PANEL_SECTION_CLASS } from "@/app/components/home/home-panel";
 
 /* ===============================================================
    🛡️ LOCATION SHOWCASE — homepage "circular avatar" carousel
@@ -201,11 +198,12 @@ export default async function LocationCollection({
   return (
     <section
       aria-label={dict.sectionAriaLabel}
-      className={HOME_PANEL_SECTION_CLASS}
+      data-home-section="regions"
+      className={`${HOME_PANEL_SECTION_CLASS} bg-white`}
     >
-      {/* 🤍 Beyaz panel — diğer ana sayfa bölümleriyle aynı kap
-          (home-panel.ts). Kartlar, carousel ve CTA AYNEN. */}
-      <div data-home-panel="regions" className={HOME_PANEL_CLASS}>
+      {/* 🤍 Beyaz zemin bölümün TAM genişliğinde (section); içerik
+          1210px ortak çizgide. Kartlar, carousel ve CTA AYNEN. */}
+      <div className="max-w-site mx-auto">
         {/* 🛡️ FAZ 39M — Normalized section header (CategoryCollection parity).
             Alt açıklama ("Özenle seçilmiş bölgeler") kaldırıldı. */}
         <HomeSectionHeading title={dict.title} />
