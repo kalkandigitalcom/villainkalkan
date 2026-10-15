@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { resolveAssetUrlVersioned } from "@/lib/storage.helpers";
@@ -254,15 +254,17 @@ export default function Footer({
     <footer
       aria-label={dictionary.footer.ariaLabel}
       className="relative mt-20 md:mt-28 overflow-hidden text-[var(--color-stone-700)]"
-      /* 🎨 Footer zemini: koyu metin rengi #1B2E5E (--color-ink), düz
-         zemin; gradient/glow yok. Footer içindeki metin/çizgi renkleri
+      /* 🎨 Footer zemini: üstte marka laciverti #1B2E5E (--color-ink),
+         alta doğru yumuşak bir mavi geçiş + altta hafif mavi ışıma
+         (referans: koyu lacivert → mavi). Footer içindeki metin/çizgi renkleri
          `--color-stone-*` değişkenleriyle tanımlı → değişkenler YALNIZ bu
          elemanda açık tonlara yeniden eşlenir (yerleşim ve sınıflar aynı;
          site geneli ve admin ETKİLENMEZ). Hover/vurgu: mercan (#C8973A,
          koyu zeminde ≈5:1). footer_logo (beyaz) AYNEN kullanılır. */
       style={
         {
-          background: "var(--color-ink)",
+          background:
+            "radial-gradient(ellipse 75% 60% at 50% 100%, rgb(64 112 196 / 0.32) 0%, transparent 70%), linear-gradient(180deg, var(--color-ink) 0%, #1d3268 45%, #22468c 100%)",
           "--color-stone-900": "#ffffff",
           "--color-stone-800": "#f1f4f8",
           "--color-stone-700": "#e2e8ef",
@@ -271,9 +273,21 @@ export default function Footer({
           "--color-stone-400": "#a0afc0",
           "--color-stone-300": "#6f8299",
           "--color-stone-200": "rgba(255, 255, 255, 0.12)",
+          /* globals.css'teki katmansız `* { border-color: var(--border) }`
+             kuralı utility kenarlık rengini eziyor (açık gri #e3e9f0).
+             Değişken YALNIZ footer kapsamında koyu zemine uygun ince
+             beyaza eşlenir → ayırıcı çizgiler ve sosyal ikon kenarları
+             zarif kalır; site geneli ETKİLENMEZ. */
+          "--border": "rgba(255, 255, 255, 0.12)",
         } as React.CSSProperties
       }
     >
+      {/* Üst geçiş — ince, ortada belirginleşen altın çizgi (dekoratif). */}
+      <span
+        aria-hidden="true"
+        data-footer-top-line
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/45 to-transparent"
+      />
 
       <div className="relative max-w-[calc(var(--container-site)+8rem)] mx-auto px-5 md:px-10 lg:px-16 pb-10">
         {/* ═════════════ SECTION 2 — MARKA + KEŞFET (asimetrik, kolon-kartı yok) ═════════════
@@ -426,42 +440,78 @@ export default function Footer({
             bir "iletişim şeridi"; telefon en belirgin (birincil hover
             #C8973A), e-posta ikincil hover #C8973A. Rezervasyon Sorgula
             linki (mevcut href) burada, destek eylemine en yakın yerde. */}
-        <div className="mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--color-stone-200)]">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
-            <div className="flex flex-wrap items-baseline gap-x-10 gap-y-5">
-              {settings?.phone && (
-                <a href={`tel:${settings.phone}`} className="group">
-                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)] mb-1.5">
+        <div
+          data-footer-contact
+          className="mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--color-stone-200)]"
+        >
+          {/* Masaüstü: ikon + etiket + değer yatayda ortalı, ince dikey
+              ayırıcılarla; tablet: ortalı, sarmalanan satır (ayırıcısız);
+              mobil: alt alta. Bağlantılar (tel/mailto) AYNEN. */}
+          <div className="flex flex-col md:flex-row md:flex-wrap md:items-center md:justify-center gap-6 md:gap-x-10 lg:gap-x-0 lg:flex-nowrap lg:divide-x lg:divide-[var(--color-stone-200)]">
+            {settings?.phone && (
+              <a
+                href={`tel:${settings.phone}`}
+                className="group flex items-center gap-3.5 lg:px-8"
+              >
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)] transition-colors duration-300 group-hover:bg-white/15 group-hover:text-accent motion-reduce:transition-none"
+                >
+                  <Phone size={18} strokeWidth={1.75} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
                     {dictionary.footer.phone}
                   </span>
-                  <span className="font-display text-[26px] md:text-[32px] tracking-[-0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
+                  <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
                     {settings.phone}
                   </span>
-                </a>
-              )}
-              {settings?.email && (
-                <a href={`mailto:${settings.email}`} className="group">
-                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)] mb-1.5">
+                </span>
+              </a>
+            )}
+            {settings?.email && (
+              <a
+                href={`mailto:${settings.email}`}
+                className="group flex items-center gap-3.5 lg:px-8"
+              >
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)] transition-colors duration-300 group-hover:bg-white/15 group-hover:text-accent motion-reduce:transition-none"
+                >
+                  <Mail size={18} strokeWidth={1.75} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
                     {dictionary.footer.email}
                   </span>
-                  <span className="text-[16px] md:text-[18px] text-[var(--color-stone-700)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none break-all">
+                  <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none break-all">
                     {settings.email}
                   </span>
-                </a>
-              )}
-              {settings?.address && (
-                <div className="max-w-xs">
-                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)] mb-1.5">
+                </span>
+              </a>
+            )}
+            {settings?.address && (
+              <div className="flex items-center gap-3.5 lg:px-8 max-w-sm">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)]"
+                >
+                  <MapPin size={18} strokeWidth={1.75} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
                     {dictionary.footer.address}
                   </span>
-                  <span className="text-[13.5px] text-[var(--color-stone-500)] leading-relaxed">
+                  <span className="block text-[13.5px] text-[var(--color-stone-600)] leading-relaxed">
                     {settings.address}
                   </span>
-                </div>
-              )}
-            </div>
+                </span>
+              </div>
+            )}
+          </div>
 
-            {/* MÜŞTERİ İŞLEMLERİ — rezervasyon durum sorgulama (mevcut href AYNEN) */}
+          {/* MÜŞTERİ İŞLEMLERİ — rezervasyon durum sorgulama (mevcut href AYNEN) */}
+          <div className="mt-8 flex md:justify-center">
             <FooterLink href={localeHref("/rezervasyon-kontrol", locale)}>
               <span className="inline-flex items-center gap-1.5 text-[13.5px]">
                 {dictionary.footer.checkReservation}
