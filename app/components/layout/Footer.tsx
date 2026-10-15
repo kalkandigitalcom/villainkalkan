@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-import { resolveAssetUrlVersioned } from "@/lib/storage.helpers";
 import type { Settings } from "@/app/services/settings.types";
 /* 🛡️ PHASE 9B — TaxonomyItem/CorporatePage tipleri artık FooterWrapper'da
    tanımlı (veriyi ÜRETEN yer) — buradan `import type` ile alınır; runtime
@@ -26,8 +25,7 @@ import type { TaxonomyItem, CorporatePage } from "./FooterWrapper";
    riski YOK (bkz. Phase 9B audit — bu tasarımın seçilme nedeni). */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import { DEFAULT_LOCALE, localeFromPathname } from "@/lib/i18n/config";
-import { resolvePublicHome } from "@/lib/i18n/public-home";
+import { localeFromPathname } from "@/lib/i18n/config";
 /* 🛡️ NAVIGATION LOCALE PERSISTENCE — footer iç linkleri aktif locale'i
    taşır (bkz. lib/i18n/locale-href.ts). Dış bağlantılar (sosyal medya,
    tel/mailto) helper tarafından AYNEN geçirilir. */
@@ -39,154 +37,6 @@ import { resolveSettingsText } from "@/lib/i18n/settings-translation.helper";
 /* 🛡️ PHASE 10H — villa tipi adı locale'e göre çözülür; çeviri yoksa
    canonical TR adı (saf helper, DB/server bağımlılığı YOK). */
 import { resolveTaxonomyName } from "@/lib/i18n/taxonomy-name.helper";
-import { categoryLinkHref, regionLinkHref } from "@/lib/taxonomy-landing";
-
-/* ---------------- INLINE SOCIAL ICONS (stroke=currentColor) ---------------- */
-
-const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.6}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-  </svg>
-);
-
-const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.6}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-  </svg>
-);
-
-const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.6}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-  </svg>
-);
-
-const TiktokIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.6}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-  </svg>
-);
-
-const WhatsappIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.6}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z" />
-  </svg>
-);
-
-/* ---------------- DRY HELPERS (dark-theme-aware) ---------------- */
-
-function SocialLink({
-  href,
-  label,
-  children,
-}: {
-  href: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      className="
-        group inline-flex items-center justify-center
-        w-10 h-10 rounded-full
-        border border-[var(--color-stone-200)] bg-white/5
-        text-[var(--color-stone-500)]
-        hover:border-brand/45 hover:bg-gradient-to-br hover:from-accent/10 hover:to-brand/10
-        hover:text-accent
-        transition-[color,background-color,border-color,transform]
-        duration-300 motion-reduce:transition-none
-        hover:scale-[1.05]
-        focus:outline-none focus-visible:ring-2
-        focus-visible:ring-white/50
-      "
-    >
-      {children}
-    </a>
-  );
-}
-
-function FooterLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="
-        inline-flex items-center
-        text-[14px] text-[var(--color-stone-500)]
-        hover:text-accent
-        hover:translate-x-[2px]
-        transition-[color,transform] duration-300
-        motion-reduce:transition-none motion-reduce:hover:translate-x-0
-      "
-    >
-      {children}
-    </Link>
-  );
-}
-
-/* 🛡️ SEO landing — kategori → `/villa-turleri/<slug>`; bölge GRUP
-   KÖKÜ → `/bolgeler/<slug>`. Alt bölge / slug'sız kayıt ESKİ
-   `/arama?<prefix>=<slug|id>` URL'inde kalır (lib/taxonomy-landing). */
-function taxonomyHref(prefix: string, item: TaxonomyItem): string {
-  return prefix === "bolgeler" ? regionLinkHref(item) : categoryLinkHref(item);
-}
 
 /* =================================================================
    ROOT COMPONENT — client
@@ -196,6 +46,9 @@ function taxonomyHref(prefix: string, item: TaxonomyItem): string {
 
 type FooterProps = {
   settings: Settings | null;
+  /* Keşfet / marka / sosyal alanı footer'dan kaldırıldı. Aşağıdaki üç
+     alan FooterWrapper sözleşmesi bozulmasın diye tipte KALIR; Footer
+     artık bunları render etmez. */
   locations: TaxonomyItem[];
   villaTypes: TaxonomyItem[];
   corporatePages: CorporatePage[];
@@ -209,12 +62,9 @@ type FooterProps = {
 
 export default function Footer({
   settings,
-  locations,
-  villaTypes,
   corporatePages,
   year,
   siteName,
-  phoneDigits,
   developerCreditLogoUrl = null,
 }: FooterProps) {
   /* Logo yüklenemezse (silinmiş/erişilemiyor) metne düş. */
@@ -228,15 +78,6 @@ export default function Footer({
   const pathname = usePathname();
   const locale = localeFromPathname(pathname);
   const dictionary = getDictionary(locale);
-
-  /* 🔄 TR ana sayfa yolu — varsayılan dil EN/DE iken "/" bir
-     YÖNLENDİRİCİDİR, TR ana sayfa "/tr"'de yaşar. Logo linki "/"
-     kalsaydı TR kullanıcı logoya basınca varsayılan dile geri
-     düşerdi. `settings` prop'u ZATEN mevcut → YENİ PROP/FETCH YOK.
-     Varsayılan "tr" veya multilingual kapalı → "/" (BYTE-IDENTICAL). */
-  const { trHomeHref } = resolvePublicHome(settings);
-  const homeHref =
-    locale === DEFAULT_LOCALE ? trHomeHref : localeHref("/", locale);
 
   /* 🛡️ PHASE 10L §7 — `settings.translations` (migration 083) locale'e
      göre çözülür. `settings` prop'u zaten `getPublicSettings()`'ten
@@ -259,7 +100,7 @@ export default function Footer({
          `--color-stone-*` değişkenleriyle tanımlı → değişkenler YALNIZ bu
          elemanda açık tonlara yeniden eşlenir (yerleşim ve sınıflar aynı;
          site geneli ve admin ETKİLENMEZ). Hover/vurgu: mercan (#C8973A,
-         koyu zeminde ≈5:1). footer_logo (beyaz) AYNEN kullanılır. */
+         koyu zeminde ≈5:1). */
       style={
         {
           background:
@@ -296,7 +137,7 @@ export default function Footer({
         <section
           data-footer-cta
           aria-labelledby="footer-cta-title"
-          className="pt-16 md:pt-24 pb-14 md:pb-20 text-center border-b border-[var(--color-stone-200)]"
+          className="pt-16 md:pt-24 pb-14 md:pb-20 text-center"
         >
           <h2
             id="footer-cta-title"
@@ -359,177 +200,12 @@ export default function Footer({
           </Link>
         </section>
 
-        {/* ═════════════ SECTION 2 — MARKA + KEŞFET (asimetrik, kolon-kartı yok) ═════════════
-            LEFT (dominant): logo + marka açıklaması + sosyal — mantık AYNEN.
-            RIGHT: tek "Keşfet" başlığı altında iki minimal alt-grup (Villalar,
-            Bölgeler); veri/link kaynakları BİREBİR aynı, yalnızca renk/zemin
-            açık temaya göre revize edildi. */}
-        <div className="pt-14 md:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16">
-          {/* LEFT — dominant brand block */}
-          <div className="lg:col-span-5 space-y-7">
-            <Link
-              href={homeHref}
-              className="font-display text-[24px] tracking-tight inline-flex items-center text-[var(--color-stone-900)]"
-            >
-              {settings?.footer_logo || settings?.site_logo ? (
-                /* 🛡️ mig 048 — footer_logo varsa onu, yoksa site_logo'ya
-                   fallback. resolveAssetUrlVersioned normalize. */
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={
-                    resolveAssetUrlVersioned(
-                      settings.footer_logo,
-                      settings.updated_at
-                    ) ||
-                    resolveAssetUrlVersioned(
-                      settings.site_logo,
-                      settings.updated_at
-                    ) ||
-                    ""
-                  }
-                  alt={`${siteName} logosu`}
-                  className="h-10 w-auto object-contain"
-                />
-              ) : (
-                <>
-                  Villaya
-                  <span className="text-accent ml-1">Gel</span>
-                </>
-              )}
-            </Link>
-            <p className="text-[14.5px] text-[var(--color-stone-500)] leading-relaxed max-w-sm">
-              {dictionary.footer.tagline}
-            </p>
-
-            {/* Sosyal — settings'ten dinamik (mevcut API aynen) */}
-            <div className="flex items-center gap-2.5">
-              {settings?.instagram && (
-                <SocialLink href={settings.instagram} label="Instagram">
-                  <InstagramIcon width={15} height={15} aria-hidden />
-                </SocialLink>
-              )}
-              {settings?.facebook && (
-                <SocialLink href={settings.facebook} label="Facebook">
-                  <FacebookIcon width={15} height={15} aria-hidden />
-                </SocialLink>
-              )}
-              {settings?.youtube && (
-                <SocialLink href={settings.youtube} label="YouTube">
-                  <YoutubeIcon width={15} height={15} aria-hidden />
-                </SocialLink>
-              )}
-              {settings?.tiktok && (
-                <SocialLink href={settings.tiktok} label="TikTok">
-                  <TiktokIcon width={15} height={15} aria-hidden />
-                </SocialLink>
-              )}
-              {phoneDigits && (
-                <SocialLink
-                  href={`https://wa.me/${phoneDigits}`}
-                  label="WhatsApp"
-                >
-                  <WhatsappIcon width={15} height={15} aria-hidden />
-                </SocialLink>
-              )}
-            </div>
-
-            {/* Adres + rezervasyon sorgulama (mevcut href AYNEN) — iletişim
-                şeridi CTA'ya taşındığı için marka bloğunda. */}
-            <div className="space-y-3">
-              {settings?.address && (
-                <p className="flex items-start gap-2 text-[13.5px] text-[var(--color-stone-500)] leading-relaxed max-w-sm">
-                  <MapPin size={15} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0 text-[var(--color-stone-400)]" />
-                  <span>
-                    <span className="sr-only">{dictionary.footer.address}: </span>
-                    {settings.address}
-                  </span>
-                </p>
-              )}
-              <FooterLink href={localeHref("/rezervasyon-kontrol", locale)}>
-                <span className="inline-flex items-center gap-1.5 text-[13.5px]">
-                  {dictionary.footer.checkReservation}
-                  <ArrowRight size={12} strokeWidth={1.75} aria-hidden />
-                </span>
-              </FooterLink>
-            </div>
-          </div>
-
-          {/* RIGHT — "Keşfet" minimal link kümesi (villa_types + villa_locations) */}
-          <div className="lg:col-span-7 lg:pl-6">
-            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--color-stone-400)]">
-              <span
-                aria-hidden="true"
-                className="inline-block w-4 h-px bg-gradient-to-r from-accent to-brand"
-              />
-              {dictionary.footer.explore}
-            </span>
-
-            <div className="mt-6 grid grid-cols-2 gap-x-10 gap-y-8">
-              {/* VİLLA KATEGORİLERİ (dynamic villa_types) */}
-              <nav aria-label={dictionary.footer.villaCategoriesAriaLabel}>
-                <p className="text-[13px] font-medium text-[var(--color-stone-800)] mb-4">
-                  {dictionary.footer.villas}
-                </p>
-                {villaTypes.length > 0 ? (
-                  <ul className="space-y-3">
-                    {villaTypes.map((t) => (
-                      <li key={t.id}>
-                        <FooterLink href={localeHref(taxonomyHref("villa-turleri", t), locale)}>
-                          {resolveTaxonomyName(t.name, t.nameByLocale, locale)}
-                        </FooterLink>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <ul className="space-y-3">
-                    <li>
-                      <FooterLink href={localeHref("/arama", locale)}>{dictionary.footer.allCategories}</FooterLink>
-                    </li>
-                  </ul>
-                )}
-              </nav>
-
-              {/* POPÜLER BÖLGELER (dynamic villa_locations) */}
-              <nav aria-label={dictionary.footer.popularRegionsAriaLabel}>
-                <p className="text-[13px] font-medium text-[var(--color-stone-800)] mb-4">
-                  {dictionary.footer.regions}
-                </p>
-                {locations.length > 0 ? (
-                  <ul className="space-y-3">
-                    {locations.map((loc) => (
-                      <li key={loc.id}>
-                        <FooterLink href={localeHref(taxonomyHref("bolgeler", loc), locale)}>
-                          {loc.name}
-                        </FooterLink>
-                      </li>
-                    ))}
-                    <li className="pt-1">
-                      <FooterLink href={localeHref("/arama", locale)}>
-                        <span className="text-[13px] text-accent inline-flex items-center gap-1">
-                          {dictionary.footer.allRegions}
-                          <ArrowRight size={12} strokeWidth={1.75} aria-hidden />
-                        </span>
-                      </FooterLink>
-                    </li>
-                  </ul>
-                ) : (
-                  <ul className="space-y-3">
-                    <li>
-                      <FooterLink href={localeHref("/arama", locale)}>{dictionary.footer.exploreAllRegions}</FooterLink>
-                    </li>
-                  </ul>
-                )}
-              </nav>
-            </div>
-          </div>
-        </div>
-
         {/* ═════════════ SECTION 4 — MİNİMAL ALT BAR ═════════════
             Sıra: copyright + kurumsal linkler → (ince separator) →
             KalkanDigital, ayrı ve tam ortalanmış, en son
             satır. `corporatePages` veri kaynağı BİREBİR aynı, yalnızca
             konum/sıra ve renkler değişti. */}
-        <div className="mt-14 md:mt-16 pt-8 border-t border-[var(--color-stone-200)]">
+        <div className="pt-8 border-t border-[var(--color-stone-200)]">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 text-[12px] text-[var(--color-stone-500)]">
             {/* 🛡️ PHASE 10L §7 — locale-aware telif metni.
                 TR: `resolveSettingsText` canonical değeri AYNEN

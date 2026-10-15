@@ -77,13 +77,19 @@ describe("Footer tasarımı", () => {
     expect(screen.queryByAltText("TÜRSAB üyesi")).toBeNull();
   });
 
-  it("adres ve rezervasyon sorgulama marka bloğunda korunur", () => {
-    render(<Footer {...PROPS} />);
-    expect(screen.getByText("Kalkan, Kaş / Antalya")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Rezervasyon Sorgula/ })).toHaveAttribute(
-      "href",
-      "/rezervasyon-kontrol",
-    );
+  it("yalnız CTA ve alt bilgi kalır: logo/açıklama, sosyal, adres, rezervasyon sorgula ve Keşfet yok", () => {
+    const { container } = render(<Footer {...PROPS} />);
+    const inner = container.querySelector("footer > div") as HTMLElement;
+    /* İki çocuk: CTA bölümü + alt bilgi. */
+    expect(inner.children).toHaveLength(2);
+    expect(inner.firstElementChild).toHaveAttribute("data-footer-cta");
+    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "WhatsApp" })).toBeNull();
+    expect(screen.queryByText("Kalkan, Kaş / Antalya")).toBeNull();
+    expect(screen.queryByText(/Rezervasyon Sorgula/)).toBeNull();
+    expect(screen.queryByText("Keşfet")).toBeNull();
+    expect(screen.queryByText(/Akdeniz'in seçkin villalarını/)).toBeNull();
+    expect(container.querySelector("img")).toBeNull();
   });
 
   it("EN: CTA metinleri ve /en önekli iletişim bağlantısı", async () => {
@@ -99,10 +105,8 @@ describe("Footer tasarımı", () => {
     vi.doUnmock("next/navigation");
   });
 
-  it("sosyal medya, yasal bağlantılar, telif ve KalkanDigital korunur", () => {
+  it("yasal bağlantılar, telif ve KalkanDigital korunur", () => {
     render(<Footer {...PROPS} />);
-    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://instagram.com/x");
-    expect(screen.getByRole("link", { name: "WhatsApp" })).toHaveAttribute("href", "https://wa.me/902420100000");
     expect(screen.getByRole("link", { name: "KVKK" })).toHaveAttribute("href", "/p/kvkk");
     expect(screen.getByText(/2026/)).toBeInTheDocument();
     const credit = screen.getByRole("link", { name: /KalkanDigital/ });

@@ -47,64 +47,54 @@ describe("Footer — Phase 9B locale dictionary (props ile doğrudan render)", (
     usePathnameMock.mockReset();
   });
 
-  it("1) TR path ('/') → TR footer dictionary metinleri (ÖNCEKİ sabit metinler, DEĞİŞMEDİ)", () => {
+  it("1) TR path ('/') → TR footer dictionary metinleri", () => {
     usePathnameMock.mockReturnValue("/");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByText("Keşfet")).toBeInTheDocument();
-    expect(screen.getByText("Rezervasyon Sorgula")).toBeInTheDocument();
+    expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Bize Ulaşın" })).toBeInTheDocument();
   });
 
   it("1b) TR path ('/kiralik-villalar') → yine TR footer dictionary metinleri", () => {
     usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByText("Keşfet")).toBeInTheDocument();
+    expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
   });
 
   it("2) '/en/kiralik-villalar' → EN footer dictionary metinleri (lib/i18n/dictionaries/en.ts değerleri)", () => {
     usePathnameMock.mockReturnValue("/en/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.queryByText("Keşfet")).not.toBeInTheDocument();
-    expect(screen.getByText("Explore")).toBeInTheDocument();
-    expect(screen.getByText("Check Reservation")).toBeInTheDocument();
+    expect(screen.queryByText("Kalkan'da Sizi Bekliyoruz")).not.toBeInTheDocument();
+    expect(screen.getByText("We Look Forward to Welcoming You in Kalkan")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Contact Us" })).toBeInTheDocument();
   });
 
   it("3) '/de/kiralik-villalar' → DE desteklenmiyor, TR footer metinlerine düşer", () => {
     usePathnameMock.mockReturnValue("/de/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByText("Keşfet")).toBeInTheDocument();
-    expect(screen.queryByText("Entdecken")).not.toBeInTheDocument();
+    expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
   });
 
   it("4) segment sınırı — '/energy-something' YANLIŞLIKLA 'en' ile eşleşmez, TR'ye düşer", () => {
     usePathnameMock.mockReturnValue("/energy-something");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByText("Keşfet")).toBeInTheDocument();
+    expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
   });
 
-  it("5) villaTypes/locations boşsa fallback dictionary metinleri (allCategories/exploreAllRegions) görünür", () => {
+  it("5) Keşfet / marka / sosyal / rezervasyon sorgulama alanı footer'da yok", () => {
     usePathnameMock.mockReturnValue("/");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByText("Tüm kategoriler")).toBeInTheDocument();
+    for (const t of ["Keşfet", "Villalar", "Bölgeler", "Tüm kategoriler", "Tüm bölgeleri keşfet", "Rezervasyon Sorgula"]) {
+      expect(screen.queryByText(t)).not.toBeInTheDocument();
+    }
   });
 
-  /* 🛡️ NAVIGATION LOCALE PERSISTENCE — sözleşme güncellendi:
-     iç linkler artık AKTİF LOCALE'i taşır (eski "prefix'siz kalır"
-     kuralı navigasyonda locale kaybına yol açıyordu). Test SİLİNMEDİ,
-     doğru davranışa çevrildi ve "TR'ye düşmüyor" kontrolü eklendi. */
-  it("6) href'ler aktif locale'i taşır — EN path'te '/en/rezervasyon-kontrol'", () => {
+  /* 🛡️ NAVIGATION LOCALE PERSISTENCE — iç linkler AKTİF LOCALE'i taşır. */
+  it("6) href'ler aktif locale'i taşır — EN path'te 'Contact Us' → '/en/iletisim'", () => {
     usePathnameMock.mockReturnValue("/en/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
-    const reservationLink = screen.getByRole("link", {
-      name: /Check Reservation/i,
-    });
-    expect(reservationLink).toHaveAttribute(
-      "href",
-      "/en/rezervasyon-kontrol"
-    );
-    expect(reservationLink).not.toHaveAttribute(
-      "href",
-      "/rezervasyon-kontrol"
-    );
+    const link = screen.getByRole("link", { name: "Contact Us" });
+    expect(link).toHaveAttribute("href", "/en/iletisim");
+    expect(link).not.toHaveAttribute("href", "/iletisim");
   });
 });
 
@@ -171,12 +161,11 @@ describe("FooterWrapper — Phase 9B prop-passing (DB/service mock'lanır, gerç
     const element = await FooterWrapper();
     render(element);
 
-    expect(screen.getByText("Kalkan")).toBeInTheDocument();
-    expect(screen.getByText("Havuzlu Villa")).toBeInTheDocument();
+    /* Kurumsal (yasal) bağlantılar basılır; Keşfet alanı (bölge/villa
+       tipi) artık footer'da YOK. */
     expect(screen.getByText("Hakkımızda")).toBeInTheDocument();
-    /* settings mock'unda site_logo/footer_logo YOK → wordmark fallback
-       render edilmeli (ÖNCEKİ davranış — <img> DEĞİL). */
-    expect(screen.getByText("Gel")).toBeInTheDocument();
+    expect(screen.queryByText("Kalkan")).not.toBeInTheDocument();
+    expect(screen.queryByText("Havuzlu Villa")).not.toBeInTheDocument();
   });
 
   it("8) bir fetch reject olursa (Promise.allSettled) diğerleri etkilenmez — ÖNCEKİ davranış korunuyor", async () => {
@@ -190,8 +179,8 @@ describe("FooterWrapper — Phase 9B prop-passing (DB/service mock'lanır, gerç
     const element = await FooterWrapper();
     render(element);
 
-    /* settings reject oldu ama locations yine de render edildi. */
-    expect(screen.getByText("Kaş")).toBeInTheDocument();
+    /* settings reject oldu ama footer yine de render edildi. */
+    expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
     /* settings null olduğu için copyright fallback görünür. */
     expect(screen.getByText(/Tüm hakları saklıdır/)).toBeInTheDocument();
   });
@@ -230,21 +219,12 @@ describe("Footer — href locale kilidi (iç linkler aktif locale'i taşır)", (
     usePathnameMock.mockReset();
   });
 
-  /* 🛡️ SEO LANDING — slug'lı villa tipi artık `/villa-turleri/<slug>`
-     landing'ine gider; bölge (grup kökü DEĞİLSE) ESKİ /arama URL'inde
-     kalır (bkz. lib/taxonomy-landing + taxonomy-landing.test.ts). */
-  it("9) villa type taxonomy href'i '/villa-turleri/{slug}' landing'i — TR path'te", () => {
+  it("9-10) villa tipi / bölge bağlantıları footer'da basılmaz (Keşfet alanı kaldırıldı)", () => {
     usePathnameMock.mockReturnValue("/");
-    render(<Footer {...PROPS_WITH_TAXONOMY_AND_CMS} />);
-    const link = screen.getByRole("link", { name: "Havuzlu Villa" });
-    expect(link).toHaveAttribute("href", "/villa-turleri/havuzlu-villa");
-  });
-
-  it("10) location taxonomy href'i '/arama?bolgeler={slug}' yapısında — TR path'te", () => {
-    usePathnameMock.mockReturnValue("/");
-    render(<Footer {...PROPS_WITH_TAXONOMY_AND_CMS} />);
-    const link = screen.getByRole("link", { name: "Kalkan" });
-    expect(link).toHaveAttribute("href", "/arama?bolgeler=kalkan");
+    const { container } = render(<Footer {...PROPS_WITH_TAXONOMY_AND_CMS} />);
+    expect(screen.queryByRole("link", { name: "Havuzlu Villa" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Kalkan" })).toBeNull();
+    expect(container.querySelector('a[href*="bolgeler"]')).toBeNull();
   });
 
   it("11) CMS (corporate page) href'i '/p/{slug}' yapısında — TR path'te", () => {
@@ -254,43 +234,22 @@ describe("Footer — href locale kilidi (iç linkler aktif locale'i taşır)", (
     expect(link).toHaveAttribute("href", "/p/hakkimizda");
   });
 
-  it("12) taxonomy + CMS href'leri '/en/...' path'te '/en' prefix'i alır (token/slug kontratı AYNEN)", () => {
+  it("12) CMS ve iletişim href'leri '/en/...' path'te '/en' prefix'i alır (slug kontratı AYNEN)", () => {
     usePathnameMock.mockReturnValue("/en/kiralik-villalar");
     render(<Footer {...PROPS_WITH_TAXONOMY_AND_CMS} />);
-    expect(screen.getByRole("link", { name: "Havuzlu Villa" })).toHaveAttribute(
-      "href",
-      "/en/villa-turleri/havuzlu-villa"
-    );
-    expect(screen.getByRole("link", { name: "Kalkan" })).toHaveAttribute(
-      "href",
-      "/en/arama?bolgeler=kalkan"
-    );
     expect(screen.getByRole("link", { name: "Hakkımızda" })).toHaveAttribute(
       "href",
       "/en/p/hakkimizda"
     );
-    /* Prefix'siz TR route'una DÜŞMÜYOR. */
-    expect(screen.getByRole("link", { name: "Kalkan" })).not.toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Contact Us" })).toHaveAttribute(
       "href",
-      "/arama?bolgeler=kalkan"
+      "/en/iletisim"
     );
   });
 
-  it("14) villaTypes/locations boşsa fallback linkleri '/arama' hedefler (allCategories/exploreAllRegions) — TR path'te", () => {
+  it("15) 'Bize Ulaşın' href TR path'te '/iletisim'", () => {
     usePathnameMock.mockReturnValue("/");
     render(<Footer {...BASE_PROPS} />);
-    expect(
-      screen.getByRole("link", { name: "Tüm kategoriler" })
-    ).toHaveAttribute("href", "/arama");
-    expect(
-      screen.getByRole("link", { name: "Tüm bölgeleri keşfet" })
-    ).toHaveAttribute("href", "/arama");
-  });
-
-  it("15) 'Rezervasyon Sorgula' href her zaman '/rezervasyon-kontrol' — TR path'te (EN path zaten test 6'da doğrulandı)", () => {
-    usePathnameMock.mockReturnValue("/");
-    render(<Footer {...BASE_PROPS} />);
-    const link = screen.getByRole("link", { name: /Rezervasyon Sorgula/i });
-    expect(link).toHaveAttribute("href", "/rezervasyon-kontrol");
+    expect(screen.getByRole("link", { name: "Bize Ulaşın" })).toHaveAttribute("href", "/iletisim");
   });
 });

@@ -493,12 +493,13 @@ describe("G) link üreticileri", () => {
     expect(hrefs).toContain("/arama?bolgeler=mesudiye");
   });
 
-  it("footer landing helper'ını kullanıyor; anasayfa villa tipi carousel'i kaldırıldı (kaynak kilidi)", () => {
+  it("footer taxonomy linki basmıyor; anasayfa villa tipi carousel'i kaldırıldı (kaynak kilidi)", () => {
     expect(fs.existsSync(path.join(process.cwd(), "app/components/villa/VillaTypeCarousel.tsx"))).toBe(false);
     const home = fs.readFileSync(path.join(process.cwd(), "app/components/home/HomePageBody.tsx"), "utf-8");
     expect(home).not.toContain("VillaTypeCarousel");
     const footer = fs.readFileSync(path.join(process.cwd(), "app/components/layout/Footer.tsx"), "utf-8");
-    expect(footer).toContain('prefix === "bolgeler" ? regionLinkHref(item) : categoryLinkHref(item)');
+    /* Footer'daki Keşfet (villa tipi / bölge) alanı kaldırıldı. */
+    expect(footer).not.toMatch(/regionLinkHref|categoryLinkHref/);
   });
 });
 

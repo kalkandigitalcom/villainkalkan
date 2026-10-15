@@ -212,67 +212,26 @@ const TYPE_ITEM = {
   nameByLocale: { en: "Luxury Villa" },
 };
 
-describe("Footer — villa tipi adı locale-aware", () => {
+/* 🛡️ FOOTER SADELEŞTİRME — Footer artık villa tipi bağlantılarını
+   (Keşfet → Villalar) RENDER ETMEZ. Villa tipi adının locale çözümü
+   Header'da (aşağıdaki gruplar) test edilmeye devam eder. Footer için
+   kilit: villa tipleri prop olarak gelse bile hiçbir dilde basılmaz ve
+   FooterWrapper çeviri hatasında çökmez. */
+describe("Footer — villa tipi bağlantıları footer'da yok", () => {
   beforeEach(() => {
     usePathnameMock.mockReset();
   });
 
-  it("14) TR path → canonical TR adı (ÖNCEKİ davranış, DEĞİŞMEDİ)", () => {
-    usePathnameMock.mockReturnValue("/");
-    render(<Footer {...FOOTER_BASE} villaTypes={[TYPE_ITEM]} />);
-    expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
-    expect(screen.queryByText("Luxury Villa")).not.toBeInTheDocument();
-  });
-
-  it("15) EN path → EN adı", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
-    render(<Footer {...FOOTER_BASE} villaTypes={[TYPE_ITEM]} />);
-    expect(screen.getByText("Luxury Villa")).toBeInTheDocument();
-    expect(screen.queryByText("Lüks Villa")).not.toBeInTheDocument();
-  });
-
-  it("16) '/de' path (DE desteği kaldırıldı) → TR'ye düşer, canonical TR adı", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villa/test");
-    render(<Footer {...FOOTER_BASE} villaTypes={[TYPE_ITEM]} />);
-    expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
-    expect(screen.queryByText("Luxury Villa")).not.toBeInTheDocument();
-  });
-
-  it("17) EN çevirisi YOKSA → TR fallback", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
-    render(
-      <Footer
-        {...FOOTER_BASE}
-        villaTypes={[{ ...TYPE_ITEM, nameByLocale: {} }]}
-      />
-    );
-    expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
-  });
-
-  it("18) nameByLocale HİÇ YOKSA (eski caller) → TR adı, çökme yok", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
-    render(
-      <Footer
-        {...FOOTER_BASE}
-        villaTypes={[{ id: "t", name: "Lüks Villa", slug: "luks-villa" }]}
-      />
-    );
-    expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
-  });
-
-  /* 🛡️ NAVIGATION LOCALE PERSISTENCE — TOKEN (`luks-villa`) ve query
-     parametresi (`villa-turleri`) canonical KALIR; link yalnız aktif
-     locale prefix'ini alır. Eski "prefix'siz" beklentisi EN'de
-     locale kaybına yol açıyordu. */
-  it("19) 🛡️ SLUG/TOKEN DEĞİŞMEDİ — EN'de canonical token + '/en' prefix", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
-    render(<Footer {...FOOTER_BASE} villaTypes={[TYPE_ITEM]} />);
-    expect(
-      screen.getByRole("link", { name: "Luxury Villa" })
-    /* 🛡️ SEO landing — slug'lı kategori `/villa-turleri/<slug>`'e gider;
-       token (slug) ve '/en' prefix'i AYNEN. */
-    ).toHaveAttribute("href", "/en/villa-turleri/luks-villa");
-  });
+  it.each(["/", "/en/kiralik-villa/test", "/de/kiralik-villa/test"])(
+    "14) %s → villa tipi adı/bağlantısı footer'da basılmaz",
+    (path) => {
+      usePathnameMock.mockReturnValue(path);
+      const { container } = render(<Footer {...FOOTER_BASE} villaTypes={[TYPE_ITEM]} />);
+      expect(screen.queryByText("Lüks Villa")).not.toBeInTheDocument();
+      expect(screen.queryByText("Luxury Villa")).not.toBeInTheDocument();
+      expect(container.querySelector('a[href*="villa-turleri"]')).toBeNull();
+    },
+  );
 });
 
 describe("FooterWrapper — multilingual gate + prop-passing", () => {
@@ -284,19 +243,7 @@ describe("FooterWrapper — multilingual gate + prop-passing", () => {
     findAllVillaTypesMock.mockReset();
     findActivePagesMock.mockReset();
     findManyForLocaleMock.mockReset();
-    findManyForLocaleMock.mockImplementation(
-      (_e: string, _ids: string[], locale: string) =>
-        Promise.resolve({
-          data: [
-            {
-              type_id: "type-1",
-              locale,
-              name: "Luxury Villa",
-            },
-          ],
-          error: null,
-        })
-    );
+    findManyForLocaleMock.mockResolvedValue({ data: [], error: null });
     findAllVillaLocationsMock.mockResolvedValue({ data: [] });
     findAllVillaTypesMock.mockResolvedValue({
       data: [{ id: "type-1", name: "Lüks Villa", slug: "luks-villa" }],
@@ -304,25 +251,18 @@ describe("FooterWrapper — multilingual gate + prop-passing", () => {
     findActivePagesMock.mockResolvedValue({ data: [] });
   });
 
-  it("20) multilingual_enabled=false → çeviri sorgusu HİÇ atılmaz, TR adı gösterilir", async () => {
+  it("20) footer render edilir (CTA görünür), villa tipi basılmaz", async () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: false });
     render(await FooterWrapper());
-    expect(findManyForLocaleMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
+    expect(screen.queryByText("Lüks Villa")).not.toBeInTheDocument();
   });
 
-  it("21) multilingual_enabled=true → çeviri okunur ve EN adı gösterilir", async () => {
-    getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-    render(await FooterWrapper());
-    expect(findManyForLocaleMock).toHaveBeenCalled();
-    expect(screen.getByText("Luxury Villa")).toBeInTheDocument();
-  });
-
-  it("22) çeviri okuması patlarsa footer ÇÖKMEZ, TR adına düşer", async () => {
+  it("22) çeviri okuması patlarsa footer ÇÖKMEZ", async () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: true });
     findManyForLocaleMock.mockRejectedValue(new Error("db down"));
     render(await FooterWrapper());
-    expect(screen.getByText("Lüks Villa")).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
   });
 
   it("23) villa tipi YOKSA çeviri sorgusu atılmaz", async () => {

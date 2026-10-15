@@ -513,7 +513,9 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
     expect(texts).toEqual(["About Us", "Contact"]);
   });
 
-  it("35) villa tipi çevirisi ETKİLENMEDİ (Phase 10H regresyon)", async () => {
+  /* Footer artık villa tipi bağlantısı basmaz (Keşfet alanı kaldırıldı);
+     kurumsal sayfa çevirisi ETKİLENMEZ. */
+  it("35) kurumsal sayfa çevirisi korunur; villa tipi footer'da basılmaz", async () => {
     findAllVillaTypesMock.mockResolvedValue({
       data: [{ id: "type-1", name: "Lüks Villa", slug: "luks-villa" }],
     });
@@ -522,7 +524,7 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
       page: { "page-1": { en: "About Us" } },
     });
     render(await FooterWrapper());
-    expect(screen.getByText("Luxury Villa")).toBeInTheDocument();
+    expect(screen.queryByText("Luxury Villa")).not.toBeInTheDocument();
     expect(screen.getByText("About Us")).toBeInTheDocument();
   });
 
