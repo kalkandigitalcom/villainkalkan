@@ -254,7 +254,7 @@ export default function Footer({
     <footer
       aria-label={dictionary.footer.ariaLabel}
       className="relative mt-20 md:mt-28 overflow-hidden text-[var(--color-stone-700)]"
-      /* 🎨 Footer zemini: koyu metin rengi #24364B (--color-ink), düz
+      /* 🎨 Footer zemini: koyu metin rengi #1B2E5E (--color-ink), düz
          zemin; gradient/glow yok. Footer içindeki metin/çizgi renkleri
          `--color-stone-*` değişkenleriyle tanımlı → değişkenler YALNIZ bu
          elemanda açık tonlara yeniden eşlenir (yerleşim ve sınıflar aynı;

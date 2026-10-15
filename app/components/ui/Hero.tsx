@@ -77,7 +77,7 @@ import type { HeroReviewStats } from "./hero/_types/hero";
    ===============================================================
    - Tam ekran (100svh) full-bleed görsel; header (TopBar + şeffaf bar)
      görselin ÜZERİNDE durur (Header ana sayfada spacer basmaz).
-   - Dengeli, düz koyu (#24364B) overlay + hafif üst/alt kenar koyulaşması
+   - Dengeli, düz koyu (#1B2E5E) overlay + hafif üst/alt kenar koyulaşması
      (yalnız okunabilirlik; dekoratif glow/orb YOK).
    - İçerik yatay + dikey ortalı: rozet (yıldız ikonlu, yarı saydam),
      iki satırlı başlık (merkezi başlık fontu Manrope) (1. satır beyaz, 2. satır altın), açıklama,
@@ -210,7 +210,7 @@ export default function Hero({
       )}
 
       {/* ═══════════════════════════════════════════════════════════
-          OVERLAY — dengeli, düz koyu petrol ton (#24364B; ana renk
+          OVERLAY — dengeli, düz koyu petrol ton (#1B2E5E; ana renk
           #C8973A'in koyu kademesi — fotoğrafa yeşil cast vermez). Admin
           `hero.overlayOpacity` (0..1) yoğunluğu ayarlar; metin kontrastı
           için taban 0.6'nın altına düşmez. Üst şerit (header) ve alt

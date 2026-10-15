@@ -78,7 +78,7 @@ export default function HeaderFavoritesLink({
             text-[10px] font-medium tabular-nums leading-none
             flex items-center justify-center
             bg-[var(--brand-coral)] text-ink
-            shadow-[0_2px_6px_-2px_rgba(36,54,75,0.45)]
+            shadow-[0_2px_6px_-2px_rgba(27,46,94,0.45)]
           "
         >
           {count > 99 ? "99+" : count}

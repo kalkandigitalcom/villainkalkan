@@ -361,7 +361,7 @@ export default function BookingSidebar({
       className="
         relative rounded-[28px]
         bg-white border border-[var(--color-stone-100)]
-        shadow-[0_1px_2px_rgba(36,54,75,0.05)]
+        shadow-[0_1px_2px_rgba(27,46,94,0.05)]
         px-6 py-7 md:px-7 md:py-8
         space-y-6
       "
@@ -452,7 +452,7 @@ export default function BookingSidebar({
           <div
             className="
               absolute right-0 z-[999] mt-4 bg-white border border-[var(--color-stone-100)]
-              rounded-2xl shadow-[0_16px_40px_-16px_rgba(36,54,75,0.16)]
+              rounded-2xl shadow-[0_16px_40px_-16px_rgba(27,46,94,0.16)]
               p-4 md:p-5
               w-[min(22rem,calc(100vw-2.5rem))]
             "
@@ -496,7 +496,7 @@ export default function BookingSidebar({
         </div>
 
         {openGuests && (
-          <div className="absolute z-50 mt-3 w-full bg-white border border-[var(--color-stone-100)] rounded-2xl shadow-[0_16px_40px_-16px_rgba(36,54,75,0.16)] p-5 space-y-4">
+          <div className="absolute z-50 mt-3 w-full bg-white border border-[var(--color-stone-100)] rounded-2xl shadow-[0_16px_40px_-16px_rgba(27,46,94,0.16)] p-5 space-y-4">
             <Counter
               label={dict.booking.adultsLabel}
               value={adults}
@@ -617,7 +617,7 @@ export default function BookingSidebar({
               ${
                 !minimumStayValid || priceUnavailable || availabilityPending || initialRangeConflict
                   ? "bg-[var(--color-stone-300)] text-white cursor-not-allowed"
-                  : "bg-gradient-to-r from-accent to-brand text-ink shadow-[0_16px_32px_-12px_rgba(36,54,75,0.45)] hover:shadow-[0_20px_40px_-12px_rgba(36,54,75,0.55)] hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
+                  : "bg-gradient-to-r from-accent to-brand text-ink shadow-[0_16px_32px_-12px_rgba(27,46,94,0.45)] hover:shadow-[0_20px_40px_-12px_rgba(27,46,94,0.55)] hover:-translate-y-0.5 motion-reduce:hover:translate-y-0"
               }
             `}
           >
@@ -730,7 +730,7 @@ export default function BookingSidebar({
                 relative w-full sm:max-w-[26rem] md:max-w-[46rem] lg:max-w-[66rem]
                 max-h-[92dvh] overflow-y-auto overscroll-contain
                 rounded-t-3xl sm:rounded-3xl bg-white
-                shadow-[0_30px_80px_-30px_rgba(36,54,75,0.55)]
+                shadow-[0_30px_80px_-30px_rgba(27,46,94,0.55)]
                 px-5 pt-5 pb-6 md:px-6 md:pt-6
               "
             >

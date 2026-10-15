@@ -200,7 +200,7 @@ export default function Header({
   const isHome = HOME_PATHS.has(normalizedPath);
   const headerShellClass =
     "bg-white border-b !border-ink/10 transition-shadow duration-300 motion-reduce:transition-none " +
-    (scrolled ? "shadow-[0_10px_30px_-16px_rgba(36,54,75,0.28)]" : "shadow-none");
+    (scrolled ? "shadow-[0_10px_30px_-16px_rgba(27,46,94,0.28)]" : "shadow-none");
   /* 🛡️ LOGO — beyaz zeminde her sayfada AYNI koyu logo: Genel Ayarlar >
      `site_logo`. `footer_logo` (beyaz/negatif) yalnız Footer'da kullanılır
      (Footer'a dokunulmadı); beyaz zeminde görünmeyeceği için header'da

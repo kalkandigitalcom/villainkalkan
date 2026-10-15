@@ -118,7 +118,7 @@ export default function VillaInfoBar({
           rounded-[28px] md:rounded-[32px]
           border border-[var(--color-stone-100)]
           bg-gradient-to-br from-white via-white to-[var(--color-sand-50)]/60
-          shadow-[0_24px_60px_-36px_rgba(36,54,75,0.22)]
+          shadow-[0_24px_60px_-36px_rgba(27,46,94,0.22)]
           px-6 py-6 md:px-9 md:py-8
         "
       >
@@ -176,7 +176,7 @@ export default function VillaInfoBar({
                   bg-[var(--color-stone-50)]
                   border border-transparent
                   hover:bg-white hover:border-[var(--color-stone-100)]
-                  hover:shadow-[0_12px_28px_-18px_rgba(36,54,75,0.22)]
+                  hover:shadow-[0_12px_28px_-18px_rgba(27,46,94,0.22)]
                   hover:-translate-y-0.5
                   transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0
                   px-4 py-3.5 md:py-4
@@ -268,7 +268,7 @@ function InfoItem({
         bg-[var(--color-stone-50)]
         border border-transparent
         hover:bg-white hover:border-[var(--color-stone-100)]
-        hover:shadow-[0_12px_28px_-18px_rgba(36,54,75,0.22)]
+        hover:shadow-[0_12px_28px_-18px_rgba(27,46,94,0.22)]
         hover:-translate-y-0.5
         transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0
         px-3.5 py-3.5 md:py-4
@@ -278,7 +278,7 @@ function InfoItem({
         aria-hidden="true"
         className="
           inline-flex items-center justify-center w-8 h-8 rounded-xl
-          bg-white shadow-[inset_0_0_0_1px_rgba(36,54,75,0.06)]
+          bg-white shadow-[inset_0_0_0_1px_rgba(27,46,94,0.06)]
           transition-transform duration-300 motion-reduce:transition-none
           group-hover/item:scale-110
         "
@@ -319,7 +319,7 @@ function CertificateItem({
         rounded-2xl
         border border-ink/15
         bg-gradient-to-br from-brand/[0.07] via-white to-accent/[0.06]
-        hover:shadow-[0_12px_28px_-18px_rgba(36,54,75,0.28)]
+        hover:shadow-[0_12px_28px_-18px_rgba(27,46,94,0.28)]
         hover:-translate-y-0.5
         transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0
         px-3.5 py-3.5 md:py-4
@@ -330,7 +330,7 @@ function CertificateItem({
         aria-hidden="true"
         className="
           inline-flex items-center justify-center w-8 h-8 rounded-xl
-          bg-white shadow-[inset_0_0_0_1px_rgba(36,54,75,0.06)]
+          bg-white shadow-[inset_0_0_0_1px_rgba(27,46,94,0.06)]
           overflow-hidden
           transition-transform duration-300 motion-reduce:transition-none
           group-hover/cert:scale-110

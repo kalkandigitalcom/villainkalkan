@@ -65,7 +65,7 @@ export function VillaAvailabilityShortcut({ locale }: { locale?: Locale }) {
         active:bg-[var(--color-champagne-100)] active:ring-brand/60
         px-5
         text-[14px] font-semibold tracking-[0.01em] text-ink
-        shadow-[0_14px_30px_-18px_rgba(36,54,75,0.45)]
+        shadow-[0_14px_30px_-18px_rgba(27,46,94,0.45)]
         transition-colors duration-200 motion-reduce:transition-none
         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
       "

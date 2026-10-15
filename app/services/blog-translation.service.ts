@@ -1,6 +1,7 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import { blogServerRepository } from "@/lib/db/blog.repository.server";
 import type { BlogPostTranslationRow } from "@/lib/i18n/translations.types";
+import { sanitizeHtml, stripHtml } from "@/lib/html-sanitize";
 
 /**
  * 🛡️ MIGRATION 089 — Admin Blog (blog_posts) Çeviri Servisi
@@ -66,6 +67,18 @@ function normalize(value: string | null | undefined): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+/* Gövde (zengin metin HTML) — Türkçe gövdeyle AYNI sözleşme: kayıtta
+   sanitizeHtml. Editörün boş çıktısı ("<p></p>") NULL sayılır → public
+   tarafta Türkçe içeriğe geri dönüş (fallback) korunur. */
+function normalizeBody(value: string | null | undefined): string | null {
+  const raw = normalize(value);
+  if (!raw) return null;
+  const clean = sanitizeHtml(raw).trim();
+  if (!clean) return null;
+  if (!stripHtml(clean) && !/<(img|table)\b/i.test(clean)) return null;
+  return clean;
+}
+
 export async function getBlogTranslations(
   postId: string
 ): Promise<BlogTranslationsListResult> {
@@ -109,7 +122,7 @@ export async function upsertBlogTranslation(
     };
   }
 
-  const body = normalize(input.body);
+  const body = normalizeBody(input.body);
   if (body && body.length > MAX_BODY_LEN) {
     return { ok: false, error: `İçerik ${MAX_BODY_LEN} karakteri geçemez` };
   }

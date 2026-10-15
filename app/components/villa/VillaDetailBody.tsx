@@ -433,7 +433,7 @@ export default function VillaDetailBody({
                 className="min-w-0 lg:col-span-3 relative pt-0 lg:-mt-14"
               >
                 <VillaAvailabilityShortcut locale={locale} />
-                <div className="mt-3 rounded-[28px] lg:shadow-[0_28px_60px_-32px_rgba(36,54,75,0.45)]">
+                <div className="mt-3 rounded-[28px] lg:shadow-[0_28px_60px_-32px_rgba(27,46,94,0.45)]">
                   <BookingSidebar
                     villaSlug={villa.slug}
                     villaId={villa.id}
@@ -465,7 +465,7 @@ export default function VillaDetailBody({
               mt-6 rounded-2xl
               border border-[var(--color-stone-100)]
               bg-gradient-to-b from-[var(--color-sand-50)]/70 to-white
-              shadow-[0_10px_28px_-20px_rgba(36,54,75,0.18)]
+              shadow-[0_10px_28px_-20px_rgba(27,46,94,0.18)]
               px-5 py-5
             "
                 >
@@ -519,7 +519,7 @@ export default function VillaDetailBody({
               mt-6 rounded-2xl
               border border-[var(--color-stone-100)]
               bg-white
-              shadow-[0_10px_28px_-20px_rgba(36,54,75,0.18)]
+              shadow-[0_10px_28px_-20px_rgba(27,46,94,0.18)]
               px-5 py-5
             "
                 >

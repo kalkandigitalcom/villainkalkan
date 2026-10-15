@@ -2,7 +2,7 @@
    🛡️ HEADER — tüm public sayfalarda TEK görünüm
    ===============================================================
    • Her sayfada (ana sayfa dahil), kaydırmadan bağımsız: BEYAZ zemin,
-     koyu metin (#24364B, text-ink) yazı/ikon, KOYU logo (site_logo).
+     koyu metin (#1B2E5E, text-ink) yazı/ikon, KOYU logo (site_logo).
    • Logo boyutu her sayfada aynı: h-12 (mobil) / md:h-16 (masaüstü),
      oran korunur (w-auto + object-contain).
    • footer_logo header'da KULLANILMAZ (Footer'a özgü).
@@ -93,7 +93,7 @@ describe("Header — standart beyaz görünüm", () => {
     const { shell } = renderAt("/");
     expect(shell.className).toContain("shadow-none");
     setScroll(200);
-    expect(shell.className).toContain("shadow-[0_10px_30px_-16px_rgba(36,54,75,0.28)]");
+    expect(shell.className).toContain("shadow-[0_10px_30px_-16px_rgba(27,46,94,0.28)]");
   });
 
   it("6) hamburger ikonu beyaz zeminde petrol renkte (her sayfada)", () => {

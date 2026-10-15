@@ -410,7 +410,7 @@ export default function Gallery({
               px-3.5 py-2
               text-[12.5px] font-semibold text-[var(--color-stone-800)]
               ring-1 ring-black/5
-              shadow-[0_8px_20px_-8px_rgba(36,54,75,0.35)]
+              shadow-[0_8px_20px_-8px_rgba(27,46,94,0.35)]
               hover:bg-white transition-colors duration-200 motion-reduce:transition-none
               focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50
             "

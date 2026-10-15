@@ -27,12 +27,37 @@ import { useEffect, useState } from "react";
 import { Languages, Loader2 } from "lucide-react";
 
 import { useNotify } from "@/app/components/admin/notifications/NotificationProvider";
+import RichTextEditor from "@/app/components/admin/villa-form/RichTextEditor";
 import {
   loadBlogTranslationsAction,
   saveBlogTranslationAction,
 } from "./blog-translations.action";
 
 type WritableLocale = "en";
+
+/* Eski EN içerikleri düz metin textarea'dan kaydedildi. Zengin metin
+   editörüne yüklerken paragraf/satır yapısı kaybolmasın diye HTML
+   OLMAYAN metin paragraflara çevrilir (yalnız editör görünümü; DB'ye
+   ancak admin kaydederse yazılır). HTML içerik AYNEN kalır. */
+export function toEditorHtml(value: string | null | undefined): string {
+  const text = (value ?? "").toString();
+  if (!text.trim()) return "";
+  if (
+    /<\/?(p|h[1-6]|ul|ol|li|strong|em|b|i|u|s|a|br|hr|blockquote|table|thead|tbody|tr|td|th|img|div|span|figure)\b[^>]*>/i.test(
+      text
+    )
+  )
+    return text;
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return text
+    .replace(/\r\n?/g, "\n")
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
 
 type LocaleFormState = {
   title: string;
@@ -94,7 +119,7 @@ export default function BlogTranslationsCard({ postId, postTitle }: Props) {
           next[row.locale] = {
             title: row.title ?? "",
             excerpt: row.excerpt ?? "",
-            body: row.body ?? "",
+            body: toEditorHtml(row.body),
             seoTitle: row.seo_title ?? "",
             seoDescription: row.seo_description ?? "",
           };
@@ -149,7 +174,7 @@ export default function BlogTranslationsCard({ postId, postTitle }: Props) {
         [activeLocale]: {
           title: result.row.title ?? "",
           excerpt: result.row.excerpt ?? "",
-          body: result.row.body ?? "",
+          body: toEditorHtml(result.row.body),
           seoTitle: result.row.seo_title ?? "",
           seoDescription: result.row.seo_description ?? "",
         },
@@ -280,16 +305,22 @@ export default function BlogTranslationsCard({ postId, postTitle }: Props) {
             </div>
           </div>
 
-          <div>
+          <div
+            role="group"
+            aria-label={`${LOCALE_LABELS[activeLocale]} içerik`}
+            data-blog-translation-body={activeLocale}
+            className="space-y-1.5"
+          >
             <label className="text-[12px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-500)] block">
               İçerik
             </label>
-            <textarea
-              aria-label={`${LOCALE_LABELS[activeLocale]} içerik`}
-              className="input !rounded-2xl !p-4 min-h-[160px] resize-none leading-relaxed"
-              maxLength={20000}
+            {/* Türkçe içerikle AYNI zengin metin editörü (aynı toolbar ve
+                biçimlendirme). key=locale → dil başına ayrı editör örneği;
+                diller birbirinin içeriğini ezmez. */}
+            <RichTextEditor
+              key={activeLocale}
               value={form.body}
-              onChange={(e) => setField("body", e.target.value)}
+              onChange={(html) => setField("body", html)}
             />
           </div>
 

@@ -49,7 +49,7 @@ export const TRUST_TONE_CLASSES: Record<
     iconBox: "bg-[#f5ead3] ring-1 ring-inset ring-[#ecd7ac]",
     iconText: "text-[#926b27]",
     hoverShadow:
-      "hover:shadow-[0_22px_44px_-22px_rgba(36,54,75,0.30)]",
+      "hover:shadow-[0_22px_44px_-22px_rgba(27,46,94,0.30)]",
   },
   emerald: {
     surface:
@@ -65,6 +65,6 @@ export const TRUST_TONE_CLASSES: Record<
     iconBox: "bg-[#f5ead3] ring-1 ring-inset ring-[#ecd7ac]",
     iconText: "text-brand",
     hoverShadow:
-      "hover:shadow-[0_22px_44px_-22px_rgba(36,54,75,0.28)]",
+      "hover:shadow-[0_22px_44px_-22px_rgba(27,46,94,0.28)]",
   },
 };

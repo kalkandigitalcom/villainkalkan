@@ -83,8 +83,8 @@ export default function FloatingSocialClient({
               rounded-full pl-2.5 pr-2.5 sm:pr-4 py-2.5
               bg-gradient-to-br from-accent to-[#a8873f] text-ink
               ring-1 ring-white/15
-              shadow-[0_16px_36px_-14px_rgba(200,151,58,0.6),0_10px_24px_-12px_rgba(36,54,75,0.32)]
-              hover:shadow-[0_22px_46px_-14px_rgba(200,151,58,0.75),0_14px_30px_-12px_rgba(36,54,75,0.42)]
+              shadow-[0_16px_36px_-14px_rgba(200,151,58,0.6),0_10px_24px_-12px_rgba(27,46,94,0.32)]
+              hover:shadow-[0_22px_46px_-14px_rgba(200,151,58,0.75),0_14px_30px_-12px_rgba(27,46,94,0.42)]
               transition-transform duration-300 motion-reduce:transition-none
               hover:scale-[1.06] hover:-translate-y-0.5
               motion-reduce:hover:scale-100 motion-reduce:hover:translate-y-0
@@ -124,8 +124,8 @@ export default function FloatingSocialClient({
               rounded-full pl-2.5 pr-2.5 sm:pr-4 py-2.5
               bg-[#25D366] text-white
               ring-1 ring-[#1da851]/40
-              shadow-[0_16px_36px_-14px_rgba(37,211,102,0.6),0_10px_24px_-12px_rgba(36,54,75,0.28)]
-              hover:shadow-[0_22px_46px_-14px_rgba(37,211,102,0.75),0_14px_30px_-12px_rgba(36,54,75,0.38)]
+              shadow-[0_16px_36px_-14px_rgba(37,211,102,0.6),0_10px_24px_-12px_rgba(27,46,94,0.28)]
+              hover:shadow-[0_22px_46px_-14px_rgba(37,211,102,0.75),0_14px_30px_-12px_rgba(27,46,94,0.38)]
               transition-transform duration-300 motion-reduce:transition-none
               hover:scale-[1.06] hover:-translate-y-0.5
               motion-reduce:hover:scale-100 motion-reduce:hover:translate-y-0

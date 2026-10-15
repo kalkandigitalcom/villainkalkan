@@ -24,7 +24,7 @@ export default function HeroAmbientGlow() {
         "
         style={{
           background:
-            "radial-gradient(circle at center, rgba(36,54,75,0.14), transparent 70%)",
+            "radial-gradient(circle at center, rgba(27,46,94,0.14), transparent 70%)",
         }}
       />
       <div

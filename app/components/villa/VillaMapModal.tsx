@@ -122,7 +122,7 @@ export default function VillaMapModal({
               text-[13.5px] font-semibold text-ink
               transition-[transform,box-shadow,background-color] duration-200 motion-reduce:transition-none
               hover:-translate-y-0.5 hover:bg-brand/5
-              hover:shadow-[0_14px_28px_-16px_rgba(36,54,75,0.45)]
+              hover:shadow-[0_14px_28px_-16px_rgba(27,46,94,0.45)]
               motion-reduce:hover:translate-y-0
               focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
             "
