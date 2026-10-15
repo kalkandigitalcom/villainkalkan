@@ -1894,6 +1894,93 @@ select.input {
 }
 
 /* ================================================================
+   🛡️ ADMIN ESKİ RENK PİNİ (2026-10) — public altın/lacivert dönüşümü
+   ================================================================
+   Public site altın (#C8973A) + lacivert (#1B2E5E) paletine geçti;
+   admin panel altın dönüşümünden ÖNCEKİ (65c0873^) renkleriyle kalır.
+   Aşağıdaki değerler git geçmişinden birebir alınmıştır — yeni renk
+   üretilmez. Public token/kuralları DEĞİŞMEZ; yalnız admin kapsamı.
+   ================================================================ */
+
+/* Ortak tokenlar — admin'de sabitlenmemiş public marka/metin rolleri. */
+.admin-shell {
+  --color-brand: #278bd0;
+  --color-brand-hover: #1f73ad;
+  --color-brand-active: #1a6496;
+  --color-brand-soft: #eaf4fb;
+  --color-accent: #ff805e;
+  --color-accent-hover: #f2683f;
+  --color-accent-strong: #c44a26;
+  --color-accent-soft: #fff1ec;
+  --color-ink: #24364b;
+}
+
+/* Global kurallar: eyebrow gölgesi, kaydırma çubuğu hover, sayfa zemini. */
+.admin-shell .eyebrow {
+  text-shadow: 0 1px 0 rgb(120 183 227 / 0.06);
+}
+:where(:root:has(.admin-shell))::-webkit-scrollbar-thumb:hover,
+:where(:root:has(.admin-shell)) ::-webkit-scrollbar-thumb:hover {
+  background: #78b7e3;
+  background-clip: padding-box;
+}
+body:has(.admin-shell) {
+  background:
+    radial-gradient(
+      ellipse 90% 65% at 100% 0%,
+      rgb(39 139 208 / 0.10) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 80% 55% at 0% 100%,
+      rgb(39 139 208 / 0.08) 0%,
+      transparent 55%
+    ),
+    var(--background);
+  background-attachment: fixed;
+  color: #24364b;
+}
+
+/* Admin villa listesi — public VillaCard önizlemesi (yalnız admin).
+   Altın dönüşümünde karta sabit yazılan renkler admin'de eski hâline
+   döner; public kart sınıfları DEĞİŞMEZ. */
+.admin-shell .lucide-star.text-brand {
+  color: oklch(82.8% 0.189 84.429); /* önce: text-amber-400 */
+}
+.admin-shell [data-price-panel],
+.admin-shell [data-price-panel] .text-ink,
+.admin-shell .group-hover\:text-ink {
+  color: #fff; /* önce: text-white (altın zeminde text-ink idi) */
+}
+.admin-shell [data-price-panel] .text-ink\/90 {
+  color: color-mix(in oklab, #fff 90%, transparent);
+}
+.admin-shell [data-price-panel] .text-ink\/85 {
+  color: color-mix(in oklab, #fff 85%, transparent);
+}
+.admin-shell .text-brand-strong {
+  color: var(--color-brand); /* önce: text-brand */
+}
+/* Olanak kutusu "coral" tonu (Yatak). */
+.admin-shell .bg-\[\#FBF6EC\] {
+  background-color: #fff1eb;
+}
+@media (hover: hover) {
+  .admin-shell .group-hover\:bg-\[\#F5EAD3\]:is(:where(.group):hover *) {
+    background-color: #ffe6d9;
+  }
+}
+.admin-shell .text-\[\#926b27\] {
+  color: #c84a20;
+}
+.admin-shell .text-\[\#74551f\] {
+  color: #7a2c12;
+}
+.admin-shell .text-\[\#b08330\] {
+  color: #c25a30;
+}
+
+/* ================================================================
    VILLA DESCRIPTION — rich text (Tiptap) render + editör tipografisi
    ================================================================
    `.villa-description` : public villa detay render (sanitize edilmiş HTML).
