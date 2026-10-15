@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -290,12 +289,82 @@ export default function Footer({
       />
 
       <div className="relative max-w-[calc(var(--container-site)+8rem)] mx-auto px-5 md:px-10 lg:px-16 pb-10">
+        {/* ═════════════ SECTION 1 — İLETİŞİM / CTA (ortalı) ═════════════
+            Başlık + alt başlık (sözlük, TR/EN), MEVCUT iletişim ayarlarından
+            telefon ve e-posta (tel:/mailto: bağlantıları), "Bize Ulaşın"
+            → mevcut iletişim sayfası (/iletisim, locale önekli). */}
+        <section
+          data-footer-cta
+          aria-labelledby="footer-cta-title"
+          className="pt-16 md:pt-24 pb-14 md:pb-20 text-center border-b border-[var(--color-stone-200)]"
+        >
+          <h2
+            id="footer-cta-title"
+            /* text-white: globals.css'teki `h2.text-[var(--color-stone-900)]`
+               başlık kuralı (lacivert) koyu zeminde görünmez olurdu. */
+            className="font-display text-[30px] md:text-[44px] font-semibold leading-[1.1] tracking-[-0.02em] text-white"
+          >
+            {dictionary.footer.ctaTitle}
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-[15px] md:text-[17px] leading-relaxed text-[var(--color-stone-600)]">
+            {dictionary.footer.ctaSubtitle}
+          </p>
+
+          {(settings?.phone || settings?.email) && (
+            <div className="mx-auto mt-9 flex w-fit flex-col items-start gap-5 sm:w-auto sm:flex-row sm:items-center sm:justify-center sm:gap-0 sm:divide-x sm:divide-[var(--color-stone-200)]">
+              {settings?.phone && (
+                <a href={`tel:${settings.phone}`} className="group flex items-center gap-3.5 text-left sm:px-7">
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)] transition-colors duration-300 group-hover:bg-white/15 group-hover:text-accent motion-reduce:transition-none"
+                  >
+                    <Phone size={18} strokeWidth={1.75} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
+                      {dictionary.footer.phone}
+                    </span>
+                    <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
+                      {settings.phone}
+                    </span>
+                  </span>
+                </a>
+              )}
+              {settings?.email && (
+                <a href={`mailto:${settings.email}`} className="group flex items-center gap-3.5 text-left sm:px-7">
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)] transition-colors duration-300 group-hover:bg-white/15 group-hover:text-accent motion-reduce:transition-none"
+                  >
+                    <Mail size={18} strokeWidth={1.75} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
+                      {dictionary.footer.email}
+                    </span>
+                    <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none break-all">
+                      {settings.email}
+                    </span>
+                  </span>
+                </a>
+              )}
+            </div>
+          )}
+
+          <Link
+            href={localeHref("/iletisim", locale)}
+            className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-brand px-9 text-[15px] font-semibold text-ink shadow-[0_16px_32px_-18px_rgba(200,151,58,0.8)] transition-colors duration-300 hover:bg-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent motion-reduce:transition-none"
+          >
+            {dictionary.footer.ctaButton}
+          </Link>
+        </section>
+
         {/* ═════════════ SECTION 2 — MARKA + KEŞFET (asimetrik, kolon-kartı yok) ═════════════
             LEFT (dominant): logo + marka açıklaması + sosyal — mantık AYNEN.
             RIGHT: tek "Keşfet" başlığı altında iki minimal alt-grup (Villalar,
             Bölgeler); veri/link kaynakları BİREBİR aynı, yalnızca renk/zemin
             açık temaya göre revize edildi. */}
-        <div className="pt-14 md:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16">
+        <div className="pt-14 md:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16">
           {/* LEFT — dominant brand block */}
           <div className="lg:col-span-5 space-y-7">
             <Link
@@ -362,6 +431,26 @@ export default function Footer({
                   <WhatsappIcon width={15} height={15} aria-hidden />
                 </SocialLink>
               )}
+            </div>
+
+            {/* Adres + rezervasyon sorgulama (mevcut href AYNEN) — iletişim
+                şeridi CTA'ya taşındığı için marka bloğunda. */}
+            <div className="space-y-3">
+              {settings?.address && (
+                <p className="flex items-start gap-2 text-[13.5px] text-[var(--color-stone-500)] leading-relaxed max-w-sm">
+                  <MapPin size={15} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0 text-[var(--color-stone-400)]" />
+                  <span>
+                    <span className="sr-only">{dictionary.footer.address}: </span>
+                    {settings.address}
+                  </span>
+                </p>
+              )}
+              <FooterLink href={localeHref("/rezervasyon-kontrol", locale)}>
+                <span className="inline-flex items-center gap-1.5 text-[13.5px]">
+                  {dictionary.footer.checkReservation}
+                  <ArrowRight size={12} strokeWidth={1.75} aria-hidden />
+                </span>
+              </FooterLink>
             </div>
           </div>
 
@@ -435,95 +524,9 @@ export default function Footer({
           </div>
         </div>
 
-        {/* ═════════════ SECTION 3 — CONTACT STRIP ═════════════
-            Telefon/e-posta/adres artık ikon+liste değil, büyük tipografili
-            bir "iletişim şeridi"; telefon en belirgin (birincil hover
-            #C8973A), e-posta ikincil hover #C8973A. Rezervasyon Sorgula
-            linki (mevcut href) burada, destek eylemine en yakın yerde. */}
-        <div
-          data-footer-contact
-          className="mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--color-stone-200)]"
-        >
-          {/* Masaüstü: ikon + etiket + değer yatayda ortalı, ince dikey
-              ayırıcılarla; tablet: ortalı, sarmalanan satır (ayırıcısız);
-              mobil: alt alta. Bağlantılar (tel/mailto) AYNEN. */}
-          <div className="flex flex-col md:flex-row md:flex-wrap md:items-center md:justify-center gap-6 md:gap-x-10 lg:gap-x-0 lg:flex-nowrap lg:divide-x lg:divide-[var(--color-stone-200)]">
-            {settings?.phone && (
-              <a
-                href={`tel:${settings.phone}`}
-                className="group flex items-center gap-3.5 lg:px-8"
-              >
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)] transition-colors duration-300 group-hover:bg-white/15 group-hover:text-accent motion-reduce:transition-none"
-                >
-                  <Phone size={18} strokeWidth={1.75} />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
-                    {dictionary.footer.phone}
-                  </span>
-                  <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
-                    {settings.phone}
-                  </span>
-                </span>
-              </a>
-            )}
-            {settings?.email && (
-              <a
-                href={`mailto:${settings.email}`}
-                className="group flex items-center gap-3.5 lg:px-8"
-              >
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)] transition-colors duration-300 group-hover:bg-white/15 group-hover:text-accent motion-reduce:transition-none"
-                >
-                  <Mail size={18} strokeWidth={1.75} />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
-                    {dictionary.footer.email}
-                  </span>
-                  <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none break-all">
-                    {settings.email}
-                  </span>
-                </span>
-              </a>
-            )}
-            {settings?.address && (
-              <div className="flex items-center gap-3.5 lg:px-8 max-w-sm">
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 text-[var(--color-stone-800)]"
-                >
-                  <MapPin size={18} strokeWidth={1.75} />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
-                    {dictionary.footer.address}
-                  </span>
-                  <span className="block text-[13.5px] text-[var(--color-stone-600)] leading-relaxed">
-                    {settings.address}
-                  </span>
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* MÜŞTERİ İŞLEMLERİ — rezervasyon durum sorgulama (mevcut href AYNEN) */}
-          <div className="mt-8 flex md:justify-center">
-            <FooterLink href={localeHref("/rezervasyon-kontrol", locale)}>
-              <span className="inline-flex items-center gap-1.5 text-[13.5px]">
-                {dictionary.footer.checkReservation}
-                <ArrowRight size={12} strokeWidth={1.75} aria-hidden />
-              </span>
-            </FooterLink>
-          </div>
-        </div>
-
         {/* ═════════════ SECTION 4 — MİNİMAL ALT BAR ═════════════
-            Sıra: copyright + kurumsal linkler → trust/ödeme rozetleri →
-            (ince separator) → KalkanDigital, ayrı ve tam ortalanmış, en son
+            Sıra: copyright + kurumsal linkler → (ince separator) →
+            KalkanDigital, ayrı ve tam ortalanmış, en son
             satır. `corporatePages` veri kaynağı BİREBİR aynı, yalnızca
             konum/sıra ve renkler değişti. */}
         <div className="mt-14 md:mt-16 pt-8 border-t border-[var(--color-stone-200)]">
@@ -569,24 +572,6 @@ export default function Footer({
             )}
           </div>
 
-          <div className="mt-6 pt-6 border-t border-[var(--color-stone-200)] flex flex-wrap items-center gap-6">
-            <Image
-              src="/brand/trust/tursab.png"
-              alt={dictionary.footer.tursabAlt}
-              width={290}
-              height={132}
-              className="h-8 w-auto object-contain opacity-80"
-            />
-            <Image
-              src="/brand/trust/payment-methods.png"
-              alt={dictionary.footer.paymentMethodsAlt}
-              width={1400}
-              height={400}
-              /* Koyu VISA/troy/mastercard yazıları lacivert zeminde
-                 kaybolmasın: logolar beyaz zemin üzerinde (boyut aynı). */
-              className="h-8 w-auto object-contain box-content bg-white rounded-md px-2 py-1"
-            />
-          </div>
 
           {/* 🛡️ KalkanDigital — ajans imzası. Logo: Admin → Webmaster →
               "Admin Logo" (FooterWrapper'dan versiyonlu URL); yoksa metin.

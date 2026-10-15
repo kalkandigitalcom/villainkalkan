@@ -67,6 +67,10 @@ export const en: Dictionary = {
     villaCategoriesAriaLabel: "Villa categories",
     popularRegionsAriaLabel: "Popular regions",
     corporateAriaLabel: "Corporate",
+    ctaTitle: "We Look Forward to Welcoming You in Kalkan",
+    ctaSubtitle:
+      "Get in touch about villa rentals, sales or investment advice. Our expert team is ready to offer solutions tailored to you.",
+    ctaButton: "Contact Us",
     tursabAlt: "TÜRSAB member",
     paymentMethodsAlt: "Visa, Mastercard and Troy payment methods",
   },

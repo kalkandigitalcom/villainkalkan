@@ -137,6 +137,10 @@ export type Dictionary = {
     villaCategoriesAriaLabel: string;
     popularRegionsAriaLabel: string;
     corporateAriaLabel: string;
+    /** Footer üst iletişim/CTA bölümü. */
+    ctaTitle: string;
+    ctaSubtitle: string;
+    ctaButton: string;
     tursabAlt: string;
     paymentMethodsAlt: string;
   };

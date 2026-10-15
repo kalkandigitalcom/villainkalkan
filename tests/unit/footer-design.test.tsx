@@ -43,25 +43,60 @@ describe("Footer tasarımı", () => {
     expect(footer.querySelector("[data-footer-top-line]")).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("iletişim: masaüstünde yatay ve ortalı, mobilde alt alta; ikonlu, bağlantılar aynı", () => {
+  it("üstte ortalı CTA: başlık, alt başlık, ayarlardaki telefon/e-posta ve 'Bize Ulaşın'", () => {
     const { container } = render(<Footer {...PROPS} />);
-    const contact = container.querySelector("[data-footer-contact]") as HTMLElement;
-    const row = contact.firstElementChild as HTMLElement;
-    expect(row.className).toContain("flex-col");
-    expect(row.className).toContain("md:flex-row");
-    expect(row.className).toContain("md:justify-center");
-    const tel = within(contact).getByRole("link", { name: /\+90 \(242\) 010-0000/ });
+    const cta = container.querySelector("[data-footer-cta]") as HTMLElement;
+    /* Footer'ın ilk içerik bölümü CTA. */
+    expect(container.querySelector("footer > div")!.firstElementChild).toBe(cta);
+    expect(cta.className).toContain("text-center");
+    const title = within(cta).getByRole("heading", { level: 2, name: "Kalkan'da Sizi Bekliyoruz" });
+    /* Koyu zeminde beyaz (global lacivert h2 kuralına takılmaz). */
+    expect(title.className).toContain("text-white");
+    expect(title.className).not.toContain("text-[var(--color-stone-900)]");
+    expect(
+      within(cta).getByText(
+        "Villa kiralama, satış veya yatırım danışmanlığı için hemen iletişime geçin. Uzman ekibimiz size özel çözümler sunmaya hazır.",
+      ),
+    ).toBeInTheDocument();
+    const tel = within(cta).getByRole("link", { name: /\+90 \(242\) 010-0000/ });
     expect(tel).toHaveAttribute("href", "tel:+90 (242) 010-0000");
-    expect(tel.querySelector("svg")).not.toBeNull();
-    expect(within(contact).getByRole("link", { name: /info@example\.com/ })).toHaveAttribute(
+    expect(within(cta).getByRole("link", { name: /info@example\.com/ })).toHaveAttribute(
       "href",
       "mailto:info@example.com",
     );
-    expect(within(contact).getByText("Kalkan, Kaş / Antalya")).toBeInTheDocument();
-    expect(within(contact).getByRole("link", { name: /Rezervasyon Sorgula/ })).toHaveAttribute(
+    expect(within(cta).getByRole("link", { name: "Bize Ulaşın" })).toHaveAttribute("href", "/iletisim");
+    /* Telefon/e-posta footer'da tek yerde (tekrar yok). */
+    expect(container.querySelectorAll('a[href^="tel:"]')).toHaveLength(1);
+    expect(container.querySelectorAll('a[href^="mailto:"]')).toHaveLength(1);
+  });
+
+  it("TÜRSAB ve ödeme yöntemi görselleri kaldırıldı", () => {
+    const { container } = render(<Footer {...PROPS} />);
+    expect(container.querySelector('img[src*="tursab"]')).toBeNull();
+    expect(container.querySelector('img[src*="payment-methods"]')).toBeNull();
+    expect(screen.queryByAltText("TÜRSAB üyesi")).toBeNull();
+  });
+
+  it("adres ve rezervasyon sorgulama marka bloğunda korunur", () => {
+    render(<Footer {...PROPS} />);
+    expect(screen.getByText("Kalkan, Kaş / Antalya")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Rezervasyon Sorgula/ })).toHaveAttribute(
       "href",
       "/rezervasyon-kontrol",
     );
+  });
+
+  it("EN: CTA metinleri ve /en önekli iletişim bağlantısı", async () => {
+    vi.resetModules();
+    vi.doMock("next/navigation", () => ({ usePathname: () => "/en" }));
+    const { default: FooterEn } = await import("@/app/components/layout/Footer");
+    const { container } = render(<FooterEn {...PROPS} />);
+    const cta = container.querySelector("[data-footer-cta]") as HTMLElement;
+    expect(within(cta).getByRole("heading", { level: 2 }).textContent).toBe(
+      "We Look Forward to Welcoming You in Kalkan",
+    );
+    expect(within(cta).getByRole("link", { name: "Contact Us" })).toHaveAttribute("href", "/en/iletisim");
+    vi.doUnmock("next/navigation");
   });
 
   it("sosyal medya, yasal bağlantılar, telif ve KalkanDigital korunur", () => {

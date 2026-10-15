@@ -71,6 +71,10 @@ export const tr: Dictionary = {
     villaCategoriesAriaLabel: "Villa kategorileri",
     popularRegionsAriaLabel: "Popüler bölgeler",
     corporateAriaLabel: "Kurumsal",
+    ctaTitle: "Kalkan'da Sizi Bekliyoruz",
+    ctaSubtitle:
+      "Villa kiralama, satış veya yatırım danışmanlığı için hemen iletişime geçin. Uzman ekibimiz size özel çözümler sunmaya hazır.",
+    ctaButton: "Bize Ulaşın",
     tursabAlt: "TÜRSAB üyesi",
     paymentMethodsAlt: "Visa, Mastercard ve Troy ödeme yöntemleri",
   },
