@@ -110,7 +110,7 @@ export default async function VillaList({
            başlık + subtitle yapısı (CategoryCollection parity).
            Typography scale: section başlıkları orta boy; hero
            dominant kalır. */}
-        <HomeSectionHeading title={dict.title} />
+        <HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />
 
         {/* 🛡️ FAZ 39L — Grid spacing tightened (cards focus). */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-10 md:gap-y-12">

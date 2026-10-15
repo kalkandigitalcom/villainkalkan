@@ -462,6 +462,8 @@ export const en: Dictionary = {
     },
     villas: {
       title: "Featured Villas",
+      subtitle:
+        "Find your perfect villa among our curated collection of luxury villas in Kalkan’s finest locations.",
       ctaAll: "View All Villas",
       emptyEyebrow: "Collection",
       emptyTitle: "Coming soon.",

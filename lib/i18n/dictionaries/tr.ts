@@ -476,6 +476,8 @@ export const tr: Dictionary = {
     },
     villas: {
       title: "Öne Çıkan Villalar",
+      subtitle:
+        "Kalkan'ın en güzel konumlarında, özenle seçilmiş lüks villa koleksiyonumuzdan size özel olanı bulun",
       ctaAll: "Tüm Villaları Gör",
       emptyEyebrow: "Koleksiyon",
       emptyTitle: "Yakında burada.",

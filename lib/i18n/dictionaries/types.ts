@@ -669,6 +669,8 @@ export type Dictionary = {
     };
     villas: {
       title: string;
+      /** Başlık altı açıklama. */
+      subtitle: string;
       ctaAll: string;
       emptyEyebrow: string;
       emptyTitle: string;

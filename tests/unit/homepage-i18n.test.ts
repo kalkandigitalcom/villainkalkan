@@ -539,6 +539,16 @@ describe("Ana sayfa — Öne Çıkan Villalar bölümü", () => {
     expect(getDictionary("tr").home.villas.title).toBe("Öne Çıkan Villalar");
     expect(getDictionary("en").home.villas.title).toBe("Featured Villas");
   });
+  it("başlık altı açıklama TR/EN ve VillaList'te ortak başlığa geçirilir", () => {
+    expect(getDictionary("tr").home.villas.subtitle).toBe(
+      "Kalkan'ın en güzel konumlarında, özenle seçilmiş lüks villa koleksiyonumuzdan size özel olanı bulun",
+    );
+    expect(getDictionary("en").home.villas.subtitle).toBe(
+      "Find your perfect villa among our curated collection of luxury villas in Kalkan’s finest locations.",
+    );
+    const list = readFileSync(join(process.cwd(), "app/components/villa/VillaList.tsx"), "utf8");
+    expect(list).toContain("<HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />");
+  });
   it("sıra: Hero → Öne Çıkan Villalar → İndirimli Kiralık Villalar → Bölgeler", () => {
     const body = readFileSync(
       join(process.cwd(), "app/components/home/HomePageBody.tsx"),
