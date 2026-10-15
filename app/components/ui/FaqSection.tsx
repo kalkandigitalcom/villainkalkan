@@ -10,6 +10,7 @@ import { Plus, Minus } from "lucide-react";
    `getDictionary` saf/statik lookup, ek bundle maliyeti YOK. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { HomeSectionOrnament } from "@/app/components/home/HomeSectionHeading";
 
 /* ===============================================================
    🛡️ FaqSection — Luxury hospitality accordion (Faz 25)
@@ -78,6 +79,7 @@ export default function FaqSection({
           >
             {dict.title}
           </h2>
+          <HomeSectionOrnament align="start" />
           <p className="mt-3 text-[14.5px] md:text-[15px] text-[var(--color-stone-500)] max-w-md">
             {dict.subtitle}
           </p>

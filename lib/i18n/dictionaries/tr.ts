@@ -475,7 +475,7 @@ export const tr: Dictionary = {
       carouselAriaLabel: "İndirimli kiralık villalar",
     },
     villas: {
-      title: "Sizin için seçtiklerimiz",
+      title: "Öne Çıkan Villalar",
       ctaAll: "Tüm Villaları Gör",
       emptyEyebrow: "Koleksiyon",
       emptyTitle: "Yakında burada.",

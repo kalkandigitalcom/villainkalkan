@@ -215,8 +215,11 @@ describe("DiscountCollection kaynak kilidi", () => {
   it("bölüm beyaz, yuvarlatılmış bir panel içinde; başlık ve carousel panelde", () => {
     const panel = src.slice(src.indexOf("data-discount-panel"));
     expect(panel).toMatch(/className=\{HOME_PANEL_CLASS\}/);
-    expect(panel.indexOf("<h2")).toBeGreaterThan(-1);
-    expect(panel.indexOf("<HorizontalCarousel")).toBeGreaterThan(panel.indexOf("<h2"));
+    /* Başlık ana sayfa ortak başlığı (h2 + altın süs) üzerinden. */
+    expect(panel.indexOf("<HomeSectionHeading")).toBeGreaterThan(-1);
+    expect(panel.indexOf("<HorizontalCarousel")).toBeGreaterThan(
+      panel.indexOf("<HomeSectionHeading"),
+    );
   });
   it("veri kaynağı, carousel ve card_key korunur", () => {
     expect(src).toMatch(/getCachedDiscountCollectionVillas\(\)/);

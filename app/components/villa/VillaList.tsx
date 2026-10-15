@@ -16,6 +16,7 @@ import {
   HOME_PANEL_CLASS,
   HOME_PANEL_SECTION_CLASS,
 } from "@/app/components/home/home-panel";
+import HomeSectionHeading from "@/app/components/home/HomeSectionHeading";
 
 /* 🛡️ KART GÖRSELİ `sizes` — yalnız ana sayfa VillaList grid'ine göre
    (kart 1 / sm+ 2 sütun; max-w 1280). Değerler ölçülen kart
@@ -109,11 +110,7 @@ export default async function VillaList({
            başlık + subtitle yapısı (CategoryCollection parity).
            Typography scale: section başlıkları orta boy; hero
            dominant kalır. */}
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
-            {dict.title}
-          </h2>
-        </div>
+        <HomeSectionHeading title={dict.title} />
 
         {/* 🛡️ FAZ 39L — Grid spacing tightened (cards focus). */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-10 md:gap-y-12">

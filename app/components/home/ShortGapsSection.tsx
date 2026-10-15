@@ -20,6 +20,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { localeHref } from "@/lib/i18n/locale-href";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import type { MonthNumber } from "@/lib/i18n/dictionaries/types";
+import HomeSectionHeading from "@/app/components/home/HomeSectionHeading";
 
 /* ===============================================================
    🛡️ KISA SÜRELİ TARİHLER — ANA SAYFA SECTION (server component)
@@ -117,14 +118,7 @@ export default async function ShortGapsSection({
       `}</style>
 
       <div className="max-w-site mx-auto">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
-            {dict.title}
-          </h2>
-          <p className="mt-3 text-[14px] leading-relaxed text-[var(--color-stone-500)] max-w-md mx-auto">
-            {dict.subtitle}
-          </p>
-        </div>
+        <HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />
 
         <HorizontalCarousel
           showArrows
@@ -143,9 +137,9 @@ export default async function ShortGapsSection({
                   className={
                     "group relative overflow-hidden rounded-[26px] p-5 h-full flex flex-col " +
                     "bg-gradient-to-br from-brand via-[#1F443D] to-[#2B5A51] " +
-                    "shadow-[0_18px_40px_-22px_rgba(36,54,75,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] " +
+                    "shadow-[0_18px_40px_-22px_rgba(27,46,94,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] " +
                     "ring-1 ring-white/10 " +
-                    "hover:shadow-[0_28px_54px_-22px_rgba(36,54,75,0.65)] hover:ring-[var(--brand-coral)]/30 " +
+                    "hover:shadow-[0_28px_54px_-22px_rgba(27,46,94,0.65)] hover:ring-[var(--brand-coral)]/30 " +
                     "hover:-translate-y-[3px] " +
                     "transition-[transform,box-shadow] duration-400 motion-reduce:transition-none motion-reduce:hover:translate-y-0 " +
                     "sg-shine"

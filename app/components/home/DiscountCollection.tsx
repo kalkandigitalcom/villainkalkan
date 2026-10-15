@@ -15,6 +15,7 @@ import {
   HOME_PANEL_CLASS,
   HOME_PANEL_SECTION_CLASS,
 } from "@/app/components/home/home-panel";
+import HomeSectionHeading from "@/app/components/home/HomeSectionHeading";
 
 /* ===============================================================
    🛡️ DISCOUNT COLLECTION — anasayfa "İndirimli Kiralık Villalar"
@@ -146,11 +147,7 @@ export default async function DiscountCollection({
         data-discount-panel
         className={HOME_PANEL_CLASS}
       >
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
-            {title}
-          </h2>
-        </div>
+        <HomeSectionHeading title={title} />
 
         <HorizontalCarousel
           showArrows

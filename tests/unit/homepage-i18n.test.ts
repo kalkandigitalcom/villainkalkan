@@ -60,7 +60,7 @@ describe("A) TR dictionary değerleri, taşınmadan önceki hardcoded metinlerle
     expect(h.discount.title).toBe("İndirimli Kiralık Villalar");
     /* "Villa Tiplerini Keşfedin" bölümü ana sayfadan kaldırıldı. */
     expect("villaTypes" in h).toBe(false);
-    expect(h.villas.title).toBe("Sizin için seçtiklerimiz");
+    expect(h.villas.title).toBe("Öne Çıkan Villalar");
     expect(h.villas.ctaAll).toBe("Tüm Villaları Gör");
     expect(h.regions.title).toBe("Villa Kiralama Bölgeleri");
     expect(h.regions.subtitle).toBe("Özenle seçilmiş bölgeler");
@@ -531,5 +531,23 @@ describe("Ana sayfa — '14 Yıllık Tecrübe' avantaj kartları kaldırıldı",
     for (const locale of SUPPORTED_LOCALES) {
       expect("advantages" in getDictionary(locale).home).toBe(false);
     }
+  });
+});
+
+describe("Ana sayfa — Öne Çıkan Villalar bölümü", () => {
+  it("başlık TR 'Öne Çıkan Villalar', EN 'Featured Villas'", () => {
+    expect(getDictionary("tr").home.villas.title).toBe("Öne Çıkan Villalar");
+    expect(getDictionary("en").home.villas.title).toBe("Featured Villas");
+  });
+  it("sıra: Hero → Öne Çıkan Villalar → İndirimli Kiralık Villalar → Bölgeler", () => {
+    const body = readFileSync(
+      join(process.cwd(), "app/components/home/HomePageBody.tsx"),
+      "utf8",
+    );
+    const at = (tag: string) => body.indexOf(tag);
+    expect(at("<Hero")).toBeGreaterThan(-1);
+    expect(at("<VillaList")).toBeGreaterThan(at("<Hero"));
+    expect(at("<DiscountCollection")).toBeGreaterThan(at("<VillaList"));
+    expect(at("<LocationCollection")).toBeGreaterThan(at("<DiscountCollection"));
   });
 });

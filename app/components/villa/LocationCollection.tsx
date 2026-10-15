@@ -23,6 +23,7 @@ import {
   REGION_LANDING_TR_PREFIX,
   regionLinkHref,
 } from "@/lib/taxonomy-landing";
+import HomeSectionHeading from "@/app/components/home/HomeSectionHeading";
 
 /* ===============================================================
    🛡️ LOCATION SHOWCASE — homepage "circular avatar" carousel
@@ -200,14 +201,7 @@ export default async function LocationCollection({
     >
       <div className="max-w-site mx-auto">
         {/* 🛡️ FAZ 39M — Normalized section header (CategoryCollection parity). */}
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
-            {dict.title}
-          </h2>
-          <p className="mt-3 text-[14px] leading-relaxed text-[var(--color-stone-500)] max-w-md mx-auto">
-            {dict.subtitle}
-          </p>
-        </div>
+        <HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />
 
         {/* CIRCULAR AVATAR CAROUSEL — yatay kaydırma, HorizontalCarousel
             (DEĞİŞTİRİLMEDİ) üzerinden. Kartlar küçük olduğu için geniş
@@ -297,10 +291,10 @@ function LocationCard({ item, locale }: { item: Item; locale: Locale }) {
           md:w-[170px] md:h-[170px] lg:w-[180px] lg:h-[180px]
           bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]
           ring-1 ring-[var(--color-stone-200)]
-          shadow-[0_8px_20px_-12px_rgba(36,54,75,0.28)]
+          shadow-[0_8px_20px_-12px_rgba(27,46,94,0.28)]
           transition-[box-shadow,transform] duration-400
           motion-reduce:transition-none
-          group-hover:shadow-[0_14px_30px_-14px_rgba(36,54,75,0.34)]
+          group-hover:shadow-[0_14px_30px_-14px_rgba(27,46,94,0.34)]
           group-hover:-translate-y-0.5
           group-hover:ring-brand/30
         "

@@ -131,10 +131,12 @@ export default async function HomePageBody({
         reviewStats={heroReviewStats}
         locale={locale}
       />
-      {/* 🛡️ "İndirimli Koleksiyon" — küratörlü fırsat villaları. Enabled
-         + aktif villa yoksa null döner; Homepage Collection'ın ÜSTÜNDE. */}
-      <DiscountCollection locale={locale} />
+      {/* 🛡️ "Öne Çıkan Villalar" (ana sayfa koleksiyonu) — Hero'nun hemen
+         altında, İndirimli Koleksiyon'un ÜSTÜNDE. */}
       <VillaList locale={locale} />
+      {/* 🛡️ "İndirimli Koleksiyon" — küratörlü fırsat villaları. Enabled
+         + aktif villa yoksa null döner. */}
+      <DiscountCollection locale={locale} />
       {/* 🛡️ "Bölgeler" — VillaList altı, Footer üstü. Bölge ADLARI her
          dilde CANONICAL kalır (Phase 10I kararı). */}
       <LocationCollection locale={locale} />

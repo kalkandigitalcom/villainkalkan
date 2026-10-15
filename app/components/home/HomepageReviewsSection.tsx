@@ -10,6 +10,7 @@ import {
   HOME_PANEL_CLASS,
   HOME_PANEL_SECTION_CLASS,
 } from "@/app/components/home/home-panel";
+import { HomeSectionOrnament } from "@/app/components/home/HomeSectionHeading";
 
 /* ===============================================================
    🛡️ HOMEPAGE REVIEWS SECTION — sabit yükseklikli premium carousel
@@ -77,6 +78,7 @@ export default async function HomepageReviewsSection({
           <h2 className="mt-4 font-display font-medium text-[28px] md:text-[36px] text-[var(--color-stone-900)] leading-[1.08] tracking-[-0.02em]">
             {dict.title}
           </h2>
+          <HomeSectionOrnament align="start" />
           <p className="mt-3 text-[14.5px] md:text-[15px] leading-relaxed text-[var(--color-stone-500)]">
             {dict.subtitle}
           </p>

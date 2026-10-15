@@ -461,7 +461,7 @@ export const en: Dictionary = {
       carouselAriaLabel: "Discounted villa rentals",
     },
     villas: {
-      title: "Our picks for you",
+      title: "Featured Villas",
       ctaAll: "View All Villas",
       emptyEyebrow: "Collection",
       emptyTitle: "Coming soon.",
