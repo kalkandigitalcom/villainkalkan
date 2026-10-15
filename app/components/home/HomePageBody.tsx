@@ -1,12 +1,10 @@
 import Hero from "@/app/components/ui/Hero";
 /* 🛡️ Hero'nun HEMEN altındaki "güven/avantaj" kartları — saf
    presentational, Hero'nun kendi kodu/prop'ları/mantığı DEĞİŞMEDİ. */
-import LocationCollection from "@/app/components/villa/LocationCollection";
 import VillaList from "@/app/components/villa/VillaList";
 /* 🛡️ İndirimli Koleksiyon (migration 062) — VillaList paraleli, AYRI
    section. Enabled + aktif villa yoksa null döner; diğerlerini etkilemez. */
 import DiscountCollection from "@/app/components/home/DiscountCollection";
-import FaqSection from "@/app/components/ui/FaqSection";
 /* 🛡️ FAZ 34 — Homepage testimonial section (approved reviews) */
 import HomepageReviewsSection from "@/app/components/home/HomepageReviewsSection";
 /* 🛡️ Kısa Süreli Tarihler — takvimdeki iç boşluklar (053/054).
@@ -19,11 +17,9 @@ import {
   JsonLd,
   buildWebsite,
   buildOrganization,
-  buildFaqJsonLd,
 } from "@/app/components/seo/StructuredData";
 import {
   getCachedSettings,
-  getCachedFaqs,
   getCachedGlobalReviewStats,
 } from "@/lib/cache.helpers";
 import { resolveHeroContent } from "@/lib/hero.helpers";
@@ -44,7 +40,6 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
      • Hero admin içeriği   → settings + settings_translations (mig. 085)
      • Villa tipi adları    → villa_type_translations (Phase 10H helper)
      • Villa kart rozeti    → villa_translations.badge
-     • SSS soru/cevap       → faq_translations (locale başına ayrı cache)
      • Villa ADI / BÖLGE    → CANONICAL (çevrilmez — proje kararı)
    =============================================================== */
 
@@ -62,12 +57,6 @@ export default async function HomePageBody({
   const settings = await getCachedSettings().catch(() => null);
   const brandName = settings?.site_name?.trim() || "Villa Kiralama";
 
-  /* 🛡️ FAZ 25 — Global SSS cached fetch.
-     Tag: "faqs", TTL 1 saat; admin replaceFaqs sonrası invalidate.
-     🛡️ PHASE 11 — locale BAŞINA AYRI cache key'i (çapraz-dil sızıntısı
-     yapısal olarak imkânsız; bkz. lib/cache.helpers.ts).
-     Boş array dönerse section + JSON-LD render YOK (caller guard). */
-  const faqs = await getCachedFaqs(locale).catch(() => []);
 
   /* 🛡️ FAZ 39F — Hero floating review card real-data wiring.
      Tek query global aggregate (cached, tag villa-reviews); admin
@@ -124,10 +113,9 @@ export default async function HomePageBody({
     <>
       <JsonLd data={websiteLd} />
       <JsonLd data={organizationLd} />
-      {/* 🛡️ FAZ 25 — FAQPage structured data (rich snippets için).
-         FAQ varsa render edilir; boşsa hiç JSON-LD basılmaz.
-         🛡️ PHASE 11 — `faqs` zaten locale'e göre çözülmüş geliyor. */}
-      {faqs.length > 0 && <JsonLd data={buildFaqJsonLd(faqs, locale)} />}
+      {/* SSS bölümü ana sayfadan kaldırıldı → FAQPage structured data da
+         basılmaz (görünmeyen içerik için işaretleme yapılmaz). SSS sayfası,
+         verisi ve admin yönetimi DEĞİŞMEDİ. */}
       <Hero
         content={heroContent}
         reviewStats={heroReviewStats}
@@ -144,14 +132,11 @@ export default async function HomePageBody({
       {/* 🛡️ "İndirimli Koleksiyon" — küratörlü fırsat villaları. Enabled
          + aktif villa yoksa null döner. */}
       <DiscountCollection locale={locale} />
-      {/* 🛡️ "Bölgeler" — VillaList altı, Footer üstü. Bölge ADLARI her
-         dilde CANONICAL kalır (Phase 10I kararı). */}
-      <LocationCollection locale={locale} />
+      {/* "Villa Kiralama Bölgeleri" ana sayfadan kaldırıldı (bileşen ve
+         bölge sayfaları korunur). */}
       {/* 🛡️ "Kısa Süreli Tarihler" — takvimdeki dolu-boş-dolu iç boşluklar.
          Veri yoksa component null döner; layout etkilenmez. */}
       <ShortGapsSection locale={locale} />
-      {/* 🛡️ FAZ 25 — Global SSS section (testimonials ÜSTÜNE taşındı). */}
-      <FaqSection faqs={faqs} locale={locale} />
       {/* 🛡️ FAZ 34 — "Misafir Yorumları" testimonial section. */}
       <HomepageReviewsSection locale={locale} />
     </>

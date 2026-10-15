@@ -558,6 +558,35 @@ describe("Ana sayfa — Öne Çıkan Villalar bölümü", () => {
     expect(at("<Hero")).toBeGreaterThan(-1);
     expect(at("<VillaList")).toBeGreaterThan(at("<Hero"));
     expect(at("<DiscountCollection")).toBeGreaterThan(at("<VillaList"));
-    expect(at("<LocationCollection")).toBeGreaterThan(at("<DiscountCollection"));
+  });
+  it("Bölgeler ve SSS ana sayfadan kaldırıldı; kalan bölümlerin sırası korunur", () => {
+    const body = readFileSync(
+      join(process.cwd(), "app/components/home/HomePageBody.tsx"),
+      "utf8",
+    );
+    expect(body).not.toContain("<LocationCollection");
+    expect(body).not.toContain("<FaqSection");
+    /* Görünmeyen SSS için FAQPage işaretlemesi de basılmaz. */
+    expect(body).not.toContain("buildFaqJsonLd");
+    expect(body).not.toContain("getCachedFaqs");
+    const order = [
+      "<Hero",
+      "<VillaList",
+      "<HomeServicesSection",
+      "<HomeBlogFeatureSection",
+      "<DiscountCollection",
+      "<ShortGapsSection",
+      "<HomepageReviewsSection",
+    ].map((t) => body.indexOf(t));
+    expect(order.every((i) => i > -1)).toBe(true);
+    expect([...order].sort((x, y) => x - y)).toEqual(order);
+  });
+  it("bileşenler ve ilgili sayfalar silinmedi (yalnız ana sayfadan çıkarıldı)", () => {
+    for (const p of [
+      "app/components/villa/LocationCollection.tsx",
+      "app/components/ui/FaqSection.tsx",
+    ]) {
+      expect(existsSync(join(process.cwd(), p))).toBe(true);
+    }
   });
 });
