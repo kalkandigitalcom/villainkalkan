@@ -468,6 +468,22 @@ export const en: Dictionary = {
       emptyBody:
         "We are curating the Mediterranean's finest villas for you. The collection will be ready to explore shortly.",
     },
+    services: {
+      sectionAriaLabel: "Our services",
+      title: "How Can We Help You?",
+      subtitle: "We are with you in villa rentals, sales and management in Kalkan.",
+      rentalTitle: "Villa Rental",
+      rentalBody:
+        "Plan your villa holiday in Kalkan with daily, weekly or monthly rental options.",
+      rentalCta: "Browse Villas",
+      saleTitle: "Villa Sales",
+      saleBody:
+        "For those looking to own a villa in Kalkan, we offer guidance from portfolio selection through the purchase process.",
+      managementTitle: "Management & Consultancy",
+      managementBody:
+        "Professional management for villa owners, with support throughout investment and operation.",
+      contactCta: "Get in Touch",
+    },
     regions: {
       sectionAriaLabel: "Regions",
       title: "Villa Rental Regions",

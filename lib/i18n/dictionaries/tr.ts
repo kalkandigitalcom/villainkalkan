@@ -482,6 +482,22 @@ export const tr: Dictionary = {
       emptyBody:
         "Akdeniz'in en seçkin villalarını sizin için hazırlıyoruz. Koleksiyon, kısa süre içinde keşfedilmeyi bekleyecek.",
     },
+    services: {
+      sectionAriaLabel: "Hizmetlerimiz",
+      title: "Size Nasıl Yardımcı Olabiliriz?",
+      subtitle: "Kalkan'da villa kiralama, satış ve yönetim süreçlerinde yanınızdayız.",
+      rentalTitle: "Villa Kiralama",
+      rentalBody:
+        "Günlük, haftalık veya aylık kiralama seçenekleriyle Kalkan'da villa tatilinizi kolayca planlayın.",
+      rentalCta: "Villaları İncele",
+      saleTitle: "Villa Satış",
+      saleBody:
+        "Kalkan'da villa sahibi olmak isteyenlere portföy seçiminden satın alma sürecine kadar danışmanlık sunuyoruz.",
+      managementTitle: "Yönetim & Danışmanlık",
+      managementBody:
+        "Villa sahiplerine profesyonel yönetim hizmeti; yatırım ve işletme süreçlerinde yanınızda oluyoruz.",
+      contactCta: "Bilgi Alın",
+    },
     regions: {
       sectionAriaLabel: "Bölgeler",
       title: "Villa Kiralama Bölgeleri",

@@ -674,6 +674,20 @@ export type Dictionary = {
       emptyTitle: string;
       emptyBody: string;
     };
+    /** Hizmet kartları — Öne Çıkan Villalar altı. */
+    services: {
+      sectionAriaLabel: string;
+      title: string;
+      subtitle: string;
+      rentalTitle: string;
+      rentalBody: string;
+      rentalCta: string;
+      saleTitle: string;
+      saleBody: string;
+      managementTitle: string;
+      managementBody: string;
+      contactCta: string;
+    };
     regions: {
       sectionAriaLabel: string;
       title: string;

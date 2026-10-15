@@ -12,6 +12,7 @@ import HomepageReviewsSection from "@/app/components/home/HomepageReviewsSection
 /* 🛡️ Kısa Süreli Tarihler — takvimdeki iç boşluklar (053/054).
    Salt-okuma; boş veride null döner. Diğer section'ları etkilemez. */
 import ShortGapsSection from "@/app/components/home/ShortGapsSection";
+import HomeServicesSection from "@/app/components/home/HomeServicesSection";
 
 import {
   JsonLd,
@@ -134,6 +135,8 @@ export default async function HomePageBody({
       {/* 🛡️ "Öne Çıkan Villalar" (ana sayfa koleksiyonu) — Hero'nun hemen
          altında, İndirimli Koleksiyon'un ÜSTÜNDE. */}
       <VillaList locale={locale} />
+      {/* 🤝 Hizmetlerimiz — Öne Çıkan Villalar altı, İndirimli Koleksiyon üstü. */}
+      <HomeServicesSection locale={locale} />
       {/* 🛡️ "İndirimli Koleksiyon" — küratörlü fırsat villaları. Enabled
          + aktif villa yoksa null döner. */}
       <DiscountCollection locale={locale} />
