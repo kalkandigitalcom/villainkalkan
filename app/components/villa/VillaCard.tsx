@@ -1080,17 +1080,19 @@ export default function VillaCard({
             )}
           </div>
 
-          {/* FİYAT PANELİ — petrol, kavisli sol/üst kenar. */}
+          {/* FİYAT PANELİ — kavisli sol/üst kenar (geniş kartta %41, 140px).
+              Fiyat tutarı beyaz; diğer metinler mevcut stilde. */}
           <div
             data-price-panel
             className="
               relative flex shrink-0 flex-col items-stretch gap-3.5
               rounded-tl-[44px] bg-brand px-5 pt-4 pb-4 pl-7 text-ink
-              @[26rem]:w-[46%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0
-              @[26rem]:rounded-tl-[96px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right
+              @[26rem]:w-[41%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0
+              @[26rem]:rounded-tl-[140px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right
             "
           >
-            <div className="min-w-0">
+            {/* Fiyat bilgisi grubu — panel içinde 10px üst boşluk. */}
+            <div data-price-info className="min-w-0 mt-[10px]">
               {isFlexible ? (
                 /* 🛡️ ESNEK EK SONUÇ — fiyat gösterilmez (MEVCUT kural). */
                 <>
@@ -1113,7 +1115,7 @@ export default function VillaCard({
                       {formatCurrency(stayTotalBeforeDiscount, currency, effectiveLocale)}
                     </p>
                   )}
-                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
+                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
                     {formatCurrency(stayTotal, currency, effectiveLocale)}
                   </p>
                   {/* "N gece" gösterilmez (tarih üst satırda — MEVCUT karar);
@@ -1141,7 +1143,7 @@ export default function VillaCard({
                     <span className="sr-only">{dict.card.originalPriceLabel}: </span>
                     {formatCurrency(convertedPrice, currency, effectiveLocale)}
                   </p>
-                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
+                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
                     <span className="sr-only">{dict.card.discountedPriceLabel}: </span>
                     {formatCurrency(discountedPrice!.converted, currency, effectiveLocale)}
                   </p>
@@ -1158,7 +1160,7 @@ export default function VillaCard({
                   <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink/90">
                     {dict.card.nightly}
                   </p>
-                  <p data-price-amount className="mt-0.5 font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums">
+                  <p data-price-amount className="mt-0.5 font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
                     {formatCurrency(convertedPrice, currency, effectiveLocale)}
                   </p>
                   <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink/85">
