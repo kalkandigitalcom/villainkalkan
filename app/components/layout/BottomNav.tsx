@@ -11,7 +11,7 @@ import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
 /* 🛡️ PHASE 11 — locale, Header (9A) / Footer (9B) ile AYNI şekilde
    ZATEN VAR OLAN `pathname`'den türetilir. Layout'a (server) dokunulmadı;
    `headers()`/`cookies()` KULLANILMADI. */
-import { DEFAULT_LOCALE, localeFromPathname } from "@/lib/i18n/config";
+import { localeFromPathname } from "@/lib/i18n/config";
 /* 🛡️ NAVIGATION LOCALE PERSISTENCE — iç link aktif locale'i taşır
    (bkz. lib/i18n/locale-href.ts). */
 import { localeHref } from "@/lib/i18n/locale-href";
@@ -77,7 +77,7 @@ export default function BottomNav({
      TR-eşdeğeri base path'i verir — `getLocaleSwitchTargets` ile AYNI
      desen. Yeni bir path/locale mantığı İCAT EDİLMEDİ. TR path'lerinde
      `basePath === pathname` olduğu için davranış BİREBİR AYNI kalır. */
-  const basePath = buildLocaleAlternates(pathname || "/", "tr").languages.tr;
+  const basePath = buildLocaleAlternates(pathname || "/", "tr").languages.en;
 
   /* 🛡️ PHASE 11 — locale AYRI bir türetme; yukarıdaki `basePath`
      (P0'da eklenen prefix-soyma) mantığına DOKUNULMADI. */
@@ -123,11 +123,8 @@ export default function BottomNav({
         <ul className="grid grid-cols-4">
           <li>
             <InternalItem
-              href={
-                locale === DEFAULT_LOCALE
-                  ? trHomeHref
-                  : localeHref("/", locale)
-              }
+              /* URL yapısı: TR ana sayfa "/tr", EN ana sayfa "/". */
+              href={localeHref("/", locale)}
               label={dict.header.home}
               Icon={Home}
               active={isActive("/")}

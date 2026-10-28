@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { verifyAccessToken } from "@/lib/auth/native/jwt";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/auth/native/cookie-names";
+import { legacyEnRedirectPath } from "@/lib/i18n/legacy-en-redirect";
 
 /* ===============================================================
    🛡️ ADMIN MIDDLEWARE — NATIVE AUTH (FAZ 4)
@@ -23,6 +24,14 @@ const HOME_PATH = "/maki-admin";
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
+
+  const legacyTarget = legacyEnRedirectPath(pathname);
+  if (legacyTarget !== null) {
+    const url = req.nextUrl.clone();
+    url.pathname = legacyTarget;
+    return NextResponse.redirect(url, 308);
+  }
+
   const isLoginPath = pathname === LOGIN_PATH;
 
   const access = req.cookies.get(ACCESS_COOKIE)?.value;
@@ -62,5 +71,8 @@ export const config = {
     /* Yalnız /maki-admin/* — public reservation flow, voucher, mail API,
        public sayfalar matcher DIŞINDA. */
     "/maki-admin/:path*",
+    /* Eski İngilizce adresler → yeni prefix'siz adresler (308). */
+    "/en",
+    "/en/:path*",
   ],
 };

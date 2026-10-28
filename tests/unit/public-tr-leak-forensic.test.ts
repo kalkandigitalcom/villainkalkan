@@ -61,19 +61,21 @@ function resolveSpec(spec: string, from: string): string | null {
   return null;
 }
 
-function walkPages(dir: string, acc: string[]): void {
+function walkPages(dir: string, acc: string[], skip: string[] = []): void {
   const abs = join(ROOT, dir);
   if (!existsSync(abs)) return;
   for (const name of readdirSync(abs)) {
     const rel = join(dir, name);
-    if (statSync(join(ROOT, rel)).isDirectory()) walkPages(rel, acc);
+    if (skip.includes(rel)) continue;
+    if (statSync(join(ROOT, rel)).isDirectory()) walkPages(rel, acc, skip);
     else if (name === "page.tsx" || name === "layout.tsx") acc.push(rel);
   }
 }
 
 function reachableFiles(): string[] {
   const entries: string[] = [];
-  walkPages("app/(public)/en", entries);
+  /* URL yapısı: İngilizce sayfalar kökte; Türkçe kopyalar `tr/` altında (hariç). */
+  walkPages("app/(public)", entries, [join("app/(public)", "tr")]);
   walkPages("app/(public)/de", entries);
   for (const extra of [
     "app/(public)/layout.tsx",
@@ -279,7 +281,7 @@ describe("public EN/DE — ASCII Türkçe sızıntısı (özel karakter içermey
       'aria-label="Daten löschen"',
       'title="Villa video"',
       'title="Villa-Video"',
-      'href="/rezervasyon/test-villa"',
+      'href="/tr/rezervasyon/test-villa"',
       'from "@/app/components/villa/VillaPoolSection"',
       'const CMS_SSS_RE = /sss|faq|yardim/;',
       'id="misafir-deneyimleri"',

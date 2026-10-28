@@ -23,6 +23,7 @@ import {
 } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ RESERVATION SHARE VIEW — token ile gelen müşteri görünümü
@@ -122,7 +123,7 @@ export default async function ReservationShareView({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale).reservationLookup;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
   /* Locale'i tek yerde bağlayan ince sarmalayıcılar — çağrı yerleri
      (aşağıdaki `TL(...)` / `formatDate(...)`) değişmedi. */
   const TL = (v: number | null): string => formatShareAmount(v, locale);

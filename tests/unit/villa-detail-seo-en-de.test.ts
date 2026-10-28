@@ -3,7 +3,7 @@
    CANONICAL + HREFLANG (7C) + SEO_DESCRIPTION (8C)
    ===============================================================
    Hedef:
-     app/(public)/en/kiralik-villa/[slug]/page.tsx > generateMetadata
+     app/(public)/kiralik-villa/[slug]/page.tsx > generateMetadata
 
    Mock seviyesi Phase 6B/locale-routes.test.tsx ile AYNI desen:
    `@/lib/i18n/public-locale-gate.server`, `@/app/services/villa.service`,
@@ -95,7 +95,7 @@ const ROUTES: Array<{
   notFoundTitle: string;
 }> = [
   {
-    modulePath: "@/app/(public)/en/kiralik-villa/[slug]/page",
+    modulePath: "@/app/(public)/kiralik-villa/[slug]/page",
     locale: "en",
     notFoundTitle: "Villa not found",
   },
@@ -110,13 +110,13 @@ describe.each(ROUTES)(
   "$modulePath generateMetadata — Phase 7C canonical/hreflang",
   ({ modulePath, locale, notFoundTitle }) => {
     /* --- 2/3) EN locale canonical --- */
-    it(`canonical '/${locale}/kiralik-villa/{slug}' formatındadır`, async () => {
+    it(`canonical '/kiralik-villa/{slug}' formatındadır (${locale} varsayılan dil, prefix'siz)`, async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
       getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
       const result = await callGenerateMetadata(modulePath);
       expect(result.alternates?.canonical).toBe(
-        `/${locale}/kiralik-villa/villa-in-love`
+        "/kiralik-villa/villa-in-love"
       );
     });
 
@@ -129,14 +129,14 @@ describe.each(ROUTES)(
       const languages = result.alternates?.languages as
         | Record<string, unknown>
         | undefined;
-      expect(languages?.tr).toBe("/kiralik-villa/villa-in-love");
-      expect(languages?.en).toBe("/en/kiralik-villa/villa-in-love");
+      expect(languages?.tr).toBe("/tr/kiralik-villa/villa-in-love");
+      expect(languages?.en).toBe("/kiralik-villa/villa-in-love");
       expect(languages).not.toHaveProperty("de");
       expect(languages?.["x-default"]).toBe("/kiralik-villa/villa-in-love");
     });
 
-    /* --- 5) x-default TR --- */
-    it("x-default HER ZAMAN TR path'tir", async () => {
+    /* --- 5) x-default EN (varsayılan dil) --- */
+    it("x-default HER ZAMAN İngilizce (prefix'siz) path'tir", async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
       getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
@@ -149,17 +149,19 @@ describe.each(ROUTES)(
 
     /* --- 6) multilingual_enabled=false iken EN hreflang'ların
        YANLIŞLIKLA 404 URL olarak üretilmemesi --- */
-    it("multilingual_enabled=false iken `languages` key'i HİÇ YOK", async () => {
+    it("multilingual_enabled=false olsa bile `languages` üretilir (URL yapısı ayardan bağımsız)", async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
       getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
       const result = await callGenerateMetadata(modulePath);
-      expect(result.alternates).toEqual({
-        canonical: `/${locale}/kiralik-villa/villa-in-love`,
-      });
+      expect(result.alternates?.canonical).toBe("/kiralik-villa/villa-in-love");
       expect(
         (result.alternates as Record<string, unknown>).languages
-      ).toBeUndefined();
+      ).toEqual({
+        tr: "/tr/kiralik-villa/villa-in-love",
+        en: "/kiralik-villa/villa-in-love",
+        "x-default": "/kiralik-villa/villa-in-love",
+      });
     });
 
     /* --- 7) 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — KOŞULSUZ `noindex`

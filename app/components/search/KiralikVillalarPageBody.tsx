@@ -314,12 +314,12 @@ export default async function KiralikVillalarPageBody({
   const breadcrumbLd = buildBreadcrumb(
     scope
       ? [
-          { name: dict.breadcrumbHome, url: "/" },
+          { name: dict.breadcrumbHome, url: localeHref("/", locale) },
           { name: dict.breadcrumbCurrent, url: archivePath(locale) },
           { name: scope.heroTitle },
         ]
       : [
-          { name: dict.breadcrumbHome, url: "/" },
+          { name: dict.breadcrumbHome, url: localeHref("/", locale) },
           { name: dict.breadcrumbCurrent },
         ],
     /* TR'de `undefined` → JSON-LD çıktısı BYTE-IDENTICAL kalır
@@ -352,7 +352,8 @@ export default async function KiralikVillalarPageBody({
             slug: String(v.slug || ""),
             title: String(v.title || ""),
             image: Array.isArray(v.images) ? v.images[0] : undefined,
-          }))
+          })),
+          locale
         )
       : null;
 

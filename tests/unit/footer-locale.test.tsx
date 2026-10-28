@@ -48,36 +48,36 @@ describe("Footer — Phase 9B locale dictionary (props ile doğrudan render)", (
   });
 
   it("1) TR path ('/') → TR footer dictionary metinleri", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(<Footer {...BASE_PROPS} />);
     expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Bize Ulaşın" })).toBeInTheDocument();
   });
 
-  it("1b) TR path ('/kiralik-villalar') → yine TR footer dictionary metinleri", () => {
-    usePathnameMock.mockReturnValue("/kiralik-villalar");
+  it("1b) TR path ('/tr/kiralik-villalar') → yine TR footer dictionary metinleri", () => {
+    usePathnameMock.mockReturnValue("/tr/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
     expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
   });
 
-  it("2) '/en/kiralik-villalar' → EN footer dictionary metinleri (lib/i18n/dictionaries/en.ts değerleri)", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villalar");
+  it("2) '/kiralik-villalar' → EN footer dictionary metinleri (lib/i18n/dictionaries/en.ts değerleri)", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
     expect(screen.queryByText("Kalkan'da Sizi Bekliyoruz")).not.toBeInTheDocument();
     expect(screen.getByText("We Look Forward to Welcoming You in Kalkan")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Contact Us" })).toBeInTheDocument();
   });
 
-  it("3) '/de/kiralik-villalar' → DE desteklenmiyor, TR footer metinlerine düşer", () => {
+  it("3) '/de/kiralik-villalar' → DE desteklenmiyor, varsayılan EN footer metinlerine düşer", () => {
     usePathnameMock.mockReturnValue("/de/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Contact Us" })).toBeInTheDocument();
   });
 
-  it("4) segment sınırı — '/energy-something' YANLIŞLIKLA 'en' ile eşleşmez, TR'ye düşer", () => {
-    usePathnameMock.mockReturnValue("/energy-something");
+  it("4) segment sınırı — '/trabzon-something' YANLIŞLIKLA 'tr' ile eşleşmez, EN'de kalır", () => {
+    usePathnameMock.mockReturnValue("/trabzon-something");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByText("Kalkan'da Sizi Bekliyoruz")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Contact Us" })).toBeInTheDocument();
   });
 
   it("5) Keşfet / marka / sosyal / rezervasyon sorgulama alanı footer'da yok", () => {
@@ -89,12 +89,12 @@ describe("Footer — Phase 9B locale dictionary (props ile doğrudan render)", (
   });
 
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — iç linkler AKTİF LOCALE'i taşır. */
-  it("6) href'ler aktif locale'i taşır — EN path'te 'Contact Us' → '/en/iletisim'", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villalar");
+  it("6) href'ler aktif locale'i taşır — EN path'te 'Contact Us' → '/iletisim'", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(<Footer {...BASE_PROPS} />);
     const link = screen.getByRole("link", { name: "Contact Us" });
-    expect(link).toHaveAttribute("href", "/en/iletisim");
-    expect(link).not.toHaveAttribute("href", "/iletisim");
+    expect(link).toHaveAttribute("href", "/iletisim");
+    expect(link).not.toHaveAttribute("href", "/tr/iletisim");
   });
 });
 
@@ -127,7 +127,7 @@ import FooterWrapper from "@/app/components/layout/FooterWrapper";
 describe("FooterWrapper — Phase 9B prop-passing (DB/service mock'lanır, gerçek DB'ye dokunulmaz)", () => {
   beforeEach(() => {
     usePathnameMock.mockReset();
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockReset();
     findAllVillaLocationsMock.mockReset();
     findAllVillaTypesMock.mockReset();
@@ -227,29 +227,29 @@ describe("Footer — href locale kilidi (iç linkler aktif locale'i taşır)", (
     expect(container.querySelector('a[href*="bolgeler"]')).toBeNull();
   });
 
-  it("11) CMS (corporate page) href'i '/p/{slug}' yapısında — TR path'te", () => {
-    usePathnameMock.mockReturnValue("/");
+  it("11) CMS (corporate page) href'i '/tr/p/{slug}' yapısında — TR path'te", () => {
+    usePathnameMock.mockReturnValue("/tr");
     render(<Footer {...PROPS_WITH_TAXONOMY_AND_CMS} />);
     const link = screen.getByRole("link", { name: "Hakkımızda" });
-    expect(link).toHaveAttribute("href", "/p/hakkimizda");
+    expect(link).toHaveAttribute("href", "/tr/p/hakkimizda");
   });
 
-  it("12) CMS ve iletişim href'leri '/en/...' path'te '/en' prefix'i alır (slug kontratı AYNEN)", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villalar");
+  it("12) CMS ve iletişim href'leri '/...' path'te '/' prefix'i alır (slug kontratı AYNEN)", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(<Footer {...PROPS_WITH_TAXONOMY_AND_CMS} />);
     expect(screen.getByRole("link", { name: "Hakkımızda" })).toHaveAttribute(
       "href",
-      "/en/p/hakkimizda"
+      "/p/hakkimizda"
     );
     expect(screen.getByRole("link", { name: "Contact Us" })).toHaveAttribute(
       "href",
-      "/en/iletisim"
+      "/iletisim"
     );
   });
 
-  it("15) 'Bize Ulaşın' href TR path'te '/iletisim'", () => {
-    usePathnameMock.mockReturnValue("/");
+  it("15) 'Bize Ulaşın' href TR path'te '/tr/iletisim'", () => {
+    usePathnameMock.mockReturnValue("/tr");
     render(<Footer {...BASE_PROPS} />);
-    expect(screen.getByRole("link", { name: "Bize Ulaşın" })).toHaveAttribute("href", "/iletisim");
+    expect(screen.getByRole("link", { name: "Bize Ulaşın" })).toHaveAttribute("href", "/tr/iletisim");
   });
 });

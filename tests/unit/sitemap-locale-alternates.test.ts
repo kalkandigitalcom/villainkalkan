@@ -91,92 +91,79 @@ function villaEntry(
   return entries.find((e) => e.url === `https://example.com/kiralik-villa/${slug}`);
 }
 
-describe("sitemap() — Phase 7D villa locale alternates", () => {
-  /* --- 5) multilingual false -> EN/DE sitemap yok --- */
-  it("5) multilingual_enabled=false → hiçbir entry'de `alternates` YOK, EN/DE URL'si HİÇ üretilmiyor", async () => {
+describe("sitemap() — URL yapısı: EN prefix'siz (varsayılan), TR /tr", () => {
+  /* --- 5) multilingual ayarı artık public URL yapısını DEĞİŞTİRMEZ --- */
+  it("5) multilingual_enabled=false olsa bile alternates üretilir (site yapısal olarak iki dilli)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
-
     const entries = await runSitemap();
-    const villa = villaEntry(entries, "villa-in-love");
-    expect(villa).toBeDefined();
-    expect((villa as Record<string, unknown>).alternates).toBeUndefined();
-
-    // Sitemap'te HİÇBİR /en veya /de URL'i yok.
-    const hasEnDeUrl = entries.some(
-      (e) => e.url.includes("/en/") || e.url.includes("/de/")
-    );
-    expect(hasEnDeUrl).toBe(false);
+    const villa = villaEntry(entries, "villa-in-love") as {
+      alternates?: { languages?: Record<string, string> };
+    };
+    expect(villa?.alternates?.languages).toBeDefined();
   });
 
-  it("5b) getCachedSettings reddederse (fail-safe) → flag false davranışıyla AYNI", async () => {
+  it("5b) getCachedSettings reddederse (fail-safe) sitemap yine tam üretilir", async () => {
     getCachedSettingsMock.mockRejectedValue(new Error("settings down"));
-
     const entries = await runSitemap();
-    const villa = villaEntry(entries, "villa-in-love");
-    expect((villa as Record<string, unknown>).alternates).toBeUndefined();
+    expect(villaEntry(entries, "villa-in-love")).toBeDefined();
   });
 
-  /* --- 6) multilingual true -> locale alternate doğru --- */
-  it("6) multilingual_enabled=true → villa entry'sinin alternates.languages doğru (absolute URL'ler)", async () => {
+  /* --- 6) alternates doğru --- */
+  it("6) villa entry'sinin alternates.languages doğru (absolute URL'ler)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-
     const entries = await runSitemap();
     const villa = villaEntry(entries, "villa-in-love") as {
       alternates?: { languages?: Record<string, string> };
     };
     expect(villa.alternates?.languages).toEqual({
-      tr: "https://example.com/kiralik-villa/villa-in-love",
-      en: "https://example.com/en/kiralik-villa/villa-in-love",
+      tr: "https://example.com/tr/kiralik-villa/villa-in-love",
+      en: "https://example.com/kiralik-villa/villa-in-love",
       "x-default": "https://example.com/kiralik-villa/villa-in-love",
     });
   });
 
-  it("6b) EN/DE için AYRI bir sitemap URL entry'si YOK (multilingual=true iken bile)", async () => {
+  it("6b) Türkçe kardeş URL'ler AYRI entry olarak yayınlanır, aynı hreflang kümesiyle", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-
     const entries = await runSitemap();
-    const hasEnDeUrl = entries.some(
-      (e) => e.url.includes("/en/") || e.url.includes("/de/")
+    const tr = entries.find(
+      (e) => e.url === "https://example.com/tr/kiralik-villa/villa-in-love"
+    ) as { alternates?: { languages?: Record<string, string> } } | undefined;
+    expect(tr).toBeDefined();
+    expect(tr?.alternates?.languages).toEqual(
+      (villaEntry(entries, "villa-in-love") as {
+        alternates?: { languages?: Record<string, string> };
+      }).alternates?.languages
     );
-    expect(hasEnDeUrl).toBe(false);
   });
 
-  /* --- 7) TR canonical URL değişmiyor --- */
-  it("7) villa entry'sinin `url` alanı flag true/false FARK ETMEKSİZİN AYNI TR path'tir", async () => {
-    getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
-    const withFlagOff = await runSitemap();
-
-    vi.resetModules();
+  /* --- 7) EN canonical URL --- */
+  it("7) villa entry'sinin `url` alanı prefix'siz İngilizce path'tir", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-    const withFlagOn = await runSitemap();
-
-    const urlOff = villaEntry(withFlagOff, "villa-in-love")?.url;
-    const urlOn = villaEntry(withFlagOn, "villa-in-love")?.url;
-    expect(urlOff).toBe("https://example.com/kiralik-villa/villa-in-love");
-    expect(urlOn).toBe(urlOff);
-  });
-
-  /* --- 8) /tr hiçbir yerde oluşmuyor --- */
-  it("8) HİÇBİR entry/alternates değeri '/tr' prefix'i İÇERMEZ", async () => {
-    getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-
     const entries = await runSitemap();
+    expect(villaEntry(entries, "villa-in-love")?.url).toBe(
+      "https://example.com/kiralik-villa/villa-in-love"
+    );
+  });
+
+  /* --- 8) /en hiçbir yerde oluşmuyor --- */
+  it("8) HİÇBİR entry/alternates değeri eski '/en' prefix'ini İÇERMEZ", async () => {
+    getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
+    const entries = await runSitemap();
+    const isEn = (u: string) =>
+      u === "https://example.com/en" || u.startsWith("https://example.com/en/");
     for (const entry of entries) {
-      expect(entry.url.startsWith("https://example.com/tr")).toBe(false);
+      expect(isEn(entry.url)).toBe(false);
       const alt = (entry as { alternates?: { languages?: Record<string, string> } })
         .alternates;
-      if (alt?.languages) {
-        for (const value of Object.values(alt.languages)) {
-          expect(value.startsWith("https://example.com/tr")).toBe(false);
-        }
+      for (const value of Object.values(alt?.languages ?? {})) {
+        expect(isEn(value)).toBe(false);
       }
     }
   });
 
-  /* --- 9) x-default TR --- */
-  it("9) x-default HER ZAMAN TR (prefix'siz) URL'e eşittir", async () => {
+  /* --- 9) x-default EN --- */
+  it("9) x-default HER ZAMAN İngilizce (prefix'siz) URL'e eşittir", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-
     const entries = await runSitemap();
     const villa = villaEntry(entries, "villa-sunset") as {
       alternates?: { languages?: Record<string, string> };
@@ -185,32 +172,17 @@ describe("sitemap() — Phase 7D villa locale alternates", () => {
       "https://example.com/kiralik-villa/villa-sunset"
     );
     expect(villa.alternates?.languages?.["x-default"]).toBe(
-      villa.alternates?.languages?.tr
+      villa.alternates?.languages?.en
     );
   });
 
-  /* --- 10) mevcut diğer sitemap entry'leri korunuyor --- */
-  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/`, `/kiralik-villalar`,
-     `/iletisim`, `/teklif-al` ve `/p/[slug]` ARTIK gerçek `/en`
-     route'larına sahip → sitemap onlara da `alternates.languages` verir.
-     🛡️ BLOG da ARTIK `/en/blog` + `/en/blog/[slug]` route'larına
-     sahip (migration 089 `blog_post_translations`) → alternates TAŞIR. */
-  it("10) locale route'u OLAN entry'ler alternates taşır (blog dahil)", async () => {
+  /* --- 10) tüm entry'ler + TR kardeşleri --- */
+  it("10) tüm public entry'ler (blog dahil) alternates taşır; ana sayfa '/' + '/tr'", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-
     const entries = await runSitemap();
     const urls = entries.map((e) => e.url);
 
-    expect(urls).toContain("https://example.com/");
-    expect(urls).toContain("https://example.com/kiralik-villalar");
-    expect(urls).toContain("https://example.com/iletisim");
-    expect(urls).toContain("https://example.com/teklif-al");
-    expect(urls).toContain("https://example.com/p/hakkimizda");
-    expect(urls).toContain("https://example.com/blog");
-    expect(urls).toContain("https://example.com/blog/ilk-yazi");
-
-    const byUrl = new Map(entries.map((e) => [e.url, e]));
-    const localized = [
+    const base = [
       "https://example.com/",
       "https://example.com/kiralik-villalar",
       "https://example.com/iletisim",
@@ -219,50 +191,37 @@ describe("sitemap() — Phase 7D villa locale alternates", () => {
       "https://example.com/blog",
       "https://example.com/blog/ilk-yazi",
     ];
-    for (const u of localized) {
+    const byUrl = new Map(entries.map((e) => [e.url, e]));
+    for (const u of base) {
+      expect(urls).toContain(u);
+      const trUrl = u === "https://example.com/" ? "https://example.com/tr" : u.replace("https://example.com/", "https://example.com/tr/");
+      expect(urls).toContain(trUrl);
       const alt = (byUrl.get(u) as Record<string, unknown> | undefined)
         ?.alternates as { languages?: Record<string, string> } | undefined;
-      expect(alt?.languages).toBeDefined();
-      expect(Object.keys(alt!.languages!).sort()).toEqual([
-        "en",
-        "tr",
-        "x-default",
-      ]);
+      expect(Object.keys(alt!.languages!).sort()).toEqual(["en", "tr", "x-default"]);
     }
 
-    /* Ana sayfa hreflang'i `buildLocaleAlternates` ile birebir. */
-    const homeAlt = (
-      byUrl.get("https://example.com/") as Record<string, unknown>
-    ).alternates as { languages: Record<string, string> };
-    expect(homeAlt.languages.en).toBe("https://example.com/en");
-    expect(homeAlt.languages).not.toHaveProperty("de");
-    expect(homeAlt.languages.tr).toBe("https://example.com/");
+    const homeAlt = (byUrl.get("https://example.com/") as Record<string, unknown>)
+      .alternates as { languages: Record<string, string> };
+    expect(homeAlt.languages).toEqual({
+      tr: "https://example.com/tr",
+      en: "https://example.com/",
+      "x-default": "https://example.com/",
+    });
 
-    /* BLOG hreflang — `buildLocaleAlternates` ile birebir. */
-    const blogAlt = (
-      byUrl.get("https://example.com/blog/ilk-yazi") as Record<string, unknown>
-    ).alternates as { languages: Record<string, string> };
-    expect(blogAlt.languages.tr).toBe("https://example.com/blog/ilk-yazi");
-    expect(blogAlt.languages.en).toBe("https://example.com/en/blog/ilk-yazi");
-    expect(blogAlt.languages["x-default"]).toBe(blogAlt.languages.tr);
+    const blogAlt = (byUrl.get("https://example.com/blog/ilk-yazi") as Record<string, unknown>)
+      .alternates as { languages: Record<string, string> };
+    expect(blogAlt.languages.tr).toBe("https://example.com/tr/blog/ilk-yazi");
+    expect(blogAlt.languages.en).toBe("https://example.com/blog/ilk-yazi");
+    expect(blogAlt.languages["x-default"]).toBe(blogAlt.languages.en);
 
-    // Toplam entry sayısı: 4 statik + 2 villa + 1 page + 1 blog-index + 1 blog = 9
-    expect(entries).toHaveLength(9);
-  });
-
-  it("10a) `multilingual_enabled=false` → HİÇBİR entry alternates taşımaz", async () => {
-    getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
-
-    const entries = await runSitemap();
-    for (const entry of entries) {
-      expect((entry as Record<string, unknown>).alternates).toBeUndefined();
-    }
+    // 9 İngilizce entry (4 statik + 2 villa + 1 page + 1 blog-index + 1 blog) + 9 Türkçe kardeş
+    expect(entries).toHaveLength(18);
   });
 
   it("10b) villa fetch exception atarsa (fail-soft) diğer entry'ler yine döner (ÖNCEKİ davranış)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
     listPublicSlugsMock.mockRejectedValue(new Error("db down"));
-
     const entries = await runSitemap();
     const urls = entries.map((e) => e.url);
     expect(urls).toContain("https://example.com/");

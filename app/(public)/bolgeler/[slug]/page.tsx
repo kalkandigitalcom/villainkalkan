@@ -3,9 +3,11 @@ import type { ArchiveSearchParams } from "@/app/components/search/KiralikVillala
 import TaxonomyLandingPageBody, {
   buildTaxonomyLandingMetadata,
 } from "@/app/components/search/TaxonomyLandingPageBody";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /bolgeler/[slug] — SEO LANDING (bölge grubu, TR)
+   🛡️ /en/bolgeler/[slug] — SEO LANDING (bölge grubu, EN)
    ===============================================================
    Gövde + metadata `TaxonomyLandingPageBody`'de (TR/EN/DE ortak).
    Slug DB'den çözülür (admin'in eklediği kayıt deploy'suz çalışır);
@@ -22,23 +24,27 @@ export async function generateMetadata({
   params: Params;
   searchParams: ArchiveSearchParams;
 }): Promise<Metadata> {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
   const { slug } = await params;
-  return buildTaxonomyLandingMetadata("region", slug, "tr", searchParams);
+  return buildTaxonomyLandingMetadata("region", slug, "en", searchParams);
 }
 
-export default async function RegionGroupLandingPage({
+export default async function RegionGroupEnLandingPage({
   params,
   searchParams,
 }: {
   params: Params;
   searchParams: ArchiveSearchParams;
 }) {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
   const { slug } = await params;
   return (
     <TaxonomyLandingPageBody
       kind="region"
       slug={slug}
-      locale="tr"
+      locale="en"
       searchParams={searchParams}
     />
   );

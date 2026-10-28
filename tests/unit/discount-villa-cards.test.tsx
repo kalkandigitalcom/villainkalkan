@@ -94,10 +94,10 @@ describe.each(CARDS)("Alternatif %s", (name, Card) => {
     render(<Card {...BASE} />);
     const cta = screen.getByRole("link", { name: /Hemen Rezervasyon Yap/ });
     expect(cta.getAttribute("href")).toBe(
-      "/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
+      "/tr/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
     );
     const heading = screen.getByRole("heading", { name: "Örnek Villa" });
-    expect(within(heading).getByRole("link").getAttribute("href")).toBe("/kiralik-villa/ornek-villa");
+    expect(within(heading).getByRole("link").getAttribute("href")).toBe("/tr/kiralik-villa/ornek-villa");
     cleanup();
   });
 
@@ -105,19 +105,19 @@ describe.each(CARDS)("Alternatif %s", (name, Card) => {
     render(<Card {...BASE} discountAvailable={false} />);
     expect(
       screen.getByRole("link", { name: /Hemen Rezervasyon Yap/ }).getAttribute("href")
-    ).toBe("/kiralik-villa/ornek-villa");
+    ).toBe("/tr/kiralik-villa/ornek-villa");
     cleanup();
   });
 
   it("4) EN → /en önekli bağlantılar ve EN metinleri", () => {
     render(<Card {...BASE} locale="en" />);
     expect(screen.getByRole("link", { name: /Book Now/ }).getAttribute("href")).toBe(
-      "/en/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
+      "/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
     );
     expect(screen.getAllByText("20% OFF").length).toBeGreaterThan(0);
     expect(
       within(screen.getByRole("heading", { name: "Örnek Villa" })).getByRole("link").getAttribute("href")
-    ).toBe("/en/kiralik-villa/ornek-villa");
+    ).toBe("/kiralik-villa/ornek-villa");
     cleanup();
   });
 
@@ -127,7 +127,7 @@ describe.each(CARDS)("Alternatif %s", (name, Card) => {
     expect(screen.queryByText(/İNDİRİM/)).toBeNull();
     expect(screen.queryByText(/indirimli/)).toBeNull();
     expect(screen.getByRole("link", { name: /Hemen Rezervasyon Yap/ }).getAttribute("href")).toBe(
-      "/kiralik-villa/ornek-villa"
+      "/tr/kiralik-villa/ornek-villa"
     );
     cleanup();
   });
@@ -228,7 +228,7 @@ describe("DiscountCollection kaynak kilidi", () => {
     expect(src).toContain("key={c.card_key || c.slug || c.id}");
   });
   it("önizleme sayfası production'da 404 ve noindex", () => {
-    const page = readFileSync("app/(public)/onizleme/indirimli-villalar/page.tsx", "utf-8");
+    const page = readFileSync("app/(public)/tr/onizleme/indirimli-villalar/page.tsx", "utf-8");
     expect(page).toMatch(/process\.env\.NODE_ENV === "production"\) notFound\(\)/);
     expect(page).toMatch(/index: false/);
   });

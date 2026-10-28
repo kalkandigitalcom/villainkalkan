@@ -156,7 +156,7 @@ describe("useBookingEngine — başlangıç aralığı", () => {
     act(() => result.current.handleReservation());
     expect(hrefSet).toHaveBeenCalledTimes(1);
     expect(hrefSet.mock.calls[0][0]).toBe(
-      `/rezervasyon/test-villa?start=${S}&end=${E}&adults=2&children=0&poolHeating=0`
+      `/tr/rezervasyon/test-villa?start=${S}&end=${E}&adults=2&children=0&poolHeating=0`
     );
   });
 

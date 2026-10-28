@@ -287,7 +287,7 @@ function card(id: string, is_active: boolean, token: string | null) {
   };
 }
 
-describe("/liste/[token] — pasif villalar özel linkle", () => {
+describe("/tr/liste/[token] — pasif villalar özel linkle", () => {
   beforeEach(() => {
     storedList = {
       token: "liste1",
@@ -317,7 +317,7 @@ describe("/liste/[token] — pasif villalar özel linkle", () => {
     render(el);
     expect([...cardProps.keys()]).toEqual(["aktif-1", "pasif-tokenli"]);
     expect(cardProps.get("aktif-1")!.privateHref).toBeUndefined();
-    expect(cardProps.get("pasif-tokenli")!.privateHref).toBe("/v/ozel123");
+    expect(cardProps.get("pasif-tokenli")!.privateHref).toBe("/tr/v/ozel123");
     /* Fiyat bağlamı pasif villada da aynı. */
     expect(cardProps.get("pasif-tokenli")!.stayStart).toBe("2026-11-10");
   });
@@ -329,7 +329,7 @@ describe("/liste/[token] — pasif villalar özel linkle", () => {
       locale: "en",
     });
     render(el);
-    expect(cardProps.get("pasif-tokenli")!.privateHref).toBe("/en/v/ozel123");
+    expect(cardProps.get("pasif-tokenli")!.privateHref).toBe("/v/ozel123");
   });
 
   it("yalnız pasif villalardan oluşan liste 404 olmaz", async () => {

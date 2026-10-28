@@ -129,7 +129,7 @@ vi.mock("@/app/context/CurrencyContext", () => ({
 
 import PrivateVillaPageBody from "@/app/components/private-villa/PrivateVillaPageBody";
 import BottomNav from "@/app/components/layout/BottomNav";
-import NormalVillaDetail from "@/app/(public)/kiralik-villa/[slug]/page";
+import NormalVillaDetail from "@/app/(public)/tr/kiralik-villa/[slug]/page";
 import VillaInfoBar from "@/app/components/villa/VillaInfoBar";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
@@ -151,7 +151,7 @@ beforeEach(() => {
   icalMock.mockClear();
 });
 
-describe("/v/[token] — normal villa detayıyla aynı gövde", () => {
+describe("/tr/v/[token] — normal villa detayıyla aynı gövde", () => {
   it("favori, sekmeler, yorumlar, benzer villalar, mobil CTA, giriş/çıkış render edilir", async () => {
     const { container } = await renderPrivate();
     expect(screen.getAllByLabelText(dict.favorites.add).length).toBeGreaterThan(0);
@@ -271,14 +271,14 @@ describe("Turizm belge numarası kaldırıldı", () => {
     expect(container.textContent).not.toContain("Belge No");
   });
 
-  it("/v/[token] → belge satırı / numarası yok", async () => {
+  it("/tr/v/[token] → belge satırı / numarası yok", async () => {
     state.villa = LEGACY;
     const { container } = await renderPrivate();
     expect(docLine(container)).toBeNull();
     expect(container.innerHTML).not.toContain(CERT);
   });
 
-  it("/v/[token] DOM'u = normal detay DOM'u", async () => {
+  it("/tr/v/[token] DOM'u = normal detay DOM'u", async () => {
     const strip = (c: HTMLElement) => {
       c.querySelectorAll('script[type="application/ld+json"]').forEach((n) => n.remove());
       return c.innerHTML;
@@ -316,7 +316,7 @@ describe("Turizm belge numarası kaldırıldı", () => {
 });
 
 describe("BottomNav — villa detayında tek alt bar", () => {
-  it.each(["/v/tok-1", "/en/v/tok-1", "/kiralik-villa/x"])(
+  it.each(["/tr/v/tok-1", "/v/tok-1", "/tr/kiralik-villa/x"])(
     "%s → BottomNav render edilmez",
     (p) => {
       pathname.value = p;
@@ -325,7 +325,7 @@ describe("BottomNav — villa detayında tek alt bar", () => {
     }
   );
   it("diğer sayfalarda BottomNav AYNEN render edilir", () => {
-    pathname.value = "/arama";
+    pathname.value = "/tr/arama";
     const { container } = render(<BottomNav phoneHref={null} whatsappHref={null} />);
     expect(container.innerHTML).not.toBe("");
   });

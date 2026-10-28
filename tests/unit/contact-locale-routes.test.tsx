@@ -188,7 +188,7 @@ beforeEach(() => {
    A) ROUTE DAVRANIŞI
    =============================================================== */
 const LOCALE_ROUTES: Array<[string, "en"]> = [
-  ["@/app/(public)/en/iletisim/page", "en"],
+  ["@/app/(public)/iletisim/page", "en"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -218,16 +218,16 @@ describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
   });
 });
 
-describe("app/(public)/iletisim/page.tsx — TR", () => {
+describe("app/(public)/tr/iletisim/page.tsx — TR", () => {
   it("4) ORTAK gövdeyi locale='tr' ile render eder", async () => {
-    const { default: Page } = await import("@/app/(public)/iletisim/page");
+    const { default: Page } = await import("@/app/(public)/tr/iletisim/page");
     const element = await Page();
     expect(element.type).toBe(ContactPageBody);
     expect(element.props.locale).toBe("tr");
   });
 
   it("5) TR'de locale gate'i ÇAĞRILMAZ (davranış değişmedi)", async () => {
-    const { default: Page } = await import("@/app/(public)/iletisim/page");
+    const { default: Page } = await import("@/app/(public)/tr/iletisim/page");
     await Page();
     expect(setRequestLocaleMock).not.toHaveBeenCalled();
     expect(requirePublicLocaleEnabledMock).not.toHaveBeenCalled();
@@ -235,7 +235,7 @@ describe("app/(public)/iletisim/page.tsx — TR", () => {
 
   it("6) TR'de de route segment config YOK (mevcut davranış korundu)", async () => {
     const mod: Record<string, unknown> = await import(
-      "@/app/(public)/iletisim/page"
+      "@/app/(public)/tr/iletisim/page"
     );
     expect(mod.dynamic).toBeUndefined();
     expect(mod.revalidate).toBeUndefined();
@@ -418,7 +418,7 @@ describe("Gövde render — TR/EN", () => {
          locale'i taşır (slug canonical kalır). */
       expect(link).toHaveAttribute(
         "href",
-        locale === "tr" ? "/arama" : `/${locale}/arama`
+        locale === "tr" ? "/tr/arama" : "/arama"
       );
     }
   );
@@ -686,14 +686,15 @@ describe("ContactForm — çoklu dil", () => {
    =============================================================== */
 describe("Metadata", () => {
   it("38) contactPath() iki locale için doğru", () => {
+    /* Taban (locale'siz) path sabiti; TR adresi `/tr` prefix'i ile türetilir. */
     expect(CONTACT_TR_PATH).toBe("/iletisim");
-    expect(contactPath("tr")).toBe("/iletisim");
-    expect(contactPath("en")).toBe("/en/iletisim");
+    expect(contactPath("tr")).toBe("/tr/iletisim");
+    expect(contactPath("en")).toBe("/iletisim");
   });
 
   it.each([
-    ["tr", "/iletisim"],
-    ["en", "/en/iletisim"],
+    ["tr", "/tr/iletisim"],
+    ["en", "/iletisim"],
   ] as const)("39) %s: canonical '%s' + locale başlık", async (locale, canonical) => {
     const meta = await buildContactMetadata(locale);
     const d = { tr, en }[locale].contact.meta;
@@ -706,19 +707,23 @@ describe("Metadata", () => {
   it("40) multilingual AÇIK → hreflang (languages) üretilir", async () => {
     const meta = await buildContactMetadata("en");
     expect(meta.alternates?.languages).toEqual({
-      tr: "/iletisim",
-      en: "/en/iletisim",
+      tr: "/tr/iletisim",
+      en: "/iletisim",
       "x-default": "/iletisim",
     });
   });
 
-  it("41) multilingual KAPALI → languages ÜRETİLMEZ (TR çıktısı eskisi gibi)", async () => {
+  it("41) multilingual KAPALI olsa bile hreflang üretilir (URL yapısı ayardan bağımsız)", async () => {
     getCachedSettingsMock.mockResolvedValue(
       settingsWith({ multilingual_enabled: false })
     );
     const meta = await buildContactMetadata("tr");
-    expect(meta.alternates?.canonical).toBe("/iletisim");
-    expect(meta.alternates?.languages).toBeUndefined();
+    expect(meta.alternates?.canonical).toBe("/tr/iletisim");
+    expect(meta.alternates?.languages).toEqual({
+      tr: "/tr/iletisim",
+      en: "/iletisim",
+      "x-default": "/iletisim",
+    });
   });
 
   it("42) settings okunamazsa brand fallback'i korunur", async () => {
@@ -732,22 +737,22 @@ describe("Metadata", () => {
    H) LOCALE SWITCH
    =============================================================== */
 describe("Locale switch", () => {
-  it("43) '/iletisim' artık EXACT locale route (fallback DEĞİL)", () => {
+  it("43) '/tr/iletisim' artık EXACT locale route (fallback DEĞİL)", () => {
     expect(hasLocaleRoute("/iletisim")).toBe(true);
   });
 
   it("44) /en/iletisim → EN/TR hedefleri doğru (de hedefi YOK)", () => {
-    expect(getLocaleSwitchTargets("/en/iletisim")).toEqual({
-      tr: "/iletisim",
-      en: "/en/iletisim",
+    expect(getLocaleSwitchTargets("/iletisim")).toEqual({
+      tr: "/tr/iletisim",
+      en: "/iletisim",
     });
   });
 
   it("45) query string KORUNUR", () => {
     const q = "utm_source=mail&x=1";
-    const t = getLocaleSwitchTargets("/en/iletisim", q);
-    expect(t.en).toBe(`/en/iletisim?${q}`);
-    expect(t.tr).toBe(`/iletisim?${q}`);
+    const t = getLocaleSwitchTargets("/iletisim", q);
+    expect(t.en).toBe(`/iletisim?${q}`);
+    expect(t.tr).toBe(`/tr/iletisim?${q}`);
   });
 });
 

@@ -15,7 +15,7 @@ const push = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, replace: vi.fn(), prefetch: vi.fn() }),
   useSearchParams: () => ({ get: () => null }),
-  usePathname: () => "/liste/x",
+  usePathname: () => "/tr/liste/x",
 }));
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -57,30 +57,30 @@ const hrefs = (c: HTMLElement) =>
 describe("VillaCard privateHref", () => {
   it("aktif kart (prop yok) → mevcut /kiralik-villa/[slug] linki", () => {
     const { container } = render(<VillaCard {...BASE} />);
-    expect(hrefs(container)).toContain("/kiralik-villa/villa-gizli");
+    expect(hrefs(container)).toContain("/tr/kiralik-villa/villa-gizli");
   });
 
   it("pasif kart → /v/[token] (+tarih); /kiralik-villa hiç yok", () => {
     const { container } = render(
       <VillaCard
         {...BASE}
-        privateHref="/v/ozel123"
+        privateHref="/tr/v/ozel123"
         stayStart="2026-11-10"
         stayEnd="2026-11-15"
       />
     );
     const all = hrefs(container);
-    expect(all).toContain("/v/ozel123?start=2026-11-10&end=2026-11-15");
-    expect(container.innerHTML).not.toContain("/kiralik-villa/");
+    expect(all).toContain("/tr/v/ozel123?start=2026-11-10&end=2026-11-15");
+    expect(container.innerHTML).not.toContain("/tr/kiralik-villa/");
   });
 
   it("pasif kart → müsaitlik butonu modal açmaz, özel sayfaya gider", () => {
-    render(<VillaCard {...BASE} privateHref="/v/ozel123" />);
+    render(<VillaCard {...BASE} privateHref="/tr/v/ozel123" />);
     const btns = screen.getAllByRole("button");
     for (const b of btns) fireEvent.click(b);
     expect(screen.queryByTestId("booking-modal")).toBeNull();
-    expect(push).toHaveBeenCalledWith("/v/ozel123");
-    expect(push.mock.calls.flat().join(" ")).not.toContain("/kiralik-villa/");
-    expect(push.mock.calls.flat().join(" ")).not.toContain("/rezervasyon/");
+    expect(push).toHaveBeenCalledWith("/tr/v/ozel123");
+    expect(push.mock.calls.flat().join(" ")).not.toContain("/tr/kiralik-villa/");
+    expect(push.mock.calls.flat().join(" ")).not.toContain("/tr/rezervasyon/");
   });
 });

@@ -5,7 +5,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
+/* Türkçe sayfa — URL yapısında TR `/tr` altında yaşar. */
+vi.mock("next/navigation", () => ({ usePathname: () => "/tr" }));
 
 import Footer from "@/app/components/layout/Footer";
 import type { Settings } from "@/app/services/settings.types";
@@ -64,7 +65,7 @@ describe("Footer tasarımı", () => {
       "href",
       "mailto:info@example.com",
     );
-    expect(within(cta).getByRole("link", { name: "Bize Ulaşın" })).toHaveAttribute("href", "/iletisim");
+    expect(within(cta).getByRole("link", { name: "Bize Ulaşın" })).toHaveAttribute("href", "/tr/iletisim");
     /* Telefon/e-posta footer'da tek yerde (tekrar yok). */
     expect(container.querySelectorAll('a[href^="tel:"]')).toHaveLength(1);
     expect(container.querySelectorAll('a[href^="mailto:"]')).toHaveLength(1);
@@ -94,20 +95,20 @@ describe("Footer tasarımı", () => {
 
   it("EN: CTA metinleri ve /en önekli iletişim bağlantısı", async () => {
     vi.resetModules();
-    vi.doMock("next/navigation", () => ({ usePathname: () => "/en" }));
+    vi.doMock("next/navigation", () => ({ usePathname: () => "/" }));
     const { default: FooterEn } = await import("@/app/components/layout/Footer");
     const { container } = render(<FooterEn {...PROPS} />);
     const cta = container.querySelector("[data-footer-cta]") as HTMLElement;
     expect(within(cta).getByRole("heading", { level: 2 }).textContent).toBe(
       "We Look Forward to Welcoming You in Kalkan",
     );
-    expect(within(cta).getByRole("link", { name: "Contact Us" })).toHaveAttribute("href", "/en/iletisim");
+    expect(within(cta).getByRole("link", { name: "Contact Us" })).toHaveAttribute("href", "/iletisim");
     vi.doUnmock("next/navigation");
   });
 
   it("yasal bağlantılar, telif ve KalkanDigital korunur", () => {
     render(<Footer {...PROPS} />);
-    expect(screen.getByRole("link", { name: "KVKK" })).toHaveAttribute("href", "/p/kvkk");
+    expect(screen.getByRole("link", { name: "KVKK" })).toHaveAttribute("href", "/tr/p/kvkk");
     expect(screen.getByText(/2026/)).toBeInTheDocument();
     const credit = screen.getByRole("link", { name: /KalkanDigital/ });
     expect(credit).toHaveAttribute("href", "https://kalkandigital.com");

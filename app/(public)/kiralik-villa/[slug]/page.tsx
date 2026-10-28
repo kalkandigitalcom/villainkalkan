@@ -1,26 +1,39 @@
 import type { Metadata } from "next";
 import { cache } from "react";
 
-/* 🛡️ FAZ 19 — distance icon key (TÜRKÇE anahtar kelimeye bağlı; her
-   zaman ORİJİNAL TR title'dan hesaplanır). */
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
+import { getVillaBySlug } from "@/app/services/villa.service";
+import {
+  getVillaTranslatedDescription,
+  getVillaTranslatedSeoDescription,
+  /* 🛡️ PHASE 10B, Section 11 — SEO title override (varsa). */
+  getVillaTranslatedSeoTitle,
+} from "@/lib/i18n/get-villa-translation.server";
+/* 🛡️ PHASE 8D-2 — batch translation okuma (8D-1) + generic fallback. */
+import {
+  getTranslationsForParents,
+  resolveTranslatedField,
+} from "@/lib/i18n/get-translation.server";
+import {
+  getCachedSettings,
+  getCachedVillaReviews,
+  getCachedVillaReviewStats,
+} from "@/lib/cache.helpers";
+import { isMultilingualEnabled } from "@/lib/i18n/config";
+import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
+import { stripHtml } from "@/lib/html-sanitize";
+/* 🛡️ PHASE 8D-2 — location/features/rules/priceIncludes/distances ham
+   veri (TR sayfasındaki AYNI servisler, DEĞİŞTİRİLMEDİ). */
+import { getVillaDistances } from "@/app/services/villa-distance.service";
+import {
+  getVillaFeaturesByVilla,
+  type Feature,
+} from "@/app/services/villa-feature.service";
+import { getRuleItemsByVilla } from "@/app/services/rule-item.service";
+import { getPriceIncludeItemsByVilla } from "@/app/services/price-include-item.service";
 import { getDistanceIconKey } from "@/lib/distance.helper";
-
-/* ===============================================================
-   🛡️ PHASE 10G — TR / EN / DE TASARIM PARİTESİ
-   ===============================================================
-   Bu sayfanın GÖVDESİ (galeri + tab band + konaklama düzeni + havuz +
-   dahil/kurallar + yorumlar + sağ kolon + mobile CTA + benzer villalar)
-   `app/components/villa/VillaDetailBody.tsx`e TAŞINDI — DOM/CSS/sıra/
-   koşullar BİREBİR aynı, yalnız artık EN/DE sayfaları da AYNI
-   component'i render ediyor. Bu dosyada kalan: veri okuma (TÜM
-   servisler/argümanlar DEĞİŞMEDİ), SEO metadata, JSON-LD üretimi ve
-   "Villa bulunamadı" bloğu.
-
-   TR'de çeviri katmanı HİÇ ÇALIŞMAZ: `displayTitle/displayName/
-   displayDistance` alanları doğrudan orijinal TR değerlerle doldurulur
-   (ek DB sorgusu YOK). Villa adı zaten hiçbir locale'de çevrilmez.
-   =============================================================== */
-import VillaDetailBody from "@/app/components/villa/VillaDetailBody";
+import { getTranslatedDistanceLabel } from "@/lib/distance-label.helper";
 import type { TranslatedDistance } from "@/app/components/villa/VillaDistancesSection";
 import type { TranslatedFeature } from "@/app/components/villa/VillaFeaturesSection";
 import type {
@@ -28,76 +41,60 @@ import type {
   TranslatedRule,
 } from "@/app/components/villa/VillaPriceIncludesAndRulesSection";
 
-import { getVillaBySlug } from "@/app/services/villa.service";
+/* ===============================================================
+   🛡️ PHASE 10G — TR / EN / DE TASARIM PARİTESİ
+   ===============================================================
+   Bu sayfa ARTIK TR ile AYNI gövdeyi render ediyor:
+   `app/components/villa/VillaDetailBody.tsx` (TR'nin kendi
+   gövdesinden, DOM/CSS DEĞİŞTİRİLMEDEN çıkarılan ortak component).
+   Önceki tek-kolon `max-w-3xl` düzeni + ayrı başlık bloğu KALDIRILDI;
+   iki-kolon `max-w-[1280px]` grid + VillaDetailTabs + sağ kolon
+   (rezervasyon formu, giriş/çıkış saatleri, "Nerede?" haritası) +
+   yorumlar + "Benzer Villalar" TR ile birebir aynı sırada geliyor.
+
+   Tüm UI metinleri i18n dictionary'den çözülür (hardcoded TR metin
+   KALMADI). DB-backed içerik (features/rules/priceIncludes/location)
+   Phase 8D-1'in batch helper'ı ile KOLEKSİYON BAŞINA TEK
+   sorguda çözülür; villa ADI çevrilmez (özel isim → canonical
+   `villa.title`).
+
+   🛡️ ICON KEY (kritik): `getDistanceIconKey` TÜRKÇE anahtar kelimeye
+   bağlı — icon key HER ZAMAN orijinal (TR) `distance.title`'dan
+   hesaplanır, ÇEVRİLMİŞ `displayTitle`'dan DEĞİL.
+
+   ROBOTS: BU FAZDA DEĞİŞMEDİ — hâlâ koşulsuz
+   `{index:false, follow:false}`.
+   =============================================================== */
+import VillaDetailBody from "@/app/components/villa/VillaDetailBody";
+
+/* 🛡️ Gallery/PriceList/AvailabilityInlineCalendar/BookingSidebar/
+   MobileBookingCta'nın ihtiyaç duyduğu veri: TR sayfasındaki AYNI
+   servisler/helper'lar, AYNI argümanlar. */
 import { getVillaImages } from "@/app/services/villa-image/villa-image.read";
+import { getVillaPrices } from "@/app/services/villa-price.service";
+import { getVillaDiscounts } from "@/app/services/villa-discount.service";
 import {
   resolveVillaImageUrl,
   resolveAssetUrlVersioned,
 } from "@/lib/storage.helpers";
-/* 🛡️ Rich text — SEO meta/JSON-LD'de düz metin (render'daki sanitize
-   artık VillaDetailBody içinde). */
-import { stripHtml } from "@/lib/html-sanitize";
-import { getVillaPrices } from "@/app/services/villa-price.service";
-import { getVillaDiscounts } from "@/app/services/villa-discount.service";
-import { getVillaDistances } from "@/app/services/villa-distance.service";
-import { getVillaFeaturesByVilla } from "@/app/services/villa-feature.service";
-import { getRuleItemsByVilla } from "@/app/services/rule-item.service";
-import { getPriceIncludeItemsByVilla } from "@/app/services/price-include-item.service";
-/* 🛡️ FAZ 33 — Villa reviews + global settings (cached). */
-import {
-  getCachedSettings,
-  getCachedVillaReviews,
-  getCachedVillaReviewStats,
-} from "@/lib/cache.helpers";
-/* 🛡️ PHASE 7C — locale-aware canonical + hreflang (yalnız
-   generateMetadata içinde kullanılır; body/render akışına dokunmaz). */
-import { isMultilingualEnabled } from "@/lib/i18n/config";
-import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
-
-import {
-  normalizeYouTubeVideos,
-  type VillaYouTubeVideo,
-} from "@/lib/youtube.helper";
-
-/* 🛡️ FAZ 56H-B/C — External iCal availability arrays. */
 import {
   fetchExternalCalendarStringsForVilla,
   EMPTY_EXTERNAL_STRING_ARRAYS,
 } from "@/lib/external-calendar.public.helper";
-
+import {
+  normalizeYouTubeVideos,
+  type VillaYouTubeVideo,
+} from "@/lib/youtube.helper";
+/* 🛡️ PHASE 10B, Section 10 — JSON-LD (TR'nin KULLANDIĞI AYNI builder'lar). */
 import {
   buildBreadcrumb,
   buildVacationRental,
 } from "@/app/components/seo/StructuredData";
-
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { isValidYmd } from "@/lib/availability.helper";
 
-type Feature = {
-  id: string;
-  name: string;
-};
-
-/* ============================================================
-   🔥 SEO METADATA
-   ============================================================
-   - title fallback: villa.title
-   - description fallback: villa.description'dan kısa excerpt
-   - robots: villa.noindex true ise noindex,nofollow; aksi index,follow
-   - OpenGraph image: villa kapak görseli
-   ============================================================ */
-function makeExcerpt(text: string | undefined, max = 160) {
-  const clean = (text || "")
-    .replace(/<[^>]*>/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-  if (clean.length <= max) return clean;
-  return clean.slice(0, max - 1).trimEnd() + "…";
-}
-
-/* ⚡ PERF — getVillaBySlug request-scoped dedupe.
-   generateMetadata + page aynı request içinde aynı villayı çağırır;
-   React cache() ile TEK DB sorgusu paylaşılır. Dönen DTO, null/404
-   davranışı ve mapVilla çıktısı BİREBİR aynı (yalnız memoize katmanı). */
+/* ⚡ PERF — generateMetadata + page body aynı request içinde aynı
+   villayı çağırır; React cache() ile TEK DB sorgusu paylaşılır. */
 const getVillaBySlugCached = cache((slug: string) => getVillaBySlug(slug));
 
 export async function generateMetadata({
@@ -110,83 +107,75 @@ export async function generateMetadata({
 
   if (!villa) {
     return {
-      title: "Villa bulunamadı",
+      title: "Villa not found",
       robots: { index: false, follow: false },
     };
   }
 
+  /* 🛡️ VİLLA ADI ÇEVRİLMEZ — özel isimdir, her locale'de canonical
+     `villa.title` kullanılır. (seo_title çevirisi AYNEN devam eder.) */
+  const fallbackTitle = villa.title;
+  const translatedSeoTitle = await getVillaTranslatedSeoTitle(
+    villa.id,
+    villa.seo_title,
+    "en"
+  );
   const title =
-    (villa.seo_title && villa.seo_title.trim()) ||
-    villa.title ||
-    "Villa";
-
-  const description =
-    (villa.seo_description && villa.seo_description.trim()) ||
-    makeExcerpt(stripHtml(villa.description), 160);
-
-  // OG: kapak görseli (mapVilla images sıralaması is_cover öncelikli)
-  const cover =
-    villa.images && villa.images.length > 0
-      ? villa.images[0]
-      : undefined;
-
-  const robots = villa.noindex
-    ? { index: false, follow: false }
-    : { index: true, follow: true };
-
-  /* 🛡️ PHASE 7C — CANONICAL + HREFLANG (Phase 7B helper reuse).
-     `buildLocaleAlternates` TEK kaynak — URL'ler elle string
-     birleştirilerek YENİDEN üretilmedi. `multilingual_enabled=false`
-     iken (bugün production) EN/DE route'ları zaten Phase 4A gate'i
-     (`requirePublicLocaleEnabled`) tarafından notFound() ile
-     kapatılıyor; bu yüzden flag false iken hreflang kümesine
-     var-olmayan/404 dönecek EN/DE URL'leri EKLENMEZ — yalnız
-     `canonical` (TR path, ÖNCEKİ DAVRANIŞLA BYTE-IDENTICAL) döner.
-     Flag true olduğunda tr/en/de/x-default karşılıklı üretilir. */
-  const canonicalPath = `/kiralik-villa/${villa.slug || slug}`;
-  const seoSettings = await getCachedSettings().catch(() => null);
+    (translatedSeoTitle && translatedSeoTitle.trim()) || fallbackTitle;
+  const description = await getVillaTranslatedSeoDescription(
+    villa.id,
+    villa.seo_description,
+    villa.description,
+    "en"
+  );
+  const trCanonicalPath = `/kiralik-villa/${villa.slug || slug}`;
+  const settings = await getCachedSettings().catch(() => null);
   const { canonical, languages } = buildLocaleAlternates(
-    canonicalPath,
-    "tr"
+    trCanonicalPath,
+    "en"
   );
 
+  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — KOŞULSUZ `noindex` KALDIRILDI.
+     Bu override Phase 4A/6B/7C'nin GEÇİCİ `LocaleRouteComingSoon`
+     placeholder'ından kalmıştı (bkz. app/sitemap.ts, Phase 7D notu);
+     sayfa Phase 10B'den beri TR ile AYNI, tam çevrilmiş gerçek içeriği
+     render ediyor ve sitemap TR entry'sine bu URL'leri hreflang
+     alternate olarak veriyor. Index politikası artık root layout'un
+     `settings.robots_index/robots_follow` ayarından miras alınır —
+     `multilingual_enabled` kapalıyken route zaten
+     `requirePublicLocaleEnabled()` ile 404 döner.
+     ⚠️ Villa BULUNAMADIĞINDA dönen `noindex` (yukarıda) DEĞİŞMEDİ. */
   return {
     title,
     description,
-    robots,
-    alternates: isMultilingualEnabled(seoSettings)
+    alternates: isMultilingualEnabled(settings)
       ? { canonical, languages }
       : { canonical },
     openGraph: {
       title,
-      description,
       type: "website",
       url: canonical,
-      ...(cover ? { images: [{ url: cover }] } : {}),
-    },
-    twitter: {
-      card: cover ? "summary_large_image" : "summary",
-      title,
-      description,
-      ...(cover ? { images: [cover] } : {}),
     },
   };
 }
 
-export default async function VillaDetail({
+export default async function EnVillaDetailPage({
   params,
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  /* 🛡️ DATE CONTINUITY — /arama → detail geçişinde URL ile
-     taşınan giriş/çıkış tarihleri. BookingSidebar'a initialStart
-     /initialEnd olarak iletilir; refresh-safe (URL source-of-truth).
-     Geçersiz/eksikse BookingSidebar boş state ile açılır (eski davranış). */
+  /* 🛡️ DATE CONTINUITY — TR sayfasındaki AYNI desen (/arama → detay
+     geçişinde URL ile taşınan giriş/çıkış tarihleri). */
   searchParams?: Promise<{
     start?: string | string[];
     end?: string | string[];
   }>;
 }) {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  const dict = getDictionary("en");
+
   const { slug } = await params;
 
   const sp = searchParams ? await searchParams : {};
@@ -194,57 +183,52 @@ export default async function VillaDetail({
   const rawEnd = Array.isArray(sp?.end) ? sp.end[0] : sp?.end;
   const initialStart = isValidYmd(rawStart) ? rawStart : null;
   const initialEnd = isValidYmd(rawEnd) ? rawEnd : null;
-  /* start < end değilse defensive olarak ikisini de düşür (Hero
-     formatDate ve /arama sayfası aynı string-level lexicographic
-     compare kullanıyor → drift yok). */
   const hasInitialRange =
     !!initialStart && !!initialEnd && initialStart < initialEnd;
 
   const villa = await getVillaBySlugCached(slug);
-
   if (!villa) {
+    /* 🛡️ PHASE 10B, Section 13 — TR sayfasının "Villa bulunamadı"
+       bloğuyla AYNI desen/stil, locale-aware metinle. */
     return (
       <section className="section-narrow py-32 text-center">
         <p className="eyebrow !text-[var(--color-stone-400)]">404</p>
         <h2 className="font-display text-3xl text-[var(--color-stone-900)] mt-3">
-          Villa bulunamadı
+          {dict.villa.notFoundTitle}
         </h2>
         <p className="text-[var(--color-stone-500)] mt-3">
-          Aradığın villa kaldırılmış veya taşınmış olabilir.
+          {dict.villa.notFoundBody}
         </p>
         <a href="/arama" className="btn-ghost mt-6 inline-flex">
-          Tüm villalara dön
+          {dict.villa.notFoundCta}
         </a>
       </section>
     );
   }
 
-  /* 🛡️ YouTube videos — VillaDTO.youtube_videos zaten normalize edilmiş
-     (villa.service > mapVilla). Defansif olarak parent component-side
-     bir kez daha normalize edilir; backward-compat (DTO field eksikse).
-     Saf sync map; villa.id'ye bağlı değil. */
+  /* 🛡️ VİLLA ADI ÇEVRİLMEZ — canonical `villa.title`. */
+  const title = villa.title;
+  const description = await getVillaTranslatedDescription(
+    villa.id,
+    villa.description,
+    "en"
+  );
+
   const youtubeVideos: VillaYouTubeVideo[] = normalizeYouTubeVideos(
     villa.youtube_videos
   );
 
-  /* ⚡ PERF — villa yüklendikten sonra çalışan TÜM bağımsız okumalar
-     tek paralel dalgada toplandı (önceki sıralı await zinciri yerine).
-     Veri çıktıları, sıralama ve fallback davranışı BİREBİR korunur:
-       • images/prices/distances/features/rules/priceIncludes: aynı
-         servisler, aynı argüman (villa.id), aynı sonuç sırası.
-       • externalBlocks: helper fail-safe + .catch() ile eski try/catch
-         davranışı aynen (hata → EMPTY_EXTERNAL_STRING_ARRAYS).
-       • settings: getCachedSettings (getPublicSettings sarmalayıcısı) —
-         watermark/logo/footer alanları ve admin invalidation korunur.
-       • reviews/reviewStats: zaten cached; aynı "villa-reviews" tag. */
+  const [distances, features, rules, priceIncludes] = await Promise.all([
+    getVillaDistances(villa.id),
+    getVillaFeaturesByVilla(villa.id) as Promise<Feature[]>,
+    getRuleItemsByVilla(villa.id),
+    getPriceIncludeItemsByVilla(villa.id),
+  ]);
+
   const [
     images,
     prices,
     discounts,
-    distances,
-    features,
-    rules,
-    priceIncludes,
     externalBlocks,
     settings,
     reviews,
@@ -253,10 +237,6 @@ export default async function VillaDetail({
     getVillaImages(villa.id),
     getVillaPrices(villa.id),
     getVillaDiscounts(villa.id),
-    getVillaDistances(villa.id),
-    getVillaFeaturesByVilla(villa.id) as Promise<Feature[]>,
-    getRuleItemsByVilla(villa.id),
-    getPriceIncludeItemsByVilla(villa.id),
     fetchExternalCalendarStringsForVilla(villa.id).catch(
       () => EMPTY_EXTERNAL_STRING_ARRAYS
     ),
@@ -265,11 +245,73 @@ export default async function VillaDetail({
     getCachedVillaReviewStats(villa.id),
   ]);
 
+  /* 🛡️ PHASE 8D-2 — koleksiyon başına TAM 1 batch çeviri sorgusu.
+     ⚠️ MESAFELER BU BATCH'TE YOKTUR: villa başına mesafe çevirisi
+     KALDIRILDI (bkz. aşağıdaki `translatedDistances`). Mesafe
+     başlıkları DB'den değil, statik `distanceLabels` dictionary'sinden
+     çözülür → mesafeler için SIFIR sorgu. */
+  const [featureTranslations, ruleTranslations, priceIncludeTranslations] =
+    await Promise.all([
+      getTranslationsForParents(
+        "villa_feature",
+        features.map((f) => f.id),
+        "en"
+      ),
+      getTranslationsForParents("rule_item", rules.map((r) => r.id), "en"),
+      getTranslationsForParents(
+        "price_include_item",
+        priceIncludes.map((p) => p.id),
+        "en"
+      ),
+    ]);
+
+  /* 🛡️ ICON KEY — ORİJİNAL (TR) d.title'dan hesaplanır. */
+  const translatedDistances: TranslatedDistance[] = distances.map((d) => ({
+    id: d.id,
+    /* 🛡️ PHASE 10D BATCH 4 — 12 CANONICAL başlık için statik i18n
+       dictionary (`getTranslatedDistanceLabel` → `distanceLabels`).
+       Canonical OLMAYAN (legacy/custom) başlık helper'ın kendi
+       fallback'i ile AYNEN döner. Villa başına DB çevirisi YOKTUR. */
+    displayTitle: getTranslatedDistanceLabel(d.title, "en"),
+    /* 🛡️ Mesafe DEĞERİ hiçbir zaman çevrilmez. */
+    displayDistance: d.distance,
+    iconKey: getDistanceIconKey(d.title),
+  }));
+
+  const translatedFeatures: TranslatedFeature[] = features.map((f) => ({
+    id: f.id,
+    displayName: resolveTranslatedField(
+      featureTranslations.get(f.id)?.name,
+      f.name
+    ),
+  }));
+
+  const translatedRules: TranslatedRule[] = rules.map((r) => ({
+    id: r.id,
+    displayTitle: resolveTranslatedField(
+      ruleTranslations.get(r.id)?.title,
+      r.title
+    ),
+  }));
+
+  const translatedPriceIncludes: TranslatedPriceInclude[] = priceIncludes.map(
+    (p) => ({
+      id: p.id,
+      displayTitle: resolveTranslatedField(
+        priceIncludeTranslations.get(p.id)?.title,
+        p.title
+      ),
+    })
+  );
+
+  /* 🛡️ PHASE 10I — BÖLGE ADI ÇEVRİLMEZ: Kalkan/Kaş/Fethiye/Çavdır gibi
+     bölge adları ÖZEL İSİMDİR, EN/DE karşılıkları yoktur. Her locale'de
+     canonical `villa.location` (villa_locations.name) gösterilir.
+     (`villa_location` çeviri okuması KALDIRILDI — bkz. Phase 10I.) */
+  const locationName = villa.location;
+
+  /* 🛡️ TR sayfasındaki AYNI watermark objesi. */
   const watermark = {
-    /* 🛡️ Watermark logo, diğer site-asset'ler (site_logo/footer_logo/hero/
-       favicon) ile AYNI şekilde resolveAssetUrl'den geçer: bucket-relative
-       path → R2/CDN public URL; legacy full URL pass-through. Ham path
-       <img src>'e gidip relative çözülünce 404 oluyordu (watermark görünmüyor). */
     logo:
       resolveAssetUrlVersioned(
         settings?.watermark_logo,
@@ -281,114 +323,72 @@ export default async function VillaDetail({
     size: settings?.watermark_size ?? 25,
   } as const;
 
-  /* 🛡️ Bucket-fix — resolveVillaImageUrl: image_url HEM FULL URL (legacy)
-     HEM relative path (Phase B sonrası) olabilir. villa-images bucket'ından
-     doğru URL üretir. Ham path Gallery component'ine veya JSON-LD'ye
-     gitmesin. */
+  /* 🛡️ Bucket-fix — TR sayfasındaki AYNI resolveVillaImageUrl reuse. */
   const imageUrls = images
     .map((img) => resolveVillaImageUrl(img.image_url))
     .filter((u): u is string => typeof u === "string" && u.length > 0);
 
-  /* 🛡️ JSON-LD structured data — SEO için fonksiyonel kazanç.
-     Fake rating/aggregateRating üretilmez; yalnız var olan villa
-     verisinden VacationRental + BreadcrumbList markup'ı çıkarılır. */
+  /* 🛡️ TR'nin AYNI saf minPrice reduce'u. */
   const minPrice = prices?.length
     ? prices.reduce(
-        (acc, p) =>
-          p.price > 0 && (acc === null || p.price < acc.price)
-            ? { price: Number(p.price), currency: p.currency || "TRY" }
+        (acc, pr) =>
+          pr.price > 0 && (acc === null || pr.price < acc.price)
+            ? { price: Number(pr.price), currency: pr.currency || "TRY" }
             : acc,
         null as { price: number; currency: string } | null
       )
     : null;
 
+  /* 🛡️ PHASE 10B, Section 10 — JSON-LD (locale="en"). */
   const vacationRentalLd = buildVacationRental({
     slug: villa.slug || slug,
-    title: villa.title,
-    description: stripHtml(villa.description),
+    title,
+    description: stripHtml(description || villa.description),
     images: imageUrls,
-    locationName: villa.location || null,
-    latitude:
-      typeof villa.latitude === "number" ? villa.latitude : null,
-    longitude:
-      typeof villa.longitude === "number" ? villa.longitude : null,
+    locationName: locationName || null,
+    latitude: typeof villa.latitude === "number" ? villa.latitude : null,
+    longitude: typeof villa.longitude === "number" ? villa.longitude : null,
     guests: villa.guests,
     bedrooms: villa.bedrooms,
     bathrooms: villa.bathrooms,
-    features: features.map((f) => f.name).filter(Boolean),
+    features: translatedFeatures.map((f) => f.displayName).filter(Boolean),
     priceFrom: minPrice
       ? { amount: minPrice.price, currency: minPrice.currency }
       : null,
-    /* 🛡️ FAZ 33 — AggregateRating (SEO).
-       Yalnız approved review varsa (count > 0) JSON-LD'ye gömülür.
-       Fake / placeholder ÜRETİLMEZ; stats service approved-only
-       hesaplar. */
     aggregateRating:
       reviewStats.count > 0
-        ? {
-            ratingValue: reviewStats.average,
-            reviewCount: reviewStats.count,
-          }
+        ? { ratingValue: reviewStats.average, reviewCount: reviewStats.count }
         : null,
-    /* 🛡️ PHASE 7D — yalnız inLanguage:"tr-TR" için. Diğer TÜM alanlar
-       DEĞİŞMEDİ. */
-    locale: "tr",
+    locale: "en",
   });
 
   const breadcrumbLd = buildBreadcrumb(
     [
-      { name: "Ana sayfa", url: "/" },
-      /* 🛡️ SEO — "Villalar" robots-engelli /arama yerine indexlenebilir
-         arşive (`/kiralik-villalar`) işaret eder. */
-      { name: "Villalar", url: "/kiralik-villalar" },
-      { name: villa.title },
+      { name: dict.header.home, url: "/" },
+      /* 🛡️ SEO — robots-engelli /arama yerine indexlenebilir arşiv. */
+      { name: dict.header.villas, url: "/kiralik-villalar" },
+      { name: title },
     ],
-    /* 🛡️ PHASE 7D — yalnız inLanguage:"tr-TR" için. */
-    "tr"
-  );
-
-  /* 🛡️ PHASE 10G — "caller resolves, component renders": TR'de çeviri
-     katmanı HİÇ çalışmaz, orijinal değerler display alanlarına doğrudan
-     kopyalanır (ek sorgu YOK, çıktı öncekiyle BİREBİR aynı).
-     🛡️ ICON KEY — ORİJİNAL (TR) `d.title`'dan hesaplanır. */
-  const displayDistances: TranslatedDistance[] = distances.map((d) => ({
-    id: d.id,
-    displayTitle: d.title,
-    displayDistance: d.distance,
-    iconKey: getDistanceIconKey(d.title),
-  }));
-  const displayFeatures: TranslatedFeature[] = features.map((f) => ({
-    id: f.id,
-    displayName: f.name,
-  }));
-  const displayRules: TranslatedRule[] = rules.map((r) => ({
-    id: r.id,
-    displayTitle: r.title,
-  }));
-  const displayPriceIncludes: TranslatedPriceInclude[] = priceIncludes.map(
-    (p) => ({
-      id: p.id,
-      displayTitle: p.title,
-    })
+    "en"
   );
 
   return (
     <VillaDetailBody
-      locale="tr"
+      locale="en"
       villa={villa}
-      villaTitle={villa.title}
-      displayLocation={villa.location}
-      displayDescription={villa.description}
+      villaTitle={title}
+      displayLocation={locationName}
+      displayDescription={description}
       imageUrls={imageUrls}
       watermark={watermark}
       youtubeVideos={youtubeVideos}
       prices={prices}
       discounts={discounts}
       externalBlocks={externalBlocks}
-      distances={displayDistances}
-      features={displayFeatures}
-      rules={displayRules}
-      priceIncludes={displayPriceIncludes}
+      distances={translatedDistances}
+      features={translatedFeatures}
+      rules={translatedRules}
+      priceIncludes={translatedPriceIncludes}
       reviews={reviews}
       reviewStats={reviewStats}
       orphanGapRuleEnabled={settings?.orphan_gap_rule_enabled ?? true}
@@ -398,7 +398,7 @@ export default async function VillaDetail({
       contactWhatsappLink={settings?.whatsapp_link ?? null}
       initialStart={hasInitialRange ? initialStart : undefined}
       initialEnd={hasInitialRange ? initialEnd : undefined}
-      bookingSidebarId="booking-sidebar"
+      bookingSidebarId="booking-sidebar-en"
       vacationRentalLd={vacationRentalLd}
       breadcrumbLd={breadcrumbLd}
     />

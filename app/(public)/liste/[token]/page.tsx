@@ -1,26 +1,28 @@
 import SharedListPageBody from "@/app/components/shared-list/SharedListPageBody";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /liste/[token] — admin curator share landing (TR)
+   🛡️ /en/liste/[token] — admin curator share landing (en)
    ===============================================================
-   Gövde `SharedListPageBody`'ye taşındı (TR/EN/DE ORTAK) — bu dosya
-   ince bir sarmalayıcıdır. Token resolve, snapshot sırası, pricing
-   context, `notFound()` davranışı ve SEO politikası (noindex) BİREBİR
-   aynıdır; TR çıktısı DEĞİŞMEDİ.
+   TR ile AYNI gövde (`SharedListPageBody`) — tek fark `locale` prop'u.
+   Token resolve/snapshot/pricing mantığı ve `notFound()` davranışı
+   BİREBİR aynıdır. SEO: TR ile AYNI (noindex/nofollow).
    =============================================================== */
 
 export const dynamic = "force-dynamic";
 
-/* Public-shareable URL → SEO crawl edilmemesi gerekir. */
 export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function SharedVillaListPage({
+export default async function ENSharedVillaListPage({
   params,
 }: {
-  /* Next.js 16 async params kontratı. */
   params: Promise<{ token: string }>;
 }) {
-  return <SharedListPageBody params={params} />;
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  return <SharedListPageBody params={params} locale="en" />;
 }

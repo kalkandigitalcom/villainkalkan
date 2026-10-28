@@ -191,11 +191,11 @@ describe("resolvePageContent — EN", () => {
 
 /* =============================================================== */
 describe("buildCmsPageMetadata — TR (mevcut davranış korunuyor)", () => {
-  it("11) TR: SEO değerleri canonical page'den, canonical '/p/{slug}'", async () => {
+  it("11) TR: SEO değerleri canonical page'den, canonical '/tr/p/{slug}'", async () => {
     const md = await buildCmsPageMetadata(SLUG, "tr");
     expect(md.title).toBe(TR_PAGE.seo_title);
     expect(md.description).toBe(TR_PAGE.seo_description);
-    expect(md.alternates).toEqual({ canonical: `/p/${SLUG}` });
+    expect(md.alternates).toEqual({ canonical: `/tr/p/${SLUG}`, languages: expect.any(Object) });
     expect(md.robots).toEqual({ index: true, follow: true });
     expect(getTranslationMock).not.toHaveBeenCalled();
   });
@@ -205,7 +205,7 @@ describe("buildCmsPageMetadata — TR (mevcut davranış korunuyor)", () => {
     expect(md.openGraph).toMatchObject({
       type: "article",
       title: TR_PAGE.seo_title,
-      url: `/p/${SLUG}`,
+      url: `/tr/p/${SLUG}`,
       images: [{ url: "https://cdn.test/pages/kas.webp" }],
     });
     expect(md.twitter).toMatchObject({ card: "summary_large_image" });
@@ -247,13 +247,13 @@ describe("buildCmsPageMetadata — TR (mevcut davranış korunuyor)", () => {
 });
 
 describe("buildCmsPageMetadata — EN", () => {
-  it("16) EN: SEO başlık/açıklama çeviriden gelir, canonical '/en/p/{slug}'", async () => {
+  it("16) EN: SEO başlık/açıklama çeviriden gelir, canonical '/p/{slug}'", async () => {
     getTranslationMock.mockResolvedValue(EN_ROW);
     const md = await buildCmsPageMetadata(SLUG, "en");
     expect(md.title).toBe(EN_ROW.seo_title);
     expect(md.description).toBe(EN_ROW.seo_description);
-    expect(md.alternates).toEqual({ canonical: `/en/p/${SLUG}` });
-    expect(md.openGraph).toMatchObject({ url: `/en/p/${SLUG}` });
+    expect(md.alternates).toEqual({ canonical: `/p/${SLUG}`, languages: expect.any(Object) });
+    expect(md.openGraph).toMatchObject({ url: `/p/${SLUG}` });
   });
 
   it("18) EN çevirisi yoksa SEO TR'ye düşer ama URL /en/p/… kalır", async () => {
@@ -261,7 +261,7 @@ describe("buildCmsPageMetadata — EN", () => {
     const md = await buildCmsPageMetadata(SLUG, "en");
     expect(md.title).toBe(TR_PAGE.seo_title);
     expect(md.description).toBe(TR_PAGE.seo_description);
-    expect(md.alternates).toEqual({ canonical: `/en/p/${SLUG}` });
+    expect(md.alternates).toEqual({ canonical: `/p/${SLUG}`, languages: expect.any(Object) });
   });
 
   it("19) multilingual AÇIK → hreflang seti eklenir (2 locale + x-default, DE YOK)", async () => {
@@ -269,10 +269,10 @@ describe("buildCmsPageMetadata — EN", () => {
     getTranslationMock.mockResolvedValue(EN_ROW);
     const md = await buildCmsPageMetadata(SLUG, "en");
     expect(md.alternates).toEqual({
-      canonical: `/en/p/${SLUG}`,
+      canonical: `/p/${SLUG}`,
       languages: {
-        tr: `/p/${SLUG}`,
-        en: `/en/p/${SLUG}`,
+        tr: `/tr/p/${SLUG}`,
+        en: `/p/${SLUG}`,
         "x-default": `/p/${SLUG}`,
       },
     });
@@ -289,10 +289,10 @@ describe("buildCmsPageMetadata — EN", () => {
     }
   });
 
-  it("21) settings okunamazsa fail-safe: yalnız canonical", async () => {
+  it("21) settings okunamazsa da hreflang seti üretilir (URL yapısı ayardan bağımsız)", async () => {
     getCachedSettingsMock.mockRejectedValue(new Error("db"));
     getTranslationMock.mockResolvedValue(EN_ROW);
     const md = await buildCmsPageMetadata(SLUG, "en");
-    expect(md.alternates).toEqual({ canonical: `/en/p/${SLUG}` });
+    expect(md.alternates).toEqual({ canonical: `/p/${SLUG}`, languages: expect.any(Object) });
   });
 });

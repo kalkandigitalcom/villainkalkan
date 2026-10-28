@@ -58,12 +58,18 @@ describe("buildVacationRental — Phase 7D inLanguage", () => {
     const withoutLocale = buildVacationRental(BASE_INPUT);
     const withLocale = buildVacationRental({ ...BASE_INPUT, locale: "tr" });
 
-    // inLanguage dışındaki TÜM alanlar birebir aynı.
+    // inLanguage ve dil-özel URL (@id/url: TR → /tr/...) dışındaki TÜM alanlar birebir aynı.
     const rest: Record<string, unknown> = {
       ...(withLocale as Record<string, unknown>),
     };
     delete rest.inLanguage;
-    expect(rest).toEqual(withoutLocale);
+    const base: Record<string, unknown> = { ...(withoutLocale as Record<string, unknown>) };
+    expect(String(rest["@id"])).toBe(`/tr${String(base["@id"])}`);
+    expect(rest.url).toBe(rest["@id"]);
+    // Dil-özel villa URL'leri (@id, url, offers.url) dışında içerik birebir aynı.
+    expect(
+      JSON.parse(JSON.stringify(rest).split("/tr/kiralik-villa/").join("/kiralik-villa/"))
+    ).toEqual(base);
 
     expect(withLocale["@type"]).toBe("VacationRental");
     expect(withLocale.name).toBe("Villa Aşkım");
@@ -94,7 +100,7 @@ describe("buildVacationRental — Phase 7D inLanguage", () => {
 describe("buildBreadcrumb — Phase 7D inLanguage", () => {
   const ITEMS = [
     { name: "Ana sayfa", url: "/" },
-    { name: "Villalar", url: "/arama" },
+    { name: "Villalar", url: "/tr/arama" },
     { name: "Villa Aşkım" },
   ];
 

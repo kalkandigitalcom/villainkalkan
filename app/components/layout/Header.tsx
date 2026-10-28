@@ -26,7 +26,6 @@ import VillaSearchBox from "@/app/components/layout/VillaSearchBox";
    için mümkün; site-wide dynamic-rendering riski YOK). */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import {
-  DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
   localeFromPathname,
 } from "@/lib/i18n/config";
@@ -137,10 +136,10 @@ export default function Header({
   const locale = localeFromPathname(pathname);
   const dictionary = getDictionary(locale);
 
-  /* TR'de ana sayfa hedefi `trHomeHref`; EN/DE'de mevcut
-     `localeHref` davranışı AYNEN korunur. */
-  const homeHref =
-    locale === DEFAULT_LOCALE ? trHomeHref : localeHref("/", locale);
+  /* URL yapısı: TR ana sayfa "/tr", EN ana sayfa "/" — `localeHref`
+     tek kaynak (`trHomeHref` prop'u geriye dönük uyum için kabul edilir). */
+  void trHomeHref;
+  const homeHref = localeHref("/", locale);
 
   /* 🛡️ Header search (desktop + mobile) TÜM sayfalarda gösterilir —
      anasayfa dahil (eski `!isHome` gizleme kaldırıldı). İç sayfa

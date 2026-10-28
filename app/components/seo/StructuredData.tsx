@@ -18,11 +18,18 @@
 import "server-only";
 
 import type { Locale } from "@/lib/i18n/config";
+import { localeHref } from "@/lib/i18n/locale-href";
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   ""
 ).replace(/\/+$/, "");
+
+/** 🛡️ URL YAPISI — locale verilirse path o dilin adresine çevrilir
+ *  (EN prefix'siz, TR `/tr`); verilmezse taban (İngilizce) path. */
+function localized(path: string, locale?: Locale): string {
+  return locale ? localeHref(path, locale) : path;
+}
 
 function abs(path: string): string {
   if (!SITE_URL) return path;
@@ -116,14 +123,14 @@ export function buildWebsite(
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: opts.name,
-    url: abs("/"),
+    url: abs(localized("/", locale)),
     ...(opts.description ? { description: opts.description } : {}),
     ...(locale ? { inLanguage: SCHEMA_IN_LANGUAGE[locale] } : {}),
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: abs("/arama?q={search_term_string}"),
+        urlTemplate: abs(localized("/arama?q={search_term_string}", locale)),
       },
       "query-input": "required name=search_term_string",
     },
@@ -212,7 +219,7 @@ export type VacationRentalInput = {
 };
 
 export function buildVacationRental(v: VacationRentalInput) {
-  const url = abs(`/kiralik-villa/${v.slug}`);
+  const url = abs(localized(`/kiralik-villa/${v.slug}`, v.locale));
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "VacationRental",
@@ -349,7 +356,9 @@ export function buildFaqJsonLd(
    🔥 ItemList — listing sayfası
 ---------------------------------------------- */
 export function buildItemList(
-  items: { slug: string; title: string; image?: string }[]
+  items: { slug: string; title: string; image?: string }[],
+  /** 🛡️ URL YAPISI — opsiyonel; verilirse villa URL'leri o dilde. */
+  locale?: Locale
 ) {
   return {
     "@context": "https://schema.org",
@@ -357,7 +366,7 @@ export function buildItemList(
     itemListElement: items.map((it, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: abs(`/kiralik-villa/${it.slug}`),
+      url: abs(localized(`/kiralik-villa/${it.slug}`, locale)),
       name: it.title,
       ...(it.image ? { image: abs(it.image) } : {}),
     })),
@@ -375,8 +384,10 @@ export function buildArticle(opts: {
   datePublished?: string | null;
   dateModified?: string | null;
   author?: string | null;
+  /** 🛡️ URL YAPISI — opsiyonel; verilirse canonical o dilde. */
+  locale?: Locale;
 }) {
-  const canonical = abs(`/blog/${opts.slug}`);
+  const canonical = abs(localized(`/blog/${opts.slug}`, opts.locale));
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",

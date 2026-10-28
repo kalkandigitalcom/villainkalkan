@@ -1143,7 +1143,7 @@ export default async function AramaPageBody({
      anlamlı değil). */
   const breadcrumbLd = buildBreadcrumb(
     [
-      { name: dict.breadcrumbHome, url: "/" },
+      { name: dict.breadcrumbHome, url: localeHref("/", locale) },
       { name: dict.breadcrumbVillas },
     ],
     /* TR'de `undefined` → JSON-LD çıktısı Phase 13 öncesiyle
@@ -1157,7 +1157,8 @@ export default async function AramaPageBody({
             slug: String(v.slug || ""),
             title: String(v.title || ""),
             image: Array.isArray(v.images) ? v.images[0] : undefined,
-          }))
+          })),
+          locale
         )
       : null;
 

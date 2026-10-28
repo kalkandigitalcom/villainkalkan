@@ -12,7 +12,7 @@
    testin kapsamı DIŞINDA) minimal bir sabit değerle mock'lar.
 
    PHASE 9C AUDIT KARARI: Header/Footer href'leri bu fazda
-   DEĞİŞTİRİLMEDİ — bu test yalnızca BUGÜNKÜ "/favoriler" davranışını
+   DEĞİŞTİRİLMEDİ — bu test yalnızca BUGÜNKÜ "/tr/favoriler" davranışını
    gelecekte yanlışlıkla bozulmaya karşı kilitler. Locale/dictionary
    mantığına dokunmaz.
 =============================================================== */
@@ -29,16 +29,16 @@ const useFavoritesMock = vi.fn(() => ({ count: 0, isHydrated: true }));
 import HeaderFavoritesLink from "@/app/components/favorites/HeaderFavoritesLink";
 
 describe("HeaderFavoritesLink — Phase 9C href regresyon kilidi", () => {
-  it("href her zaman '/favoriler' — count/isHydrated durumundan bağımsız (badge yok)", () => {
+  it("href her zaman '/tr/favoriler' — count/isHydrated durumundan bağımsız (badge yok)", () => {
     render(<HeaderFavoritesLink />);
     const link = screen.getByRole("link", { name: "Favorilerim" });
-    expect(link).toHaveAttribute("href", "/favoriler");
+    expect(link).toHaveAttribute("href", "/tr/favoriler");
   });
 
-  it("href her zaman '/favoriler' — badge görünür durumda da (count > 0)", () => {
+  it("href her zaman '/tr/favoriler' — badge görünür durumda da (count > 0)", () => {
     useFavoritesMock.mockReturnValueOnce({ count: 3, isHydrated: true });
     render(<HeaderFavoritesLink />);
     const link = screen.getByRole("link", { name: "Favorilerim (3)" });
-    expect(link).toHaveAttribute("href", "/favoriler");
+    expect(link).toHaveAttribute("href", "/tr/favoriler");
   });
 });

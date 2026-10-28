@@ -95,17 +95,18 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     useSearchParamsMock.mockReset();
     getPublicSettingsMock.mockReset();
     setCurrencyMock.mockReset();
-    usePathnameMock.mockReturnValue("/");
+    /* Varsayılan senaryo: Türkçe ana sayfa (`/tr`). */
+    usePathnameMock.mockReturnValue("/tr");
     useSearchParamsMock.mockReturnValue(new URLSearchParams(""));
   });
 
   /* --- 1-3) GÖRÜNÜRLÜK --- */
 
-  it("1) multilingual_enabled=false → dil değiştirici RENDER EDİLMEZ, currency seçici etkilenmez", async () => {
+  it("1) multilingual_enabled=false olsa bile dil değiştirici render edilir (URL yapısı gereği iki dilli), currency seçici etkilenmez", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: false }));
     render(<TopBar />);
     expect(await screen.findByText("TRY")).toBeInTheDocument();
-    expect(screen.queryByLabelText(LANGUAGE_LABEL.tr)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(LANGUAGE_LABEL.tr)).toBeInTheDocument();
   });
 
   it("2) multilingual_enabled=true → dil değiştirici render edilir", async () => {
@@ -124,8 +125,8 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
 
   /* --- 4-9) AKTİF LOCALE + HEDEF URL'LER --- */
 
-  it("4) '/' (TR ana sayfa) → aktif locale TR, EN→'/en'", async () => {
-    usePathnameMock.mockReturnValue("/");
+  it("4) '/tr' (TR ana sayfa) → aktif locale TR, EN→'/'", async () => {
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
@@ -133,94 +134,94 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     const trOption = screen.getByRole("option", { name: "TR" });
     expect(trOption.tagName).toBe("SPAN");
     expect(trOption).toHaveAttribute("aria-current", "true");
-    expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute("href", "/en");
+    expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute("href", "/");
   });
 
-  it("5) '/en' (EN ana sayfa) → aktif locale EN, TR→'/'", async () => {
-    usePathnameMock.mockReturnValue("/en");
+  it("5) '/' (EN ana sayfa) → aktif locale EN, TR→'/tr'", async () => {
+    usePathnameMock.mockReturnValue("/");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.en);
     fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
     expect(screen.getByRole("option", { name: "EN" }).tagName).toBe("SPAN");
-    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute("href", "/tr");
   });
 
-  it("6) '/de' artık DESTEKLENMİYOR → aktif locale TR, yalnız TR/EN seçenekleri (DE yok)", async () => {
+  it("6) '/de' artık DESTEKLENMİYOR → aktif locale EN (varsayılan), yalnız TR/EN seçenekleri (DE yok)", async () => {
     usePathnameMock.mockReturnValue("/de");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
-    await screen.findByLabelText(LANGUAGE_LABEL.tr);
-    fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.tr));
-    expect(screen.getByRole("option", { name: "TR" }).tagName).toBe("SPAN");
+    await screen.findByLabelText(LANGUAGE_LABEL.en);
+    fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
+    expect(screen.getByRole("option", { name: "EN" }).tagName).toBe("SPAN");
     expect(screen.getByRole("option", { name: "EN" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "DE" })).not.toBeInTheDocument();
   });
 
-  it("7) '/kiralik-villa/test' (TR villa detay) → EN→'/en/kiralik-villa/test'", async () => {
-    usePathnameMock.mockReturnValue("/kiralik-villa/test");
+  it("7) '/tr/kiralik-villa/test' (TR villa detay) → EN→'/kiralik-villa/test'", async () => {
+    usePathnameMock.mockReturnValue("/tr/kiralik-villa/test");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
     fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.tr));
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
-      "href",
-      "/en/kiralik-villa/test"
-    );
-  });
-
-  it("8) '/en/kiralik-villa/test' (EN villa detay) → TR→'/kiralik-villa/test'", async () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
-    getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
-    render(<TopBar />);
-    await screen.findByLabelText(LANGUAGE_LABEL.en);
-    fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
-    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
       "href",
       "/kiralik-villa/test"
     );
   });
 
-  /* --- 10-12) LOCALE ROUTE'LARI + FALLBACK-TO-HOME ---
-     🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA: `/teklif-al` artık GERÇEK `/en` ve
-     `/de` route'larına sahip → fallback DEĞİL, prefix'li hedef.
-     Fallback davranışı `/blog` (12) ile doğrulanmaya devam ediyor. */
+  it("8) '/kiralik-villa/test' (EN villa detay) → TR→'/tr/kiralik-villa/test'", async () => {
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
+    getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
+    render(<TopBar />);
+    await screen.findByLabelText(LANGUAGE_LABEL.en);
+    fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
+    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
+      "href",
+      "/tr/kiralik-villa/test"
+    );
+  });
 
-  it("10) '/teklif-al' → EN→'/en/teklif-al'", async () => {
-    usePathnameMock.mockReturnValue("/teklif-al");
+  /* --- 10-12) LOCALE ROUTE'LARI + FALLBACK-TO-HOME ---
+     🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA: `/tr/teklif-al` artık GERÇEK `/` ve
+     `/de` route'larına sahip → fallback DEĞİL, prefix'li hedef.
+     Fallback davranışı `/tr/blog` (12) ile doğrulanmaya devam ediyor. */
+
+  it("10) '/tr/teklif-al' → EN→'/teklif-al'", async () => {
+    usePathnameMock.mockReturnValue("/tr/teklif-al");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
     fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.tr));
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      "/en/teklif-al"
-    );
-  });
-
-  it("11) '/en/teklif-al' → TR→'/teklif-al'", async () => {
-    usePathnameMock.mockReturnValue("/en/teklif-al");
-    getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
-    render(<TopBar />);
-    await screen.findByLabelText(LANGUAGE_LABEL.en);
-    fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
-    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
-      "href",
       "/teklif-al"
     );
   });
 
-  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en/blog` GERÇEK route'u
-     eklendi; `/en/blog` fallback DEĞİL, locale-routed. */
-  it("12) '/en/blog' → TR→'/blog' (locale route'u var)", async () => {
-    usePathnameMock.mockReturnValue("/en/blog");
+  it("11) '/teklif-al' → TR→'/tr/teklif-al'", async () => {
+    usePathnameMock.mockReturnValue("/teklif-al");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.en);
     fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
     expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
       "href",
-      "/blog"
+      "/tr/teklif-al"
+    );
+  });
+
+  /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/blog` GERÇEK route'u
+     eklendi; `/blog` fallback DEĞİL, locale-routed. */
+  it("12) '/blog' → TR→'/tr/blog' (locale route'u var)", async () => {
+    usePathnameMock.mockReturnValue("/blog");
+    getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
+    render(<TopBar />);
+    await screen.findByLabelText(LANGUAGE_LABEL.en);
+    fireEvent.click(screen.getByLabelText(LANGUAGE_LABEL.en));
+    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
+      "href",
+      "/tr/blog"
     );
   });
 
@@ -240,7 +241,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   it("14) dil değiştirici açıkken currency seçici KAPALI kalır (bağımsız state)", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
@@ -251,7 +252,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   it("15) telefon/e-posta KORUNUR; sosyal ikonlar ve 7/24 destek YOK — multilingual açık", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
@@ -282,7 +283,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   /* --- 17-19) DROPDOWN MEKANIğİ --- */
 
   it("17) dil değiştirici butonuna tıklayınca dropdown açılır, tekrar tıklayınca kapanır", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     const langButton = await screen.findByLabelText(LANGUAGE_LABEL.tr);
@@ -294,7 +295,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   it("18) dropdown açıkken dışarı tıklanınca kapanır (dışa-tık — currency ile AYNI mekanik)", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     const langButton = await screen.findByLabelText(LANGUAGE_LABEL.tr);
@@ -305,7 +306,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   it("19) aktif locale seçeneği tıklanamaz (span, Link değil) — diğeri tıklanabilir Link", async () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villalar");
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     getPublicSettingsMock.mockResolvedValue(settingsWith({ multilingual_enabled: true }));
     render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.en);
@@ -319,8 +320,8 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   /* ═══════════════════════════════════════════════════════════════
      20-28) QUERY STRING KORUMA (/arama dil değiştirme düzeltmesi)
      ═══════════════════════════════════════════════════════════════
-     SORUN: `/arama?villa-turleri=...&flexible=3` üzerindeyken EN'e
-     geçince `/en/arama` üretiliyor, query KAYBOLUYORDU.
+     SORUN: `/tr/arama?villa-turleri=...&flexible=3` üzerindeyken EN'e
+     geçince `/arama` üretiliyor, query KAYBOLUYORDU.
      BEKLENEN: yalnız locale segmenti değişir; query string EKSİKSİZ,
      AYNEN (parametre adı/değeri/sırası/encoding) korunur. */
 
@@ -340,94 +341,94 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     fireEvent.click(screen.getByLabelText(label));
   }
 
-  it("20) '/arama' + query → EN hedefi AYNI query'yi korur", async () => {
-    await openSwitcher("/arama", ARAMA_QUERY, LANGUAGE_LABEL.tr);
+  it("20) '/tr/arama' + query → EN hedefi AYNI query'yi korur", async () => {
+    await openSwitcher("/tr/arama", ARAMA_QUERY, LANGUAGE_LABEL.tr);
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
-      "href",
-      `/en/arama?${ARAMA_QUERY}`
-    );
-  });
-
-  it("21) '/en/arama' + query → TR hedefi AYNI query'yi korur", async () => {
-    await openSwitcher("/en/arama", ARAMA_QUERY, LANGUAGE_LABEL.en);
-    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
       "href",
       `/arama?${ARAMA_QUERY}`
     );
   });
 
+  it("21) '/arama' + query → TR hedefi AYNI query'yi korur", async () => {
+    await openSwitcher("/arama", ARAMA_QUERY, LANGUAGE_LABEL.en);
+    expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
+      "href",
+      `/tr/arama?${ARAMA_QUERY}`
+    );
+  });
+
   it("23) BİRDEN FAZLA parametre (sıra dahil) korunur", async () => {
     const q = "regions=fethiye&guests=6&start=2026-07-01&end=2026-07-08&page=2";
-    await openSwitcher("/arama", q, LANGUAGE_LABEL.tr);
+    await openSwitcher("/tr/arama", q, LANGUAGE_LABEL.tr);
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      `/en/arama?${q}`
+      `/arama?${q}`
     );
   });
 
   it("24) `villa-turleri` VİRGÜLLÜ değerleri canonical slug olarak korunur (çevrilmez)", async () => {
     const q = "villa-turleri=2027-kiralik-villalar%2Cmuhafazakar-villalar";
-    await openSwitcher("/arama", q, LANGUAGE_LABEL.tr);
+    await openSwitcher("/tr/arama", q, LANGUAGE_LABEL.tr);
     const en = screen.getByRole("option", { name: "EN" });
-    expect(en).toHaveAttribute("href", `/en/arama?${q}`);
+    expect(en).toHaveAttribute("href", `/arama?${q}`);
     expect(en.getAttribute("href")).toContain(
       "2027-kiralik-villalar%2Cmuhafazakar-villalar"
     );
   });
 
   it("25) `flexible` parametresi korunur", async () => {
-    await openSwitcher("/arama", "flexible=3", LANGUAGE_LABEL.tr);
+    await openSwitcher("/tr/arama", "flexible=3", LANGUAGE_LABEL.tr);
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      "/en/arama?flexible=3"
+      "/arama?flexible=3"
     );
   });
 
   it("26) query YOKSA mevcut davranış BİREBİR korunur (soru işareti eklenmez)", async () => {
-    await openSwitcher("/arama", "", LANGUAGE_LABEL.tr);
+    await openSwitcher("/tr/arama", "", LANGUAGE_LABEL.tr);
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      "/en/arama"
+      "/arama"
     );
   });
 
   it("27) URL encoding BOZULMAZ (percent-encoded değerler aynen taşınır)", async () => {
     const q = "regions=k%C3%B6ycegiz%2Csarigerme&villa-turleri=a%2Cb";
-    await openSwitcher("/arama", q, LANGUAGE_LABEL.tr);
+    await openSwitcher("/tr/arama", q, LANGUAGE_LABEL.tr);
     const href = screen.getByRole("option", { name: "EN" })!.getAttribute("href");
-    expect(href).toBe(`/en/arama?${q}`);
+    expect(href).toBe(`/arama?${q}`);
     expect(href).not.toContain("köycegiz");
   });
 
   it("28) DİĞER locale route'ları ETKİLENMEZ: fallback hâlâ query'siz kök, villa detay query'yi korur", async () => {
     /* (a) locale karşılığı OLMAYAN path → hâlâ query'siz locale kökü.
-       🛡️ `/blog` ARTIK locale-routed olduğu için gerçek bir fallback
+       🛡️ `/tr/blog` ARTIK locale-routed olduğu için gerçek bir fallback
        örneğiyle (bilinmeyen path) değiştirildi. */
-    await openSwitcher("/bilinmeyen-sayfa", "foo=bar", LANGUAGE_LABEL.tr);
-    expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute("href", "/en");
+    await openSwitcher("/tr/bilinmeyen-sayfa", "foo=bar", LANGUAGE_LABEL.tr);
+    expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute("href", "/");
     cleanup();
 
-    /* (a1) 🛡️ `/blog` ARTIK locale route'u → query AYNEN korunur */
-    await openSwitcher("/blog", "foo=bar", LANGUAGE_LABEL.tr);
+    /* (a1) 🛡️ `/tr/blog` ARTIK locale route'u → query AYNEN korunur */
+    await openSwitcher("/tr/blog", "foo=bar", LANGUAGE_LABEL.tr);
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      "/en/blog?foo=bar"
+      "/blog?foo=bar"
     );
     cleanup();
 
-    /* (a2) 🛡️ `/teklif-al` ARTIK locale route'u → query AYNEN korunur */
-    await openSwitcher("/teklif-al", "foo=bar", LANGUAGE_LABEL.tr);
+    /* (a2) 🛡️ `/tr/teklif-al` ARTIK locale route'u → query AYNEN korunur */
+    await openSwitcher("/tr/teklif-al", "foo=bar", LANGUAGE_LABEL.tr);
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      "/en/teklif-al?foo=bar"
+      "/teklif-al?foo=bar"
     );
     cleanup();
 
     /* (b) query'siz villa detay → Phase 10C davranışı BİREBİR aynı */
-    await openSwitcher("/kiralik-villa/test", "", LANGUAGE_LABEL.tr);
+    await openSwitcher("/tr/kiralik-villa/test", "", LANGUAGE_LABEL.tr);
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      "/en/kiralik-villa/test"
+      "/kiralik-villa/test"
     );
   });
 
@@ -463,7 +464,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   }
 
   it("29) TR/EN ana sayfa + alt sayfalarda kaldırılan içerik YOK", async () => {
-    for (const p of ["/", "/kiralik-villalar", "/en", "/en/kiralik-villa/test"]) {
+    for (const p of ["/", "/tr/kiralik-villalar", "/", "/kiralik-villa/test"]) {
       await mountAt(p);
       expectRemovedContentAbsent();
       cleanup();
@@ -480,7 +481,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   it("37) EN metinleri ile locale switch query koruması BİRLİKTE çalışır", async () => {
-    usePathnameMock.mockReturnValue("/en/arama");
+    usePathnameMock.mockReturnValue("/arama");
     useSearchParamsMock.mockReturnValue(new URLSearchParams(ARAMA_QUERY));
     getPublicSettingsMock.mockResolvedValue(
       settingsWith({ multilingual_enabled: true })
@@ -489,7 +490,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     fireEvent.click(await screen.findByLabelText(LANGUAGE_LABEL.en));
     expect(screen.getByRole("option", { name: "TR" })).toHaveAttribute(
       "href",
-      `/arama?${ARAMA_QUERY}`
+      `/tr/arama?${ARAMA_QUERY}`
     );
   });
 
@@ -504,7 +505,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   /* 🔄 DİL ÇİPLERİ (md+) — Header'dan TopBar'a taşındı. Dropdown
      kapalıyken DOM'daki tek dil linkleri çiplerdir. */
   it("43b) TR/EN çipleri (DE yok) — aktif dil vurgulu, hedefler aynı sayfada kalır", async () => {
-    usePathnameMock.mockReturnValue("/kiralik-villa/test");
+    usePathnameMock.mockReturnValue("/tr/kiralik-villa/test");
     getPublicSettingsMock.mockResolvedValue(
       settingsWith({ multilingual_enabled: true })
     );
@@ -512,12 +513,12 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
     const active = container.querySelector('span[aria-current="true"]');
     expect(active?.textContent).toBe("TR");
-    expect(container.querySelector('a[href="/en/kiralik-villa/test"]')).toBeTruthy();
+    expect(container.querySelector('a[href="/kiralik-villa/test"]')).toBeTruthy();
     expect(container.querySelector('a[href^="/de"]')).toBeNull();
   });
 
   it("43c) çipler query string'i korur (arama sayfası)", async () => {
-    usePathnameMock.mockReturnValue("/arama");
+    usePathnameMock.mockReturnValue("/tr/arama");
     useSearchParamsMock.mockReturnValue(new URLSearchParams(ARAMA_QUERY));
     getPublicSettingsMock.mockResolvedValue(
       settingsWith({ multilingual_enabled: true })
@@ -525,19 +526,19 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     const { container } = render(<TopBar />);
     await screen.findByLabelText(LANGUAGE_LABEL.tr);
     expect(
-      container.querySelector(`a[href="/en/arama?${ARAMA_QUERY}"]`)
+      container.querySelector(`a[href="/arama?${ARAMA_QUERY}"]`)
     ).toBeTruthy();
   });
 
-  it("43d) multilingual KAPALI → çip YOK", async () => {
+  it("43d) multilingual KAPALI olsa bile çipler VAR (URL yapısı gereği iki dilli site)", async () => {
     usePathnameMock.mockReturnValue("/");
     getPublicSettingsMock.mockResolvedValue(
       settingsWith({ multilingual_enabled: false })
     );
     const { container } = render(<TopBar />);
     await screen.findByText("TRY");
-    expect(container.querySelector('span[aria-current="true"]')).toBeNull();
-    expect(container.querySelector('a[href="/en"]')).toBeNull();
+    expect(container.querySelector('span[aria-current="true"]')).toBeTruthy();
+    expect(container.querySelector('a[href="/tr"]')).toBeTruthy();
   });
 
   it("44) KUR dropdown'ı — her seçenek KENDİ sembolünü gösterir", async () => {
@@ -582,7 +583,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   it("47) DİL dropdown'ı — her seçenek KENDİ bayrağını gösterir (emoji DEĞİL, /flags/*.svg)", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue(
       settingsWith({ multilingual_enabled: true })
     );
@@ -602,7 +603,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
   });
 
   it("48) DİL seçimi — bayrak eklenmesi hedef URL'leri DEĞİŞTİRMEDİ", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue(
       settingsWith({ multilingual_enabled: true })
     );
@@ -611,7 +612,7 @@ describe("TopBar — Phase 10C dil değiştirici", () => {
     expect(screen.getByRole("option", { name: "TR" }).tagName).toBe("SPAN");
     expect(screen.getByRole("option", { name: "EN" })).toHaveAttribute(
       "href",
-      "/en"
+      "/"
     );
   });
 });

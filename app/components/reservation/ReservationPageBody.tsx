@@ -13,6 +13,7 @@ import PageHero from "@/app/components/ui/PageHero";
    KURULMADI. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ /rezervasyon/[slug] — ORTAK GÖVDE
@@ -68,7 +69,7 @@ export default async function ReservationPageBody({
   /* 🛡️ TR'de prefix YOK → href'ler BİREBİR eskisi gibi ("/",
      "/kiralik-villalar"). EN/DE'de mevcut gerçek route'lara işaret
      eder. Yeni routing sistemi kurulmadı. */
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
 
   if (!slug) {
     return (

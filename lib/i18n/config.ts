@@ -32,6 +32,15 @@ export const SUPPORTED_LOCALES: readonly Locale[] = ["tr", "en"];
 
 export const DEFAULT_LOCALE: Locale = "tr";
 
+/* 🛡️ URL YAPISI — İngilizce varsayılan dil (prefix'siz), Türkçe `/tr`.
+   `DEFAULT_LOCALE` ("tr") İÇERİK/ÇEVİRİ katmanının canonical dili olarak
+   KALIR (DB canonical alanları Türkçe; çeviri fallback'leri ona düşer).
+   URL katmanı ise bu iki sabiti kullanır:
+     ROUTE_DEFAULT_LOCALE  → prefix'siz URL'lerin dili ("/", "/kiralik-villalar")
+     PREFIXED_ROUTE_LOCALE → `/tr` prefix'li URL'lerin dili ("/tr", "/tr/arama") */
+export const ROUTE_DEFAULT_LOCALE: Locale = "en";
+export const PREFIXED_ROUTE_LOCALE: Locale = "tr";
+
 /** Type guard — yalnız `SUPPORTED_LOCALES` içindeki 2 değeri kabul eder. */
 export function isSupportedLocale(value: unknown): value is Locale {
   return (
@@ -83,12 +92,15 @@ export function resolveLocale(explicitLocale?: string | null): Locale {
 export function localeFromPathname(
   pathname: string | null | undefined
 ): Locale {
-  if (!pathname) return DEFAULT_LOCALE;
+  /* URL yapısı: `/tr` (tam segment) → Türkçe; diğer her şey (prefix'siz
+     ve eski `/en/...` adresleri) → İngilizce. `/trabzon` gibi path'ler
+     segment-sınırlı karşılaştırma sayesinde `/tr` sayılmaz. */
+  if (!pathname) return ROUTE_DEFAULT_LOCALE;
   const firstSegment = pathname.split("/")[1] || "";
-  if (firstSegment === "en") {
-    return firstSegment;
+  if (firstSegment === PREFIXED_ROUTE_LOCALE) {
+    return PREFIXED_ROUTE_LOCALE;
   }
-  return DEFAULT_LOCALE;
+  return ROUTE_DEFAULT_LOCALE;
 }
 
 /* ===============================================================
@@ -106,7 +118,13 @@ type SettingsLocaleFields = {
 export function isMultilingualEnabled(
   settings: SettingsLocaleFields | null | undefined
 ): boolean {
-  return !!settings?.multilingual_enabled;
+  /* 🛡️ URL YAPISI GEREĞİ HER ZAMAN AÇIK: İngilizce varsayılan dil kökte
+     (`/`), Türkçe `/tr` altında yaşar — site artık yapısal olarak iki
+     dillidir. `settings.multilingual_enabled` alanı (migration 081) DB'de
+     ve admin formunda AYNEN durur, ancak public tarafı kapatamaz (aksi
+     halde kök İngilizce sayfalar 404 olur / çevirileri okunmazdı). */
+  void settings;
+  return true;
 }
 
 /** settings.public_default_locale'i güvenli bir Locale'e çevirir.

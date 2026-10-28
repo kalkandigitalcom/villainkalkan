@@ -450,12 +450,12 @@ describe("H) buildHomeMetadata", () => {
     });
   });
 
-  it("29) canonical — TR '/', EN '/en'", async () => {
+  it("29) canonical — TR '/tr', EN '/'", async () => {
     const { buildHomeMetadata } = await import(
       "@/app/components/home/home-metadata"
     );
-    expect((await buildHomeMetadata("tr")).alternates?.canonical).toBe("/");
-    expect((await buildHomeMetadata("en")).alternates?.canonical).toBe("/en");
+    expect((await buildHomeMetadata("tr")).alternates?.canonical).toBe("/tr");
+    expect((await buildHomeMetadata("en")).alternates?.canonical).toBe("/");
   });
 
   it("30) hreflang — tr/en/x-default her locale'de AYNI küme (DE YOK)", async () => {
@@ -466,8 +466,8 @@ describe("H) buildHomeMetadata", () => {
       const langs = (await buildHomeMetadata(locale)).alternates
         ?.languages as Record<string, string>;
       expect(langs).toEqual({
-        tr: "/",
-        en: "/en",
+        tr: "/tr",
+        en: "/",
         "x-default": "/",
       });
     }

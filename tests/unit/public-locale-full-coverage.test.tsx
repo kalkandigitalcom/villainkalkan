@@ -2,8 +2,8 @@
    🛡️ PUBLIC ÇOKLU DİL — TAM KAPSAM (blog + token sayfaları)
    ===============================================================
    Kapsam:
-     • `/en/blog`, `/en/blog/[slug]`, `/en/liste/[token]`,
-       `/en/v/[token]` route dosyalarının VARLIĞI + locale gate
+     • `/blog`, `/blog/[slug]`, `/liste/[token]`,
+       `/v/[token]` route dosyalarının VARLIĞI + locale gate
      • `blog`, `sharedList`, `privateVilla` dictionary namespace'lerinin
        TR/EN bütünlüğü ve TR byte-identity
      • `blog_post` translation entity'sinin registry'de olması
@@ -31,10 +31,10 @@ const LOCALES: Locale[] = ["tr", "en"];
    =============================================================== */
 
 const ROUTE_PAIRS: Array<[string, string]> = [
-  ["app/(public)/blog/page.tsx", "app/(public)/en/blog/page.tsx"],
-  ["app/(public)/blog/[slug]/page.tsx", "app/(public)/en/blog/[slug]/page.tsx"],
-  ["app/(public)/liste/[token]/page.tsx", "app/(public)/en/liste/[token]/page.tsx"],
-  ["app/(public)/v/[token]/page.tsx", "app/(public)/en/v/[token]/page.tsx"],
+  ["app/(public)/tr/blog/page.tsx", "app/(public)/blog/page.tsx"],
+  ["app/(public)/tr/blog/[slug]/page.tsx", "app/(public)/blog/[slug]/page.tsx"],
+  ["app/(public)/tr/liste/[token]/page.tsx", "app/(public)/liste/[token]/page.tsx"],
+  ["app/(public)/tr/v/[token]/page.tsx", "app/(public)/v/[token]/page.tsx"],
 ];
 
 describe("1) blog + token sayfalarının TR/EN route dosyaları var", () => {
@@ -64,7 +64,8 @@ describe("1) blog + token sayfalarının TR/EN route dosyaları var", () => {
       "v/[token]/page.tsx": "PrivateVillaPageBody",
     };
     for (const [key, body] of Object.entries(bodies)) {
-      for (const prefix of ["app/(public)/", "app/(public)/en/"]) {
+      /* URL yapısı: EN sayfaları kökte, TR kopyaları `tr/` altında. */
+      for (const prefix of ["app/(public)/tr/", "app/(public)/"]) {
         const src = readFileSync(resolve(process.cwd(), prefix + key), "utf8");
         expect(src, prefix + key).toContain(body);
       }
@@ -234,18 +235,18 @@ describe("4) blog_post translation entity", () => {
 
 describe("5) locale switcher blog + token sayfalarında segmenti korur", () => {
   it.each([
-    ["/blog", "/blog", "/en/blog"],
-    ["/blog/kas-rehberi", "/blog/kas-rehberi", "/en/blog/kas-rehberi"],
-    ["/en/liste/AbC-123_x", "/liste/AbC-123_x", "/en/liste/AbC-123_x"],
-    ["/en/v/tok_9Z", "/v/tok_9Z", "/en/v/tok_9Z"],
+    ["/tr/blog", "/tr/blog", "/blog"],
+    ["/tr/blog/kas-rehberi", "/tr/blog/kas-rehberi", "/blog/kas-rehberi"],
+    ["/liste/AbC-123_x", "/tr/liste/AbC-123_x", "/liste/AbC-123_x"],
+    ["/v/tok_9Z", "/tr/v/tok_9Z", "/v/tok_9Z"],
   ])("%s", (path, tr, en) => {
     expect(getLocaleSwitchTargets(path)).toEqual({ tr, en });
   });
 
   it("query string AYNEN korunur", () => {
-    expect(getLocaleSwitchTargets("/v/tok_9Z", "start=2026-06-04&end=2026-06-11")).toEqual({
-      tr: "/v/tok_9Z?start=2026-06-04&end=2026-06-11",
-      en: "/en/v/tok_9Z?start=2026-06-04&end=2026-06-11",
+    expect(getLocaleSwitchTargets("/tr/v/tok_9Z", "start=2026-06-04&end=2026-06-11")).toEqual({
+      tr: "/tr/v/tok_9Z?start=2026-06-04&end=2026-06-11",
+      en: "/v/tok_9Z?start=2026-06-04&end=2026-06-11",
     });
   });
 });
@@ -260,10 +261,10 @@ const SOURCE_LOCKED = [
   "app/components/blog/blog-metadata.ts",
   "app/components/private-villa/PrivateVillaPageBody.tsx",
   "app/components/private-villa/private-villa-metadata.ts",
-  "app/(public)/blog/page.tsx",
-  "app/(public)/blog/[slug]/page.tsx",
-  "app/(public)/liste/[token]/page.tsx",
-  "app/(public)/v/[token]/page.tsx",
+  "app/(public)/tr/blog/page.tsx",
+  "app/(public)/tr/blog/[slug]/page.tsx",
+  "app/(public)/tr/liste/[token]/page.tsx",
+  "app/(public)/tr/v/[token]/page.tsx",
 ];
 
 describe("6) source-lock — yeni public gövdelerde hardcoded TR metin yok", () => {

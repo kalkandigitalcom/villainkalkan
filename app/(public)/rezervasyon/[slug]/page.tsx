@@ -1,22 +1,32 @@
+import type { Metadata } from "next";
+
 import ReservationPageBody from "@/app/components/reservation/ReservationPageBody";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /rezervasyon/[slug] — PUBLIC REZERVASYON (TR)
+   🛡️ /en/rezervasyon/[slug] — PUBLIC REZERVASYON (EN)
    ===============================================================
-   Sayfa gövdesi `app/components/reservation/ReservationPageBody.tsx`'e
-   TAŞINDI (DOM/CSS/veri akışı/servis çağrıları DEĞİŞTİRİLMEDEN) —
-   `/en/rezervasyon/[slug]` ve `/de/rezervasyon/[slug]` AYNI gövdeyi
-   render eder; kodun ikinci/üçüncü kopyası YOKTUR.
+   TR ile AYNI gövde (`ReservationPageBody`) — tek fark `locale`
+   prop'u. Servis çağrıları, fiyat/snapshot/ödeme/pool heating
+   mantığı, API payload'ı ve rezervasyon oluşturma akışı BİREBİR
+   aynıdır; bu fazda hiçbiri değiştirilmedi.
 
-   TR DAVRANIŞI DEĞİŞMEDİ:
-     • URL `/rezervasyon/[slug]` aynı.
-     • `locale="tr"` → dictionary TR değerleri eski hardcoded
-       metinlerle BİREBİR.
-     • Route segment config (`dynamic`/`revalidate`) EKLENMEDİ.
-     • `generateMetadata` YOK (eskiden de yoktu) — robots.ts zaten
-       `/rezervasyon/` segmentini Disallow ediyor (DEĞİŞTİRİLMEDİ).
-     • TR'de locale gate (`requirePublicLocaleEnabled`) ÇAĞRILMAZ.
+   PHASE 4A/4B'den KORUNAN DAVRANIŞ:
+     • `setRequestLocale("en")` — request-scoped locale işareti.
+     • `await requirePublicLocaleEnabled()` — `multilingual_enabled`
+       kapalıyken notFound() → 404 (bugünkü production davranışı).
+     • `robots: { index: false, follow: false }` — PHASE 4A'dan
+       DEVRALINDI. `/rezervasyon/` TR tarafında robots.ts ile zaten
+       Disallow; robots.ts/sitemap.ts'ye DOKUNULMADI.
+
+   Not: `LocaleRouteComingSoon` placeholder'ı yerini gerçek gövdeye
+   bıraktı.
    =============================================================== */
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -29,12 +39,18 @@ type Props = {
   }>;
 };
 
-export default async function ReservationPage({ params, searchParams }: Props) {
+export default async function EnReservationPage({
+  params,
+  searchParams,
+}: Props) {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
   return (
     <ReservationPageBody
       params={params}
       searchParams={searchParams}
-      locale="tr"
+      locale="en"
     />
   );
 }

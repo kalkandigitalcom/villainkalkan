@@ -260,14 +260,21 @@ describe("C) server çözümü", () => {
 describe("D) metadata", () => {
   const sp = (o: Record<string, string> = {}) => Promise.resolve(o);
 
-  it("kategori TR: title/description/canonical/OG; hreflang kapalı", async () => {
+  it("kategori TR: title/description/canonical (/tr/...)/OG; hreflang her zaman üretilir", async () => {
     const { buildTaxonomyLandingMetadata } = await import(
       "@/app/components/search/TaxonomyLandingPageBody"
     );
     const m = await buildTaxonomyLandingMetadata("category", "muhafazakar-villalar", "tr", sp());
     expect(m.title).toBe("Muhafazakar Villalar | Balayı Villanız");
     expect(String(m.description)).toContain("Muhafazakar Villalar");
-    expect(m.alternates).toEqual({ canonical: "/villa-turleri/muhafazakar-villalar" });
+    expect(m.alternates).toEqual({
+      canonical: "/tr/villa-turleri/muhafazakar-villalar",
+      languages: {
+        tr: "/tr/villa-turleri/muhafazakar-villalar",
+        en: "/villa-turleri/muhafazakar-villalar",
+        "x-default": "/villa-turleri/muhafazakar-villalar",
+      },
+    });
     expect((m.openGraph as { title: string }).title).toBe(m.title);
     expect((m.twitter as { title: string }).title).toBe(m.title);
     expect(m.robots).toBeUndefined();
@@ -285,7 +292,7 @@ describe("D) metadata", () => {
     );
   });
 
-  it("EN kategori adı mevcut çeviri sisteminden; canonical /en/... ; hreflang açık", async () => {
+  it("EN kategori adı mevcut çeviri sisteminden; canonical prefix'siz ; hreflang açık", async () => {
     settingsMock.mockResolvedValue({ site_name: "Balayı Villanız", multilingual_enabled: true });
     const { buildTaxonomyLandingMetadata } = await import(
       "@/app/components/search/TaxonomyLandingPageBody"
@@ -293,10 +300,10 @@ describe("D) metadata", () => {
     const m = await buildTaxonomyLandingMetadata("category", "muhafazakar-villalar", "en", sp());
     expect(m.title).toBe("Conservative Villas | Balayı Villanız");
     expect(m.alternates).toEqual({
-      canonical: "/en/villa-turleri/muhafazakar-villalar",
+      canonical: "/villa-turleri/muhafazakar-villalar",
       languages: {
-        tr: "/villa-turleri/muhafazakar-villalar",
-        en: "/en/villa-turleri/muhafazakar-villalar",
+        tr: "/tr/villa-turleri/muhafazakar-villalar",
+        en: "/villa-turleri/muhafazakar-villalar",
         "x-default": "/villa-turleri/muhafazakar-villalar",
       },
     });
@@ -313,19 +320,19 @@ describe("D) metadata", () => {
     );
     const p2 = await buildTaxonomyLandingMetadata("category", "muhafazakar-villalar", "tr", sp({ page: "2" }));
     expect((p2.alternates as { canonical: string }).canonical).toBe(
-      "/villa-turleri/muhafazakar-villalar?page=2"
+      "/tr/villa-turleri/muhafazakar-villalar?page=2"
     );
     const big = await buildTaxonomyLandingMetadata(
       "category", "muhafazakar-villalar", "tr", sp({ page: "2", pageSize: "30" })
     );
     expect((big.alternates as { canonical: string }).canonical).toBe(
-      "/villa-turleri/muhafazakar-villalar"
+      "/tr/villa-turleri/muhafazakar-villalar"
     );
     const sorted = await buildTaxonomyLandingMetadata(
       "category", "muhafazakar-villalar", "tr", sp({ sort: "price-asc" })
     );
     expect((sorted.alternates as { canonical: string }).canonical).toBe(
-      "/villa-turleri/muhafazakar-villalar"
+      "/tr/villa-turleri/muhafazakar-villalar"
     );
   });
 
@@ -373,8 +380,8 @@ describe("E) gövde", () => {
     expect(hero.title).toBe("Muhafazakar Villalar");
     expect(hero.eyebrow).toBe("Villa Kategorisi");
     expect(hero.breadcrumb).toEqual([
-      { name: tr.villasArchive.breadcrumbHome, href: "/" },
-      { name: tr.villasArchive.breadcrumbCurrent, href: "/kiralik-villalar" },
+      { name: tr.villasArchive.breadcrumbHome, href: "/tr" },
+      { name: tr.villasArchive.breadcrumbCurrent, href: "/tr/kiralik-villalar" },
       { name: "Muhafazakar Villalar" },
     ]);
   });
@@ -383,13 +390,13 @@ describe("E) gövde", () => {
     await renderLanding("category", "muhafazakar-villalar");
     const sb = sidebarProps.at(-1)!;
     expect(sb.mode).toBe("redirect");
-    expect(sb.basePath).toBe("/arama");
+    expect(sb.basePath).toBe("/tr/arama");
     expect((sb.initial as { categories: string[] }).categories).toEqual(["t-muh"]);
 
     await renderLanding("region", "bodrum");
     const rb = sidebarProps.at(-1)!;
     expect((rb.initial as { regions: string[] }).regions).toEqual(["l-bodrum"]);
-    expect(rb.basePath).toBe("/arama");
+    expect(rb.basePath).toBe("/tr/arama");
   });
 
   it("bölge: grubun villaları + 'Bodrum Villaları' başlığı", async () => {
@@ -406,8 +413,8 @@ describe("E) gövde", () => {
     });
     const { container } = await renderLanding("category", "muhafazakar-villalar");
     const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
-    expect(hrefs).toContain("/villa-turleri/muhafazakar-villalar?page=2");
-    expect(hrefs.some((h) => h?.startsWith("/kiralik-villalar?"))).toBe(false);
+    expect(hrefs).toContain("/tr/villa-turleri/muhafazakar-villalar?page=2");
+    expect(hrefs.some((h) => h?.startsWith("/tr/kiralik-villalar?"))).toBe(false);
   });
 
   it("boş kategori: sayfa render edilir (boş durum), kart yok", async () => {
@@ -427,7 +434,7 @@ describe("E) gövde", () => {
     render(el);
     expect(screen.getAllByTestId("villa-card")).toHaveLength(15);
     expect(heroProps.at(-1)!.breadcrumb).toEqual([
-      { name: tr.villasArchive.breadcrumbHome, href: "/" },
+      { name: tr.villasArchive.breadcrumbHome, href: "/tr" },
       { name: tr.villasArchive.breadcrumbCurrent },
     ]);
     expect((sidebarProps.at(-1)!.initial as { categories: string[] }).categories).toEqual([]);
@@ -486,8 +493,9 @@ describe("G) link üreticileri", () => {
     const el = await LocationCollection({ locale: "tr" });
     const { container } = render(el!);
     const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
-    expect(hrefs).toContain("/bolgeler/bodrum");
-    expect(hrefs).toContain("/arama?bolgeler=mesudiye");
+    /* TR anasayfa kartları `/tr` prefix'li adrese gider. */
+    expect(hrefs).toContain("/tr/bolgeler/bodrum");
+    expect(hrefs).toContain("/tr/arama?bolgeler=mesudiye");
   });
 
   it("footer taxonomy linki basmıyor; anasayfa villa tipi carousel'i kaldırıldı (kaynak kilidi)", () => {
@@ -507,12 +515,13 @@ describe("H) route dosyaları", () => {
   const read = (p: string) => fs.readFileSync(path.join(process.cwd(), p), "utf-8");
   for (const [seg, kind] of [["villa-turleri", "category"], ["bolgeler", "region"]] as const) {
     it(`${seg}: TR/EN dosyaları ortak gövdeyi doğru locale ile çağırır; DE route YOK`, () => {
-      const trSrc = read(`app/(public)/${seg}/[slug]/page.tsx`);
+      const trSrc = read(`app/(public)/tr/${seg}/[slug]/page.tsx`);
       expect(trSrc).toContain(`kind="${kind}"`);
       expect(trSrc).toContain('locale="tr"');
       expect(trSrc).not.toContain("requirePublicLocaleEnabled");
       for (const loc of ["en"]) {
-        const s = read(`app/(public)/${loc}/${seg}/[slug]/page.tsx`);
+        void loc; /* URL yapısı: EN sayfası kökte (prefix'siz). */
+        const s = read(`app/(public)/${seg}/[slug]/page.tsx`);
         expect(s).toContain(`locale="${loc}"`);
         expect(s).toContain(`setRequestLocale("${loc}")`);
         expect(s).toContain("await requirePublicLocaleEnabled();");

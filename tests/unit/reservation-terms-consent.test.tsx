@@ -44,9 +44,9 @@ import ReservationForm from "@/app/components/reservation/ReservationForm";
 const LOCALES: Locale[] = ["tr", "en"];
 
 const SLUGS = {
-  cancellation: "/p/rezervasyon-ve-iptal-kosullari",
-  distanceSales: "/p/mesafeli-satis-sozlesmesi",
-  privacy: "/p/kvkk-ve-gizlilik-politikasi",
+  cancellation: "/tr/p/rezervasyon-ve-iptal-kosullari",
+  distanceSales: "/tr/p/mesafeli-satis-sozlesmesi",
+  privacy: "/tr/p/kvkk-ve-gizlilik-politikasi",
 } as const;
 
 const VILLA = {
@@ -279,13 +279,13 @@ describe("6-7-8) Link hedefleri aktif locale'i TAŞIR", () => {
       a.getAttribute("href")
     );
     expect(hrefs).toEqual([
-      "/p/rezervasyon-ve-iptal-kosullari",
-      "/p/mesafeli-satis-sozlesmesi",
-      "/p/kvkk-ve-gizlilik-politikasi",
+      "/tr/p/rezervasyon-ve-iptal-kosullari",
+      "/tr/p/mesafeli-satis-sozlesmesi",
+      "/tr/p/kvkk-ve-gizlilik-politikasi",
     ]);
   });
 
-  it("7b) EN → /en/p/...", async () => {
+  it("7b) EN → /p/... (varsayılan dil, prefix'siz)", async () => {
     for (const loc of ["en"] as const) {
       renderForm(loc);
       await waitFor(() => expect(terms()).toBeTruthy());
@@ -296,9 +296,9 @@ describe("6-7-8) Link hedefleri aktif locale'i TAŞIR", () => {
         a.getAttribute("href")
       );
       expect(hrefs).toEqual([
-        `/${loc}/p/rezervasyon-ve-iptal-kosullari`,
-        `/${loc}/p/mesafeli-satis-sozlesmesi`,
-        `/${loc}/p/kvkk-ve-gizlilik-politikasi`,
+        "/p/rezervasyon-ve-iptal-kosullari",
+        "/p/mesafeli-satis-sozlesmesi",
+        "/p/kvkk-ve-gizlilik-politikasi",
       ]);
       cleanup();
     }

@@ -60,11 +60,12 @@ import Footer from "@/app/components/layout/Footer";
 const LOCALES = ["tr", "en"] as const;
 type L = (typeof LOCALES)[number];
 /** Aktif locale için beklenen prefix. */
-const PREFIX: Record<L, string> = { tr: "", en: "/en" };
+/* URL yapısı: İngilizce varsayılan dil (prefix'siz), Türkçe `/tr`. */
+const PREFIX: Record<L, string> = { tr: "/tr", en: "" };
 /** O locale'in "bulunduğu sayfa" pathname'i. */
 const ON_PAGE: Record<L, string> = {
-  tr: "/kiralik-villa/villa-lorien",
-  en: "/en/kiralik-villa/villa-lorien",
+  tr: "/tr/kiralik-villa/villa-lorien",
+  en: "/kiralik-villa/villa-lorien",
 };
 
 const MENU = [
@@ -115,29 +116,31 @@ function PublicChrome() {
 }
 
 describe("localeHref — birim davranışı", () => {
-  it("1) TR çıktısı GİRDİYLE BİREBİR AYNI (canonical route korunur)", () => {
+  it("1) EN (varsayılan dil) çıktısı GİRDİYLE BİREBİR AYNI (prefix'siz)", () => {
     for (const p of ["/", "/teklif-al", "/p/x", "/arama?a=1", "/blog/y"]) {
-      expect(localeHref(p, "tr")).toBe(p);
+      expect(localeHref(p, "en")).toBe(p);
     }
   });
 
-  it("2) EN prefix uygular; kök için çifte slash üretmez", () => {
-    expect(localeHref("/", "en")).toBe("/en");
-    expect(localeHref("/teklif-al", "en")).toBe("/en/teklif-al");
-    expect(localeHref("/p/hakkimizda", "en")).toBe("/en/p/hakkimizda");
+  it("2) TR '/tr' prefix'i uygular; kök için çifte slash üretmez", () => {
+    expect(localeHref("/", "tr")).toBe("/tr");
+    expect(localeHref("/teklif-al", "tr")).toBe("/tr/teklif-al");
+    expect(localeHref("/p/hakkimizda", "tr")).toBe("/tr/p/hakkimizda");
   });
 
   it("3) query ve hash AYNEN taşınır (kontrat değişmez)", () => {
-    expect(localeHref("/arama?villa-turleri=balayi&flexible=3", "en")).toBe(
-      "/en/arama?villa-turleri=balayi&flexible=3"
+    expect(localeHref("/arama?villa-turleri=balayi&flexible=3", "tr")).toBe(
+      "/tr/arama?villa-turleri=balayi&flexible=3"
     );
-    expect(localeHref("/arama#sonuc", "en")).toBe("/en/arama#sonuc");
-    expect(localeHref("/?a=1", "en")).toBe("/en?a=1");
+    expect(localeHref("/arama#sonuc", "tr")).toBe("/tr/arama#sonuc");
+    expect(localeHref("/?a=1", "tr")).toBe("/tr?a=1");
   });
 
-  it("4) idempotent — zaten prefix'li path yeniden prefix'lenmez", () => {
-    expect(localeHref("/en/blog", "en")).toBe("/en/blog");
-    expect(localeHref("/en/blog", "tr")).toBe("/blog");
+  it("4) idempotent — zaten prefix'li path yeniden prefix'lenmez; eski /en soyulur", () => {
+    expect(localeHref("/tr/blog", "tr")).toBe("/tr/blog");
+    expect(localeHref("/tr/blog", "en")).toBe("/blog");
+    expect(localeHref("/en/blog", "en")).toBe("/blog");
+    expect(localeHref("/en/blog", "tr")).toBe("/tr/blog");
   });
 
   it("5) dış bağlantı / özel şema AYNEN korunur", () => {
@@ -186,19 +189,19 @@ describe("Header — iç linkler aktif locale'i taşır", () => {
     ).toBeTruthy();
   });
 
-  it("7) EN'de HİÇBİR iç link prefix'siz TR route'una gitmiyor", () => {
-    usePathnameMock.mockReturnValue(ON_PAGE.en);
-    const { container } = render(<PublicChrome />);
-    for (const h of allHrefs(container)) {
-      expect(h, `prefix'siz link: ${h}`).toMatch(/^\/en(\/|$|\?)/);
-    }
-  });
-
-  it("9) TR'de linkler canonical (prefix'siz) KALIR — TR davranışı değişmedi", () => {
+  it("7) TR'de HİÇBİR iç link prefix'siz (İngilizce) route'a gitmiyor", () => {
     usePathnameMock.mockReturnValue(ON_PAGE.tr);
     const { container } = render(<PublicChrome />);
     for (const h of allHrefs(container)) {
-      expect(h).not.toMatch(/^\/en(\/|$)/);
+      expect(h, `prefix'siz link: ${h}`).toMatch(/^\/tr(\/|$|\?)/);
+    }
+  });
+
+  it("9) EN'de linkler prefix'siz KALIR ve eski /en veya /tr taşımaz", () => {
+    usePathnameMock.mockReturnValue(ON_PAGE.en);
+    const { container } = render(<PublicChrome />);
+    for (const h of allHrefs(container)) {
+      expect(h).not.toMatch(/^\/(en|tr)(\/|$)/);
     }
     expect(container.querySelector('a[href="/teklif-al"]')).toBeTruthy();
     expect(container.querySelector('a[href="/p/hakkimizda"]')).toBeTruthy();
@@ -222,7 +225,7 @@ describe("Footer — iç linkler aktif locale'i taşır", () => {
        prop tipine daraltılır. */
   } as unknown as React.ComponentProps<typeof Footer>;
 
-  it.each(["en"] as const)(
+  it.each(["tr"] as const)(
     "10) %s: footer iç linklerinin TAMAMI prefix'li",
     (loc) => {
       usePathnameMock.mockReturnValue(ON_PAGE[loc]);
@@ -237,11 +240,11 @@ describe("Footer — iç linkler aktif locale'i taşır", () => {
     }
   );
 
-  it("11) TR: footer linkleri canonical kalır", () => {
-    usePathnameMock.mockReturnValue(ON_PAGE.tr);
+  it("11) EN: footer linkleri prefix'siz kalır", () => {
+    usePathnameMock.mockReturnValue(ON_PAGE.en);
     const { container } = render(<Footer {...footerProps} />);
     for (const h of allHrefs(container)) {
-      expect(h).not.toMatch(/^\/en(\/|$)/);
+      expect(h).not.toMatch(/^\/(en|tr)(\/|$)/);
     }
   });
 });
@@ -251,28 +254,29 @@ describe("Footer — iç linkler aktif locale'i taşır", () => {
    =============================================================== */
 describe("Dil değiştirici hedefleri", () => {
   it("12) TR → EN: aynı içeriğin locale karşılığı (de hedefi YOK)", () => {
-    const t = getLocaleSwitchTargets("/kiralik-villa/villa-lorien");
-    expect(t.tr).toBe("/kiralik-villa/villa-lorien");
-    expect(t.en).toBe("/en/kiralik-villa/villa-lorien");
+    const t = getLocaleSwitchTargets("/tr/kiralik-villa/villa-lorien");
+    expect(t.tr).toBe("/tr/kiralik-villa/villa-lorien");
+    expect(t.en).toBe("/kiralik-villa/villa-lorien");
     expect("de" in t).toBe(false);
   });
 
   it("13) EN ↔ TR: aynı sayfada kalır (mapping korunur)", () => {
-    expect(getLocaleSwitchTargets("/en/blog/kalkan-rehberi").tr).toBe(
-      "/blog/kalkan-rehberi"
+    expect(getLocaleSwitchTargets("/blog/kalkan-rehberi").tr).toBe(
+      "/tr/blog/kalkan-rehberi"
     );
-    expect(getLocaleSwitchTargets("/blog/kalkan-rehberi").en).toBe(
-      "/en/blog/kalkan-rehberi"
+    expect(getLocaleSwitchTargets("/tr/blog/kalkan-rehberi").en).toBe(
+      "/blog/kalkan-rehberi"
     );
   });
 
-  it("14) EN → TR: canonical TR route'una döner", () => {
-    expect(getLocaleSwitchTargets("/en/teklif-al").tr).toBe("/teklif-al");
+  it("14) EN → TR: /tr prefix'li TR route'una gider", () => {
+    expect(getLocaleSwitchTargets("/teklif-al").tr).toBe("/tr/teklif-al");
   });
 
   it("15) query korunur (mevcut /arama davranışı BOZULMADI)", () => {
     const t = getLocaleSwitchTargets("/arama", "villa-turleri=balayi&flexible=3");
-    expect(t.en).toBe("/en/arama?villa-turleri=balayi&flexible=3");
+    expect(t.en).toBe("/arama?villa-turleri=balayi&flexible=3");
+    expect(t.tr).toBe("/tr/arama?villa-turleri=balayi&flexible=3");
   });
 
   it("16) hedef, o locale'de GEÇERLİ bir route'tur (switch → yeni sayfa → locale korunur)", () => {
@@ -327,21 +331,21 @@ describe("Uçtan uca: locale seç → navigasyon → locale korunuyor", () => {
     }
   });
 
-  it("19) çok adımlı gezinti: /en → menü → /en/p/... → CTA → /en/teklif-al", () => {
-    usePathnameMock.mockReturnValue("/en");
+  it("19) çok adımlı gezinti: /tr → menü → /tr/p/... → CTA → /tr/teklif-al", () => {
+    usePathnameMock.mockReturnValue("/tr");
     const first = render(<PublicChrome />);
     const menuHref = href(
-      first.container.querySelector('a[href^="/en/p/"]')
+      first.container.querySelector('a[href^="/tr/p/"]')
     );
-    expect(menuHref).toBe("/en/p/hakkimizda");
+    expect(menuHref).toBe("/tr/p/hakkimizda");
     first.unmount();
 
     usePathnameMock.mockReturnValue(menuHref);
     const second = render(<PublicChrome />);
     expect(
-      second.container.querySelector('a[href="/en/teklif-al"]')
+      second.container.querySelector('a[href="/tr/teklif-al"]')
     ).toBeTruthy();
-    expect(localeFromPathname(menuHref)).toBe("en");
+    expect(localeFromPathname(menuHref)).toBe("tr");
   });
 });
 
@@ -393,9 +397,10 @@ const ROOT = process.cwd();
 
 /** Bilinçli canonical (locale prefix'i ALMAMASI GEREKEN) yerler. */
 const INTENTIONAL_CANONICAL: Record<string, string[]> = {
-  /* TR-only route'ların kendi inline blokları. */
+  /* İngilizce (prefix'siz) villa detay sayfasının kendi inline 404 bloğu —
+     İngilizce sayfada prefix'siz adres DOĞRU hedeftir. Türkçe kopyası
+     (`app/(public)/tr/...`) `/tr/arama` kullanır. */
   "app/(public)/kiralik-villa/[slug]/page.tsx": ["/arama"],
-  "app/p/[slug]/page.tsx": ["/"],
   /* Menü href ÜRETİCİLERİ canonical kalır — locale, Header/Footer
      render'ında `localeHref` ile uygulanır (tek kaynak korunur). */
   "lib/menu-resolver.ts": [
@@ -556,7 +561,8 @@ describe("STRUCTURAL INVARIANT — prefix'siz iç link eklenemez", () => {
             if (!url) continue;
             if (
               url.startsWith("//") ||
-              url.startsWith("/en") ||
+              url === "/tr" ||
+              url.startsWith("/tr/") ||
               url.startsWith("/api/")
             ) {
               continue;

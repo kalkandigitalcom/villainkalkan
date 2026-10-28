@@ -168,7 +168,7 @@ describe("Veri: yalnız yayındaki + işaretli yazı", () => {
     const f = (await buildHomepageBlogFeature(POST, "tr"))!;
     expect(f.title).toBe("Akdeniz'in En Gizli Cenneti");
     expect(f.category).toBe("Neden Kalkan?");
-    expect(f.href).toBe("/blog/akdenizin-en-gizli-cenneti");
+    expect(f.href).toBe("/tr/blog/akdenizin-en-gizli-cenneti");
     expect(f.coverUrl).toContain("blog/akdenizin-en-gizli-cenneti.webp");
     /* excerpt yok → gövde özeti öncü metin; tekrar basılmaz. */
     expect(f.lead).toContain("Kalkan, Türkiye'nin");
@@ -185,14 +185,14 @@ describe("Veri: yalnız yayındaki + işaretli yazı", () => {
   it("EN: çevrilmiş başlık ve /en önekli bağlantı", async () => {
     const f = (await buildHomepageBlogFeature(POST, "en"))!;
     expect(f.title).toBe("The Mediterranean's Hidden Paradise");
-    expect(f.href).toBe("/en/blog/akdenizin-en-gizli-cenneti");
+    expect(f.href).toBe("/blog/akdenizin-en-gizli-cenneti");
   });
 });
 
 describe("Ana sayfa görünümü", () => {
   const feature: HomepageBlogFeature = {
     slug: "s",
-    href: "/blog/s",
+    href: "/tr/blog/s",
     title: "Akdeniz'in En Gizli Cenneti",
     category: "Neden Kalkan?",
     lead: "Öncü metin",
@@ -227,7 +227,7 @@ describe("Ana sayfa görünümü", () => {
     const list = screen.getByRole("list");
     expect(within(list).getAllByRole("listitem")).toHaveLength(2);
     const link = screen.getByRole("link", { name: new RegExp(cta) });
-    expect(link).toHaveAttribute("href", "/blog/s");
+    expect(link).toHaveAttribute("href", "/tr/blog/s");
     expect(cta).toBe("Daha Fazla Keşfet");
     expect(getDictionary("en").home.blogFeature.cta).toBe("Discover More");
   });

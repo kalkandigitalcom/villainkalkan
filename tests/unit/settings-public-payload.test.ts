@@ -57,29 +57,22 @@ beforeEach(() => {
 });
 
 describe("getPublicSettings — §5 çeviri payload'ı", () => {
-  it("1) multilingual KAPALI → çeviri sorgusu HİÇ atılmaz, AYNI referans döner", async () => {
-    const rpcObject = {
-      id: "settings-1",
-      site_name: "Tatilin Yeri",
-      multilingual_enabled: false,
-      footer_copyright: "© {year} {site_name} · Tüm hakları saklıdır",
-    };
+  /* URL yapısı: EN kökte, TR /tr altında — site yapısal olarak iki dilli.
+     `multilingual_enabled` kapalı/eksik olsa bile çeviriler payload'a eklenir
+     (aksi halde kök İngilizce sayfalar Türkçe ayar metinleri gösterirdi). */
+  it.each([
+    ["multilingual KAPALI", { id: "settings-1", site_name: "Tatilin Yeri", multilingual_enabled: false }],
+    ["multilingual alanı YOK", { id: "settings-1", site_name: "Tatilin Yeri" }],
+  ])("1-2) %s → çeviriler yine payload'a eklenir", async (_l, rpcObject) => {
     findPublicViaRpcMock.mockResolvedValue({ data: rpcObject, error: null });
 
     const result = await getPublicSettings();
 
-    expect(findAllForSettingsMock).not.toHaveBeenCalled();
-    expect(result).toBe(rpcObject);
-    expect(result).not.toHaveProperty("translations");
-  });
-
-  it("2) multilingual alanı HİÇ YOKSA (null/undefined) → yine sorgu atılmaz", async () => {
-    const rpcObject = { id: "settings-1", site_name: "Tatilin Yeri" };
-    findPublicViaRpcMock.mockResolvedValue({ data: rpcObject, error: null });
-
-    const result = await getPublicSettings();
-    expect(findAllForSettingsMock).not.toHaveBeenCalled();
-    expect(result).toBe(rpcObject);
+    expect(findAllForSettingsMock).toHaveBeenCalledWith("settings-1");
+    expect(result?.site_name).toBe("Tatilin Yeri");
+    expect(result?.translations?.en?.footer_copyright).toBe(
+      "© {year} {site_name} · All rights reserved"
+    );
   });
 
   it("3) multilingual AÇIK → çeviriler payload'a eklenir", async () => {

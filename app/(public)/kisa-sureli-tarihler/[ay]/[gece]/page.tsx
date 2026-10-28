@@ -2,16 +2,15 @@ import type { Metadata } from "next";
 
 import ShortGapsPageBody from "@/app/components/short-gaps/ShortGapsPageBody";
 import { buildShortGapsMetadata } from "@/app/components/short-gaps/short-gaps-metadata";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ KISA SÜRELİ TARİHLER — LİSTELEME SAYFASI (TR)
+   🛡️ /en/kisa-sureli-tarihler/[ay]/[gece] — KISA SÜRELİ TARİHLER (EN)
    ===============================================================
-   Sayfa gövdesi `app/components/short-gaps/ShortGapsPageBody.tsx`'e
-   TAŞINDI (DOM/CSS/sorgu akışı DEĞİŞTİRİLMEDEN) —
-   `/en|de/kisa-sureli-tarihler/[ay]/[gece]` AYNI gövdeyi render eder.
-
-   DEĞİŞMEYEN: `dynamic = "force-dynamic"`, gap/villa sorguları,
-   URL contract (bolgeler · villa-turleri · guests), fiyat mantığı.
+   TR ile AYNI gövde (`ShortGapsPageBody`) — tek fark `locale` prop'u.
+   Gap/villa sorguları, fiyat mantığı ve URL contract BİREBİR aynıdır.
+   Ay SLUG'ı canonical (TR) kalır — yalnız GÖRÜNEN ay adı çevrilir.
    =============================================================== */
 
 export const dynamic = "force-dynamic";
@@ -28,21 +27,24 @@ export async function generateMetadata({
 }: {
   params: Promise<RouteParams>;
 }): Promise<Metadata> {
-  return buildShortGapsMetadata(params, "tr");
+  return buildShortGapsMetadata(params, "en");
 }
 
-export default async function ShortGapListingPage({
+export default async function EnShortGapListingPage({
   params,
   searchParams,
 }: {
   params: Promise<RouteParams>;
   searchParams: Promise<SearchParams>;
 }) {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
   return (
     <ShortGapsPageBody
       params={params}
       searchParams={searchParams}
-      locale="tr"
+      locale="en"
     />
   );
 }

@@ -274,7 +274,7 @@ beforeEach(() => {
    A) ROUTE DAVRANIŞI
    =============================================================== */
 const LOCALE_ROUTES: Array<[string, "en"]> = [
-  ["@/app/(public)/en/kiralik-villalar/page", "en"],
+  ["@/app/(public)/kiralik-villalar/page", "en"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -313,11 +313,11 @@ describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
   });
 });
 
-describe("app/(public)/kiralik-villalar/page.tsx — TR", () => {
+describe("app/(public)/tr/kiralik-villalar/page.tsx — TR", () => {
   it("5) ORTAK gövdeyi locale='tr' ile render eder", async () => {
     const sp = Promise.resolve({});
     const { default: Page } = await import(
-      "@/app/(public)/kiralik-villalar/page"
+      "@/app/(public)/tr/kiralik-villalar/page"
     );
     const element = await Page({ searchParams: sp });
     expect(element.type).toBe(KiralikVillalarPageBody);
@@ -327,7 +327,7 @@ describe("app/(public)/kiralik-villalar/page.tsx — TR", () => {
 
   it("6) TR'de locale gate'i ÇAĞRILMAZ (davranış değişmedi)", async () => {
     const { default: Page } = await import(
-      "@/app/(public)/kiralik-villalar/page"
+      "@/app/(public)/tr/kiralik-villalar/page"
     );
     await Page({ searchParams: Promise.resolve({}) });
     expect(setRequestLocaleMock).not.toHaveBeenCalled();
@@ -336,7 +336,7 @@ describe("app/(public)/kiralik-villalar/page.tsx — TR", () => {
 
   it("7) TR'de de route segment config YOK (mevcut davranış korundu)", async () => {
     const mod: Record<string, unknown> = await import(
-      "@/app/(public)/kiralik-villalar/page"
+      "@/app/(public)/tr/kiralik-villalar/page"
     );
     expect(mod.dynamic).toBeUndefined();
     expect(mod.revalidate).toBeUndefined();
@@ -481,7 +481,7 @@ describe("Gövde render — TR/EN görünür metinler", () => {
       /* Arama route'u locale-aware. */
       expect(link).toHaveAttribute(
         "href",
-        buildLocaleAlternates("/arama", locale).canonical
+        buildLocaleAlternates("/tr/arama", locale).canonical
       );
     }
   );
@@ -513,8 +513,8 @@ describe("Gövde render — TR/EN görünür metinler", () => {
    =============================================================== */
 describe("FilterSidebar sözleşmesi", () => {
   it.each([
-    ["tr", "/arama"],
-    ["en", "/en/arama"],
+    ["tr", "/tr/arama"],
+    ["en", "/arama"],
   ] as const)(
     "20) %s: mode='redirect' + locale + basePath='%s' (arama route'u, bu sayfa DEĞİL)",
     async (locale, expectedBasePath) => {
@@ -626,14 +626,15 @@ describe("Villa tipi çevirisi", () => {
    =============================================================== */
 describe("URL kontratı — pagination / sort / pageSize", () => {
   it("28) archivePath() her locale için doğru", () => {
+    /* Taban (locale'siz) arşiv path'i; TR adresi `/tr` prefix'iyle türetilir. */
     expect(ARCHIVE_TR_PATH).toBe("/kiralik-villalar");
-    expect(archivePath("tr")).toBe("/kiralik-villalar");
-    expect(archivePath("en")).toBe("/en/kiralik-villalar");
+    expect(archivePath("tr")).toBe("/tr/kiralik-villalar");
+    expect(archivePath("en")).toBe("/kiralik-villalar");
   });
 
   it.each([
-    ["tr", "/kiralik-villalar"],
-    ["en", "/en/kiralik-villalar"],
+    ["tr", "/tr/kiralik-villalar"],
+    ["en", "/kiralik-villalar"],
   ] as const)(
     "29) %s: pagination linkleri locale'li basePath kullanır, query adları AYNI",
     async (locale, base) => {
@@ -656,13 +657,13 @@ describe("URL kontratı — pagination / sort / pageSize", () => {
     const smart = screen.getByRole("menuitemradio", {
       name: en.search.sortOptions.smart,
     });
-    expect(smart).toHaveAttribute("href", "/en/kiralik-villalar");
+    expect(smart).toHaveAttribute("href", "/kiralik-villalar");
     const priceAsc = screen.getByRole("menuitemradio", {
       name: en.search.sortOptions.priceAsc,
     });
     expect(priceAsc).toHaveAttribute(
       "href",
-      "/en/kiralik-villalar?sort=price-asc"
+      "/kiralik-villalar?sort=price-asc"
     );
   });
 
@@ -675,10 +676,10 @@ describe("URL kontratı — pagination / sort / pageSize", () => {
       a.getAttribute("href")
     );
     expect(hrefs).toEqual([
-      "/en/kiralik-villalar?sort=price-desc",
-      "/en/kiralik-villalar?pageSize=30&sort=price-desc",
-      "/en/kiralik-villalar?pageSize=50&sort=price-desc",
-      "/en/kiralik-villalar?pageSize=100&sort=price-desc",
+      "/kiralik-villalar?sort=price-desc",
+      "/kiralik-villalar?pageSize=30&sort=price-desc",
+      "/kiralik-villalar?pageSize=50&sort=price-desc",
+      "/kiralik-villalar?pageSize=100&sort=price-desc",
     ]);
   });
 
@@ -701,13 +702,13 @@ describe("Locale switch — query string korunması", () => {
     "villa-turleri=2027-kiralik-villalar%2Cmuhafazakar-villalar&flexible=3";
 
   it("34) /kiralik-villalar + query → EN'de AYNI query (kullanıcı senaryosu)", () => {
-    const t = getLocaleSwitchTargets("/kiralik-villalar", Q);
-    expect(t.en).toBe(`/en/kiralik-villalar?${Q}`);
-    expect(t.tr).toBe(`/kiralik-villalar?${Q}`);
+    const t = getLocaleSwitchTargets("/tr/kiralik-villalar", Q);
+    expect(t.en).toBe(`/kiralik-villalar?${Q}`);
+    expect(t.tr).toBe(`/tr/kiralik-villalar?${Q}`);
   });
 
   it("35) canonical token'lar ÇEVRİLMEZ / yeniden yorumlanmaz", () => {
-    const t = getLocaleSwitchTargets("/kiralik-villalar", Q);
+    const t = getLocaleSwitchTargets("/tr/kiralik-villalar", Q);
     for (const href of [t.tr, t.en]) {
       expect(href).toContain("2027-kiralik-villalar%2Cmuhafazakar-villalar");
       expect(href).toContain("flexible=3");
@@ -716,16 +717,16 @@ describe("Locale switch — query string korunması", () => {
 
   it("36) pagination query'si de korunur", () => {
     const t = getLocaleSwitchTargets(
-      "/en/kiralik-villalar",
+      "/kiralik-villalar",
       "page=3&pageSize=50&sort=price-asc"
     );
-    expect(t.tr).toBe("/kiralik-villalar?page=3&pageSize=50&sort=price-asc");
+    expect(t.tr).toBe("/tr/kiralik-villalar?page=3&pageSize=50&sort=price-asc");
   });
 
   it("37) query YOKSA mevcut davranış BİREBİR (soru işareti eklenmez)", () => {
-    expect(getLocaleSwitchTargets("/kiralik-villalar")).toEqual({
-      tr: "/kiralik-villalar",
-      en: "/en/kiralik-villalar",
+    expect(getLocaleSwitchTargets("/tr/kiralik-villalar")).toEqual({
+      tr: "/tr/kiralik-villalar",
+      en: "/kiralik-villalar",
     });
   });
 });
@@ -767,11 +768,12 @@ describe("SOURCE-LOCK — gövdede hardcoded TR kalmadı", () => {
     }
   });
 
-  it("41) hardcoded '/arama' ve '/kiralik-villalar' literal'i sayfa linklerinde YOK (basePath türetilir)", () => {
-    /* Tek izinli literal: ARCHIVE_TR_PATH tanımı. */
+  it("41) hardcoded '/kiralik-villalar' ve '/arama' literal'i sayfa linklerinde YOK (basePath türetilir)", () => {
+    /* Tek izinli literal: ARCHIVE_TR_PATH (taban path) tanımı. */
     const occurrences = code.split('"/kiralik-villalar"').length - 1;
     expect(occurrences).toBe(1);
     expect(code.includes('href="/arama"')).toBe(false);
+    expect(code.includes('href="/tr/arama"')).toBe(false);
   });
 });
 

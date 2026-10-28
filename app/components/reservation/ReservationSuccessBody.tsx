@@ -8,6 +8,7 @@ import { getCachedSettings } from "@/lib/cache.helpers";
    KURULMADI. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ /rezervasyon/basarili — ORTAK GÖVDE
@@ -50,7 +51,7 @@ export default async function ReservationSuccessBody({
   /* 🛡️ TR'de prefix YOK → href'ler BİREBİR eskisi gibi ("/",
      "/kiralik-villa/<slug>"). EN/DE'de mevcut gerçek route'lara
      işaret eder. Yeni routing sistemi kurulmadı. */
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
   const refNumber =
     typeof sp.ref === "string" && sp.ref.trim().length > 0
       ? sp.ref.trim()

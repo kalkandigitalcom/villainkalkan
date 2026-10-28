@@ -313,7 +313,7 @@ const RESERVATION_GATE_ROUTES: Array<
   [string, "en", Record<string, unknown>]
 > = [
   [
-    "@/app/(public)/en/rezervasyon/[slug]/page",
+    "@/app/(public)/rezervasyon/[slug]/page",
     "en",
     {
       params: Promise.resolve({ slug: "test-villa" }),
@@ -329,7 +329,7 @@ const RESERVATION_SUCCESS_GATE_ROUTES: Array<
   [string, "en", Record<string, unknown>]
 > = [
   [
-    "@/app/(public)/en/rezervasyon/basarili/page",
+    "@/app/(public)/rezervasyon/basarili/page",
     "en",
     { searchParams: Promise.resolve({}) },
   ],
@@ -342,7 +342,7 @@ const SEARCH_GATE_ROUTES: Array<
   [string, "en", Record<string, unknown>]
 > = [
   [
-    "@/app/(public)/en/arama/page",
+    "@/app/(public)/arama/page",
     "en",
     { searchParams: Promise.resolve({}) },
   ],
@@ -356,7 +356,7 @@ const ARCHIVE_GATE_ROUTES: Array<
   [string, "en", Record<string, unknown>]
 > = [
   [
-    "@/app/(public)/en/kiralik-villalar/page",
+    "@/app/(public)/kiralik-villalar/page",
     "en",
     { searchParams: Promise.resolve({}) },
   ],
@@ -393,7 +393,7 @@ describe.each(ARCHIVE_GATE_ROUTES)("%s", (modulePath, locale, pageProps) => {
    assertion'ı ortak `ContactPageBody` + locale prop'u. Sayfa prop
    ALMAZ (searchParams yok). */
 const CONTACT_GATE_ROUTES: Array<[string, "en"]> = [
-  ["@/app/(public)/en/iletisim/page", "en"],
+  ["@/app/(public)/iletisim/page", "en"],
 ];
 
 describe.each(CONTACT_GATE_ROUTES)("%s", (modulePath, locale) => {
@@ -433,7 +433,7 @@ describe.each(CONTACT_GATE_ROUTES)("%s", (modulePath, locale) => {
 const VILLA_DETAIL_GATE_ROUTES: Array<
   [string, "en", Record<string, unknown> | undefined]
 > = [
-  ["@/app/(public)/en/kiralik-villa/[slug]/page", "en", VILLA_PAGE_PROPS],
+  ["@/app/(public)/kiralik-villa/[slug]/page", "en", VILLA_PAGE_PROPS],
 ];
 
 describe.each(RESERVATION_GATE_ROUTES)(
@@ -577,7 +577,7 @@ describe.each(VILLA_DETAIL_GATE_ROUTES)(
    `CollapsibleDescription`'a/fallback'e ilettiği doğrulanıyor.
    =============================================================== */
 const VILLA_DETAIL_ROUTES: Array<[string, "en"]> = [
-  ["@/app/(public)/en/kiralik-villa/[slug]/page", "en"],
+  ["@/app/(public)/kiralik-villa/[slug]/page", "en"],
 ];
 
 describe.each(VILLA_DETAIL_ROUTES)(

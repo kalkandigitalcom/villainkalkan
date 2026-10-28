@@ -10,6 +10,7 @@ import { resolveReservationShare } from "@/app/(public)/rezervasyon-kontrol/shar
    yalnız ödeme yöntemi etiketi için `locale` geçirilir. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ /rezervasyon-kontrol — ORTAK GÖVDE
@@ -28,7 +29,7 @@ export default async function ReservationLookupPageBody({
 }) {
   const dictionary = getDictionary(locale);
   const dict = dictionary.reservationLookup;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
   const homeHref = localePrefix === "" ? "/" : localePrefix;
 
   /* 🛡️ ADDITIVE — `?token=` ile gelen güvenli paylaşım linki. Token YOKSA
@@ -42,7 +43,7 @@ export default async function ReservationLookupPageBody({
 
   const breadcrumbLd = buildBreadcrumb(
     [
-      { name: dictionary.search.breadcrumbHome, url: "/" },
+      { name: dictionary.search.breadcrumbHome, url: homeHref },
       { name: dict.breadcrumbCurrent },
     ],
     locale === DEFAULT_LOCALE ? undefined : locale

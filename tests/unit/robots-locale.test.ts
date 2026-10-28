@@ -8,7 +8,7 @@
    ("default allow + explicit disallow", kök `/` açık). Disallow listesi
    yalnız internal/token/duplicate path'leri kapsıyor
    (/maki-admin, /api, /arama, /favoriler, /liste/, /v/, /rezervasyon/)
-   — bunların HİÇBİRİ `/en` veya `/de` prefix'i DEĞİL, dolayısıyla
+   — bunların HİÇBİRİ `/` veya `/de` prefix'i DEĞİL, dolayısıyla
    EN/DE villa/sayfa URL'leri robots.txt seviyesinde ZATEN Disallow
    EDİLMİYOR.
 
@@ -55,12 +55,13 @@ async function runRobots() {
 
 describe("robots() — Phase 7E EN locale davranışı", () => {
   /* --- 8) TR disallow politikası AYNEN korunuyor + locale eşitleme ---
-     🛡️ PUBLIC LOCALE PARİTESİ: `/arama` TR'de kapalıyken `/en/arama` ve
+     🛡️ PUBLIC LOCALE PARİTESİ: `/tr/arama` TR'de kapalıyken `/arama` ve
      `/de/arama` açık kalıyordu (faceted search asimetrisi). Artık TR
      girdileri AYNI SIRAYLA başta, ardından locale-prefix'li kardeşleri
      geliyor. `/maki-admin` ve `/api` locale-routed DEĞİL → prefix ÜRETİLMEZ.
      Hiçbir route crawl'a AÇILMADI; yalnız mevcut politika EN/DE'ye
      eşitlendi. --- */
+  /* URL yapısı: taban (prefix'siz) path'ler İngilizce; Türkçe kardeşleri /tr. */
   const TR_DISALLOW = [
     "/maki-admin",
     "/api",
@@ -82,19 +83,20 @@ describe("robots() — Phase 7E EN locale davranışı", () => {
     expect(list.slice(0, TR_DISALLOW.length)).toEqual(TR_DISALLOW);
   });
 
-  it("8a) locale-routed TR path'lerinin /en varyantları da disallow (/de YOK)", async () => {
+  it("8a) locale-routed taban path'lerin /tr varyantları da disallow (/en, /de YOK)", async () => {
     const result = await runRobots();
     const rule = result.rules as { disallow?: string | string[] } | Array<{ disallow?: string | string[] }>;
     const ruleObj = Array.isArray(rule) ? rule[0] : rule;
     const list = ruleObj.disallow as string[];
     for (const p of LOCALE_ROUTED) {
-      expect(list).toContain(`/en${p}`);
+      expect(list).toContain(`/tr${p}`);
+      expect(list).not.toContain(`/en${p}`);
       /* DE desteği kaldırıldı — /de varyantı ÜRETİLMEZ. */
       expect(list).not.toContain(`/de${p}`);
     }
     /* Faceted search — auditte bulunan asimetri. */
+    expect(list).toContain("/tr/arama");
     expect(list).toContain("/arama");
-    expect(list).toContain("/en/arama");
     expect(list).not.toContain("/de/arama");
   });
 
@@ -103,7 +105,7 @@ describe("robots() — Phase 7E EN locale davranışı", () => {
     const rule = result.rules as { disallow?: string | string[] } | Array<{ disallow?: string | string[] }>;
     const ruleObj = Array.isArray(rule) ? rule[0] : rule;
     const list = ruleObj.disallow as string[];
-    for (const bad of ["/en/maki-admin", "/en/api"]) {
+    for (const bad of ["/tr/maki-admin", "/tr/api", "/en/maki-admin", "/en/api"]) {
       expect(list).not.toContain(bad);
     }
   });
@@ -114,20 +116,20 @@ describe("robots() — Phase 7E EN locale davranışı", () => {
     const ruleObj = Array.isArray(rule) ? rule[0] : rule;
     const list = ruleObj.disallow as string[];
     for (const allowed of [
+      "/tr/kiralik-villalar",
       "/kiralik-villalar",
-      "/en/kiralik-villalar",
+      "/tr/kiralik-villa/",
       "/kiralik-villa/",
-      "/en/kiralik-villa/",
+      "/tr/p/",
       "/p/",
-      "/en/p/",
+      "/tr/iletisim",
       "/iletisim",
-      "/en/iletisim",
+      "/tr/teklif-al",
       "/teklif-al",
-      "/en/teklif-al",
+      "/tr/rezervasyon-kontrol",
       "/rezervasyon-kontrol",
-      "/en/rezervasyon-kontrol",
-      "/kisa-sureli-tarihler/",
-      "/blog",
+      "/tr/kisa-sureli-tarihler/",
+      "/tr/blog",
     ]) {
       expect(list).not.toContain(allowed);
     }
@@ -143,8 +145,8 @@ describe("robots() — Phase 7E EN locale davranışı", () => {
   });
 
   /* --- 9) EN/DE kök prefix'i TOPTAN engellenmiyor (yalnız TR ile AYNI
-     path'ler) — `/en` veya `/de` tek başına listede OLMAMALI. --- */
-  it("9) '/en' kökü TOPTAN disallow DEĞİL (yalnız TR politikasının eşleniği)", async () => {
+     path'ler) — `/` veya `/de` tek başına listede OLMAMALI. --- */
+  it("9) '/' kökü TOPTAN disallow DEĞİL (yalnız TR politikasının eşleniği)", async () => {
     const result = await runRobots();
     const rule = result.rules as { disallow?: string | string[] } | Array<{ disallow?: string | string[] }>;
     const ruleObj = Array.isArray(rule) ? rule[0] : rule;
@@ -153,12 +155,12 @@ describe("robots() — Phase 7E EN locale davranışı", () => {
       : ruleObj.disallow
         ? [ruleObj.disallow]
         : [];
-    for (const bad of ["/en", "/en/"]) {
+    for (const bad of ["/", "/tr"]) {
       expect(disallowList).not.toContain(bad);
     }
-    /* Her `/en/...` girdisinin TR eşleniği listede OLMALI. */
+    /* Her `/...` girdisinin TR eşleniği listede OLMALI. */
     for (const entry of disallowList) {
-      const m = /^\/(en)(\/.*)$/.exec(entry);
+      const m = /^\/(tr)(\/.*)$/.exec(entry);
       if (m) expect(disallowList).toContain(m[2]);
     }
   });

@@ -4,34 +4,38 @@ import KiralikVillalarPageBody, {
   type ArchiveSearchParams,
 } from "@/app/components/search/KiralikVillalarPageBody";
 import { buildVillasArchiveMetadata } from "@/app/components/search/kiralik-villalar-metadata";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /kiralik-villalar — PUBLIC ARCHIVE (TR)
+   🛡️ /en/kiralik-villalar — PUBLIC ARCHIVE (EN)
    ===============================================================
-   Sayfa gövdesi + tüm arşiv pipeline'ı `app/components/search/
-   KiralikVillalarPageBody.tsx`'e TAŞINDI (DOM/CSS/veri akışı
-   DEĞİŞTİRİLMEDEN) — `/en/kiralik-villalar` ve `/de/kiralik-villalar`
-   AYNI gövdeyi render eder; kodun ikinci/üçüncü kopyası YOKTUR
-   (`AramaPageBody` Phase 13 deseni).
+   ÖNCEKİ DURUM: `LocaleRouteComingSoon` placeholder (Phase 4A).
+   ŞİMDİ: TR ile AYNI gövde (`KiralikVillalarPageBody`) — tek fark
+   `locale` prop'u. Veri akışı, URL query kontratı, sort/pagination
+   semantiği BİREBİR aynı.
 
-   TR DAVRANIŞI DEĞİŞMEDİ:
-     • URL `/kiralik-villalar` + `page`/`pageSize`/`sort` query
-       parametreleri AYNI.
-     • `locale="tr"` → dictionary TR değerleri eski hardcoded
-       metinlerle BİREBİR.
-     • Route segment config (`dynamic` vb.) EKLENMEDİ — sayfa
-       `cookies()` kullandığı için ZATEN dynamic; önceki davranış
-       aynen korunur.
+   KORUNAN PHASE 4A/4B DAVRANIŞI:
+     • `setRequestLocale("en")` — request-scoped locale işareti.
+     • `await requirePublicLocaleEnabled()` — `multilingual_enabled`
+       kapalıyken notFound() → 404 (bugünkü production davranışı).
+
+   SEO: placeholder'a özel koşulsuz `noindex` metadata'sı KALDIRILDI
+   (Phase 13'te `/en|de/arama` için verilen AYNI karar). `/kiralik-
+   villalar` robots.ts'te ZATEN allow; indexing politikası merkezî.
    =============================================================== */
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildVillasArchiveMetadata("tr");
+  return buildVillasArchiveMetadata("en");
 }
 
-export default async function KiralikVillalarPage({
+export default async function EnVillasPage({
   searchParams,
 }: {
   searchParams: ArchiveSearchParams;
 }) {
-  return <KiralikVillalarPageBody locale="tr" searchParams={searchParams} />;
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  return <KiralikVillalarPageBody locale="en" searchParams={searchParams} />;
 }

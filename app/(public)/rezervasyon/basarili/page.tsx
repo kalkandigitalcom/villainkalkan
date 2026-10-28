@@ -1,35 +1,39 @@
 import type { Metadata } from "next";
 
 import ReservationSuccessBody from "@/app/components/reservation/ReservationSuccessBody";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /rezervasyon/basarili — REZERVASYON BAŞARILI (TR)
+   🛡️ /en/rezervasyon/basarili — REZERVASYON BAŞARILI (EN)
    ===============================================================
-   Sayfa gövdesi
-   `app/components/reservation/ReservationSuccessBody.tsx`'e TAŞINDI
-   (DOM/CSS/veri akışı DEĞİŞTİRİLMEDEN) — `/en/rezervasyon/basarili`
-   ve `/de/rezervasyon/basarili` AYNI gövdeyi render eder.
+   TR ile AYNI gövde (`ReservationSuccessBody`) — tek fark `locale`
+   prop'u. `ref` / `villa` query parametreleri ve `getCachedSettings`
+   WhatsApp link öncelik sırası BİREBİR aynıdır.
 
-   TR DAVRANIŞI DEĞİŞMEDİ:
-     • URL `/rezervasyon/basarili` aynı.
-     • `metadata.title` eski hardcoded değerle BİREBİR (dictionary
-       TR değeri aynı stringtir).
-     • SEO: robots noindex, nofollow — başarı sayfaları indexlenmez
-       (duplicate + private content guard).
-     • Route segment config (`dynamic`/`revalidate`) EKLENMEDİ.
+   PHASE 4A/4B deseni:
+     • `setRequestLocale("en")` — request-scoped locale işareti.
+     • `await requirePublicLocaleEnabled()` — `multilingual_enabled`
+       kapalıyken notFound() → 404.
+     • `robots: { index: false, follow: false }` — TR ile AYNI SEO
+       davranışı. robots.ts/sitemap.ts'ye DOKUNULMADI.
    =============================================================== */
 
 export const metadata: Metadata = {
-  title: "Rezervasyon Talebiniz Alındı",
+  title: getDictionary("en").reservation.success.metaTitle,
   robots: { index: false, follow: false },
 };
 
 type SearchParams = Promise<{ ref?: string; villa?: string }>;
 
-export default async function ReservationSuccessPage({
+export default async function EnReservationSuccessPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  return <ReservationSuccessBody searchParams={searchParams} locale="tr" />;
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  return <ReservationSuccessBody searchParams={searchParams} locale="en" />;
 }

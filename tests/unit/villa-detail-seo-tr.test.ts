@@ -1,7 +1,7 @@
 /* ===============================================================
    🛡️ PHASE 7C — TR VILLA DETAIL generateMetadata: CANONICAL + HREFLANG
    ===============================================================
-   Hedef: app/(public)/kiralik-villa/[slug]/page.tsx > generateMetadata
+   Hedef: app/(public)/tr/kiralik-villa/[slug]/page.tsx > generateMetadata
 
    Bu dosya TR sayfasının generateMetadata'sını GERÇEK modül olarak
    import eder (dynamic import) — yalnız `@/app/services/villa.service`
@@ -59,7 +59,7 @@ const BASE_VILLA = {
 };
 
 async function callGenerateMetadata(slug = "villa-in-love") {
-  const mod = await import("@/app/(public)/kiralik-villa/[slug]/page");
+  const mod = await import("@/app/(public)/tr/kiralik-villa/[slug]/page");
   return mod.generateMetadata({ params: Promise.resolve({ slug }) });
 }
 
@@ -70,7 +70,7 @@ describe("TR villa detail generateMetadata — Phase 7C canonical/hreflang", () 
     getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
     const result = await callGenerateMetadata();
-    expect(result.alternates?.canonical).toBe("/kiralik-villa/villa-in-love");
+    expect(result.alternates?.canonical).toBe("/tr/kiralik-villa/villa-in-love");
   });
 
   /* --- 4) multilingual_enabled=true iken dört hreflang key'i --- */
@@ -83,14 +83,14 @@ describe("TR villa detail generateMetadata — Phase 7C canonical/hreflang", () 
       | Record<string, unknown>
       | undefined;
     expect(languages).toBeDefined();
-    expect(languages?.tr).toBe("/kiralik-villa/villa-in-love");
-    expect(languages?.en).toBe("/en/kiralik-villa/villa-in-love");
+    expect(languages?.tr).toBe("/tr/kiralik-villa/villa-in-love");
+    expect(languages?.en).toBe("/kiralik-villa/villa-in-love");
     expect(languages).not.toHaveProperty("de");
     expect(languages?.["x-default"]).toBe("/kiralik-villa/villa-in-love");
   });
 
-  /* --- 5) x-default TR --- */
-  it("5) x-default HER ZAMAN TR path'tir (flag true iken de)", async () => {
+  /* --- 5) x-default EN (varsayılan dil) --- */
+  it("5) x-default HER ZAMAN İngilizce (prefix'siz) path'tir", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
     getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
@@ -103,28 +103,30 @@ describe("TR villa detail generateMetadata — Phase 7C canonical/hreflang", () 
 
   /* --- 6) multilingual_enabled=false iken EN/DE hreflang'ların
      YANLIŞLIKLA 404 URL olarak üretilmemesi --- */
-  it("6) multilingual_enabled=false iken alternates'te `languages` key'i HİÇ YOK (EN/DE'ye işaret eden 404 hreflang üretilmez)", async () => {
+  it("6) multilingual_enabled=false olsa bile hreflang üretilir (EN kökte her zaman açık)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
     getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
     const result = await callGenerateMetadata();
     expect(result.alternates).toEqual({
-      canonical: "/kiralik-villa/villa-in-love",
+      canonical: "/tr/kiralik-villa/villa-in-love",
+      languages: {
+        tr: "/tr/kiralik-villa/villa-in-love",
+        en: "/kiralik-villa/villa-in-love",
+        "x-default": "/kiralik-villa/villa-in-love",
+      },
     });
-    expect(
-      (result.alternates as Record<string, unknown>).languages
-    ).toBeUndefined();
   });
 
-  it("6b) getCachedSettings null/reject ederse (fail-safe) → flag false davranışıyla AYNI (languages YOK)", async () => {
+  it("6b) getCachedSettings null/reject ederse (fail-safe) yine hreflang + TR canonical", async () => {
     getCachedSettingsMock.mockRejectedValue(new Error("settings down"));
     getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
 
     const result = await callGenerateMetadata();
     expect(
       (result.alternates as Record<string, unknown>).languages
-    ).toBeUndefined();
-    expect(result.alternates?.canonical).toBe("/kiralik-villa/villa-in-love");
+    ).toBeDefined();
+    expect(result.alternates?.canonical).toBe("/tr/kiralik-villa/villa-in-love");
   });
 
   /* --- 7) mevcut robots/noindex davranışının korunması --- */

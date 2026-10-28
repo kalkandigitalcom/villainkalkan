@@ -2,19 +2,23 @@ import type { Metadata } from "next";
 
 import BlogIndexPageBody from "@/app/components/blog/BlogIndexPageBody";
 import { buildBlogIndexMetadata } from "@/app/components/blog/blog-metadata";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ BLOG INDEX — /blog (public, TR)
+   🛡️ /en/blog — BLOG INDEX (en)
    ===============================================================
-   Gövde `BlogIndexPageBody`'ye, metadata `blog-metadata`'ya taşındı
-   (TR/EN/DE ORTAK) — bu dosya ince bir sarmalayıcıdır. Yayın filtresi,
-   sıralama, URL contract'ı ve TR çıktısı DEĞİŞMEDİ.
+   TR ile AYNI gövde (`BlogIndexPageBody`) — tek fark `locale` prop'u.
+   Yayın filtresi ve slug/URL contract'ı BİREBİR aynıdır.
    =============================================================== */
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildBlogIndexMetadata();
+  return buildBlogIndexMetadata("en");
 }
 
-export default async function BlogIndexPage() {
-  return <BlogIndexPageBody />;
+export default async function ENBlogIndexPage() {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  return <BlogIndexPageBody locale="en" />;
 }

@@ -181,7 +181,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
   beforeEach(() => usePathnameMock.mockReset());
 
   it("11) TR — canonical metin, {year}/{site_name} ikamesi AYNEN", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(
       <Footer
         {...FOOTER_BASE}
@@ -194,7 +194,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
   });
 
   it("12) EN — çeviri kullanılır ve yer tutucular ÇEVİRİDE DE ikame edilir", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villalar");
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(
       <Footer
         {...FOOTER_BASE}
@@ -209,8 +209,8 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("13) '/de' artık desteklenmiyor → TR canonical metin (EN sızmaz)", () => {
-    usePathnameMock.mockReturnValue("/de");
+  it("13) '/tr/...' → TR canonical metin (EN sızmaz)", () => {
+    usePathnameMock.mockReturnValue("/tr/kiralik-villalar");
     render(
       <Footer
         {...FOOTER_BASE}
@@ -226,7 +226,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
   });
 
   it("14) EN + çeviri YOK → TR canonical metin gösterilir", () => {
-    usePathnameMock.mockReturnValue("/en");
+    usePathnameMock.mockReturnValue("/");
     render(
       <Footer
         {...FOOTER_BASE}
@@ -239,7 +239,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
   });
 
   it("15) canonical BOŞ + çeviri yok → ESKİ hardcoded Türkçe fallback (DEĞİŞMEDİ)", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(<Footer {...FOOTER_BASE} settings={{ footer_copyright: "" }} />);
     expect(
       screen.getByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır")
@@ -247,7 +247,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
   });
 
   it("16) settings null → ESKİ hardcoded Türkçe fallback (DEĞİŞMEDİ)", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(<Footer {...FOOTER_BASE} settings={null} />);
     expect(
       screen.getByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır")
@@ -255,7 +255,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
   });
 
   it("17) EN + canonical boş + çeviri VAR → çeviri gösterilir", () => {
-    usePathnameMock.mockReturnValue("/en");
+    usePathnameMock.mockReturnValue("/");
     render(
       <Footer
         {...FOOTER_BASE}
@@ -275,7 +275,7 @@ describe("TR bit-bire aynılık (§6) — çeviri VARKEN bile TR çıktısı de�
   beforeEach(() => usePathnameMock.mockReset());
 
   it("24) Footer TR DOM'u, translations=null ve translations=DOLU durumlarında AYNI", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     const { container: withoutT, unmount } = render(
       <Footer
         {...FOOTER_BASE}
@@ -285,7 +285,7 @@ describe("TR bit-bire aynılık (§6) — çeviri VARKEN bile TR çıktısı de�
     const htmlWithout = withoutT.innerHTML;
     unmount();
 
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     const { container: withT } = render(
       <Footer
         {...FOOTER_BASE}

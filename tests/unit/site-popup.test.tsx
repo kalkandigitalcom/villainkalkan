@@ -358,7 +358,7 @@ describe("SitePopupLoader (public davranış)", () => {
     window.localStorage.clear();
     window.sessionStorage.clear();
     document.body.style.overflow = "";
-    pathname = "/";
+    pathname = "/tr"; /* Varsayılan senaryo: Türkçe ana sayfa. */
   });
   afterEach(() => {
     vi.useRealTimers();
@@ -378,7 +378,7 @@ describe("SitePopupLoader (public davranış)", () => {
     expect(document.body.style.overflow).toBe("hidden");
     expect(screen.getByText("20")).toBeTruthy();
     expect(screen.getByText("TÜRSAB 9117")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Villaları inceleyin" }).getAttribute("href")).toBe("/kiralik-villalar");
+    expect(screen.getByRole("link", { name: "Villaları inceleyin" }).getAttribute("href")).toBe("/tr/kiralik-villalar");
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(document.body.style.overflow).toBe("");
@@ -425,7 +425,7 @@ describe("SitePopupLoader (public davranış)", () => {
   });
 
   it("kapsam 'home' iken diğer sayfalarda açılmaz; 'all' iken açılır", async () => {
-    pathname = "/kiralik-villalar";
+    pathname = "/tr/kiralik-villalar";
     const { unmount } = render(<SitePopupLoader popup={popup} />);
     await openNow();
     expect(screen.queryByRole("dialog")).toBeNull();
@@ -442,7 +442,7 @@ describe("SitePopupLoader (public davranış)", () => {
   });
 
   it("backdrop tıklaması kapatır, kart içi tıklama kapatmaz; EN'de 'Close' etiketi", async () => {
-    pathname = "/en";
+    pathname = "/";
     render(<SitePopupLoader popup={popup} />);
     await openNow();
     const dialog = screen.getByRole("dialog");
@@ -681,16 +681,16 @@ describe("çoklu dil — SitePopupLoader", () => {
     });
   };
 
-  it("/en → İngilizce içerik (+ Türkçe vurgu fallback)", async () => {
-    pathname = "/en";
+  it("/ → İngilizce içerik (+ Türkçe vurgu fallback); site içi buton linki prefix'siz", async () => {
+    pathname = "/";
     render(<SitePopupLoader popup={popup} />);
     await openNow();
     expect(screen.getByRole("heading", { name: "Since 2006 we have been with you." })).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Explore All Villas" }).getAttribute("href")).toBe("/en/kiralik-villalar");
+    expect(screen.getByRole("link", { name: "Explore All Villas" }).getAttribute("href")).toBe("/kiralik-villalar");
     expect(screen.getByText("20")).toBeTruthy();
   });
 
-  it("/de artık ana sayfa değil → popup (kapsam 'home') açılmaz; / → Türkçe içerik", async () => {
+  it("/de artık ana sayfa değil → popup (kapsam 'home') açılmaz; /tr → Türkçe içerik", async () => {
     pathname = "/de";
     const { unmount } = render(<SitePopupLoader popup={popup} />);
     await openNow();
@@ -698,20 +698,20 @@ describe("çoklu dil — SitePopupLoader", () => {
     expect(screen.queryByRole("button", { name: "Schließen" })).toBeNull();
     unmount();
     window.localStorage.clear();
-    pathname = "/";
+    pathname = "/tr";
     render(<SitePopupLoader popup={popup} />);
     await openNow();
     expect(screen.getByRole("link", { name: "Villaları inceleyin" })).toBeTruthy();
   });
 
-  it("kapsam 'all': /en/kiralik-villalar → İngilizce; /energy gibi yol TR sayılır", async () => {
-    pathname = "/en/kiralik-villalar";
+  it("kapsam 'all': /kiralik-villalar → İngilizce; /tr/kiralik-villalar → Türkçe", async () => {
+    pathname = "/kiralik-villalar";
     const { unmount } = render(<SitePopupLoader popup={{ ...popup, scope: "all" }} />);
     await openNow();
     expect(screen.getByRole("heading", { name: "Since 2006 we have been with you." })).toBeTruthy();
     unmount();
     window.localStorage.clear();
-    pathname = "/energy";
+    pathname = "/tr/kiralik-villalar";
     render(<SitePopupLoader popup={{ ...popup, scope: "all" }} />);
     await openNow();
     expect(screen.getByRole("heading", { name: "2006'dan bu yana tatilinizin yanındayız." })).toBeTruthy();

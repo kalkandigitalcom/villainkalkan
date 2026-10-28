@@ -33,6 +33,10 @@ import { isMultilingualEnabled } from "@/lib/i18n/config";
  *  olarak KAPALI kabul edilir) → notFound() fırlatır (Next.js'in
  *  standart digest-throw mekanizması; çağıran page component'in
  *  gövdesinden `await` ile çağrılmalı). true ise sessizce döner. */
+/* 🛡️ URL YAPISI (güncel): İngilizce varsayılan dil kökte, Türkçe `/tr`
+   altında yaşar; `isMultilingualEnabled` artık her zaman true döndüğü için
+   bu kapı hiçbir zaman 404 üretmez (kök İngilizce sayfalar daima açık).
+   Çağrı noktaları geriye dönük uyum için korunur. */
 export async function requirePublicLocaleEnabled(): Promise<void> {
   const settings = await getCachedSettings().catch(() => null);
   if (!isMultilingualEnabled(settings)) {

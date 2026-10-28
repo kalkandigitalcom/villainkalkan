@@ -184,7 +184,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       /* MOD A → "/" (bugünkü davranış). MOD B → "/tr": `/` artık
          yönlendirici olduğu için sitemap'e indexlenebilir olan
          TR ana sayfa URL'i yazılır. */
-      url: url(home.trHomeHref),
+      /* URL yapısı: İngilizce ana sayfa `/` (varsayılan dil); Türkçe
+         kardeşi `/tr` aşağıda `withTurkishEntries` ile eklenir. */
+      url: url("/"),
       lastModified: now,
       changeFrequency: "daily",
       priority: 1.0,
@@ -362,14 +364,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  return [
+  return withTurkishEntries([
     ...staticEntries,
     ...landingEntries,
     ...villaEntries,
     ...pageEntries,
     ...blogIndexEntry,
     ...blogEntries,
-  ];
+  ]);
+}
+
+/* 🛡️ URL YAPISI — her İngilizce (prefix'siz) entry'nin Türkçe (`/tr/...`)
+   kardeşi de AYRI bir sitemap URL'i olarak yayınlanır; aynı hreflang
+   kümesini (`alternates.languages`) taşır. Önce TÜM İngilizce entry'ler,
+   sonra Türkçe kardeşler (sıra deterministik). */
+function withTurkishEntries(
+  entries: MetadataRoute.Sitemap
+): MetadataRoute.Sitemap {
+  const turkish = entries.flatMap((entry) => {
+    const trUrl = entry.alternates?.languages?.tr;
+    if (!trUrl || trUrl === entry.url) return [];
+    return [{ ...entry, url: trUrl }];
+  });
+  return [...entries, ...turkish];
 }
 
 /* ===============================================================

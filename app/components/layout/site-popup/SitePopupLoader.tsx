@@ -11,6 +11,8 @@ import {
   popupDismissMs,
   type PublicSitePopup,
 } from "@/lib/site-popup";
+import { localeFromPathname } from "@/lib/i18n/config";
+import { localeHref } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ SitePopupLoader — açılış popup'ının hafif karar katmanı
@@ -40,8 +42,8 @@ const SitePopupDialog = dynamic(() => import("./SitePopupDialog"), { ssr: false 
 const CLOSE_LABELS: Record<string, string> = { tr: "Kapat", en: "Close" };
 
 function localeOf(pathname: string): "tr" | "en" {
-  if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
-  return "tr";
+  /* URL yapısı: `/tr` → Türkçe, diğerleri İngilizce (varsayılan). */
+  return localeFromPathname(pathname);
 }
 
 function readDismissed(version: string): boolean {
@@ -85,7 +87,16 @@ export default function SitePopupLoader({ popup }: { popup: PublicSitePopup }) {
   /* İçerik dili: URL prefix'i (/en; diğerleri TR). Çeviri yoksa
      veya alan boşsa Türkçe (server'da uygulanmış fallback). */
   const locale = localeOf(pathname);
-  const content = useMemo(() => localizeSitePopup(popup, locale), [popup, locale]);
+  const content = useMemo(() => {
+    const localized = localizeSitePopup(popup, locale);
+    /* 🛡️ URL yapısı: site içi buton bağlantısı ziyaretçinin dilindeki
+       adrese çevrilir (TR → /tr/..., EN → prefix'siz; eski /en soyulur).
+       Dış bağlantılar AYNEN kalır. */
+    const button = localized.button;
+    return button && !button.external
+      ? { ...localized, button: { ...button, url: localeHref(button.url, locale) } }
+      : localized;
+  }, [popup, locale]);
 
   useEffect(() => {
     if (closedHere || open || !inScope) return;

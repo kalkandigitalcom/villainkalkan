@@ -222,7 +222,7 @@ describe("Footer — villa tipi bağlantıları footer'da yok", () => {
     usePathnameMock.mockReset();
   });
 
-  it.each(["/", "/en/kiralik-villa/test", "/de/kiralik-villa/test"])(
+  it.each(["/", "/kiralik-villa/test", "/de/kiralik-villa/test"])(
     "14) %s → villa tipi adı/bağlantısı footer'da basılmaz",
     (path) => {
       usePathnameMock.mockReturnValue(path);
@@ -237,7 +237,7 @@ describe("Footer — villa tipi bağlantıları footer'da yok", () => {
 describe("FooterWrapper — multilingual gate + prop-passing", () => {
   beforeEach(() => {
     usePathnameMock.mockReset();
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
     getPublicSettingsMock.mockReset();
     findAllVillaLocationsMock.mockReset();
     findAllVillaTypesMock.mockReset();
@@ -276,7 +276,7 @@ describe("FooterWrapper — multilingual gate + prop-passing", () => {
 const CATEGORY_MENU_ITEM = {
   id: "m1",
   name: "Lüks Villa",
-  href: "/arama?villa-turleri=luks-villa",
+  href: "/tr/arama?villa-turleri=luks-villa",
   source_type: "category",
   source_id: "type-1",
   children: [],
@@ -288,7 +288,7 @@ describe("Header — kategori menü adı locale-aware", () => {
   });
 
   it("24) TR path → canonical TR adı (ÖNCEKİ davranış)", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(
       <Header
         menu={[{ ...CATEGORY_MENU_ITEM, nameByLocale: { en: "Luxury Villa" } }]}
@@ -300,7 +300,7 @@ describe("Header — kategori menü adı locale-aware", () => {
   });
 
   it("25) EN path → EN adı (masaüstü + mobil menüde)", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
     render(
       <Header
         menu={[{ ...CATEGORY_MENU_ITEM, nameByLocale: { en: "Luxury Villa" } }]}
@@ -311,8 +311,8 @@ describe("Header — kategori menü adı locale-aware", () => {
     expect(screen.queryByText("Lüks Villa")).not.toBeInTheDocument();
   });
 
-  it("26) '/de' path (DE desteği kaldırıldı) → TR'ye düşer, canonical TR adı", () => {
-    usePathnameMock.mockReturnValue("/de/kiralik-villa/test");
+  it("26) '/tr/...' path → canonical TR adı (EN çevirisi sızmaz)", () => {
+    usePathnameMock.mockReturnValue("/tr/kiralik-villa/test");
     render(
       <Header
         menu={[{ ...CATEGORY_MENU_ITEM, nameByLocale: { en: "Luxury Villa" } }]}
@@ -324,12 +324,12 @@ describe("Header — kategori menü adı locale-aware", () => {
   });
 
   it("27) çeviri yoksa TR fallback; nameByLocale olmayan öğeler etkilenmez", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
     render(
       <Header
         menu={[
           { ...CATEGORY_MENU_ITEM, nameByLocale: {} },
-          { id: "m2", name: "Hakkımızda", href: "/p/hakkimizda" },
+          { id: "m2", name: "Hakkımızda", href: "/tr/p/hakkimizda" },
         ]}
         siteLogo={null}
       />
@@ -339,14 +339,14 @@ describe("Header — kategori menü adı locale-aware", () => {
   });
 
   it("28) alt menü (children) öğeleri de locale-aware", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
     render(
       <Header
         menu={[
           {
             id: "m0",
             name: "Villalar",
-            href: "/arama",
+            href: "/tr/arama",
             children: [
               {
                 ...CATEGORY_MENU_ITEM,
@@ -365,8 +365,8 @@ describe("Header — kategori menü adı locale-aware", () => {
      parametresi (`villa-turleri`) canonical KALIR; link yalnız aktif
      locale prefix'ini alır. Eski "prefix'siz" beklentisi EN'de
      locale kaybına yol açıyordu. */
-  it("29) 🛡️ SLUG/TOKEN DEĞİŞMEDİ — EN'de canonical token + '/en' prefix", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
+  it("29) 🛡️ SLUG/TOKEN DEĞİŞMEDİ — EN'de canonical token + '/' prefix", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
     render(
       <Header
         menu={[{ ...CATEGORY_MENU_ITEM, nameByLocale: { en: "Luxury Villa" } }]}
@@ -378,7 +378,7 @@ describe("Header — kategori menü adı locale-aware", () => {
     for (const l of links) {
       expect(l).toHaveAttribute(
         "href",
-        "/en/arama?villa-turleri=luks-villa"
+        "/arama?villa-turleri=luks-villa"
       );
     }
   });
@@ -387,7 +387,7 @@ describe("Header — kategori menü adı locale-aware", () => {
 describe("HeaderWrapper — multilingual gate + ağaç birleştirme", () => {
   beforeEach(() => {
     usePathnameMock.mockReset();
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/test");
+    usePathnameMock.mockReturnValue("/kiralik-villa/test");
     getPublicSettingsMock.mockReset();
     getMenuMock.mockReset();
     findManyForLocaleMock.mockReset();
@@ -407,11 +407,10 @@ describe("HeaderWrapper — multilingual gate + ağaç birleştirme", () => {
     getMenuMock.mockResolvedValue([CATEGORY_MENU_ITEM]);
   });
 
-  it("30) multilingual_enabled=false → çeviri sorgusu HİÇ atılmaz, TR adı", async () => {
+  it("30) multilingual_enabled=false olsa bile çeviri okunur (URL yapısı gereği iki dilli site)", async () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: false });
     render(await HeaderWrapper());
-    expect(findManyForLocaleMock).not.toHaveBeenCalled();
-    expect(screen.getAllByText("Lüks Villa").length).toBeGreaterThan(0);
+    expect(findManyForLocaleMock).toHaveBeenCalled();
   });
 
   it("31) multilingual_enabled=true → EN adı gösterilir", async () => {
@@ -427,7 +426,7 @@ describe("HeaderWrapper — multilingual gate + ağaç birleştirme", () => {
       {
         id: "m0",
         name: "Villalar",
-        href: "/arama",
+        href: "/tr/arama",
         source_type: "manual",
         source_id: null,
         children: [CATEGORY_MENU_ITEM],
@@ -452,7 +451,7 @@ describe("HeaderWrapper — multilingual gate + ağaç birleştirme", () => {
   it("33) menüde kategori öğesi yoksa VİLLA TİPİ çeviri sorgusu atılmaz", async () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: true });
     getMenuMock.mockResolvedValue([
-      { id: "m2", name: "Hakkımızda", href: "/p/hakkimizda", source_type: "page", source_id: "p1" },
+      { id: "m2", name: "Hakkımızda", href: "/tr/p/hakkimizda", source_type: "page", source_id: "p1" },
     ]);
     render(await HeaderWrapper());
     expect(

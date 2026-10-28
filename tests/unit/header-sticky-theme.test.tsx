@@ -28,7 +28,7 @@ import Header from "@/app/components/layout/Header";
 
 const MENU = [{ id: "1", name: "Villalar", href: "/kiralik-villalar" }];
 const SITE_LOGO = "https://assets.example.com/logo/logo.webp";
-const PATHS = ["/", "/tr", "/en", "/kiralik-villalar", "/kiralik-villa/x", "/arama", "/blog", "/en/blog"];
+const PATHS = ["/", "/tr", "/kiralik-villalar", "/tr/kiralik-villalar", "/tr/kiralik-villa/x", "/tr/arama", "/tr/blog", "/blog"];
 
 function setScroll(y: number) {
   Object.defineProperty(window, "scrollY", { value: y, configurable: true });
@@ -69,7 +69,7 @@ describe("Header — standart beyaz görünüm", () => {
     const { imgs } = renderAt(p);
     expect(imgs).toHaveLength(1);
     expect(imgs[0].getAttribute("src")).toBe(SITE_LOGO);
-    expect(imgs[0].getAttribute("alt")).toMatch(p.startsWith("/en") ? /^Site logo$/ : /^Site logosu$/);
+    expect(imgs[0].getAttribute("alt")).toMatch(p === "/tr" || p.startsWith("/tr/") ? /^Site logosu$/ : /^Site logo$/);
     for (const c of ["h-12", "md:h-16", "w-auto", "object-contain"]) {
       expect(imgs[0].className, c).toContain(c);
     }
@@ -79,7 +79,7 @@ describe("Header — standart beyaz görünüm", () => {
   it("3) logo boyutu sayfadan bağımsız — ana sayfa ile iç sayfa birebir", () => {
     const home = renderAt("/").imgs[0].className;
     cleanupAll();
-    const inner = renderAt("/kiralik-villalar").imgs[0].className;
+    const inner = renderAt("/tr/kiralik-villalar").imgs[0].className;
     expect(inner).toBe(home);
   });
 
@@ -97,7 +97,7 @@ describe("Header — standart beyaz görünüm", () => {
   });
 
   it("6) hamburger ikonu beyaz zeminde petrol renkte (her sayfada)", () => {
-    for (const p of ["/", "/kiralik-villalar"]) {
+    for (const p of ["/tr", "/tr/kiralik-villalar"]) {
       const { getByLabelText, unmount } = renderAt(p);
       expect(getByLabelText("Menüyü aç").className).toContain("text-ink");
       unmount();
@@ -107,7 +107,7 @@ describe("Header — standart beyaz görünüm", () => {
   it("7) spacer yalnız iç sayfalarda (ana sayfada hero header altından başlar)", () => {
     expect(renderAt("/").container.querySelector("div.h-\\[108px\\]")).toBeNull();
     cleanupAll();
-    expect(renderAt("/kiralik-villalar").container.querySelector("div.h-\\[108px\\]")).toBeTruthy();
+    expect(renderAt("/tr/kiralik-villalar").container.querySelector("div.h-\\[108px\\]")).toBeTruthy();
   });
 
   it("8) 🔒 kaynak: footer_logo header'a geçirilmiyor, şeffaf durum yok", () => {

@@ -103,7 +103,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     clickCta();
     expect(pushSpy).toHaveBeenCalledTimes(1);
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
+      "/tr/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
     );
   });
 
@@ -125,7 +125,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     });
     clickCta();
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/rezervasyon/ornek-villa?start=2026-10-10&end=2026-10-17"
+      "/tr/rezervasyon/ornek-villa?start=2026-10-10&end=2026-10-17"
     );
   });
 
@@ -135,7 +135,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     });
     clickCta();
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/rezervasyon/ornek-villa?start=2026-11-01&end=2026-11-05"
+      "/tr/rezervasyon/ornek-villa?start=2026-11-01&end=2026-11-05"
     );
   });
 
@@ -145,7 +145,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     });
     clickCta();
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/rezervasyon/ornek-villa?start=2026-12-28&end=2027-01-02"
+      "/tr/rezervasyon/ornek-villa?start=2026-12-28&end=2027-01-02"
     );
   });
 
@@ -155,7 +155,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     });
     clickCta();
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-08"
+      "/tr/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-08"
     );
   });
 
@@ -172,14 +172,14 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     renderDiscountCard({ locale: "en" });
     clickCta("Book now");
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/en/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
+      "/rezervasyon/ornek-villa?start=2026-10-08&end=2026-10-14"
     );
   });
 
   it("10) discount YOKSA → MEVCUT davranış: villa detay sayfası", () => {
     renderDiscountCard({ discount: null });
     clickCta();
-    expect(pushSpy.mock.calls[0][0]).toBe("/kiralik-villa/ornek-villa");
+    expect(pushSpy.mock.calls[0][0]).toBe("/tr/kiralik-villa/ornek-villa");
   });
 
   it("11) BOZUK tarih → MEVCUT davranışa düşer (asla geçersiz URL üretmez)", () => {
@@ -187,7 +187,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
       discount: { ...BASE_DISCOUNT, start_date: "bozuk", end_date: "2026-10-14" },
     });
     clickCta();
-    expect(pushSpy.mock.calls[0][0]).toBe("/kiralik-villa/ornek-villa");
+    expect(pushSpy.mock.calls[0][0]).toBe("/tr/kiralik-villa/ornek-villa");
   });
 
   it("12) TERS aralık (end < start) → MEVCUT davranışa düşer", () => {
@@ -195,7 +195,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
       discount: { ...BASE_DISCOUNT, start_date: "2026-10-14", end_date: "2026-10-08" },
     });
     clickCta();
-    expect(pushSpy.mock.calls[0][0]).toBe("/kiralik-villa/ornek-villa");
+    expect(pushSpy.mock.calls[0][0]).toBe("/tr/kiralik-villa/ornek-villa");
   });
 
   it("13) CTA — mavi fiyat panelindeki beyaz buton (2026 paleti)", () => {
@@ -215,8 +215,8 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
       discountAvailable: false,
     });
     clickCta();
-    expect(pushSpy.mock.calls[0][0]).toBe("/kiralik-villa/ornek-villa");
-    expect(String(pushSpy.mock.calls[0][0])).not.toContain("/rezervasyon/");
+    expect(pushSpy.mock.calls[0][0]).toBe("/tr/kiralik-villa/ornek-villa");
+    expect(String(pushSpy.mock.calls[0][0])).not.toContain("/tr/rezervasyon/");
   });
 
   it("16) MÜSAİTLİK — discountAvailable=true → indirim tarihleriyle rezervasyon sayfası", () => {
@@ -226,7 +226,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     });
     clickCta();
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/rezervasyon/ornek-villa?start=2026-10-10&end=2026-10-17"
+      "/tr/rezervasyon/ornek-villa?start=2026-10-10&end=2026-10-17"
     );
   });
 
@@ -236,7 +236,7 @@ describe("İndirimli kart CTA — fırsat tarihlerini rezervasyona taşır", () 
     });
     clickCta();
     expect(pushSpy.mock.calls[0][0]).toBe(
-      "/rezervasyon/ornek-villa?start=2026-10-10&end=2026-10-17"
+      "/tr/rezervasyon/ornek-villa?start=2026-10-10&end=2026-10-17"
     );
   });
 

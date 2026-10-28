@@ -13,6 +13,7 @@ import { formatDateForLocale } from "@/lib/date-format";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ /favoriler/paylas/[token] — ORTAK GÖVDE
@@ -33,7 +34,7 @@ export default async function SharedFavoritesPageBody({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale).favoritesPage;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
   const { token } = await params;
   const data = await getSharedFavoritesList(token);
   if (!data) {

@@ -8,7 +8,7 @@
        (`guests`, `bolgeler`, `villa-turleri`) ve slug tercihi
      - Tarih aralığı (react-datepicker, portal hedefi) → `start`/`end`
      - Gelişmiş Arama → `flexible=3` + `ozellikler`
-     - Yönlendirme: TR `/arama?...`, EN `/en/arama?...`
+     - Yönlendirme: TR `/tr/arama?...`, EN `/arama?...`
      - Erişilebilirlik: aria-expanded, etiketli alanlar, DOM/tab sırası
    =============================================================== */
 
@@ -91,7 +91,7 @@ describe("HeroSearchPanel — yeni tasarım, korunan davranış", () => {
   it("2) TR varsayılan arama → /arama?guests=2", async () => {
     await renderPanel("tr");
     fireEvent.click(screen.getByRole("button", { name: /Villa bul/ }));
-    expect(pushedUrl()).toBe("/arama?guests=2");
+    expect(pushedUrl()).toBe("/tr/arama?guests=2");
   });
 
   it("3) EN etiketleri + yönlendirme /en/arama", async () => {
@@ -103,7 +103,7 @@ describe("HeroSearchPanel — yeni tasarım, korunan davranış", () => {
     expect(screen.getByPlaceholderText("Select dates")).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Guests"), { target: { value: "5" } });
     fireEvent.click(screen.getByRole("button", { name: /Find a villa/ }));
-    expect(pushedUrl()).toBe("/en/arama?guests=5");
+    expect(pushedUrl()).toBe("/arama?guests=5");
   });
 
   it("4) Bölge: yalnız grup kökleri listelenir, seçim → bolgeler=slug", async () => {

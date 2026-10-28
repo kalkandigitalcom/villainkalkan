@@ -26,8 +26,9 @@ import VillaCard from "@/app/components/villa/VillaCard";
    ve detay linkleri de locale-aware olur. Villa verisi, sıralama ve
    kart prop'ları AYNEN korundu.
    =============================================================== */
-import { DEFAULT_LOCALE, localeFromPathname } from "@/lib/i18n/config";
+import { localeFromPathname } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /** `app/not-found.tsx`'in `getCachedVillas()` sonucundan geçirdiği
  *  öneri villaları — kart prop'larıyla BİREBİR aynı alanlar. */
@@ -51,7 +52,7 @@ export default function NotFoundContent({
 }) {
   const locale = localeFromPathname(usePathname());
   const dict = getDictionary(locale).notFound;
-  const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const prefix = localePathPrefix(locale);
 
   return (
     <main className="flex-1">

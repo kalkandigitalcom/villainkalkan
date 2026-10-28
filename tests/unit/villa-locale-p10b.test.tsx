@@ -499,7 +499,7 @@ describe("useBookingEngine — Phase 10B handleReservation navigation URL '&loca
     });
 
     expect(window.location.href).toBe(
-      "/rezervasyon/test-villa?start=2026-10-05&end=2026-10-08&adults=2&children=0&poolHeating=0"
+      "/tr/rezervasyon/test-villa?start=2026-10-05&end=2026-10-08&adults=2&children=0&poolHeating=0"
     );
     expect(window.location.href).not.toContain("locale=");
   });
@@ -530,7 +530,7 @@ describe("useBookingEngine — Phase 10B handleReservation navigation URL '&loca
     expect(window.location.href).toContain("&locale=en");
     /* Hedef artık EN route'u (locale kaybı düzeltmesi). */
     expect(window.location.href).toBe(
-      "/en/rezervasyon/test-villa?start=2026-10-05&end=2026-10-08&adults=2&children=0&poolHeating=0&locale=en"
+      "/rezervasyon/test-villa?start=2026-10-05&end=2026-10-08&adults=2&children=0&poolHeating=0&locale=en"
     );
   });
 

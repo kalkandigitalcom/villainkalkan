@@ -2,9 +2,9 @@
    🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — YENİ LOCALE ROUTE'LARI
    ===============================================================
    Kapsam:
-     • `/en/teklif-al`, `/en/rezervasyon-kontrol`,
-       `/en/favoriler`, `/en/favoriler/paylas/[token]`,
-       `/en/kisa-sureli-tarihler/[ay]/[gece]` gate + ortak gövde
+     • `/teklif-al`, `/rezervasyon-kontrol`,
+       `/favoriler`, `/favoriler/paylas/[token]`,
+       `/kisa-sureli-tarihler/[ay]/[gece]` gate + ortak gövde
      • Yeni dictionary namespace'lerinin TR/EN bütünlüğü
      • TR byte-identity (eski hardcoded metinler dictionary'de AYNEN)
      • 404 + bakım ekranı locale çözümü
@@ -99,7 +99,7 @@ const ROUTES: Array<{
 for (const route of ROUTES) {
   for (const locale of WRITABLE) {
     describe(`/${locale}/${route.path}`, () => {
-      const modulePath = `@/app/(public)/${locale}/${route.path}/page`;
+      const modulePath = `@/app/(public)/${route.path}/page`;
 
       it(`1) gate geçtiğinde ortak gövdeyi locale="${locale}" ile render eder`, async () => {
         const { default: Page } = await import(modulePath);
@@ -227,10 +227,10 @@ describe("yeni dictionary namespace'leri — TR/EN", () => {
 
 describe("NotFoundContent — pathname'den locale", () => {
   it.each([
-    ["/olmayan-sayfa", "tr"],
-    ["/en/olmayan-sayfa", "en"],
+    ["/tr/olmayan-sayfa", "tr"],
+    ["/olmayan-sayfa", "en"],
     /* DE desteği kaldırıldı — `/de/...` artık TR'ye düşer. */
-    ["/de/olmayan-sayfa", "tr"],
+    ["/de/olmayan-sayfa", "en"],
   ] as const)("8) %s → %s metinleri", async (pathname, locale) => {
     usePathnameMock.mockReturnValue(pathname);
     const { default: NotFoundContent } = await import(
@@ -242,14 +242,14 @@ describe("NotFoundContent — pathname'den locale", () => {
     expect(screen.getByText(dict.homeCta)).toBeInTheDocument();
     expect(screen.getByText(dict.homeCta).closest("a")).toHaveAttribute(
       "href",
-      locale === "tr" ? "/" : `/${locale}`
+      locale === "tr" ? "/tr" : "/"
     );
   });
 });
 
 describe("MaintenanceScreen — canonical mesaj + locale etiketi", () => {
   it.each(LOCALES)("9) %s — mesaj yoksa dictionary varsayılanı", async (locale) => {
-    usePathnameMock.mockReturnValue(locale === "tr" ? "/" : `/${locale}`);
+    usePathnameMock.mockReturnValue(locale === "tr" ? "/tr" : "/");
     const { default: MaintenanceScreen } = await import(
       "@/app/components/layout/MaintenanceScreen"
     );
@@ -260,7 +260,7 @@ describe("MaintenanceScreen — canonical mesaj + locale etiketi", () => {
   });
 
   it("10) 🔒 admin mesajı CANONICAL kalır (migration 084 kararı)", async () => {
-    usePathnameMock.mockReturnValue("/en");
+    usePathnameMock.mockReturnValue("/");
     const { default: MaintenanceScreen } = await import(
       "@/app/components/layout/MaintenanceScreen"
     );

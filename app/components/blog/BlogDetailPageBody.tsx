@@ -22,6 +22,7 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { resolveBlogContent } from "@/lib/i18n/get-blog-translation.server";
 import { excerptFrom } from "@/app/components/blog/blog-metadata";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ BLOG DETAY GÖVDESİ — /blog/[slug] · /en/... · /de/...
@@ -40,7 +41,7 @@ export default async function BlogDetailPageBody({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale).blog;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
 
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
@@ -69,6 +70,7 @@ export default async function BlogDetailPageBody({
     datePublished: post.published_at,
     dateModified: post.updated_at,
     author: post.author,
+    locale,
   });
   const breadcrumbLd = buildBreadcrumb([
     { name: dict.breadcrumbHome, url: localePrefix || "/" },

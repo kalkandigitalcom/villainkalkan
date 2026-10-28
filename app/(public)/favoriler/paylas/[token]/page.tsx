@@ -3,17 +3,15 @@ import type { Metadata } from "next";
 import SharedFavoritesPageBody from "@/app/components/favorites/SharedFavoritesPageBody";
 import { getSharedFavoritesList } from "@/app/services/shared-favorites.service";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /favoriler/paylas/[token] — SHARED FAVORITES (TR)
+   🛡️ /en/favoriler/paylas/[token] — SHARED FAVORITES (EN)
    ===============================================================
-   Sayfa gövdesi
-   `app/components/favorites/SharedFavoritesPageBody.tsx`'e TAŞINDI
-   (DOM/CSS/veri akışı DEĞİŞTİRİLMEDEN) —
-   `/en|de/favoriler/paylas/[token]` AYNI gövdeyi render eder.
-
-   DEĞİŞMEYEN: token/snapshot mantığı, `dynamic = "force-dynamic"`,
-   robots noindex/nofollow, canonical YOK, JSON-LD YOK.
+   TR ile AYNI gövde (`SharedFavoritesPageBody`) — tek fark `locale`
+   prop'u. Token/snapshot mantığı ve `notFound()` davranışı BİREBİR
+   aynıdır. SEO: TR ile AYNI (noindex/nofollow, canonical YOK).
    =============================================================== */
 
 export const dynamic = "force-dynamic";
@@ -23,7 +21,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ token: string }>;
 }): Promise<Metadata> {
-  const dict = getDictionary("tr").favoritesPage;
+  const dict = getDictionary("en").favoritesPage;
   const { token } = await params;
   const data = await getSharedFavoritesList(token);
   if (!data) {
@@ -43,10 +41,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function SharedFavoritesPage({
+export default async function EnSharedFavoritesPage({
   params,
 }: {
   params: Promise<{ token: string }>;
 }) {
-  return <SharedFavoritesPageBody params={params} locale="tr" />;
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  return <SharedFavoritesPageBody params={params} locale="en" />;
 }

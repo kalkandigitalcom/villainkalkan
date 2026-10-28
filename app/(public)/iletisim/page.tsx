@@ -2,28 +2,31 @@ import type { Metadata } from "next";
 
 import ContactPageBody from "@/app/components/contact/ContactPageBody";
 import { buildContactMetadata } from "@/app/components/contact/contact-metadata";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /iletisim — PUBLIC İLETİŞİM (TR)
+   🛡️ /en/iletisim — PUBLIC İLETİŞİM (EN)
    ===============================================================
-   Sayfa gövdesi `app/components/contact/ContactPageBody.tsx`'e
-   TAŞINDI (DOM/CSS/veri akışı DEĞİŞTİRİLMEDEN) — `/en/iletisim` ve
-   `/de/iletisim` AYNI gövdeyi render eder; kodun ikinci/üçüncü
-   kopyası YOKTUR (`KiralikVillalarPageBody` Phase deseni).
+   TR ile AYNI gövde (`ContactPageBody`) — tek fark `locale` prop'u.
+   Veri akışı (`getCachedSettings`), form submit akışı ve JSON-LD
+   semantiği BİREBİR aynı.
 
-   TR DAVRANIŞI DEĞİŞMEDİ:
-     • URL `/iletisim` aynı.
-     • `locale="tr"` → dictionary TR değerleri eski hardcoded
-       metinlerle BİREBİR.
-     • Route segment config (`dynamic`/`revalidate`) EKLENMEDİ —
-       mevcut statik/ISR davranışı AYNEN korunur.
-     • TR'de locale gate (`requirePublicLocaleEnabled`) ÇAĞRILMAZ.
+   KORUNAN PHASE 4A/4B DAVRANIŞI:
+     • `setRequestLocale("en")` — request-scoped locale işareti.
+     • `await requirePublicLocaleEnabled()` — `multilingual_enabled`
+       kapalıyken notFound() → 404 (bugünkü production davranışı).
+
+   Route segment config EKLENMEDİ — TR ile aynı statik/ISR davranışı.
    =============================================================== */
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildContactMetadata("tr");
+  return buildContactMetadata("en");
 }
 
-export default async function ContactPage() {
-  return <ContactPageBody locale="tr" />;
+export default async function EnContactPage() {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  return <ContactPageBody locale="en" />;
 }

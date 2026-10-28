@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MessageSquareText } from "lucide-react";
 
-import { DEFAULT_LOCALE, localeFromPathname } from "@/lib/i18n/config";
+import { localeFromPathname } from "@/lib/i18n/config";
+import { toBasePath } from "@/lib/i18n/seo-alternates";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { localeHref } from "@/lib/i18n/locale-href";
 
@@ -33,9 +34,8 @@ import { localeHref } from "@/lib/i18n/locale-href";
 /** Teklif sayfasının kendisi mi? (locale prefix'i dikkate alır) */
 function isQuotePage(pathname: string | null): boolean {
   if (!pathname) return false;
-  const locale = localeFromPathname(pathname);
-  const base =
-    locale === DEFAULT_LOCALE ? pathname : pathname.slice(locale.length + 1);
+  /* Locale'siz taban path ("/tr/teklif-al" → "/teklif-al"). */
+  const base = toBasePath(pathname);
   return base === "/teklif-al" || base.startsWith("/teklif-al/");
 }
 

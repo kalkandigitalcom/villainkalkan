@@ -4,11 +4,11 @@
    KÖK NEDEN (düzeltildi):
      Villa detay sayfasındaki "Rezervasyon Yap" butonu
      (`useBookingEngine > handleReservation`) hedefi PREFIX'SİZ
-     üretiyordu: `/rezervasyon/<slug>?...`. Bu kod yazıldığında
-     `/en/rezervasyon/[slug]` route'ları `LocaleRouteComingSoon`
+     üretiyordu: `/tr/rezervasyon/<slug>?...`. Bu kod yazıldığında
+     `/rezervasyon/[slug]` route'ları `LocaleRouteComingSoon`
      placeholder'ıydı ve locale yalnız `&locale=` query param'ı ile
-     taşınıyordu — ancak `/rezervasyon/[slug]/page.tsx` o param'ı HİÇ
-     okumuyor. Sonuç: `/en/...` üzerindeki kullanıcı TR route'una
+     taşınıyordu — ancak `/tr/rezervasyon/[slug]/page.tsx` o param'ı HİÇ
+     okumuyor. Sonuç: `/...` üzerindeki kullanıcı TR route'una
      düşüyor → `localeFromPathname` "tr" → dil TR'ye dönüyordu.
 
    DÜZELTME: hedef, projenin MEVCUT merkezi helper'ı `localeHref` ile
@@ -100,25 +100,24 @@ async function reserveWith(locale?: "tr" | "en") {
 
 /* =============================================================== */
 describe("1-3) Rezervasyon hedefi aktif locale prefix'ini TAŞIR", () => {
-  it("1) TR → /rezervasyon/... (canonical, prefix'siz — DAVRANIŞ DEĞİŞMEDİ)", async () => {
+  it("1) TR → /tr/rezervasyon/... (Türkçe sayfalar /tr prefix'i taşır)", async () => {
     const url = await reserveWith("tr");
-    expect(url.startsWith("/rezervasyon/deniz-villa?")).toBe(true);
-    expect(url.startsWith("/tr/")).toBe(false);
+    expect(url.startsWith("/tr/rezervasyon/deniz-villa?")).toBe(true);
     /* TR'de ek query param EKLENMEZ (byte-identical davranış). */
     expect(url).not.toContain("locale=");
   });
 
   it("1b) locale HİÇ verilmezse de TR canonical (geriye dönük uyum)", async () => {
     const url = await reserveWith(undefined);
-    expect(url.startsWith("/rezervasyon/deniz-villa?")).toBe(true);
+    expect(url.startsWith("/tr/rezervasyon/deniz-villa?")).toBe(true);
     expect(url).not.toContain("locale=");
   });
 
-  it("2) EN → /en/rezervasyon/... (bildirilen hata senaryosu)", async () => {
+  it("2) EN → /rezervasyon/... (varsayılan dil, prefix'siz)", async () => {
     const url = await reserveWith("en");
-    expect(url.startsWith("/en/rezervasyon/deniz-villa?")).toBe(true);
+    expect(url.startsWith("/rezervasyon/deniz-villa?")).toBe(true);
     /* REGRESYON: prefix'siz TR route'una ASLA düşmemeli. */
-    expect(url.startsWith("/rezervasyon/")).toBe(false);
+    expect(url.startsWith("/tr/rezervasyon/")).toBe(false);
   });
 });
 
@@ -136,7 +135,7 @@ describe("4) Query sözleşmesi AYNEN korunur", () => {
   it("4b) TR ile EN arasındaki TEK fark path prefix'i (+ mevcut &locale=)", async () => {
     const tr = await reserveWith("tr");
     const en = await reserveWith("en");
-    expect(en).toBe(`/en${tr}&locale=en`);
+    expect(en).toBe(`${tr.replace(/^\/tr/, "")}&locale=en`);
   });
 });
 
@@ -192,5 +191,6 @@ describe("7) Mevcut davranışlar KORUNDU (regresyon)", () => {
   it("7b) slug URL'de AYNEN korunur", async () => {
     const url = await reserveWith("en");
     expect(url).toContain("/rezervasyon/deniz-villa?");
+    expect(url.startsWith("/tr/")).toBe(false);
   });
 });

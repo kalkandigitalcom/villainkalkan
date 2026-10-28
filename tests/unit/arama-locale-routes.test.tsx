@@ -174,7 +174,7 @@ beforeEach(() => {
    A) ROUTE DAVRANIŞI
    =============================================================== */
 const LOCALE_ROUTES: Array<[string, "en"]> = [
-  ["@/app/(public)/en/arama/page", "en"],
+  ["@/app/(public)/arama/page", "en"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -207,10 +207,10 @@ describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
   });
 });
 
-describe("app/(public)/arama/page.tsx — TR", () => {
+describe("app/(public)/tr/arama/page.tsx — TR", () => {
   it("4) ORTAK AramaPageBody'yi locale='tr' ile render eder", async () => {
     const sp = Promise.resolve({});
-    const { default: Page } = await import("@/app/(public)/arama/page");
+    const { default: Page } = await import("@/app/(public)/tr/arama/page");
     const element = await Page({ searchParams: sp });
     expect(element.type).toBe(AramaPageBody);
     expect(element.props.locale).toBe("tr");
@@ -218,14 +218,14 @@ describe("app/(public)/arama/page.tsx — TR", () => {
   });
 
   it("5) TR'de locale gate'i ÇAĞRILMAZ (davranış değişmedi)", async () => {
-    const { default: Page } = await import("@/app/(public)/arama/page");
+    const { default: Page } = await import("@/app/(public)/tr/arama/page");
     await Page({ searchParams: Promise.resolve({}) });
     expect(setRequestLocaleMock).not.toHaveBeenCalled();
     expect(requirePublicLocaleEnabledMock).not.toHaveBeenCalled();
   });
 
   it("6) force-dynamic KORUNDU", async () => {
-    const mod = await import("@/app/(public)/arama/page");
+    const mod = await import("@/app/(public)/tr/arama/page");
     expect(mod.dynamic).toBe("force-dynamic");
   });
 
@@ -357,15 +357,15 @@ describe("Phase 13 — TR byte-identity", () => {
    =============================================================== */
 describe("Phase 13 — basePath", () => {
   it("15) mevcut `buildLocaleAlternates` ile /arama · /en/arama", () => {
-    expect(buildLocaleAlternates("/arama", "tr").canonical).toBe("/arama");
-    expect(buildLocaleAlternates("/arama", "en").canonical).toBe("/en/arama");
+    expect(buildLocaleAlternates("/tr/arama", "tr").canonical).toBe("/tr/arama");
+    expect(buildLocaleAlternates("/tr/arama", "en").canonical).toBe("/arama");
   });
 
   it("16) gövde basePath'i buildLocaleAlternates'ten türetiyor", () => {
     const src = stripComments(readSrc(BODY_SRC));
     expect(src).toContain('buildLocaleAlternates("/arama", locale).canonical');
-    /* Hardcoded "/arama?" URL inşası KALMADI. */
-    expect(src).not.toContain('`/arama?${qs}`');
+    /* Hardcoded "/tr/arama?" URL inşası KALMADI. */
+    expect(src).not.toContain('`/tr/arama?${qs}`');
   });
 });
 
@@ -418,7 +418,7 @@ describe("Phase 13 — FilterSidebar locale", () => {
   }
 
   it("17) TR: başlık ve CTA TR (mevcut davranış)", () => {
-    renderSidebar("tr", "/arama");
+    renderSidebar("tr", "/tr/arama");
     expect(
       screen.getAllByText("Filtrele ve Tarih Seç").length
     ).toBeGreaterThan(0);
@@ -426,7 +426,7 @@ describe("Phase 13 — FilterSidebar locale", () => {
   });
 
   it("18) EN: panel metinleri İngilizce", () => {
-    renderSidebar("en", "/en/arama");
+    renderSidebar("en", "/arama");
     expect(
       screen.getAllByText(en.search.filters.title).length
     ).toBeGreaterThan(0);
@@ -437,20 +437,20 @@ describe("Phase 13 — FilterSidebar locale", () => {
   });
 
   it("20) EN buildHref → /en/arama (query kontratı korunur)", async () => {
-    renderSidebar("en", "/en/arama", { ...INITIAL, guests: 4 });
+    renderSidebar("en", "/arama", { ...INITIAL, guests: 4 });
     clickPanelButton(en.search.filters.apply);
-    await waitFor(() => expect(pushMock).toHaveBeenCalled());
-    expect(pushMock.mock.calls[0][0]).toBe("/en/arama?guests=4");
-  });
-
-  it("22) TR buildHref → /arama (BYTE-IDENTICAL eski davranış)", async () => {
-    renderSidebar("tr", "/arama", { ...INITIAL, guests: 4 });
-    clickPanelButton("Filtrele");
     await waitFor(() => expect(pushMock).toHaveBeenCalled());
     expect(pushMock.mock.calls[0][0]).toBe("/arama?guests=4");
   });
 
-  it("23) prop verilmezse default tr + /arama (kiralik-villalar korunur)", async () => {
+  it("22) TR buildHref → /arama (BYTE-IDENTICAL eski davranış)", async () => {
+    renderSidebar("tr", "/tr/arama", { ...INITIAL, guests: 4 });
+    clickPanelButton("Filtrele");
+    await waitFor(() => expect(pushMock).toHaveBeenCalled());
+    expect(pushMock.mock.calls[0][0]).toBe("/tr/arama?guests=4");
+  });
+
+  it("23) prop verilmezse default tr metinleri + varsayılan basePath '/arama' (çağıranlar basePath'i her zaman locale'e göre geçer)", async () => {
     render(
       <FilterSidebar
         regionOptions={REGIONS}
@@ -467,10 +467,10 @@ describe("Phase 13 — FilterSidebar locale", () => {
   });
 
   it("24) resetFilters locale-aware (EN → /en/arama)", async () => {
-    renderSidebar("en", "/en/arama", { ...INITIAL, guests: 4 });
+    renderSidebar("en", "/arama", { ...INITIAL, guests: 4 });
     clickPanelButton(en.search.filters.reset);
     await waitFor(() => expect(pushMock).toHaveBeenCalled());
-    expect(pushMock.mock.calls[0][0]).toBe("/en/arama");
+    expect(pushMock.mock.calls[0][0]).toBe("/arama");
   });
 
   it("25) mode='redirect' resetFilters PUSH ETMEZ (mevcut sözleşme)", async () => {
@@ -481,7 +481,7 @@ describe("Phase 13 — FilterSidebar locale", () => {
         initial={{ ...INITIAL, guests: 4 }}
         mode="redirect"
         locale="en"
-        basePath="/en/arama"
+        basePath="/arama"
       />
     );
     clickPanelButton(en.search.filters.reset);
@@ -544,7 +544,7 @@ describe("Villa tipi adı locale-aware", () => {
           categoryOptions={[{ id: "t1", name: expected, slug: "mustakil" }]}
           initial={INITIAL}
           locale={loc}
-          basePath={loc === "tr" ? "/arama" : `/${loc}/arama`}
+          basePath={loc === "tr" ? "/tr/arama" : "/arama"}
         />
       );
       /* 🛡️ "Villa Tipi" bölümü artık seçim yokken KAPALI başlıyor
@@ -563,7 +563,7 @@ describe("Villa tipi adı locale-aware", () => {
         ]}
         initial={INITIAL}
         locale="en"
-        basePath="/en/arama"
+        basePath="/arama"
       />
     );
     /* 🛡️ Accordion: seçim yokken kapalı → önce aç (assertion aynı). */
@@ -573,7 +573,7 @@ describe("Villa tipi adı locale-aware", () => {
     await waitFor(() => expect(pushMock).toHaveBeenCalled());
     /* Görünen ad EN, ama URL token canonical TR slug'ı. */
     expect(pushMock.mock.calls[0][0]).toBe(
-      "/en/arama?villa-turleri=mustakil-villa"
+      "/arama?villa-turleri=mustakil-villa"
     );
   });
 });

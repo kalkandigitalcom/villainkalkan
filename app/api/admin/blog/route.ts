@@ -177,7 +177,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   revalidatePath("/blog");
   /* 🛡️ EN/DE blog listeleri de ISR — yalnız TR tazeleniyordu; kapak
      (ve `?v=` versiyonu) EN/DE listede de hemen güncel olsun. */
-  revalidatePath("/en/blog");
+  revalidatePath("/tr/blog");
   /* 🏝️ Ana sayfa "Neden Kalkan?" bölümü (migration 099). */
   revalidateTag(BLOG_HOMEPAGE_TAG, { expire: 0 });
 

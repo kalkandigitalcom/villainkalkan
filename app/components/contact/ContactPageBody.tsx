@@ -175,7 +175,7 @@ export default async function ContactPageBody({
   const breadcrumbCurrent = getDictionary(locale).header.contact;
 
   const breadcrumbLd = buildBreadcrumb(
-    [{ name: breadcrumbHome, url: "/" }, { name: breadcrumbCurrent }],
+    [{ name: breadcrumbHome, url: localeHref("/", locale) }, { name: breadcrumbCurrent }],
     locale === DEFAULT_LOCALE ? undefined : locale
   );
 

@@ -211,7 +211,7 @@ export default function CmsPageBody({
      "verilmezse davranış öncekiyle AYNI"). */
   const breadcrumbLd = buildBreadcrumb(
     [
-      { name: dict.breadcrumbHome, url: "/" },
+      { name: dict.breadcrumbHome, url: localeHref("/", locale) },
       { name: title || dict.fallbackTitle },
     ],
     locale === DEFAULT_LOCALE ? undefined : locale

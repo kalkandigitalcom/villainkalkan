@@ -90,7 +90,7 @@ import FooterWrapper from "@/app/components/layout/FooterWrapper";
 const PAGE_ITEM = {
   id: "menu-row-1",
   name: "Hakkımızda",
-  href: "/p/hakkimizda",
+  href: "/tr/p/hakkimizda",
   source_type: "page",
   source_id: "page-1",
 };
@@ -100,7 +100,7 @@ const PAGE_ITEM = {
 const PAGE_AUTO_ITEM = {
   id: "page-2",
   name: "İletişim",
-  href: "/p/iletisim",
+  href: "/tr/p/iletisim",
   source_type: "page",
   source_id: "page-2",
 };
@@ -108,7 +108,7 @@ const PAGE_AUTO_ITEM = {
 const MANUAL_ITEM = {
   id: "m1",
   name: "Kiralık Villalar",
-  href: "/kiralik-villalar",
+  href: "/tr/kiralik-villalar",
   source_type: "manual",
   source_id: null,
 };
@@ -116,7 +116,7 @@ const MANUAL_ITEM = {
 const CATEGORY_ITEM = {
   id: "m9",
   name: "Lüks Villa",
-  href: "/arama?villa-turleri=luks-villa",
+  href: "/tr/arama?villa-turleri=luks-villa",
   source_type: "category",
   source_id: "type-1",
 };
@@ -124,7 +124,7 @@ const CATEGORY_ITEM = {
 const REGION_ITEM = {
   id: "m7",
   name: "Kalkan",
-  href: "/arama?bolgeler=kalkan",
+  href: "/tr/arama?bolgeler=kalkan",
   source_type: "region",
   source_id: "loc-1",
 };
@@ -164,7 +164,7 @@ const pageCalls = () =>
 
 beforeEach(() => {
   vi.clearAllMocks();
-  usePathnameMock.mockReturnValue("/en");
+  usePathnameMock.mockReturnValue("/");
   getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: true });
   getMenuMock.mockResolvedValue([PAGE_ITEM]);
   findManyForLocaleMock.mockResolvedValue({ data: [], error: null });
@@ -235,17 +235,17 @@ describe("getPageTitlesByLocale — batch okuma", () => {
    B) HEADER
    =============================================================== */
 describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
-  it("8) TR → canonical `pages.title`; çeviri sorgusu ATILMAZ", async () => {
-    usePathnameMock.mockReturnValue("/");
+  it("8) TR → canonical `pages.title` gösterilir (multilingual ayarı kapalı olsa bile); EN çevirisi SIZMAZ", async () => {
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: false });
     mockTranslations({ page: { "page-1": { en: "About Us" } } });
     render(await HeaderWrapper());
-    expect(findManyForLocaleMock).not.toHaveBeenCalled();
     expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.queryByText("About Us")).not.toBeInTheDocument();
   });
 
   it("9) TR path (multilingual AÇIK) → yine canonical başlık gösterilir", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     mockTranslations({
       page: { "page-1": { en: "About Us" } },
     });
@@ -263,14 +263,14 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
     expect(screen.queryByText("Hakkımızda")).not.toBeInTheDocument();
   });
 
-  it("11) '/de' artık desteklenmiyor → canonical TR başlık (EN sızmaz)", async () => {
+  it("11) '/de' artık desteklenmiyor → varsayılan EN başlık", async () => {
     usePathnameMock.mockReturnValue("/de");
     mockTranslations({
       page: { "page-1": { en: "About Us" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
-    expect(screen.queryByText("About Us")).not.toBeInTheDocument();
+    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Hakkımızda")).not.toBeInTheDocument();
   });
 
   it("12) EN çevirisi YOK → TR fallback", async () => {
@@ -333,13 +333,13 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
     expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
   });
 
-  /* 🛡️ NAVIGATION LOCALE PERSISTENCE — `/p/{slug}` SLUG'ı canonical
+  /* 🛡️ NAVIGATION LOCALE PERSISTENCE — `/tr/p/{slug}` SLUG'ı canonical
      kalır (çevrilmez); link yalnız aktif locale prefix'ini taşır. */
-  it("20) slug ÇEVRİLMEZ — `/p/{slug}` canonical, prefix locale'den", async () => {
+  it("20) slug ÇEVRİLMEZ — `/tr/p/{slug}` canonical, prefix locale'den", async () => {
     mockTranslations({ page: { "page-1": { en: "About Us" } } });
     render(await HeaderWrapper());
     for (const link of screen.getAllByRole("link", { name: "About Us" })) {
-      expect(link).toHaveAttribute("href", "/en/p/hakkimizda");
+      expect(link).toHaveAttribute("href", "/p/hakkimizda");
     }
   });
 });
@@ -436,18 +436,17 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
   });
 
   it("26) TR → canonical başlıklar", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     mockTranslations({ page: { "page-1": { en: "About Us" } } });
     render(await FooterWrapper());
     expect(screen.getByText("Hakkımızda")).toBeInTheDocument();
     expect(screen.queryByText("About Us")).not.toBeInTheDocument();
   });
 
-  it("27) multilingual KAPALI → çeviri sorgusu HİÇ atılmaz", async () => {
+  it("27) multilingual KAPALI olsa bile çeviri okunur (URL yapısı gereği iki dilli site)", async () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: false });
     render(await FooterWrapper());
-    expect(findManyForLocaleMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Hakkımızda")).toBeInTheDocument();
+    expect(findManyForLocaleMock).toHaveBeenCalled();
   });
 
   it("28) EN → çevrilmiş başlıklar", async () => {
@@ -478,14 +477,14 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
     expect([...pageCalls()[0][1]].sort()).toEqual(["page-1", "page-2"]);
   });
 
-  /* 🛡️ NAVIGATION LOCALE PERSISTENCE — `/p/{slug}` SLUG'ı canonical
+  /* 🛡️ NAVIGATION LOCALE PERSISTENCE — `/tr/p/{slug}` SLUG'ı canonical
      kalır (çevrilmez); link yalnız aktif locale prefix'ini taşır. */
-  it("32) slug ÇEVRİLMEZ — `/p/{slug}` canonical, prefix locale'den", async () => {
+  it("32) slug ÇEVRİLMEZ — `/tr/p/{slug}` canonical, prefix locale'den", async () => {
     mockTranslations({ page: { "page-1": { en: "About Us" } } });
     render(await FooterWrapper());
     expect(screen.getByRole("link", { name: "About Us" })).toHaveAttribute(
       "href",
-      "/en/p/hakkimizda"
+      "/p/hakkimizda"
     );
   });
 
@@ -502,7 +501,7 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
     render(await FooterWrapper());
     /* 🛡️ aria-label artık dictionary'den (`footer.corporateAriaLabel`);
        TR değeri "Kurumsal" ile BİREBİR aynı. Bu test beforeEach'ten
-       gelen `/en` pathname'i ile render ediliyor (EN başlıklar
+       gelen `/` pathname'i ile render ediliyor (EN başlıklar
        bekleniyor) → EN etiketiyle sorgulanır. */
     const nav = screen.getByRole("navigation", {
       name: getDictionary("en").footer.corporateAriaLabel,

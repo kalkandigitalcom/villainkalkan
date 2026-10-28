@@ -61,13 +61,14 @@ function stripComments(src: string): string {
 }
 
 const PATHS: Record<Locale, string> = {
-  tr: "/",
-  en: "/en",
+  tr: "/tr",
+  en: "/",
 };
 
 beforeEach(() => {
   usePathnameMock.mockReset();
-  usePathnameMock.mockReturnValue("/");
+  /* Varsayılan senaryo: Türkçe sayfa (`/tr`). */
+  usePathnameMock.mockReturnValue("/tr");
   try {
     window.localStorage.clear();
   } catch {
@@ -82,7 +83,7 @@ describe("1) BottomNav — locale", () => {
   const props = { phoneHref: "tel:+900000", whatsappHref: "https://wa.me/900000" };
 
   it("1a) TR — ESKİ hardcoded metinler BİREBİR", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(<BottomNav {...props} />);
     expect(screen.getByLabelText("Alt gezinme")).toBeInTheDocument();
     expect(screen.getByText("Anasayfa")).toBeInTheDocument();
@@ -100,7 +101,7 @@ describe("1) BottomNav — locale", () => {
   });
 
   it("1b) EN — çevrilmiş metinler", () => {
-    usePathnameMock.mockReturnValue("/en");
+    usePathnameMock.mockReturnValue("/");
     render(<BottomNav {...props} />);
     const d = getDictionary("en");
     expect(screen.getByLabelText(d.layout.bottomNav.ariaLabel)).toBeInTheDocument();
@@ -115,13 +116,13 @@ describe("1) BottomNav — locale", () => {
   });
 
   it("1d) 🔒 P0 REGRESYONU — /en/kiralik-villa/x'te nav HÂLÂ gizli (null)", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/ornek-villa");
+    usePathnameMock.mockReturnValue("/kiralik-villa/ornek-villa");
     const { container } = render(<BottomNav {...props} />);
     expect(container.innerHTML).toBe("");
   });
 
   it("1e) 🔒 P0 REGRESYONU — /en'de 'Anasayfa' sekmesi AKTİF", () => {
-    usePathnameMock.mockReturnValue("/en");
+    usePathnameMock.mockReturnValue("/");
     render(<BottomNav {...props} />);
     const home = screen.getByLabelText(getDictionary("en").header.home);
     expect(home).toHaveAttribute("aria-current", "page");
@@ -193,10 +194,10 @@ describe("1) BottomNav — locale", () => {
      prefix'siz TR route'una düşürüyordu. Test SİLİNMEDİ: TR
      beklentisi AYNEN korunur, EN/DE doğru davranışa çevrildi. */
   it("1f) 🔒 HREF'LER aktif locale'i taşır (TR canonical, EN prefix'li)", () => {
-    for (const p of ["/", "/en"]) {
+    for (const p of ["/tr", "/"]) {
       usePathnameMock.mockReturnValue(p);
-      const locale = p === "/" ? "tr" : (p.slice(1) as Locale);
-      const prefix = locale === "tr" ? "" : `/${locale}`;
+      const locale: Locale = p === "/tr" ? "tr" : "en";
+      const prefix = locale === "tr" ? "/tr" : "";
       const { unmount } = render(<BottomNav {...props} />);
       const d = getDictionary(locale);
       expect(screen.getByLabelText(d.header.home)).toHaveAttribute(
@@ -207,7 +208,7 @@ describe("1) BottomNav — locale", () => {
          kaldırıldı). Eski href beklentisi silinmedi, bu daha SIKI
          kurala dönüştürüldü. */
       expect(
-        document.querySelector('a[href$="/teklif-al"]')
+        document.querySelector('a[href$="/tr/teklif-al"]')
       ).toBeNull();
       unmount();
     }
@@ -325,24 +326,24 @@ describe("4) CookieConsent — locale", () => {
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — slug canonical kalır, link
      aktif locale prefix'ini taşır. */
   it("4c) 'Detaylar' href'i aktif locale'i taşır — /en/p/cerez-politikasi", async () => {
-    usePathnameMock.mockReturnValue("/en");
+    usePathnameMock.mockReturnValue("/");
     render(<CookieConsent />);
     const link = await screen.findByText(
       getDictionary("en").layout.cookie.details
     );
     expect(link.closest("a")).toHaveAttribute(
       "href",
-      "/en/p/cerez-politikasi"
+      "/p/cerez-politikasi"
     );
   });
 
   it("4d) TR'de çerez politikası linki canonical KALIR", async () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(<CookieConsent />);
     const link = await screen.findByText(
       getDictionary("tr").layout.cookie.details
     );
-    expect(link.closest("a")).toHaveAttribute("href", "/p/cerez-politikasi");
+    expect(link.closest("a")).toHaveAttribute("href", "/tr/p/cerez-politikasi");
   });
 });
 
@@ -405,7 +406,7 @@ describe("6) FloatingSocialClient — locale", () => {
   });
 
   it("6c) 🔒 HREF'LER locale'den BAĞIMSIZ (link hedefleri değişmedi)", () => {
-    usePathnameMock.mockReturnValue("/en");
+    usePathnameMock.mockReturnValue("/");
     render(<FloatingSocialClient {...props} />);
     const d = getDictionary("en").layout.floatingSocial;
     expect(screen.getByLabelText(d.call)).toHaveAttribute("href", props.phoneHref);

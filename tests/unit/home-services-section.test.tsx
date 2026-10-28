@@ -40,9 +40,9 @@ describe("HomeServicesSection", () => {
     const { container } = render(<HomeServicesSection locale="tr" />);
     const href = (k: string) =>
       container.querySelector(`[data-service-card="${k}"] a`)?.getAttribute("href");
-    expect(href("rental")).toBe("/kiralik-villalar");
-    expect(href("sale")).toBe("/iletisim");
-    expect(href("management")).toBe("/iletisim");
+    expect(href("rental")).toBe("/tr/kiralik-villalar");
+    expect(href("sale")).toBe("/tr/iletisim");
+    expect(href("management")).toBe("/tr/iletisim");
     const rental = container.querySelector('[data-service-card="rental"]') as HTMLElement;
     expect(within(rental).getByRole("link").textContent).toContain(tr.rentalCta);
   });
@@ -58,7 +58,7 @@ describe("HomeServicesSection", () => {
     const links = Array.from(container.querySelectorAll("[data-service-card] a")).map((a) =>
       a.getAttribute("href"),
     );
-    expect(links).toEqual(["/en/kiralik-villalar", "/en/iletisim", "/en/iletisim"]);
+    expect(links).toEqual(["/kiralik-villalar", "/iletisim", "/iletisim"]);
   });
 
   it("responsive ızgara: mobil tek sütun, tablet iki, masaüstü üç sütun", () => {

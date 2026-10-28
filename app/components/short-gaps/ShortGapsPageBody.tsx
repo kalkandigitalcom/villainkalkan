@@ -38,6 +38,7 @@ import {
   type TaxonomyNameByLocale,
 } from "@/lib/i18n/taxonomy-name.helper";
 import { shortGapsMonthLabel } from "@/app/components/short-gaps/short-gaps-metadata";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ KISA SÜRELİ TARİHLER — LİSTELEME SAYFASI
@@ -134,7 +135,7 @@ export default async function ShortGapsPageBody({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale).shortGaps;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
   const { ay, gece } = await params;
   const sp = await searchParams;
 
@@ -360,7 +361,7 @@ export default async function ShortGapsPageBody({
     seenItemSlugs.add(v.slug);
     itemListItems.push({ slug: v.slug, title: v.title, image: v.images[0] });
   }
-  const itemListLd = buildItemList(itemListItems);
+  const itemListLd = buildItemList(itemListItems, locale);
 
   return (
     <main className="px-5 md:px-10 lg:px-16 py-10 md:py-14">

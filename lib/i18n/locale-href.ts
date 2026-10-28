@@ -31,11 +31,12 @@
      getirmez: saf, senkron, state'siz.
 
    DAVRANIŞ:
-     localeHref("/teklif-al", "tr") → "/teklif-al"
-     localeHref("/teklif-al", "en") → "/en/teklif-al"
-     localeHref("/", "en")          → "/en"          (çifte slash yok)
-     localeHref("/arama?x=1", "en") → "/en/arama?x=1" (query AYNEN)
-     localeHref("/en/blog", "en")   → "/en/blog"      (idempotent)
+     localeHref("/teklif-al", "en") → "/teklif-al"   (varsayılan dil, prefix yok)
+     localeHref("/teklif-al", "tr") → "/tr/teklif-al"
+     localeHref("/", "tr")          → "/tr"          (çifte slash yok)
+     localeHref("/arama?x=1", "tr") → "/tr/arama?x=1" (query AYNEN)
+     localeHref("/tr/blog", "tr")   → "/tr/blog"      (idempotent)
+     localeHref("/en/blog", "en")   → "/blog"         (eski /en soyulur)
      localeHref("https://…", "en")  → "https://…"     (dış bağlantı)
      localeHref("mailto:…", "en")   → "mailto:…"
      localeHref("#hero", "en")      → "#hero"
@@ -76,4 +77,12 @@ export function localeHref(
   /* 🛡️ Yeni path mantığı İCAT EDİLMEDİ — mevcut Phase 7B helper'ı. */
   const prefixed = buildLocaleAlternates(pathOnly, locale).canonical;
   return `${prefixed}${suffix}`;
+}
+
+/** 🛡️ URL YAPISI — locale'in path prefix'i: İngilizce (varsayılan) için
+ *  "" (prefix yok), Türkçe için "/tr". Elle `${prefix}/blog` gibi path
+ *  kuran gövdeler için; `localeHref` ile AYNI kurala dayanır. */
+export function localePathPrefix(locale: Locale = DEFAULT_LOCALE): string {
+  const home = buildLocaleAlternates("/", locale).canonical;
+  return home === "/" ? "" : home;
 }

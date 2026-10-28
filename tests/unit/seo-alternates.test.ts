@@ -16,8 +16,8 @@ import { describe, it, expect } from "vitest";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
 import { SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 
-const TR_PATH = "/kiralik-villa/villa-in-love";
-const EN_PATH = "/en/kiralik-villa/villa-in-love";
+const TR_PATH = "/tr/kiralik-villa/villa-in-love";
+const EN_PATH = "/kiralik-villa/villa-in-love";
 
 describe("buildLocaleAlternates", () => {
   /* --- 1) TR villa path --- */
@@ -27,7 +27,7 @@ describe("buildLocaleAlternates", () => {
   });
 
   /* --- 2) EN villa path --- */
-  it("2) EN villa path → languages.en '/en' prefix'li", () => {
+  it("2) EN villa path → languages.en '/' prefix'li", () => {
     const result = buildLocaleAlternates(TR_PATH, "en");
     expect(result.languages.en).toBe(EN_PATH);
   });
@@ -40,9 +40,9 @@ describe("buildLocaleAlternates", () => {
   });
 
   /* --- 4) x-default --- */
-  it("4) x-default HER ZAMAN TR path'e işaret eder (hedef locale ne olursa olsun)", () => {
-    expect(buildLocaleAlternates(TR_PATH, "tr").languages["x-default"]).toBe(TR_PATH);
-    expect(buildLocaleAlternates(TR_PATH, "en").languages["x-default"]).toBe(TR_PATH);
+  it("4) x-default HER ZAMAN İngilizce (varsayılan, prefix'siz) path'e işaret eder", () => {
+    expect(buildLocaleAlternates(TR_PATH, "tr").languages["x-default"]).toBe(EN_PATH);
+    expect(buildLocaleAlternates(TR_PATH, "en").languages["x-default"]).toBe(EN_PATH);
   });
 
   /* --- 5) TR canonical --- */
@@ -52,41 +52,46 @@ describe("buildLocaleAlternates", () => {
   });
 
   /* --- 6) EN canonical --- */
-  it("6) locale='en' → canonical, '/en' prefix'li path'tir", () => {
+  it("6) locale='en' → canonical, '/' prefix'li path'tir", () => {
     const result = buildLocaleAlternates(TR_PATH, "en");
     expect(result.canonical).toBe(EN_PATH);
   });
 
 
   /* --- 8) EN prefixed input normalize --- */
-  it("8) input zaten '/en/...' ile prefixed ve locale='en' → çifte prefix OLUŞMAZ ('/en/en/...' değil)", () => {
+  it("8) input zaten '/...' ile prefixed ve locale='en' → çifte prefix OLUŞMAZ ('/en/...' değil)", () => {
     const result = buildLocaleAlternates(EN_PATH, "en");
     expect(result.canonical).toBe(EN_PATH);
-    expect(result.canonical).not.toContain("/en/en/");
+    expect(result.canonical).not.toContain("/en/");
     expect(result.languages.tr).toBe(TR_PATH);
   });
 
 
   /* --- 10) TR input normalize (çapraz yön: prefixed input + tr hedefi) --- */
-  it("10) input '/en/...' prefixed ama hedef locale='tr' → canonical prefix'siz TR path'e NORMALIZE olur", () => {
+  it("10) input '/...' prefixed ama hedef locale='tr' → canonical prefix'siz TR path'e NORMALIZE olur", () => {
     const result = buildLocaleAlternates(EN_PATH, "tr");
     expect(result.canonical).toBe(TR_PATH);
     expect(result.languages.tr).toBe(TR_PATH);
   });
 
-  /* --- 11) '/tr/...' hiçbir zaman üretilmez --- */
-  it("11) hiçbir input/locale kombinasyonu '/tr' prefix'i ÜRETMEZ", () => {
-    const inputs = [TR_PATH, EN_PATH, "/", "/kiralik-villalar"];
+  /* --- 11) URL yapısı: TR daima '/tr', EN daima prefix'siz; '/en' asla üretilmez --- */
+  it("11) her input/locale kombinasyonunda TR '/tr' ile başlar, EN/x-default '/en' ve '/tr' taşımaz", () => {
+    const inputs = [TR_PATH, EN_PATH, "/", "/tr/kiralik-villalar", "/en/kiralik-villalar"];
     const locales: Locale[] = ["tr", "en"];
     for (const input of inputs) {
       for (const locale of locales) {
         const result = buildLocaleAlternates(input, locale);
-        expect(result.canonical.startsWith("/tr")).toBe(false);
-        expect(result.languages.tr.startsWith("/tr")).toBe(false);
+        expect(result.languages.tr.startsWith("/tr")).toBe(true);
         expect(result.languages.en.startsWith("/tr")).toBe(false);
-        expect(result.languages["x-default"].startsWith("/tr")).toBe(false);
+        expect(result.languages.en.startsWith("/en")).toBe(false);
+        expect(result.languages["x-default"]).toBe(result.languages.en);
       }
     }
+  });
+
+  it("11b) eski '/en/...' input'u prefix'siz İngilizce adrese normalize olur", () => {
+    expect(buildLocaleAlternates("/en/kiralik-villa/villa-in-love", "en").canonical).toBe(EN_PATH);
+    expect(buildLocaleAlternates("/en", "tr").canonical).toBe("/tr");
   });
 
   /* --- 12) supported locale davranışı --- */
@@ -106,38 +111,37 @@ describe("buildLocaleAlternates", () => {
 
   /* --- 13) path sonundaki slash davranışı --- */
   it("13) trailing slash STRIP EDİLMEZ — olduğu gibi (tek kopya) taşınır, yeni bir kural icat edilmez", () => {
-    const withSlash = "/kiralik-villa/villa-in-love/";
+    const withSlash = "/tr/kiralik-villa/villa-in-love/";
     const result = buildLocaleAlternates(withSlash, "en");
-    expect(result.canonical).toBe("/en/kiralik-villa/villa-in-love/");
+    expect(result.canonical).toBe("/kiralik-villa/villa-in-love/");
     expect(result.languages.tr).toBe(withSlash);
   });
 
   /* --- 14) query/hash yanlışlıkla eklenmiyor/bozulmuyor --- */
   it("14) query string + hash opak taşınır — parse/strip/encode EDİLMEZ", () => {
-    const withQueryAndHash = "/kiralik-villa/villa-in-love?ref=abc&utm=x#section";
+    const withQueryAndHash = "/tr/kiralik-villa/villa-in-love?ref=abc&utm=x#section";
     const result = buildLocaleAlternates(withQueryAndHash, "en");
     expect(result.canonical).toBe(
-      "/en/kiralik-villa/villa-in-love?ref=abc&utm=x#section"
+      "/kiralik-villa/villa-in-love?ref=abc&utm=x#section"
     );
     // Yalnız prefix eklendi; query/hash karakterleri BOZULMADI.
     expect(result.canonical).toContain("?ref=abc&utm=x#section");
   });
 
   /* --- Ek: segment-sınırlı prefix eşleşmesi (yanlış pozitif KORUMASI) --- */
-  it("ek) '/energy-report' gibi path'ler '/en' prefix'i taşıyormuş gibi YANLIŞ ALGILANMAZ", () => {
-    const falsePositiveCandidate = "/energy-report";
-    const result = buildLocaleAlternates(falsePositiveCandidate, "tr");
-    // Eğer segment sınırı doğru çalışıyorsa, "/en" YANLIŞLIKLA soyulmaz;
-    // TR canonical path'in TAMAMI korunur.
-    expect(result.canonical).toBe(falsePositiveCandidate);
-    expect(result.languages.en).toBe(`/en${falsePositiveCandidate}`);
+  it("ek) '/energy-report', '/trabzon' gibi path'ler '/en' veya '/tr' prefix'i taşıyormuş gibi YANLIŞ ALGILANMAZ", () => {
+    for (const candidate of ["/energy-report", "/trabzon"]) {
+      const result = buildLocaleAlternates(candidate, "en");
+      expect(result.canonical).toBe(candidate);
+      expect(result.languages.tr).toBe(`/tr${candidate}`);
+    }
   });
 
   /* --- Ek: kök path özel durumu ("/") --- */
-  it("ek) path='/' → EN '/en/' değil, '/en' üretir (çifte slash yok)", () => {
+  it("ek) path='/' → TR '/tr' (çifte slash yok), EN '/'", () => {
     const result = buildLocaleAlternates("/", "en");
-    expect(result.languages.tr).toBe("/");
-    expect(result.languages.en).toBe("/en");
+    expect(result.languages.tr).toBe("/tr");
+    expect(result.languages.en).toBe("/");
     expect(result.languages["x-default"]).toBe("/");
   });
 

@@ -57,35 +57,35 @@ describe("Header — Phase 9A locale dictionary", () => {
   });
 
   it("1) TR path ('/') → 'Teklif Al' (ÖNCEKİ sabit TR metin, DEĞİŞMEDİ)", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(<FloatingQuoteCta />);
     expect(screen.getAllByText("Teklif Al").length).toBeGreaterThan(0);
   });
 
   it("2) TR path (villa detay örneği) → yine 'Teklif Al'", () => {
-    usePathnameMock.mockReturnValue("/kiralik-villa/ornek-slug");
+    usePathnameMock.mockReturnValue("/tr/kiralik-villa/ornek-slug");
     render(<FloatingQuoteCta />);
     expect(screen.getAllByText("Teklif Al").length).toBeGreaterThan(0);
   });
 
-  it("3) '/en/...' path → 'Get a Quote' (EN dictionary)", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/ornek-slug");
+  it("3) '/...' path → 'Get a Quote' (EN dictionary)", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villa/ornek-slug");
     render(<FloatingQuoteCta />);
     expect(screen.getAllByText("Get a Quote").length).toBeGreaterThan(0);
     expect(screen.queryByText("Teklif Al")).not.toBeInTheDocument();
   });
 
-  it("4) '/de/...' artık locale değil → TR fallback 'Teklif Al'", () => {
+  it("4) '/de/...' artık locale değil → varsayılan EN 'Get a Quote'", () => {
     usePathnameMock.mockReturnValue("/de/kiralik-villa/ornek-slug");
     render(<FloatingQuoteCta />);
-    expect(screen.getAllByText("Teklif Al").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Get a Quote").length).toBeGreaterThan(0);
   });
 
   it("4b) Header artık 'Teklif Al' CTA'sı İÇERMEZ (sol kenardaki FloatingQuoteCta'ya taşındı)", () => {
-    for (const p of ["/", "/en/kiralik-villalar"]) {
+    for (const p of ["/", "/kiralik-villalar"]) {
       usePathnameMock.mockReturnValue(p);
       const { container, unmount } = render(<Header menu={[]} siteLogo={null} />);
-      expect(container.querySelector('a[href$="/teklif-al"]')).toBeNull();
+      expect(container.querySelector('a[href$="/tr/teklif-al"]')).toBeNull();
       for (const t of ["Teklif Al", "Get a Quote"]) {
         expect(screen.queryByText(t)).not.toBeInTheDocument();
       }
@@ -94,7 +94,7 @@ describe("Header — Phase 9A locale dictionary", () => {
   });
 
   it("4c) FloatingQuoteCta teklif sayfasının kendisinde render EDİLMEZ", () => {
-    for (const p of ["/teklif-al", "/en/teklif-al"]) {
+    for (const p of ["/tr/teklif-al", "/teklif-al"]) {
       usePathnameMock.mockReturnValue(p);
       const { container, unmount } = render(<FloatingQuoteCta />);
       expect(container.querySelector("a")).toBeNull();
@@ -103,21 +103,21 @@ describe("Header — Phase 9A locale dictionary", () => {
   });
 
   it("5) menuOpen aria-label — EN path'te 'Open menu'", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villalar");
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(<Header menu={[]} siteLogo={null} />);
     expect(screen.getByLabelText("Open menu")).toBeInTheDocument();
   });
 
   it("7) menuOpen aria-label — TR path'te ÖNCEKİ 'Menüyü aç' (regresyon)", () => {
-    usePathnameMock.mockReturnValue("/arama");
+    usePathnameMock.mockReturnValue("/tr/arama");
     render(<Header menu={[]} siteLogo={null} />);
     expect(screen.getByLabelText("Menüyü aç")).toBeInTheDocument();
   });
 
-  it("8) segment sınırı — '/energy...' gibi yanlış-pozitif olabilecek bir path yine TR'ye düşer", () => {
-    usePathnameMock.mockReturnValue("/energy-tasarrufu-ipuclari");
+  it("8) segment sınırı — '/trabzon...' gibi yanlış-pozitif olabilecek bir path TR SAYILMAZ (EN)", () => {
+    usePathnameMock.mockReturnValue("/trabzon-tasarrufu-ipuclari");
     render(<FloatingQuoteCta />);
-    expect(screen.getAllByText("Teklif Al").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Get a Quote").length).toBeGreaterThan(0);
   });
 });
 
@@ -149,39 +149,39 @@ describe("Header — href locale kilidi (iç linkler aktif locale'i taşır)", (
     usePathnameMock.mockReset();
   });
 
-  it("Logo href her zaman '/' — TR path'te", () => {
-    usePathnameMock.mockReturnValue("/");
+  it("Logo href TR path'te '/tr' (TR ana sayfa)", () => {
+    usePathnameMock.mockReturnValue("/tr");
+    render(<Header menu={[]} siteLogo={null} />);
+    const logoLink = screen.getByRole("link", { name: /Kiralama/i });
+    expect(logoLink).toHaveAttribute("href", "/tr");
+  });
+
+  it("Logo href EN path'te '/' olur (locale KAYBOLMAZ)", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villa/ornek-slug");
     render(<Header menu={[]} siteLogo={null} />);
     const logoLink = screen.getByRole("link", { name: /Kiralama/i });
     expect(logoLink).toHaveAttribute("href", "/");
+    expect(logoLink).not.toHaveAttribute("href", "/tr");
   });
 
-  it("Logo href '/en/...' path'te '/en' olur (locale KAYBOLMAZ)", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villa/ornek-slug");
-    render(<Header menu={[]} siteLogo={null} />);
-    const logoLink = screen.getByRole("link", { name: /Kiralama/i });
-    expect(logoLink).toHaveAttribute("href", "/en");
-    expect(logoLink).not.toHaveAttribute("href", "/");
-  });
-
-  it("'Teklif Al' CTA href her zaman '/teklif-al' — TR path'te", () => {
-    usePathnameMock.mockReturnValue("/");
+  it("'Teklif Al' CTA href her zaman '/tr/teklif-al' — TR path'te", () => {
+    usePathnameMock.mockReturnValue("/tr");
     render(<FloatingQuoteCta />);
     const ctaLinks = screen.getAllByRole("link", { name: "Teklif Al" });
     expect(ctaLinks.length).toBeGreaterThan(0);
     ctaLinks.forEach((link) => {
-      expect(link).toHaveAttribute("href", "/teklif-al");
+      expect(link).toHaveAttribute("href", "/tr/teklif-al");
     });
   });
 
-  it("CTA href '/en/...' path'te '/en/teklif-al' olur (metin VE hedef EN)", () => {
-    usePathnameMock.mockReturnValue("/en/kiralik-villalar");
+  it("CTA href '/...' path'te '/teklif-al' olur (metin VE hedef EN)", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(<FloatingQuoteCta />);
     const ctaLinks = screen.getAllByRole("link", { name: "Get a Quote" });
     expect(ctaLinks.length).toBeGreaterThan(0);
     ctaLinks.forEach((link) => {
-      expect(link).toHaveAttribute("href", "/en/teklif-al");
-      expect(link).not.toHaveAttribute("href", "/teklif-al");
+      expect(link).toHaveAttribute("href", "/teklif-al");
+      expect(link).not.toHaveAttribute("href", "/tr/teklif-al");
     });
   });
 });

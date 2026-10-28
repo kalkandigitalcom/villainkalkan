@@ -20,6 +20,7 @@ import {
 } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { resolveBlogListContent } from "@/lib/i18n/get-blog-translation.server";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ BLOG INDEX GÖVDESİ — /blog · /en/blog · /de/blog
@@ -50,7 +51,7 @@ export default async function BlogIndexPageBody({
   locale?: Locale;
 } = {}) {
   const dict = getDictionary(locale).blog;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
 
   const posts = await getBlogPosts();
   const translated = await resolveBlogListContent(posts, locale);

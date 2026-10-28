@@ -52,7 +52,7 @@ beforeEach(() => {
 describe("Public villa kartı — yeni tasarım", () => {
   it("1) kart detay sayfasına bağlı; ad, konum, kapasite gerçek veriden", () => {
     const { container } = render(<VillaCard {...BASE} />);
-    expect(container.querySelector("a")!.getAttribute("href")).toBe("/kiralik-villa/terra-mila");
+    expect(container.querySelector("a")!.getAttribute("href")).toBe("/tr/kiralik-villa/terra-mila");
     expect(screen.getByRole("heading", { name: "Terra Mila" })).toBeTruthy();
     expect(screen.getByText("Fethiye / Kirme")).toBeTruthy();
     expect(screen.getByLabelText("4 kişi kapasitesi")).toBeTruthy();
@@ -86,18 +86,18 @@ describe("Public villa kartı — yeni tasarım", () => {
   });
 
   it("5) pasif villa (privateHref) → takvim/CTA özel sayfaya gider (modal yok)", () => {
-    render(<VillaCard {...BASE} privateHref="/v/tok-1" />);
+    render(<VillaCard {...BASE} privateHref="/tr/v/tok-1" />);
     fireEvent.click(screen.getByRole("button", { name: "Rezervasyon" }));
-    expect(pushSpy).toHaveBeenCalledWith("/v/tok-1");
+    expect(pushSpy).toHaveBeenCalledWith("/tr/v/tok-1");
     fireEvent.click(screen.getByLabelText("Müsaitlik ve tarih seçimi modalını aç"));
-    expect(pushSpy).toHaveBeenLastCalledWith("/v/tok-1");
+    expect(pushSpy).toHaveBeenLastCalledWith("/tr/v/tok-1");
   });
 
   it("6) kısa-süreli tarihler (reserveInfo) → etiket + CTA reserveInfo.href", () => {
-    render(<VillaCard {...BASE} reserveInfo={{ label: "12 Kas – 15 Kas", nights: 3, href: "/rezervasyon/terra-mila?start=2026-11-12&end=2026-11-15" }} />);
+    render(<VillaCard {...BASE} reserveInfo={{ label: "12 Kas – 15 Kas", nights: 3, href: "/tr/rezervasyon/terra-mila?start=2026-11-12&end=2026-11-15" }} />);
     expect(screen.getByText(/12 Kas – 15 Kas/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Hemen rezervasyon yap" }));
-    expect(pushSpy).toHaveBeenCalledWith("/rezervasyon/terra-mila?start=2026-11-12&end=2026-11-15");
+    expect(pushSpy).toHaveBeenCalledWith("/tr/rezervasyon/terra-mila?start=2026-11-12&end=2026-11-15");
   });
 
   it("7) esnek sonuç → fiyat yerine esnek tarih bilgisi", () => {
@@ -109,7 +109,7 @@ describe("Public villa kartı — yeni tasarım", () => {
 
   it("8) EN: metinler ve detay bağlantısı /en", () => {
     const { container } = render(<VillaCard {...BASE} locale="en" />);
-    expect(container.querySelector("a")!.getAttribute("href")).toBe("/en/kiralik-villa/terra-mila");
+    expect(container.querySelector("a")!.getAttribute("href")).toBe("/kiralik-villa/terra-mila");
     expect(screen.getByRole("button", { name: "Book" })).toBeTruthy();
     expect(container.querySelector("[data-price-panel]")!.textContent).toContain("Starting From");
   });

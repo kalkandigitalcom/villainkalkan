@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 /* 🛡️ Public locale prefix'leri — `lib/i18n/config.ts`'in TEK doğruluk
    kaynağından türetilir (yeni bir locale listesi İCAT EDİLMEZ). */
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/lib/i18n/config";
+import { PREFIXED_ROUTE_LOCALE } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ ROBOTS — Next.js App Router (production-grade crawl policy)
@@ -46,15 +46,13 @@ import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/lib/i18n/config";
      Yalnız yeni bir internal/token/duplicate path çıkarsa buraya disallow
      eklenir. Yeni SEO sayfaları otomatik crawl'a açık kalır.
 
-   🛡️ LOCALE PREFIX'LERİ: Aşağıdaki TR path'lerinin `/en` ve `/de`
-     varyantları AYNI politikaya tabidir (ör. `/arama` kapalıyken
-     `/en/arama` açık kalmamalı — faceted search asimetrisi). Liste tek
-     yerde tutulur; `withLocalePrefixes` her giriş için prefix'li
-     kardeşlerini otomatik üretir. TR girdileri ve SIRA korunur; yeni bir
-     route politikası EKLENMEZ, yalnız mevcut politika EN/DE'ye eşitlenir.
+   🛡️ LOCALE PREFIX'LERİ: Aşağıdaki taban (İngilizce, prefix'siz)
+     path'lerin `/tr` varyantları AYNI politikaya tabidir (ör. `/arama`
+     kapalıyken `/tr/arama` açık kalmamalı — faceted search asimetrisi).
+     `withLocalePrefixes` her giriş için `/tr` kardeşini üretir.
    =============================================================== */
 
-/** TR (prefix'siz) disallow listesi — POLİTİKA KAYNAĞI. */
+/** Taban (İngilizce, prefix'siz) disallow listesi — POLİTİKA KAYNAĞI. */
 const DISALLOW_PATHS: readonly string[] = [
   "/maki-admin",
   "/api",
@@ -74,7 +72,9 @@ const LOCALE_PREFIXED_EXCLUDES: readonly string[] = ["/maki-admin", "/api"];
  * prefix'li varyantlar.
  */
 function withLocalePrefixes(paths: readonly string[]): string[] {
-  const prefixes = SUPPORTED_LOCALES.filter((l) => l !== DEFAULT_LOCALE);
+  /* URL yapısı: taban (prefix'siz) path'ler İngilizce; Türkçe kardeşleri
+     `/tr` prefix'i taşır. */
+  const prefixes = [PREFIXED_ROUTE_LOCALE];
   const localized = paths
     .filter((p) => !LOCALE_PREFIXED_EXCLUDES.includes(p))
     .flatMap((p) => prefixes.map((l) => `/${l}${p}`));

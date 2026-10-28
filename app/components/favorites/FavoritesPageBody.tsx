@@ -6,6 +6,7 @@ import FavoritesGrid from "@/app/(public)/favoriler/FavoritesGrid";
    (localStorage) ve veri akışı DEĞİŞTİRİLMEDİ. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ /favoriler — ORTAK GÖVDE
@@ -22,7 +23,7 @@ export default function FavoritesPageBody({
 }) {
   const dictionary = getDictionary(locale);
   const dict = dictionary.favoritesPage;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
 
   return (
     <>

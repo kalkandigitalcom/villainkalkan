@@ -21,6 +21,7 @@ import { createSharedFavoritesListAction as createSharedFavoritesList } from "./
    akışı ve VillaCard veri akışı DEĞİŞTİRİLMEDİ. */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ FAZ 36 — FAVORITES GRID (client island)
@@ -63,7 +64,7 @@ export default function FavoritesGrid({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale).favoritesPage;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
   const {
     favorites,
     isHydrated,

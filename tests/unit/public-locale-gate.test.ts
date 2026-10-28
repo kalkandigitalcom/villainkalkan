@@ -28,47 +28,20 @@ beforeEach(() => {
   getCachedSettingsMock.mockReset();
 });
 
+/* URL YAPISI: İngilizce varsayılan dil kökte (`/`), Türkçe `/tr` altında
+   yaşar. Kök İngilizce sayfalar hiçbir ayar durumunda 404 OLMAMALI —
+   `settings.multilingual_enabled` artık public erişimi kapatamaz. */
 describe("requirePublicLocaleEnabled", () => {
-  it("multilingual_enabled=false → notFound() çağrılır (bugünkü production ayarı)", async () => {
-    getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
+  it.each([
+    ["multilingual_enabled=false", () => getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false })],
+    ["multilingual_enabled=null", () => getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: null })],
+    ["settings okunamıyor", () => getCachedSettingsMock.mockRejectedValue(new Error("db unreachable"))],
+    ["multilingual_enabled=true", () => getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true })],
+  ])("%s → notFound() ÇAĞRILMAZ (EN varsayılan dil her zaman açık)", async (_label, arrange) => {
+    arrange();
     const { requirePublicLocaleEnabled } = await import(
       "@/lib/i18n/public-locale-gate.server"
     );
-
-    await expect(requirePublicLocaleEnabled()).rejects.toThrow(
-      "NEXT_NOT_FOUND"
-    );
-    expect(notFoundMock).toHaveBeenCalledTimes(1);
-  });
-
-  it("multilingual_enabled=null/undefined → notFound() (fail-safe KAPALI, isMultilingualEnabled ile aynı)", async () => {
-    getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: null });
-    const { requirePublicLocaleEnabled } = await import(
-      "@/lib/i18n/public-locale-gate.server"
-    );
-
-    await expect(requirePublicLocaleEnabled()).rejects.toThrow(
-      "NEXT_NOT_FOUND"
-    );
-  });
-
-  it("settings okunamıyor (catch) → notFound() (fail-safe KAPALI)", async () => {
-    getCachedSettingsMock.mockRejectedValue(new Error("db unreachable"));
-    const { requirePublicLocaleEnabled } = await import(
-      "@/lib/i18n/public-locale-gate.server"
-    );
-
-    await expect(requirePublicLocaleEnabled()).rejects.toThrow(
-      "NEXT_NOT_FOUND"
-    );
-  });
-
-  it("multilingual_enabled=true → notFound() ÇAĞRILMAZ, sessizce döner", async () => {
-    getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-    const { requirePublicLocaleEnabled } = await import(
-      "@/lib/i18n/public-locale-gate.server"
-    );
-
     await expect(requirePublicLocaleEnabled()).resolves.toBeUndefined();
     expect(notFoundMock).not.toHaveBeenCalled();
   });

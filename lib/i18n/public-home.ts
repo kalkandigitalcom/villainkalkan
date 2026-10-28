@@ -1,9 +1,4 @@
-import {
-  DEFAULT_LOCALE,
-  getPublicDefaultLocale,
-  isMultilingualEnabled,
-  type Locale,
-} from "@/lib/i18n/config";
+import { ROUTE_DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ PUBLIC ANA SAYFA LOCALE ÇÖZÜMLEYİCİSİ
@@ -72,31 +67,22 @@ export type PublicHomeResolution = {
 };
 
 /** MOD A (fail-safe / bugünkü davranış) — tek tanım, tek yerde. */
-const MODE_A: PublicHomeResolution = {
-  defaultLocale: DEFAULT_LOCALE,
-  redirectsFromRoot: false,
-  trHomeHref: "/",
-};
-
-/** TR ana sayfanın MOD B'deki yolu. `/tr` prefix'i YALNIZ ana sayfa
- *  içindir — TR iç route'ları prefix'siz kalmaya devam eder. */
+/* 🛡️ URL YAPISI (güncel): İngilizce varsayılan dil `/`'de render edilir,
+   Türkçe ana sayfa `/tr`'dedir. Kökte yönlendirme YOKTUR. Bu karar artık
+   URL yapısının parçası olduğu için `settings.multilingual_enabled` /
+   `settings.public_default_locale` (admin'de AYNEN durur) public ana
+   sayfa davranışını DEĞİŞTİRMEZ. Saf + client-safe kalır. */
 export const TR_HOME_PATH = "/tr";
 
-/**
- * Ana sayfa giriş davranışını `settings`ten çözer. SAF fonksiyon:
- * aynı girdi → aynı çıktı, side-effect YOK, asla throw etmez.
- */
+const URL_STRUCTURE: PublicHomeResolution = {
+  defaultLocale: ROUTE_DEFAULT_LOCALE,
+  redirectsFromRoot: false,
+  trHomeHref: TR_HOME_PATH,
+};
+
 export function resolvePublicHome(
   settings: PublicHomeSettings | null | undefined
 ): PublicHomeResolution {
-  if (!isMultilingualEnabled(settings)) return MODE_A;
-
-  const defaultLocale = getPublicDefaultLocale(settings);
-  if (defaultLocale === DEFAULT_LOCALE) return MODE_A;
-
-  return {
-    defaultLocale,
-    redirectsFromRoot: true,
-    trHomeHref: TR_HOME_PATH,
-  };
+  void settings;
+  return URL_STRUCTURE;
 }

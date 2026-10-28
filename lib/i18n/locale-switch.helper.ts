@@ -155,7 +155,9 @@ export function getLocaleSwitchTargets(
   const suffix = normalizeSearchSuffix(search ?? inlineSearch);
 
   const { languages } = buildLocaleAlternates(pathOnly || "/", "tr");
-  const basePath = languages.tr;
+  /* Locale'siz taban path: URL yapısında İngilizce adres prefix'sizdir,
+     bu yüzden taban = `languages.en` ("/tr/arama" → "/arama"). */
+  const basePath = languages.en;
 
   /* 🔄 ANA SAYFAYA ÖZEL TR HEDEFİ
      ------------------------------------------------------------
@@ -169,8 +171,11 @@ export function getLocaleSwitchTargets(
      `trHomePath` verilmezse veya "/" ise davranış BYTE-IDENTICAL.
      İç sayfalar (`/kiralik-villalar`, `/arama`, …) HİÇ etkilenmez:
      onların TR hedefi prefix'siz path olmaya devam eder. */
-  const trHome =
-    basePath === "/" && trHomePath ? trHomePath : languages.tr;
+  /* 🛡️ URL YAPISI (güncel): TR ana sayfa HER ZAMAN "/tr"
+     (`languages.tr`). `trHomePath` geriye dönük imza uyumu için kabul
+     edilir ama kullanılmaz — "/" artık İngilizce ana sayfadır. */
+  void trHomePath;
+  const trHome = languages.tr;
 
   if (hasLocaleRoute(basePath)) {
     return {
@@ -183,5 +188,8 @@ export function getLocaleSwitchTargets(
      ⚠️ Burada `trHome` KULLANILMAZ: bu dalda `basePath` "/" değildir,
      dolayısıyla `trHome` o sayfanın kendi path'idir. TR KÖKÜ MOD B'de
      "/tr", aksi halde "/" olmalıdır. */
-  return { tr: trHomePath || "/", en: "/en" };
+  return {
+    tr: buildLocaleAlternates("/", "tr").canonical,
+    en: buildLocaleAlternates("/", "en").canonical,
+  };
 }

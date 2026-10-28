@@ -42,7 +42,7 @@ beforeEach(() => {
    A + B) ROUTE DAVRANIŞI
    =============================================================== */
 const LOCALE_ROUTES: Array<[string, "en"]> = [
-  ["@/app/(public)/en/page", "en"],
+  ["@/app/(public)/page", "en"],
 ];
 
 describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
@@ -71,24 +71,24 @@ describe.each(LOCALE_ROUTES)("%s", (modulePath, locale) => {
   });
 });
 
-describe("app/(public)/page.tsx — TR", () => {
+describe("app/(public)/tr/page.tsx — TR", () => {
   it("4) ORTAK HomePageBody'yi locale='tr' ile render eder", async () => {
-    const { default: Page } = await import("@/app/(public)/page");
+    const { default: Page } = await import("@/app/(public)/tr/page");
     const element = await Page();
     expect(element.type).toBe(HomePageBody);
     expect(element.props.locale).toBe("tr");
   });
 
   it("5) TR'de locale gate'i ÇAĞRILMAZ (davranış değişmedi)", async () => {
-    const { default: Page } = await import("@/app/(public)/page");
+    const { default: Page } = await import("@/app/(public)/tr/page");
     await Page();
     expect(requirePublicLocaleEnabledMock).not.toHaveBeenCalled();
     expect(setRequestLocaleMock).not.toHaveBeenCalled();
   });
 
   it("6) TR ve EN route AYNI component referansını kullanır (kopya YOK)", async () => {
-    const tr = await (await import("@/app/(public)/page")).default();
-    const en = await (await import("@/app/(public)/en/page")).default();
+    const tr = await (await import("@/app/(public)/tr/page")).default();
+    const en = await (await import("@/app/(public)/page")).default();
     expect(tr.type).toBe(en.type);
   });
 

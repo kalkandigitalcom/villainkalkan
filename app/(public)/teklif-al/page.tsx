@@ -2,22 +2,29 @@ import type { Metadata } from "next";
 
 import OfferPageBody from "@/app/components/offer/OfferPageBody";
 import { buildOfferMetadata } from "@/app/components/offer/offer-metadata";
+import { requirePublicLocaleEnabled } from "@/lib/i18n/public-locale-gate.server";
+import { setRequestLocale } from "@/lib/i18n/request-locale.server";
 
 /* ===============================================================
-   🛡️ /teklif-al — PREMIUM CONCIERGE PAGE (TR)
+   🛡️ /en/teklif-al — PREMIUM CONCIERGE PAGE (EN)
    ===============================================================
-   Sayfa gövdesi `app/components/offer/OfferPageBody.tsx`'e TAŞINDI
-   (DOM/CSS DEĞİŞTİRİLMEDEN) — `/en/teklif-al` ve `/de/teklif-al`
-   AYNI gövdeyi render eder (`ContactPageBody` deseni).
+   TR ile AYNI gövde (`OfferPageBody`) — tek fark `locale` prop'u.
+   Taxonomy API'si, honeypot/time-trap, payload ve submit akışı
+   BİREBİR aynıdır.
 
-   TR DAVRANIŞI DEĞİŞMEDİ: URL, metinler, `robots: index/follow`,
-   canonical ve form submit akışı BİREBİR aynı.
+   PHASE 4A/4B deseni:
+     • `setRequestLocale("en")` — request-scoped locale işareti.
+     • `await requirePublicLocaleEnabled()` — `multilingual_enabled`
+       kapalıyken notFound() → 404.
    =============================================================== */
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildOfferMetadata("tr");
+  return buildOfferMetadata("en");
 }
 
-export default function Page() {
-  return <OfferPageBody locale="tr" />;
+export default async function EnOfferPage() {
+  setRequestLocale("en");
+  await requirePublicLocaleEnabled();
+
+  return <OfferPageBody locale="en" />;
 }

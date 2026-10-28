@@ -2,7 +2,7 @@
    🛡️ /teklif-al "Tercihleriniz" — TAXONOMY ETİKETİ LOCALE ÇÖZÜMÜ
    ===============================================================
    SORUN (auditte tespit edildi):
-   `/en/teklif-al` "Tercihleriniz" bölümündeki villa TİPİ ve
+   `/teklif-al` "Tercihleriniz" bölümündeki villa TİPİ ve
    ÖZELLİK chip'leri `/api/public/taxonomies` cevabındaki canonical
    TR `name` alanını render ediyordu. `villa_type_translations` ve
    `villa_feature_translations` (migration 082) DB'de MEVCUT ve
@@ -157,15 +157,14 @@ describe("A) /api/public/taxonomies — additive name_by_locale", () => {
     expect(json.features[0].name).toBe("Korunaklı Havuz");
   });
 
-  it("5) multilingual_enabled=false → çeviri sorgusu HİÇ atılmaz", async () => {
+  it("5) multilingual_enabled=false olsa bile çeviriler okunur (URL yapısı gereği iki dilli site)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
 
     const json = await callRoute();
 
-    expect(typeNamesMock).not.toHaveBeenCalled();
-    expect(featureNamesMock).not.toHaveBeenCalled();
+    expect(typeNamesMock).toHaveBeenCalled();
+    expect(featureNamesMock).toHaveBeenCalled();
     expect(json.types[0].name).toBe("Balayı Villası");
-    expect(json.types[0].name_by_locale).toEqual({});
   });
 
   it("6) çeviri okuma hatası cevabı BOZMAZ (fail-soft)", async () => {

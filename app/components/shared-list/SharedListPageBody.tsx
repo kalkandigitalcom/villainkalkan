@@ -18,6 +18,7 @@ import { getSharedVillaListByToken } from "@/app/services/shared-villa-list.serv
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
+import { localePathPrefix } from "@/lib/i18n/locale-href";
 
 /* ===============================================================
    🛡️ /liste/[token] — admin curator share landing
@@ -128,7 +129,7 @@ export default async function SharedListPageBody({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale).sharedList;
-  const localePrefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  const localePrefix = localePathPrefix(locale);
   const { token } = await params;
 
   /* 1) Token resolve — revoke/expire guard service içinde.

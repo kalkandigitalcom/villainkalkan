@@ -72,14 +72,13 @@ describe("/api/public/payment-methods — additive name_by_locale", () => {
     });
   });
 
-  it("3) multilingual_enabled=false → çeviri sorgusu HİÇ atılmaz", async () => {
+  it("3) multilingual_enabled=false olsa bile çeviri okunur (URL yapısı gereği iki dilli site)", async () => {
     getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
 
     const json = await callRoute();
 
-    expect(getPaymentMethodNamesByLocaleMock).not.toHaveBeenCalled();
+    expect(getPaymentMethodNamesByLocaleMock).toHaveBeenCalled();
     expect(json.payment_methods[0].name).toBe("Kredi Kartı");
-    expect(json.payment_methods[0].name_by_locale).toEqual({});
   });
 
   it("4) çeviri okuma hatası cevabı BOZMAZ (fail-soft)", async () => {

@@ -130,8 +130,8 @@ async function renderRoute(modulePath: string, slug = EDITORIAL_PAGE.slug) {
 }
 
 const ROUTES = {
-  tr: "@/app/p/[slug]/page",
-  en: "@/app/(public)/en/p/[slug]/page",
+  tr: "@/app/(public)/tr/p/[slug]/page",
+  en: "@/app/(public)/p/[slug]/page",
 } as const;
 
 /* ===============================================================
