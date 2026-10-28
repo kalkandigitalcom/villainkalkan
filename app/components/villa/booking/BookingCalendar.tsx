@@ -71,7 +71,7 @@ export default function BookingCalendar({
   locale,
   numberOfMonths = 1,
 }: Props) {
-  const { currency, ratesReady } = useCurrency();
+  const { currency } = useCurrency();
   const dict = getDictionary(locale);
   const dateFnsLocale =
     locale === "en" ? enUS : tr;
@@ -101,6 +101,8 @@ export default function BookingCalendar({
     /* İndirimli günlük fiyat — engine'in salt-gösterim helper'ı
        (indirim yoksa null → mevcut tek-fiyat görünümü). */
     getDiscountedPriceForDate,
+    /* 🛡️ Kur kapısı — ilgili kur yoksa çevrilmiş fiyat placeholder. */
+    calendarPriceReady,
   } = engine;
 
   return (
@@ -330,7 +332,7 @@ export default function BookingCalendar({
                         letterSpacing: "0.02em",
                       }}
                     >
-                      {formatDisplayPrice(price, currency, locale ?? "tr", ratesReady)}
+                      {formatDisplayPrice(price, currency, locale ?? "tr", calendarPriceReady)}
                     </span>
                     <span
                       style={{
@@ -344,7 +346,7 @@ export default function BookingCalendar({
                         discountedPrice,
                         currency,
                         locale ?? "tr",
-                        ratesReady
+                        calendarPriceReady
                       )}
                     </span>
                   </div>
@@ -359,7 +361,7 @@ export default function BookingCalendar({
                       letterSpacing: "0.02em",
                     }}
                   >
-                    {formatDisplayPrice(price, currency, locale ?? "tr", ratesReady)}
+                    {formatDisplayPrice(price, currency, locale ?? "tr", calendarPriceReady)}
                   </div>
                 ) : null}
               </div>

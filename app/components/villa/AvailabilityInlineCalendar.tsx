@@ -8,7 +8,12 @@ import {
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { convertPrice, formatDisplayPrice } from "@/lib/currency";
+import {
+  canConvertForDisplay,
+  collectSourceCurrencies,
+  convertPrice,
+  formatDisplayPrice,
+} from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { getDayStyle } from "@/lib/calendar.engine";
 import { formatLocalDate } from "@/lib/date-format";
@@ -167,7 +172,7 @@ export default function AvailabilityInlineCalendar({
   discounts,
   locale,
 }: Props) {
-  const { currency, rates, ratesReady } = useCurrency();
+  const { currency, rates } = useCurrency();
   const dict = getDictionary(locale);
   const bcp47 = LOCALE_BCP47[locale ?? "tr"];
 
@@ -253,7 +258,12 @@ export default function AvailabilityInlineCalendar({
       currency,
       rates
     );
-    return formatDisplayPrice(converted, currency, locale ?? "tr", ratesReady);
+    return formatDisplayPrice(
+      converted,
+      currency,
+      locale ?? "tr",
+      canConvertForDisplay(rates, currency, [found.currency])
+    );
   };
 
   /* ---------------------------------------------------------------
@@ -293,7 +303,12 @@ export default function AvailabilityInlineCalendar({
     );
     /* Sahte indirim koruması (PriceList `isDiscounted` kuralı). */
     if (!(discounted.converted < converted)) return null;
-    return formatDisplayPrice(discounted.converted, currency, locale ?? "tr", ratesReady);
+    return formatDisplayPrice(
+      discounted.converted,
+      currency,
+      locale ?? "tr",
+      canConvertForDisplay(rates, currency, collectSourceCurrencies(found.currency, [activeDiscount]))
+    );
   };
 
   /* Responsive month count — admin pattern'iyle aynı: 1/2/3 col.

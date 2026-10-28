@@ -3,7 +3,11 @@
 import { useId, useState } from "react";
 import { AlertTriangle, ChevronDown } from "lucide-react";
 
-import { convertPrice, formatDisplayPrice } from "@/lib/currency";
+import {
+  canConvertForDisplay,
+  convertPrice,
+  formatDisplayPrice,
+} from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 /* 🛡️ PHASE 10G — locale-aware uyarı metni. `locale` OPSİYONEL, default
    "tr" → TR çıktısı BİREBİR AYNI. Ücret/kural hesabı DEĞİŞMEDİ. */
@@ -84,7 +88,7 @@ export default function ShortStayFeeNotice({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale);
-  const { currency, rates, ratesReady } = useCurrency();
+  const { currency, rates } = useCurrency();
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
@@ -109,6 +113,9 @@ export default function ShortStayFeeNotice({
     currency,
     rates
   );
+
+  /* 🛡️ Kur kapısı — yalnız temizlik ücretinin para birimi için. */
+  const feeReady = canConvertForDisplay(rates, currency, [cleaningCurrency || "TRY"]);
 
   return (
     <div className="mt-4">
@@ -208,7 +215,7 @@ export default function ShortStayFeeNotice({
           className="ssfn-panel-in mt-2.5 rounded-2xl border border-red-100 bg-white p-4 shadow-[0_18px_40px_-24px_rgba(220,38,38,0.28)]"
         >
           <p className="font-display text-xl font-bold text-red-600 tabular-nums">
-            {formatDisplayPrice(convertedFee, currency, locale ?? "tr", ratesReady)}
+            {formatDisplayPrice(convertedFee, currency, locale ?? "tr", feeReady)}
           </p>
         </div>
       )}

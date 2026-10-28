@@ -500,6 +500,9 @@ function ModalContent({
     activeStayDiscount,
     prepayment,
     convertedDeposit,
+    /* 🛡️ Kur kapısı (yalnız gösterim). */
+    summaryPriceReady,
+    depositReady,
     handleReservation,
     /* 🛡️ HAVUZ ISITMA — apiData.config.pool_heating_fee artık gerçek
        villa değeri olduğundan poolHeatingTotal/selected aktif çalışır. */
@@ -694,6 +697,8 @@ function ModalContent({
             prepayment={prepayment}
             prepaymentRate={prepaymentRate}
             convertedDeposit={convertedDeposit}
+            priceReady={summaryPriceReady}
+            depositReady={depositReady}
             deposit={apiData.config.deposit ?? 0}
             /* 🛡️ HAVUZ ISITMA — yerleşim turu. Satır artık SUMMARY'nin
                içinde (BookingSidebar ile AYNI yerleşim); değerler AYNEN

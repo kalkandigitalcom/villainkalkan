@@ -155,12 +155,12 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
               <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
                 <span className="text-[13.5px] text-[var(--color-stone-400)] line-through decoration-[var(--color-stone-400)]/70 tabular-nums">
                   <span className="sr-only">{m.dict.card.originalPriceLabel}: </span>
-                  {formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.ratesReady)}
+                  {formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.basePriceReady)}
                 </span>
                 <span className="inline-flex items-baseline gap-1.5">
                   <span className="sr-only">{m.dict.card.discountedPriceLabel}: </span>
                   <span className="font-display text-[24px] md:text-[26px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">
-                    {formatDisplayPrice(m.discountedPrice!.converted, m.currency, m.effectiveLocale, m.ratesReady)}
+                    {formatDisplayPrice(m.discountedPrice!.converted, m.currency, m.effectiveLocale, m.discountPriceReady)}
                   </span>
                   <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--color-stone-500)]">
                     {m.dict.card.nightly}
@@ -180,7 +180,7 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
           ) : (
             <span className="font-display text-[22px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">
               {price
-                ? formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.ratesReady)
+                ? formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.basePriceReady)
                 : m.dict.card.priceOnRequest}
             </span>
           )}

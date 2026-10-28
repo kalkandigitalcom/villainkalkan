@@ -2,8 +2,10 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -23,12 +25,18 @@ type CurrencyContextType = {
 
   rates: Record<string, number>;
 
-  /** 🛡️ USD/EUR/GBP kurlarının TAMAMI geçerli (finite > 0) mi?
-   *  false iken çevrilmiş tutar GÖSTERİLMEZ (placeholder) — kur
-   *  bilinmeden yapılan çevrim 1:1 fallback'e düşer ve yanlış tutar
-   *  üretir (ör. ₺40.000 → "£40.000"). Tahmini kur KULLANILMAZ. */
+  /** 🛡️ USD/EUR/GBP kurlarının TAMAMI geçerli (finite > 0) mi? (bilgi
+   *  amaçlı). Kur bilinmeden yapılan çevrim 1:1 fallback'e düşer ve yanlış
+   *  tutar üretir (ör. ₺40.000 → "£40.000"); tahmini kur KULLANILMAZ. */
   ratesReady: boolean;
+  /* Fiyat bazında kur kapısı için tüketiciler `canConvertForDisplay(rates,
+     currency, kaynakPB)` (lib/currency) kullanır: TRY → TRY her zaman
+     görünür, yalnız GEREKLİ kur eksikse çevrilmiş tutar placeholder olur. */
 };
+
+/** Ziyaretçinin kayıtlı (veya bu oturumda seçtiği) bir tercihi var mı?
+ *  Yalnız AdminCurrencyScope okur — public tüketiciler etkilenmez. */
+const CurrencyPreferenceContext = createContext(false);
 
 /* ⚠️ Bu varsayılan YALNIZ CurrencyProvider DIŞINDA (izole bileşen
    render'ı / testler) kullanılır; site her zaman root layout'taki
@@ -67,8 +75,9 @@ export function CurrencyProvider({
 }: {
   children: React.ReactNode;
   /** 🛡️ Sunucuda (root layout) okunan kurlar — ilk render'da (SSR dahil)
-   *  doğru çevrim için. Yoksa kurlar istemcide yüklenene kadar
-   *  `ratesReady=false` olur ve fiyatlar placeholder gösterilir. */
+   *  doğru çevrim için. Yoksa kurlar istemcide yüklenene kadar kur
+   *  gerektiren (çevrilmiş) fiyatlar placeholder gösterilir; TRY → TRY
+   *  fiyatlar her zaman görünür. */
   initialRates?: Record<string, number> | null;
 }) {
 
@@ -78,10 +87,19 @@ export function CurrencyProvider({
   const [currency, setCurrency] =
     useState<string>(DEFAULT_DISPLAY_CURRENCY);
 
-  /* Kayıtlı tercih okunmadan localStorage/cookie'ye YAZILMAZ — aksi halde
-     varsayılan, mevcut tercihin üzerine (kısa da olsa) yazılırdı. */
-  const [preferenceLoaded, setPreferenceLoaded] =
+  /* 🛡️ Yalnız GERÇEK bir tercih (kayıtlı değer veya kullanıcının seçimi)
+     localStorage/cookie'ye yazılır. Varsayılan (GBP) ASLA yazılmaz:
+       - kayıtlı tercih okunmadan üzerine yazılamaz,
+       - admin panelinde (aynı origin) ziyaretçi varsayılanı kalıcı
+         tercihe dönüşüp admin'i GBP'ye zorlayamaz.
+     Cookie yoksa sunucu fallback'i zaten GBP (resolveDisplayCurrencyCookie). */
+  const [hasPreference, setHasPreference] =
     useState(false);
+
+  const chooseCurrency = useCallback((value: string) => {
+    setCurrency(value);
+    setHasPreference(true);
+  }, []);
 
   const [rates, setRates] =
     useState<Record<string, number>>(() =>
@@ -95,16 +113,15 @@ export function CurrencyProvider({
 
     if (saved) {
       setCurrency(saved);
+      setHasPreference(true);
     }
-
-    setPreferenceLoaded(true);
 
   }, []);
 
   // local storage kaydet
   useEffect(() => {
 
-    if (!preferenceLoaded) return;
+    if (!hasPreference) return;
 
     localStorage.setItem(
       "currency",
@@ -127,7 +144,7 @@ export function CurrencyProvider({
         "; path=/; max-age=31536000; samesite=lax";
     }
 
-  }, [currency, preferenceLoaded]);
+  }, [currency, hasPreference]);
 
   // 🔥 KURLARI ÇEK
   useEffect(() => {
@@ -174,14 +191,41 @@ export function CurrencyProvider({
   }, []);
 
   return (
-    <CurrencyContext.Provider
-      value={{
-        currency,
-        setCurrency,
-        rates,
-        ratesReady: areDisplayRatesReady(rates),
-      }}
-    >
+    <CurrencyPreferenceContext.Provider value={hasPreference}>
+      <CurrencyContext.Provider
+        value={{
+          currency,
+          setCurrency: chooseCurrency,
+          rates,
+          ratesReady: areDisplayRatesReady(rates),
+        }}
+      >
+        {children}
+      </CurrencyContext.Provider>
+    </CurrencyPreferenceContext.Provider>
+  );
+}
+
+/** 🛡️ ADMIN PARA BİRİMİ KAPSAMI — ziyaretçi varsayılanından (GBP) ayrı.
+ *  Kayıtlı/seçilmiş bir tercih varsa AYNEN o kullanılır (eski davranış);
+ *  yoksa admin eskisi gibi TRY görür. Kurlar ve setCurrency üst
+ *  Provider'dan gelir (ek fetch YOK, hiçbir şey kalıcı yazılmaz). */
+export const ADMIN_DEFAULT_CURRENCY = "TRY";
+
+export function AdminCurrencyScope({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const parent = useContext(CurrencyContext);
+  const hasPreference = useContext(CurrencyPreferenceContext);
+  const currency = hasPreference ? parent.currency : ADMIN_DEFAULT_CURRENCY;
+  const value = useMemo<CurrencyContextType>(
+    () => ({ ...parent, currency }),
+    [parent, currency]
+  );
+  return (
+    <CurrencyContext.Provider value={value}>
       {children}
     </CurrencyContext.Provider>
   );

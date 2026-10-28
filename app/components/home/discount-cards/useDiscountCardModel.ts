@@ -17,7 +17,11 @@
 
 import { useState } from "react";
 
-import { convertPrice } from "@/lib/currency";
+import {
+  canConvertForDisplay,
+  collectSourceCurrencies,
+  convertPrice,
+} from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
@@ -59,7 +63,14 @@ export function useDiscountCardModel(props: DiscountVillaCardProps) {
 
   const dict = getDictionary(locale);
   const effectiveLocale: Locale = locale ?? "tr";
-  const { currency, rates, ratesReady } = useCurrency();
+  const { currency, rates } = useCurrency();
+
+  /* 🛡️ Kur kapısı — yalnız ilgili kaynak para birimleri (TRY → TRY her
+     zaman görünür). */
+  const basePriceReady = canConvertForDisplay(rates, currency, [villaCurrency]);
+  const discountPriceReady = canConvertForDisplay(rates, currency,
+    collectSourceCurrencies(villaCurrency, discount ? [discount] : null)
+  );
 
   const convertedPrice = convertPrice(
     Number(price || 0),
@@ -81,7 +92,7 @@ export function useDiscountCardModel(props: DiscountVillaCardProps) {
     privateHref: undefined,
     dict,
     effectiveLocale,
-    ratesReady,
+    ratesReady: discountPriceReady,
   });
 
   const detailHref = buildLocaleAlternates(
@@ -110,7 +121,8 @@ export function useDiscountCardModel(props: DiscountVillaCardProps) {
     dict,
     effectiveLocale,
     currency,
-    ratesReady,
+    basePriceReady,
+    discountPriceReady,
     convertedPrice,
     ...pricing,
     detailHref,

@@ -64,7 +64,12 @@
 
 import { ShieldCheck } from "lucide-react";
 
-import { formatCurrency, formatDisplayPrice } from "@/lib/currency";
+import {
+  canConvertForDisplay,
+  collectSourceCurrencies,
+  formatCurrency,
+  formatDisplayPrice,
+} from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 
 import type { BookingResult, ActiveStayDiscount } from "./useBookingEngine";
@@ -105,6 +110,10 @@ type Props = {
   poolHeatingActiveForRange?: boolean;
   /* 🛡️ PHASE 10B — opsiyonel, default "tr". */
   locale?: Locale;
+  /* 🛡️ Kur kapısı (useBookingEngine `summaryPriceReady` / `depositReady`).
+     Verilmezse sonuçtaki para birimlerinden context ile hesaplanır. */
+  priceReady?: boolean;
+  depositReady?: boolean;
 };
 
 export default function BookingSummary({
@@ -121,8 +130,21 @@ export default function BookingSummary({
   poolHeatingTotal = 0,
   poolHeatingActiveForRange = true,
   locale,
+  priceReady,
+  depositReady,
 }: Props) {
-  const { currency, ratesReady } = useCurrency();
+  const { currency, rates } = useCurrency();
+  const summaryReady =
+    priceReady ??
+    canConvertForDisplay(rates, currency,
+      collectSourceCurrencies(
+        result.original_currency,
+        result.cleaning > 0 ? result.original_cleaning_currency : null,
+        poolHeatingSelected ? poolHeatingCurrency : null,
+        activeStayDiscount ? [activeStayDiscount.discount] : null
+      )
+    );
+  const depositDisplayReady = depositReady ?? canConvertForDisplay(rates, currency, ["TRY"]);
   const dict = getDictionary(locale);
   const accommodationLabel = formatDictionaryString(
     dict.booking.accommodationAmountLabel,
@@ -130,7 +152,7 @@ export default function BookingSummary({
   );
 
   const fmt = (v: number) =>
-    formatDisplayPrice(v, currency, locale ?? "tr", ratesReady);
+    formatDisplayPrice(v, currency, locale ?? "tr", summaryReady);
   return (
     <div className="space-y-3 text-[13.5px]">
       {/* 🎨 PREMIUM DÖKÜM — fildişi zemin, ince ayırıcılı satırlar,
@@ -247,7 +269,7 @@ export default function BookingSummary({
             <div className="flex items-center justify-between gap-3">
               <span className="font-medium text-ink">{dict.booking.depositLabel}</span>
               <span className="font-semibold text-ink tabular-nums">
-                {fmt(convertedDeposit)}
+                {formatDisplayPrice(convertedDeposit, currency, locale ?? "tr", depositDisplayReady)}
               </span>
             </div>
             <p className="mt-1 text-[11.5px] text-[var(--color-stone-500)] leading-relaxed">

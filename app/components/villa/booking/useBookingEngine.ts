@@ -65,7 +65,12 @@ import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from
    fetch boundary'sinden çekilir; SECURITY DEFINER semantic ve PII-safe
    payload aynen korunur. */
 import { useCurrency } from "@/app/context/CurrencyContext";
-import { convertPrice, formatDisplayPrice } from "@/lib/currency";
+import {
+  canConvertForDisplay,
+  collectSourceCurrencies,
+  convertPrice,
+  formatDisplayPrice,
+} from "@/lib/currency";
 
 import { getPublicSettingsAction as getPublicSettings } from "@/app/services/settings.action";
 
@@ -255,6 +260,13 @@ export type UseBookingEngineReturn = {
   convertedDeposit: number;
   startingPrice: string;
 
+  /* 🛡️ Kur kapısı (yalnız GÖSTERİM) — ilgili kaynak para birimlerinin
+     gerçek kuru yoksa false → çevrilmiş tutar placeholder. TRY → TRY
+     her zaman true. Hesaplamaya / rezervasyona etkisi YOK. */
+  calendarPriceReady: boolean;
+  summaryPriceReady: boolean;
+  depositReady: boolean;
+
   /* 🛡️ HAVUZ ISITMA — 4. adım (booking engine altyapısı; UI bu adımda
      hiçbir component tarafından tüketilmiyor olabilir — normal).
      poolHeatingTotal display currency'de (result.poolHeating ile aynı —
@@ -330,7 +342,7 @@ export function useBookingEngine(
     locale,
   } = input;
 
-  const { currency, rates, ratesReady } = useCurrency();
+  const { currency, rates } = useCurrency();
   const dict = getDictionary(locale);
 
   /* 🛡️ FAZ 55K — Data boundary normalization (currency garantisi).
@@ -1069,6 +1081,22 @@ export function useBookingEngine(
 
   const convertedDeposit = convertPrice(deposit, "TRY", currency, rates);
 
+  /* 🛡️ Kur kapısı — yalnız gösterim; hesaplama / rezervasyon değişmez. */
+  const calendarPriceReady = canConvertForDisplay(rates, currency,
+    collectSourceCurrencies(normalizedPrices, discounts)
+  );
+  const summaryPriceReady = canConvertForDisplay(rates, currency,
+    collectSourceCurrencies(
+      normalizedPrices,
+      discounts,
+      Number(cleaning_fee || 0) > 0 ? cleaning_currency : null,
+      poolHeatingSelected && Number(pool_heating_fee || 0) > 0
+        ? pool_heating_currency
+        : null
+    )
+  );
+  const depositReady = canConvertForDisplay(rates, currency, ["TRY"]);
+
   const startingPrice = formatDisplayPrice(
     convertPrice(
       Number(prices[0]?.price || 0),
@@ -1078,7 +1106,7 @@ export function useBookingEngine(
     ),
     currency,
     locale ?? "tr",
-    ratesReady
+    canConvertForDisplay(rates, currency, [prices[0]?.currency])
   );
 
   /* ---------------------------------------------
@@ -1229,6 +1257,9 @@ export function useBookingEngine(
     prepayment,
     convertedDeposit,
     startingPrice,
+    calendarPriceReady,
+    summaryPriceReady,
+    depositReady,
 
     /* 🛡️ HAVUZ ISITMA — 4. adım (altyapı; UI sonraki adımda bağlanacak) */
     poolHeatingSelected,

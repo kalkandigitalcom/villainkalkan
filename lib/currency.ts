@@ -184,6 +184,68 @@ export function areDisplayRatesReady(
   );
 }
 
+/** Bir tutarın kaynak para birimi kodu. Boş/null kaynak, fiyat motoru
+ *  ile AYNI şekilde TRY kabul edilir (`x.currency || "TRY"`). */
+function normalizeSourceCurrency(code: string | null | undefined): string {
+  return code ? String(code).toUpperCase() : "TRY";
+}
+
+type CurrencySourcePart =
+  | string
+  | null
+  | undefined
+  | ReadonlyArray<
+      { currency?: string | null; discount_type?: string | null } | null | undefined
+    >;
+
+/** Gösterilecek tutara katkı veren kaynak para birimlerini toplar
+ *  (villa fiyat satırları, sabit tutarlı indirimler, temizlik / havuz
+ *  ısıtma para birimi vb.). Satır listelerinden `currency` alanı okunur;
+ *  yüzde indirim satırları (`discount_type: "percent"`) para biriminden
+ *  bağımsız olduğu için atlanır. */
+export function collectSourceCurrencies(
+  ...parts: CurrencySourcePart[]
+): string[] {
+  const out = new Set<string>();
+  for (const part of parts) {
+    if (part == null) continue;
+    if (typeof part === "string") {
+      out.add(normalizeSourceCurrency(part));
+      continue;
+    }
+    for (const row of part) {
+      if (!row || row.discount_type === "percent") continue;
+      out.add(normalizeSourceCurrency(row.currency));
+    }
+  }
+  return [...out];
+}
+
+/** `sources` para birimlerindeki tutarlar `target`'a GERÇEK kurla
+ *  çevrilebilir mi? `convertPrice` TRY pivotludur:
+ *    - kaynak === hedef → kur gerekmez
+ *    - TRY → TRY        → kur gerekmez (TRY fiyatları HER ZAMAN görünür)
+ *    - diğer tüm çevrimler → ilgili TRY dışı kodların geçerli kuru gerekir.
+ *  Kur yoksa convertPrice 1'e düşer (yanlış tutar) — o durumda false
+ *  döner ve yalnız o tutar yer tutucu ile gösterilir. Tahmini kur YOK. */
+export function canConvertForDisplay(
+  rates: Record<string, number> | null | undefined,
+  target: string,
+  sources: ReadonlyArray<string | null | undefined>
+): boolean {
+  const to = normalizeSourceCurrency(target);
+  const from = sources.length
+    ? sources.map(normalizeSourceCurrency)
+    : ["TRY"];
+  if (from.every((c) => c === to)) return true;
+  const needed = new Set<string>([to, ...from]);
+  for (const code of needed) {
+    if (code === "TRY") continue;
+    if (!isValidRate(rates?.[code])) return false;
+  }
+  return true;
+}
+
 /** Kur hazır değilken fiyat yerine gösterilen yer tutucu. */
 export const PRICE_PENDING_PLACEHOLDER = "…";
 

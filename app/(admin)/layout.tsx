@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ADMIN_BRANDING_PATHS, getAdminIconUrl } from "@/lib/admin-branding";
 import { getSiteAssetVersions } from "@/lib/storage/site-asset-version.server";
 import { AdminBrandingVersionProvider } from "@/app/components/admin/AdminBrandingVersion";
+import { AdminCurrencyScope } from "@/app/context/CurrencyContext";
 
 /* ===============================================================
    🛡️ ADMIN-WIDE CACHE BYPASS — force-dynamic (server layout)
@@ -85,7 +86,9 @@ export default async function AdminGroupLayout({
   const versions = await getAdminBrandingVersions();
   return (
     <AdminBrandingVersionProvider versions={versions}>
-      {children}
+      {/* 🛡️ Admin para birimi ziyaretçi varsayılanından (GBP) ayrı:
+          kayıtlı tercih yoksa admin eskisi gibi TRY görür. */}
+      <AdminCurrencyScope>{children}</AdminCurrencyScope>
     </AdminBrandingVersionProvider>
   );
 }

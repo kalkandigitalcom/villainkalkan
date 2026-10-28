@@ -218,6 +218,9 @@ export default function BookingSidebar({
     activeStayDiscount,
     prepayment,
     convertedDeposit,
+    /* 🛡️ Kur kapısı (yalnız gösterim). */
+    summaryPriceReady,
+    depositReady,
     parseLocalDate,
     handleReservation,
     /* 🛡️ alert() yerine inline banner — null → gizli. */
@@ -620,6 +623,8 @@ export default function BookingSidebar({
             prepayment={prepayment}
             prepaymentRate={prepaymentRate}
             convertedDeposit={convertedDeposit}
+            priceReady={summaryPriceReady}
+            depositReady={depositReady}
             deposit={deposit}
             /* 🛡️ HAVUZ ISITMA — yerleşim turu. Satır artık SUMMARY'nin
                içinde (Kısa Süreli Konaklama Ücreti altında); değerler

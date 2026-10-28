@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Calendar, Moon, ShieldCheck, Info } from "lucide-react";
 
-import { convertPrice, formatDisplayPrice } from "@/lib/currency";
+import {
+  canConvertForDisplay,
+  collectSourceCurrencies,
+  convertPrice,
+  formatDisplayPrice,
+} from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { formatDateForLocale, parseLocalDate, formatLocalDate } from "@/lib/date-format";
 import { applyDiscountToDailyPrice, type DiscountRange } from "@/lib/price.engine";
@@ -260,7 +265,7 @@ export default function PriceList({
   /* 🛡️ PHASE 10B — opsiyonel, default "tr". */
   locale?: Locale;
 }) {
-  const { currency, rates, ratesReady } = useCurrency();
+  const { currency, rates } = useCurrency();
   const [openId, setOpenId] = useState<string | null>(null);
   const dict = getDictionary(locale);
   const effectiveLocale = locale ?? "tr";
@@ -287,6 +292,9 @@ export default function PriceList({
   const convertedDeposit = hasDeposit
     ? convertPrice(deposit as number, "TRY", currency, rates)
     : 0;
+
+  /* 🛡️ Depozito TRY → seçili para birimi (TRY seçiliyse kur gerekmez). */
+  const depositReady = canConvertForDisplay(rates, currency, ["TRY"]);
 
   const hasInfo = hasMinStay || hasDeposit;
 
@@ -370,6 +378,11 @@ export default function PriceList({
               rates
             )
           : null;
+        /* 🛡️ Kur kapısı — yalnız bu segmentin kaynak para birimleri. */
+        const segPriceReady = canConvertForDisplay(rates, currency, [seg.currency]);
+        const segDiscountReady = canConvertForDisplay(rates, currency,
+          collectSourceCurrencies(seg.currency, seg.discount ? [seg.discount] : null)
+        );
         const isDiscounted =
           !!seg.discount &&
           !!discountedResult &&
@@ -466,13 +479,13 @@ export default function PriceList({
                 {isDiscounted ? (
                   <div className="text-left md:text-right">
                     <p className="text-[12px] text-[var(--color-stone-400)] line-through tabular-nums leading-none">
-                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, ratesReady)}
+                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
                     </p>
                     <p
                       className="mt-1 font-display font-bold text-[19px] md:text-[17px] text-green-600 tracking-[-0.02em] leading-none"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
-                      {formatDisplayPrice(discountedResult!.converted, currency, effectiveLocale, ratesReady)}
+                      {formatDisplayPrice(discountedResult!.converted, currency, effectiveLocale, segDiscountReady)}
                     </p>
                     <p
                       className="text-[8.5px] tracking-[0.18em] uppercase text-[var(--color-stone-400)] font-medium mt-1.5"
@@ -487,7 +500,7 @@ export default function PriceList({
                       className="font-display font-bold text-[19px] md:text-[17px] text-brand-strong tracking-[-0.02em] leading-none"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
-                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, ratesReady)}
+                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
                     </p>
                     <p
                       className="text-[8.5px] tracking-[0.18em] uppercase text-[var(--color-stone-400)] font-medium mt-1.5"
@@ -557,7 +570,7 @@ export default function PriceList({
                                 <ShieldCheck size={12} strokeWidth={1.9} aria-hidden />
                               </span>
                               {formatDictionaryString(dict.price.damageDeposit, {
-                                amount: formatDisplayPrice(convertedDeposit, currency, effectiveLocale, ratesReady),
+                                amount: formatDisplayPrice(convertedDeposit, currency, effectiveLocale, depositReady),
                               })}
                             </li>
                           )}
