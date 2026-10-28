@@ -64,7 +64,7 @@
 
 import { ShieldCheck } from "lucide-react";
 
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, formatDisplayPrice } from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 
 import type { BookingResult, ActiveStayDiscount } from "./useBookingEngine";
@@ -122,14 +122,15 @@ export default function BookingSummary({
   poolHeatingActiveForRange = true,
   locale,
 }: Props) {
-  const { currency } = useCurrency();
+  const { currency, ratesReady } = useCurrency();
   const dict = getDictionary(locale);
   const accommodationLabel = formatDictionaryString(
     dict.booking.accommodationAmountLabel,
     { n: result.nights }
   );
 
-  const fmt = (v: number) => formatCurrency(v, currency, locale ?? "tr");
+  const fmt = (v: number) =>
+    formatDisplayPrice(v, currency, locale ?? "tr", ratesReady);
   return (
     <div className="space-y-3 text-[13.5px]">
       {/* 🎨 PREMIUM DÖKÜM — fildişi zemin, ince ayırıcılı satırlar,

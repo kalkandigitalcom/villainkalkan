@@ -59,7 +59,7 @@ export function useDiscountCardModel(props: DiscountVillaCardProps) {
 
   const dict = getDictionary(locale);
   const effectiveLocale: Locale = locale ?? "tr";
-  const { currency, rates } = useCurrency();
+  const { currency, rates, ratesReady } = useCurrency();
 
   const convertedPrice = convertPrice(
     Number(price || 0),
@@ -81,6 +81,7 @@ export function useDiscountCardModel(props: DiscountVillaCardProps) {
     privateHref: undefined,
     dict,
     effectiveLocale,
+    ratesReady,
   });
 
   const detailHref = buildLocaleAlternates(
@@ -109,6 +110,7 @@ export function useDiscountCardModel(props: DiscountVillaCardProps) {
     dict,
     effectiveLocale,
     currency,
+    ratesReady,
     convertedPrice,
     ...pricing,
     detailHref,

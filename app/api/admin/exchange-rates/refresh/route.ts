@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 import { authorizeAdminCaller } from "@/lib/admin-route-auth";
 import {
@@ -35,12 +36,10 @@ import {
        sınırlı pratik trafik)
 
    CACHE INVALIDATION:
-     - exchange_rates direkt fetch ediliyor (cache wrapper yok şu an;
-       cache.helpers.ts'te `exchange-rates` tag tanımlı değil)
-     - Public CurrencyContext useEffect ile fetch ediyor; refresh
-       sonrası sayfa yenilenince güncel görünür.
-     - Eğer ileride `getCachedExchangeRates` eklenirse, burada
+     - Root layout kurları `getCachedDisplayRates` (tag
+       "exchange-rates") ile okur → başarılı upsert sonrası
        `revalidateTag("exchange-rates")` çağrılır.
+     - Public CurrencyContext ayrıca useEffect ile güncel kuru çeker.
 =============================================================== */
 
 export const runtime = "nodejs";
@@ -122,6 +121,9 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
+
+  /* Root layout'taki sunucu kur cache'i bir sonraki istekte tazelensin. */
+  revalidateTag("exchange-rates", { expire: 0 });
 
   /* 🛡️ FAZ 55B — AUDIT LOG (additive, fail-safe)
      Refresh başarılı olduktan sonra activity log insert. Logger

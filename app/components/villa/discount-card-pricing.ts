@@ -58,6 +58,9 @@ export type DiscountCardPricingInput = {
   privateHref: string | undefined;
   dict: ReturnType<typeof getDictionary>;
   effectiveLocale: Locale;
+  /** Görüntüleme kurları hazır mı (useCurrency). false → tasarruf
+   *  etiketi (çevrilmiş tutar içerir) üretilmez. Varsayılan true. */
+  ratesReady?: boolean;
 };
 
 export type DiscountCardPricing = {
@@ -86,6 +89,7 @@ export function computeDiscountCardPricing(
     privateHref,
     dict,
     effectiveLocale,
+    ratesReady = true,
   } = input;
 
   const activeDiscount: DiscountRange | null =
@@ -170,7 +174,7 @@ export function computeDiscountCardPricing(
      render edilmez. Para birimi mevcut formatCurrency() ile AYNI
      mantıkla gösterilir — yeni bir currency formatlama YOK. */
   const nightlySavingsLabel: string | null = (() => {
-    if (!showDiscountPricing || !discountedPrice) return null;
+    if (!showDiscountPricing || !discountedPrice || !ratesReady) return null;
     const savings = convertedPrice - discountedPrice.converted;
     if (!(savings > 0)) return null;
     return formatDictionaryString(dict.card.nightlySavings, {

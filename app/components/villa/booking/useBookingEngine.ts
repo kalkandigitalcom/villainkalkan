@@ -65,7 +65,7 @@ import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from
    fetch boundary'sinden çekilir; SECURITY DEFINER semantic ve PII-safe
    payload aynen korunur. */
 import { useCurrency } from "@/app/context/CurrencyContext";
-import { convertPrice, formatCurrency } from "@/lib/currency";
+import { convertPrice, formatDisplayPrice } from "@/lib/currency";
 
 import { getPublicSettingsAction as getPublicSettings } from "@/app/services/settings.action";
 
@@ -330,7 +330,7 @@ export function useBookingEngine(
     locale,
   } = input;
 
-  const { currency, rates } = useCurrency();
+  const { currency, rates, ratesReady } = useCurrency();
   const dict = getDictionary(locale);
 
   /* 🛡️ FAZ 55K — Data boundary normalization (currency garantisi).
@@ -1069,7 +1069,7 @@ export function useBookingEngine(
 
   const convertedDeposit = convertPrice(deposit, "TRY", currency, rates);
 
-  const startingPrice = formatCurrency(
+  const startingPrice = formatDisplayPrice(
     convertPrice(
       Number(prices[0]?.price || 0),
       prices[0]?.currency || "TRY",
@@ -1077,7 +1077,8 @@ export function useBookingEngine(
       rates
     ),
     currency,
-    locale ?? "tr"
+    locale ?? "tr",
+    ratesReady
   );
 
   /* ---------------------------------------------

@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 import { CurrencyProvider } from "@/app/context/CurrencyContext";
-import { getCachedSettings } from "@/lib/cache.helpers";
+import { getCachedDisplayRates, getCachedSettings } from "@/lib/cache.helpers";
 import { siteMetadataBase } from "@/lib/seo";
 import { resolveAssetUrlVersioned } from "@/lib/storage.helpers";
 
@@ -148,6 +148,10 @@ export default async function RootLayout({
      (bkz. app/components/layout/SiteTrackingScripts.tsx). Böylece admin
      paneli ve login sayfası admin girdisi ham HTML / GTM tag'lerini
      çalıştırmaz. Public sayfalarda içerik ve sıra AYNEN korunur. */
+  /* 🛡️ Görüntüleme kurları sunucuda okunur → fiyatlar ilk render'da
+     (SSR dahil) doğru para biriminde. Okunamazsa null: fiyatlar kurlar
+     istemcide gelene kadar placeholder gösterir (tahmini kur YOK). */
+  const initialRates = await getCachedDisplayRates().catch(() => null);
   return (
     <html
       lang="tr"
@@ -155,7 +159,7 @@ export default async function RootLayout({
     >
       <head />
       <body className="min-h-screen bg-[var(--color-ivory)] text-[var(--color-stone-900)] antialiased font-sans">
-        <CurrencyProvider>{children}</CurrencyProvider>
+        <CurrencyProvider initialRates={initialRates}>{children}</CurrencyProvider>
       </body>
     </html>
   );

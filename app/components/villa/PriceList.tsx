@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Calendar, Moon, ShieldCheck, Info } from "lucide-react";
 
-import { convertPrice, formatCurrency } from "@/lib/currency";
+import { convertPrice, formatDisplayPrice } from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { formatDateForLocale, parseLocalDate, formatLocalDate } from "@/lib/date-format";
 import { applyDiscountToDailyPrice, type DiscountRange } from "@/lib/price.engine";
@@ -260,7 +260,7 @@ export default function PriceList({
   /* 🛡️ PHASE 10B — opsiyonel, default "tr". */
   locale?: Locale;
 }) {
-  const { currency, rates } = useCurrency();
+  const { currency, rates, ratesReady } = useCurrency();
   const [openId, setOpenId] = useState<string | null>(null);
   const dict = getDictionary(locale);
   const effectiveLocale = locale ?? "tr";
@@ -466,13 +466,13 @@ export default function PriceList({
                 {isDiscounted ? (
                   <div className="text-left md:text-right">
                     <p className="text-[12px] text-[var(--color-stone-400)] line-through tabular-nums leading-none">
-                      {formatCurrency(convertedPrice, currency, effectiveLocale)}
+                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, ratesReady)}
                     </p>
                     <p
                       className="mt-1 font-display font-bold text-[19px] md:text-[17px] text-green-600 tracking-[-0.02em] leading-none"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
-                      {formatCurrency(discountedResult!.converted, currency, effectiveLocale)}
+                      {formatDisplayPrice(discountedResult!.converted, currency, effectiveLocale, ratesReady)}
                     </p>
                     <p
                       className="text-[8.5px] tracking-[0.18em] uppercase text-[var(--color-stone-400)] font-medium mt-1.5"
@@ -487,7 +487,7 @@ export default function PriceList({
                       className="font-display font-bold text-[19px] md:text-[17px] text-brand-strong tracking-[-0.02em] leading-none"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
-                      {formatCurrency(convertedPrice, currency, effectiveLocale)}
+                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, ratesReady)}
                     </p>
                     <p
                       className="text-[8.5px] tracking-[0.18em] uppercase text-[var(--color-stone-400)] font-medium mt-1.5"
@@ -557,7 +557,7 @@ export default function PriceList({
                                 <ShieldCheck size={12} strokeWidth={1.9} aria-hidden />
                               </span>
                               {formatDictionaryString(dict.price.damageDeposit, {
-                                amount: formatCurrency(convertedDeposit, currency, effectiveLocale),
+                                amount: formatDisplayPrice(convertedDeposit, currency, effectiveLocale, ratesReady),
                               })}
                             </li>
                           )}

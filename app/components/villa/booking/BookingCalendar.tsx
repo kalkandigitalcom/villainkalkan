@@ -32,7 +32,7 @@ import "react-day-picker/dist/style.css";
 import { tr, enUS } from "date-fns/locale";
 
 import { useState } from "react";
-import { formatCurrency } from "@/lib/currency";
+import { formatDisplayPrice } from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { getDayStyle } from "@/lib/calendar.engine";
 import { getValidEndDate } from "@/lib/date-range";
@@ -71,7 +71,7 @@ export default function BookingCalendar({
   locale,
   numberOfMonths = 1,
 }: Props) {
-  const { currency } = useCurrency();
+  const { currency, ratesReady } = useCurrency();
   const dict = getDictionary(locale);
   const dateFnsLocale =
     locale === "en" ? enUS : tr;
@@ -330,7 +330,7 @@ export default function BookingCalendar({
                         letterSpacing: "0.02em",
                       }}
                     >
-                      {formatCurrency(price, currency, locale ?? "tr")}
+                      {formatDisplayPrice(price, currency, locale ?? "tr", ratesReady)}
                     </span>
                     <span
                       style={{
@@ -340,10 +340,11 @@ export default function BookingCalendar({
                         letterSpacing: "0.02em",
                       }}
                     >
-                      {formatCurrency(
+                      {formatDisplayPrice(
                         discountedPrice,
                         currency,
-                        locale ?? "tr"
+                        locale ?? "tr",
+                        ratesReady
                       )}
                     </span>
                   </div>
@@ -358,7 +359,7 @@ export default function BookingCalendar({
                       letterSpacing: "0.02em",
                     }}
                   >
-                    {formatCurrency(price, currency, locale ?? "tr")}
+                    {formatDisplayPrice(price, currency, locale ?? "tr", ratesReady)}
                   </div>
                 ) : null}
               </div>

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 import { authorizeCronRequest } from "@/lib/cron-auth";
 import { exchangeRateServerRepository } from "@/lib/db/exchange-rate.repository.server";
@@ -77,6 +78,10 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   }
+
+  /* Root layout'taki sunucu kur cache'i (`getCachedDisplayRates`,
+     tag "exchange-rates") bir sonraki istekte tazelensin. */
+  revalidateTag("exchange-rates", { expire: 0 });
 
   console.log(
     "[cron.exchange-rates-refresh] DONE",

@@ -8,7 +8,7 @@ import {
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { convertPrice, formatCurrency } from "@/lib/currency";
+import { convertPrice, formatDisplayPrice } from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { getDayStyle } from "@/lib/calendar.engine";
 import { formatLocalDate } from "@/lib/date-format";
@@ -167,7 +167,7 @@ export default function AvailabilityInlineCalendar({
   discounts,
   locale,
 }: Props) {
-  const { currency, rates } = useCurrency();
+  const { currency, rates, ratesReady } = useCurrency();
   const dict = getDictionary(locale);
   const bcp47 = LOCALE_BCP47[locale ?? "tr"];
 
@@ -253,7 +253,7 @@ export default function AvailabilityInlineCalendar({
       currency,
       rates
     );
-    return formatCurrency(converted, currency, locale ?? "tr");
+    return formatDisplayPrice(converted, currency, locale ?? "tr", ratesReady);
   };
 
   /* ---------------------------------------------------------------
@@ -293,7 +293,7 @@ export default function AvailabilityInlineCalendar({
     );
     /* Sahte indirim koruması (PriceList `isDiscounted` kuralı). */
     if (!(discounted.converted < converted)) return null;
-    return formatCurrency(discounted.converted, currency, locale ?? "tr");
+    return formatDisplayPrice(discounted.converted, currency, locale ?? "tr", ratesReady);
   };
 
   /* Responsive month count — admin pattern'iyle aynı: 1/2/3 col.

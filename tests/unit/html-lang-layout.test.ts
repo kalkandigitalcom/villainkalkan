@@ -64,6 +64,7 @@ import { describe, it, expect, vi } from "vitest";
 
 vi.mock("@/lib/cache.helpers", () => ({
   getCachedSettings: () => Promise.resolve(null),
+  getCachedDisplayRates: () => Promise.resolve(null),
 }));
 
 vi.mock("next/font/google", () => ({

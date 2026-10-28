@@ -16,7 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { convertPrice, formatCurrency } from "@/lib/currency";
+import { convertPrice, formatDisplayPrice } from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
 import {
   calculateNights,
@@ -296,7 +296,7 @@ export default function VillaCard({
       });
   };
 
-  const { currency, rates } = useCurrency();
+  const { currency, rates, ratesReady } = useCurrency();
 
   const convertedPrice = convertPrice(
     Number(price || 0),
@@ -353,6 +353,7 @@ export default function VillaCard({
     privateHref,
     dict,
     effectiveLocale,
+    ratesReady,
   });
 
   /* 🛡️ GRAND TOTAL — mevcut price.engine reuse (calculateGrandTotal).
@@ -708,7 +709,7 @@ export default function VillaCard({
                           (isCuration ? "text-[17px]" : "text-[22px]")
                         }
                       >
-                        {formatCurrency(stayTotal, currency, effectiveLocale)}
+                        {formatDisplayPrice(stayTotal, currency, effectiveLocale, ratesReady)}
                       </span>
                     </div>
                     {/* Alt satır: meta — gece + temizlik dahil bilgisi */}
@@ -747,7 +748,7 @@ export default function VillaCard({
                       }
                     >
                       {price
-                        ? formatCurrency(convertedPrice, currency, effectiveLocale)
+                        ? formatDisplayPrice(convertedPrice, currency, effectiveLocale, ratesReady)
                         : dict.card.priceOnRequest}
                     </span>
                     {price ? (
@@ -1092,11 +1093,11 @@ export default function VillaCard({
                   )}
                   {stayTotalBeforeDiscount !== null && (
                     <p className="mt-1 text-[12.5px] text-ink/85 line-through tabular-nums">
-                      {formatCurrency(stayTotalBeforeDiscount, currency, effectiveLocale)}
+                      {formatDisplayPrice(stayTotalBeforeDiscount, currency, effectiveLocale, ratesReady)}
                     </p>
                   )}
                   <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
-                    {formatCurrency(stayTotal, currency, effectiveLocale)}
+                    {formatDisplayPrice(stayTotal, currency, effectiveLocale, ratesReady)}
                   </p>
                   {/* "N gece" gösterilmez (tarih üst satırda — MEVCUT karar);
                       "Temizlik dahil" MEVCUT koşuluyla. */}
@@ -1108,7 +1109,7 @@ export default function VillaCard({
                   {stayDiscountSavings !== null && (
                     <p data-price-savings className="mt-1 text-[12px] font-semibold text-ink tabular-nums">
                       {formatDictionaryString(dict.card.totalSavings, {
-                        amount: formatCurrency(stayDiscountSavings, currency, effectiveLocale),
+                        amount: formatDisplayPrice(stayDiscountSavings, currency, effectiveLocale, ratesReady),
                       })}
                     </p>
                   )}
@@ -1121,11 +1122,11 @@ export default function VillaCard({
                   </p>
                   <p className="mt-1 text-[12.5px] text-ink/85 line-through tabular-nums">
                     <span className="sr-only">{dict.card.originalPriceLabel}: </span>
-                    {formatCurrency(convertedPrice, currency, effectiveLocale)}
+                    {formatDisplayPrice(convertedPrice, currency, effectiveLocale, ratesReady)}
                   </p>
                   <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
                     <span className="sr-only">{dict.card.discountedPriceLabel}: </span>
-                    {formatCurrency(discountedPrice!.converted, currency, effectiveLocale)}
+                    {formatDisplayPrice(discountedPrice!.converted, currency, effectiveLocale, ratesReady)}
                   </p>
                   {nightlySavingsLabel && (
                     <p className="mt-1.5 text-[12px] font-semibold text-ink">
@@ -1141,7 +1142,7 @@ export default function VillaCard({
                     {dict.card.nightly}
                   </p>
                   <p data-price-amount className="mt-0.5 font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
-                    {formatCurrency(convertedPrice, currency, effectiveLocale)}
+                    {formatDisplayPrice(convertedPrice, currency, effectiveLocale, ratesReady)}
                   </p>
                   <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink/85">
                     {dict.card.startingFromUpper}

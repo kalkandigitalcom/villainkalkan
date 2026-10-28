@@ -59,6 +59,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/types";
 /* 🛡️ VİLLA TİPİ ADI (EN/DE) — `AramaPageBody` / `loadHeroFilters` ile
    AYNI, ZATEN VAR OLAN iki helper. Yeni translation sistemi YAZILMADI. */
 import { getVillaTypeNamesByLocale } from "@/lib/i18n/get-villa-type-translations.server";
+import { resolveDisplayCurrencyCookie } from "@/lib/currency";
 import {
   resolveTaxonomyName,
   type TaxonomyNameByLocale,
@@ -252,7 +253,10 @@ export default async function KiralikVillalarPageBody({
      formülü → gösterilen ekonomik değer === sıralama anahtarı.
      Cookie + server rates yukarıda paralel fetch edildi. */
   const sort: PublicSort = parsePublicSort(sp.sort);
-  const userCurrency = cookieStore.get("currency")?.value || "TRY";
+  /* Cookie yoksa (ilk ziyaret) istemcinin varsayılanı GBP ile AYNI. */
+  const userCurrency = resolveDisplayCurrencyCookie(
+    cookieStore.get("currency")?.value
+  );
   const rates: Record<string, number> = {
     TRY: 1,
     USD: Number(ratesMap.rates.USD) || 0,

@@ -118,3 +118,85 @@ export function formatCurrency(
     }
   ).format(amount);
 }
+/* ===============================================================
+   🛡️ GÖRÜNTÜLEME PARA BİRİMİ — VARSAYILAN + KUR HAZIRLIĞI
+   ===============================================================
+   Yalnız GÖRÜNTÜLEME katmanı içindir (CurrencyContext + fiyat
+   gösteren public bileşenler). `convertPrice` / `formatCurrency`,
+   villanın kendi para birimi, rezervasyon snapshot'ı (TRY), sunucu
+   fiyat doğrulaması, ödeme, voucher ve e-postalar BUNLARDAN
+   ETKİLENMEZ.
+   =============================================================== */
+
+/** Site para birimi seçicisindeki kodlar (TopBar CURRENCY_OPTIONS ile aynı). */
+export const DISPLAY_CURRENCIES = ["TRY", "USD", "EUR", "GBP"] as const;
+
+/** İlk kez gelen ziyaretçinin görüntüleme para birimi. */
+export const DEFAULT_DISPLAY_CURRENCY = "GBP";
+
+/** Sunucu tarafı cookie fallback'i (sıralama anahtarı) — istemci
+ *  varsayılanıyla AYNI olmalı. */
+export function resolveDisplayCurrencyCookie(
+  value: string | null | undefined
+): string {
+  return isDisplayCurrency(value) ? value : DEFAULT_DISPLAY_CURRENCY;
+}
+
+export function isDisplayCurrency(
+  value: unknown
+): value is (typeof DISPLAY_CURRENCIES)[number] {
+  return (
+    typeof value === "string" &&
+    (DISPLAY_CURRENCIES as readonly string[]).includes(value)
+  );
+}
+
+function isValidRate(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0;
+}
+
+/** `base` üzerine `incoming` içindeki YALNIZ geçerli (finite > 0) kurları
+ *  yazar; geçersiz/eksik değerler mevcut kuru bozmaz. TRY her zaman 1. */
+export function mergeValidRates(
+  base: Record<string, number>,
+  incoming: Record<string, unknown> | null | undefined
+): Record<string, number> {
+  const next: Record<string, number> = { ...base, TRY: 1 };
+  if (!incoming) return next;
+  for (const code of DISPLAY_CURRENCIES) {
+    if (code === "TRY") continue;
+    const v = incoming[code];
+    if (isValidRate(v)) next[code] = v;
+  }
+  return next;
+}
+
+/** USD/EUR/GBP kurlarının tamamı geçerli mi? Değilse çevrilmiş tutar
+ *  gösterilmemelidir (convertPrice kur bilinmezse 1'e düşer → yanlış
+ *  tutar). Villa fiyatları ve ek ücretler farklı para birimlerinde
+ *  olabildiği için tek bir kur yeterli değildir. */
+export function areDisplayRatesReady(
+  rates: Record<string, number> | null | undefined
+): boolean {
+  if (!rates) return false;
+  return DISPLAY_CURRENCIES.every(
+    (code) => code === "TRY" || isValidRate(rates[code])
+  );
+}
+
+/** Kur hazır değilken fiyat yerine gösterilen yer tutucu. */
+export const PRICE_PENDING_PLACEHOLDER = "…";
+
+/** Görüntüleme para birimine ÇEVRİLMİŞ bir tutarı biçimler; kurlar henüz
+ *  hazır değilse (ratesReady=false) tahmini değer yerine yer tutucu döner.
+ *  `formatCurrency` davranışı DEĞİŞMEZ — yalnız bu kapı eklenir. */
+export function formatDisplayPrice(
+  amount: number,
+  currency: string,
+  locale: Locale = DEFAULT_LOCALE,
+  ratesReady = true
+): string {
+  return ratesReady
+    ? formatCurrency(amount, currency, locale)
+    : PRICE_PENDING_PLACEHOLDER;
+}

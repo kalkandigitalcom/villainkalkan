@@ -33,6 +33,7 @@ import { villaLocationRepository } from "@/lib/db/villa-location.repository";
 import { homepageRepository } from "@/lib/db/homepage.repository";
 import { discountRepository } from "@/lib/db/discount.repository";
 import { getPublicSettings } from "@/app/services/settings.service";
+import { getExchangeRatesMap } from "@/app/services/exchange-rate.service";
 import { getMenu } from "@/app/services/menu.service";
 import { getVillas, type VillaDTO } from "@/app/services/villa.service";
 import { getFaqs, type Faq } from "@/app/services/faq.service";
@@ -88,6 +89,25 @@ export const getCachedSettings = unstable_cache(
   async () => getPublicSettings(),
   ["settings:get"],
   { tags: ["settings"], revalidate: 3600 }
+);
+
+/** Görüntüleme kurları (USD/EUR/GBP → TRY) — CurrencyProvider'a ilk
+ *  render'da (SSR dahil) doğru çevrim için verilir. Tag: "exchange-rates".
+ *  ⚠️ Eksik/geçersiz kur varsa THROW eder → unstable_cache eksik sonucu
+ *  CACHE'LEMEZ; çağıran `.catch(() => null)` ile istemci yüklemesine düşer.
+ *  İstemci yine `/api/exchange-rates`'ten güncel kuru çeker (değişmedi). */
+export const getCachedDisplayRates = unstable_cache(
+  async () => {
+    const { rates } = await getExchangeRatesMap();
+    const ok = (["USD", "EUR", "GBP"] as const).every((code) => {
+      const v = rates[code];
+      return typeof v === "number" && Number.isFinite(v) && v > 0;
+    });
+    if (!ok) throw new Error("exchange rates incomplete");
+    return { TRY: 1, USD: rates.USD!, EUR: rates.EUR!, GBP: rates.GBP! };
+  },
+  ["exchange-rates:display"],
+  { tags: ["exchange-rates"], revalidate: 3600 }
 );
 
 /** Menu tree — dynamic 4-source resolver (manual/page/category/region).
