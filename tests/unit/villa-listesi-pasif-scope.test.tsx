@@ -2,15 +2,11 @@
    🏛️ /maki-admin/villa-listesi — PASİF VİLLA KAPSAMI + /liste PAYLAŞIMI
    ===============================================================
    Kapsam: AKTİF  veya  PASİF + (pozitif fiyatlı, bitişi bugün/sonrası
-   en az bir villa_prices sezonu). Belge numarası hiçbir durumda filtre
-   değildir.
+   en az bir villa_prices sezonu).
 
-     A) Aktif + belge var + fiyat var  → GELİR
-     B) Aktif + belge yok + fiyat var  → GELİR
-     C) Pasif + belge var + fiyat var  → GELİR
-     D) Pasif + belge yok + fiyat var  → GELİR
-     E) Pasif + belge var + fiyat yok  → GELMEZ
-     F) Pasif + belge yok + fiyat yok  → GELMEZ
+     A, B) Aktif + fiyat var  → GELİR
+     C, D) Pasif + fiyat var  → GELİR
+     E, F) Pasif + fiyat yok  → GELMEZ
      +  Pasif + yalnız GEÇMİŞ fiyat    → GELMEZ
      +  Aktif + fiyat yok              → GELİR (aktif davranışı değişmedi)
 
@@ -63,15 +59,13 @@ const FUTURE = [{ price: 9000, currency: "TRY", start_date: "2026-06-01", end_da
 const PAST = [{ price: 9000, currency: "TRY", start_date: "2025-06-01", end_date: "2025-09-30" }];
 const ZERO = [{ price: 0, currency: "TRY", start_date: "2026-06-01", end_date: "2026-12-31" }];
 
-function raw(id: string, is_active: boolean, prices: unknown[], doc: string | null) {
+function raw(id: string, is_active: boolean, prices: unknown[]) {
   return {
     id,
     slug: id,
     title: id,
     location_id: "loc",
-    badge: null,
     is_active,
-    tourism_document_number: doc,
     guests: 4,
     bedrooms: 2,
     bathrooms: 1,
@@ -86,15 +80,15 @@ function raw(id: string, is_active: boolean, prices: unknown[], doc: string | nu
 }
 
 const CURATOR_ROWS = [
-  raw("A-aktif-belge-fiyat", true, FUTURE, "07-1234"),
-  raw("B-aktif-belgesiz-fiyat", true, FUTURE, null),
-  raw("C-pasif-belge-fiyat", false, FUTURE, "07-5678"),
-  raw("D-pasif-belgesiz-fiyat", false, FUTURE, null),
-  raw("E-pasif-belge-fiyatsiz", false, [], "07-9999"),
-  raw("F-pasif-belgesiz-fiyatsiz", false, [], null),
-  raw("pasif-gecmis-fiyat", false, PAST, null),
-  raw("pasif-sifir-fiyat", false, ZERO, null),
-  raw("aktif-fiyatsiz", true, [], null),
+  raw("A-aktif-fiyat", true, FUTURE),
+  raw("B-aktif-fiyat", true, FUTURE),
+  raw("C-pasif-fiyat", false, FUTURE),
+  raw("D-pasif-fiyat", false, FUTURE),
+  raw("E-pasif-fiyatsiz", false, []),
+  raw("F-pasif-fiyatsiz", false, []),
+  raw("pasif-gecmis-fiyat", false, PAST),
+  raw("pasif-sifir-fiyat", false, ZERO),
+  raw("aktif-fiyatsiz", true, []),
 ];
 
 /* Repository katmanı — admin sayfası + paylaşım servisi + /liste. */
@@ -164,9 +158,6 @@ vi.mock("next/link", () => ({
     <a href={href}>{children}</a>
   ),
 }));
-vi.mock("@/lib/i18n/get-villa-badge-translations.server", () => ({
-  getVillaBadgesByLocale: async () => new Map(),
-}));
 
 import VillaListesiPage from "@/app/(admin)/maki-admin/villa-listesi/page";
 import {
@@ -221,19 +212,19 @@ describe("admin villa listesi havuzu (A–F)", () => {
     const villas = clientProps.current!.villas as Array<{ id: string; is_active: boolean }>;
     const ids = villas.map((v) => v.id);
     expect(ids).toEqual([
-      "A-aktif-belge-fiyat",
-      "B-aktif-belgesiz-fiyat",
-      "C-pasif-belge-fiyat",
-      "D-pasif-belgesiz-fiyat",
+      "A-aktif-fiyat",
+      "B-aktif-fiyat",
+      "C-pasif-fiyat",
+      "D-pasif-fiyat",
       "aktif-fiyatsiz",
     ]);
-    expect(ids).not.toContain("E-pasif-belge-fiyatsiz");
-    expect(ids).not.toContain("F-pasif-belgesiz-fiyatsiz");
+    expect(ids).not.toContain("E-pasif-fiyatsiz");
+    expect(ids).not.toContain("F-pasif-fiyatsiz");
     expect(ids).not.toContain("pasif-gecmis-fiyat");
     expect(ids).not.toContain("pasif-sifir-fiyat");
     /* Pasif işareti istemciye taşınır (kart rozeti). */
-    expect(villas.find((v) => v.id === "C-pasif-belge-fiyat")!.is_active).toBe(false);
-    expect(villas.find((v) => v.id === "A-aktif-belge-fiyat")!.is_active).toBe(true);
+    expect(villas.find((v) => v.id === "C-pasif-fiyat")!.is_active).toBe(false);
+    expect(villas.find((v) => v.id === "A-aktif-fiyat")!.is_active).toBe(true);
   });
 });
 
@@ -288,7 +279,7 @@ describe("paylaşım: pasif villa özel link token'ı", () => {
    =============================================================== */
 function card(id: string, is_active: boolean, token: string | null) {
   return {
-    ...raw(id, is_active, FUTURE, null),
+    ...raw(id, is_active, FUTURE),
     deleted_at: null,
     price: null,
     currency: null,

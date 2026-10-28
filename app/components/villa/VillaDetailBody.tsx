@@ -63,7 +63,6 @@ import VillaPriceIncludesAndRulesSection, {
 import { JsonLd } from "@/app/components/seo/StructuredData";
 import { sanitizeHtml, stripHtml } from "@/lib/html-sanitize";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import type { Locale } from "@/lib/i18n/config";
 import type { VillaDTO } from "@/app/services/villa.service";
 
@@ -184,7 +183,6 @@ export default function VillaDetailBody({
 
   /* 🛡️ Üst tanıtım bandı — yalnız GÖRÜNÜM: mevcut prop'lardan türetilir,
      yeni veri/sorgu YOK. */
-  const documentNumber = villa.tourism_document_number?.trim() || "";
   const heroStats = [
     {
       key: "guests",
@@ -237,23 +235,6 @@ export default function VillaDetailBody({
       >
         <div className="max-w-site mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 items-center gap-7 md:gap-8 lg:gap-12">
           <div className="min-w-0 lg:col-span-5">
-            {documentNumber && (
-              <p
-                data-villa-document-number
-                className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.14em] text-white/85 ring-1 ring-white/15"
-              >
-                <span
-                  aria-hidden="true"
-                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
-                />
-                <span className="truncate">
-                  {formatDictionaryString(dict.villa.documentNumber, {
-                    n: documentNumber,
-                  })}
-                </span>
-              </p>
-            )}
-
             <h1 className="mt-4 font-display font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.08] tracking-[-0.02em] text-white break-words">
               {villaTitle}
             </h1>

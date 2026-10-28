@@ -55,7 +55,6 @@ const enVillaRow = {
   locale: "en" as const,
   title: "Villa In Love",
   description: null,
-  badge: null,
   seo_title: null,
   seo_description: null,
   created_at: "2026-01-01T00:00:00.000Z",

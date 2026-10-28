@@ -31,7 +31,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   getVillaTranslatedDescription,
   getVillaTranslatedSeoDescription,
-  getVillaTranslatedBadge,
+  getVillaTranslatedSeoTitle,
 } from "@/lib/i18n/get-villa-translation.server";
 
 const findOneMock = vi.fn();
@@ -82,7 +82,6 @@ describe("getVillaTranslatedDescription", () => {
         locale: "en",
         title: null,
         description: "<p>A wonderful villa description.</p>",
-        badge: null,
         seo_title: null,
         seo_description: null,
         created_at: "",
@@ -118,7 +117,6 @@ describe("getVillaTranslatedDescription", () => {
         locale: "en",
         title: "Villa In Love",
         description: null,
-        badge: null,
         seo_title: null,
         seo_description: null,
         created_at: "",
@@ -142,7 +140,6 @@ describe("getVillaTranslatedDescription", () => {
         locale: "en",
         title: null,
         description: "   ",
-        badge: null,
         seo_title: null,
         seo_description: null,
         created_at: "",
@@ -191,7 +188,7 @@ describe("getVillaTranslatedDescription", () => {
      `getVillaTranslationCached`'in ikisi için de AYNI cache girişini
      paylaşacağı tasarımı (aynı fonksiyon + aynı argümanlar) kod
      seviyesinde teyit ediyor. */
-  it("8) title ve description helper'ları AYNI (entity, villaId, locale) anahtarıyla findOne çağırır — gerçek RSC'de TEK sorguya indirgenecek tasarımın kilidi", async () => {
+  it("8) seo_title ve description helper'ları AYNI (entity, villaId, locale) anahtarıyla findOne çağırır — gerçek RSC'de TEK sorguya indirgenecek tasarımın kilidi", async () => {
     findOneMock.mockResolvedValue({
       data: {
         id: "t4",
@@ -199,7 +196,6 @@ describe("getVillaTranslatedDescription", () => {
         locale: "en",
         title: "Villa In Love",
         description: "<p>A wonderful villa description.</p>",
-        badge: null,
         seo_title: null,
         seo_description: null,
         created_at: "",
@@ -208,14 +204,14 @@ describe("getVillaTranslatedDescription", () => {
       error: null,
     });
 
-    await getVillaTranslatedBadge(VILLA_ID, "Orijinal Rozet", "en");
+    await getVillaTranslatedSeoTitle(VILLA_ID, "Orijinal SEO Başlık", "en");
     await getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "en");
 
     expect(findOneMock).toHaveBeenCalledTimes(2);
-    const [badgeCallArgs, descriptionCallArgs] = findOneMock.mock.calls;
-    expect(badgeCallArgs).toEqual(["villa", VILLA_ID, "en"]);
+    const [seoTitleCallArgs, descriptionCallArgs] = findOneMock.mock.calls;
+    expect(seoTitleCallArgs).toEqual(["villa", VILLA_ID, "en"]);
     expect(descriptionCallArgs).toEqual(["villa", VILLA_ID, "en"]);
-    expect(badgeCallArgs).toEqual(descriptionCallArgs);
+    expect(seoTitleCallArgs).toEqual(descriptionCallArgs);
   });
 });
 
@@ -276,7 +272,6 @@ describe("getVillaTranslatedSeoDescription", () => {
         locale: "en",
         title: null,
         description: "<p>A wonderful villa description.</p>",
-        badge: null,
         seo_title: null,
         seo_description: "A stunning villa with sea view.",
         created_at: "",
@@ -302,7 +297,6 @@ describe("getVillaTranslatedSeoDescription", () => {
         locale: "en",
         title: null,
         description: LONG_DESCRIPTION_HTML.replace("Bu villa", "This villa"),
-        badge: null,
         seo_title: null,
         seo_description: null,
         created_at: "",
@@ -330,7 +324,6 @@ describe("getVillaTranslatedSeoDescription", () => {
         locale: "en",
         title: null,
         description: "<p>Short EN description.</p>",
-        badge: null,
         seo_title: null,
         seo_description: "   ",
         created_at: "",
@@ -383,7 +376,7 @@ describe("getVillaTranslatedSeoDescription", () => {
   /* --- 7) doğru locale + entity ile çağrılır, title/description ile AYNI
      cache-anahtarını reuse eder (Phase 8B test #8 ile AYNI desen/AYNI
      kısıtlama notu — bkz. dosya başı yorum) --- */
-  it("7) helper, findOne'ı title/description ile AYNI (entity, villaId, locale) anahtarıyla çağırır", async () => {
+  it("7) helper, findOne'ı seo_title ile AYNI (entity, villaId, locale) anahtarıyla çağırır", async () => {
     findOneMock.mockResolvedValue({
       data: {
         id: "t4",
@@ -391,7 +384,6 @@ describe("getVillaTranslatedSeoDescription", () => {
         locale: "en",
         title: "Villa In Love",
         description: "<p>A wonderful villa description.</p>",
-        badge: null,
         seo_title: null,
         seo_description: "A stunning villa with sea view.",
         created_at: "",
@@ -400,7 +392,7 @@ describe("getVillaTranslatedSeoDescription", () => {
       error: null,
     });
 
-    await getVillaTranslatedBadge(VILLA_ID, "Orijinal Rozet", "en");
+    await getVillaTranslatedSeoTitle(VILLA_ID, "Orijinal SEO Başlık", "en");
     await getVillaTranslatedSeoDescription(
       VILLA_ID,
       ORIGINAL_SEO_DESCRIPTION,

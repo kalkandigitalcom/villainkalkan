@@ -4,14 +4,12 @@ import {
 } from "@/lib/cache.helpers";
 import VillaCard from "./VillaCard";
 /* 🛡️ PHASE 11 — section metinleri dictionary'den; villa ADI ve BÖLGESİ
-   her dilde CANONICAL kalır (proje kararı). Yalnız kart rozeti (badge)
-   `villa_translations.badge` üzerinden çevrilir. */
+   her dilde CANONICAL kalır (proje kararı). */
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 /* 🛡️ NAVIGATION LOCALE PERSISTENCE — iç link aktif locale'i taşır
    (bkz. lib/i18n/locale-href.ts). */
 import { localeHref } from "@/lib/i18n/locale-href";
-import { getVillaBadgesByLocale } from "@/lib/i18n/get-villa-badge-translations.server";
 import {
   HOME_PANEL_CLASS,
   HOME_PANEL_SECTION_CLASS,
@@ -61,7 +59,6 @@ export default async function VillaList({
           location: c.location,
           price: c.price ?? 0,
           currency: c.currency,
-          badge: c.badge ?? undefined,
           bedrooms: c.bedrooms,
           bathrooms: c.bathrooms,
           guests: c.guests,
@@ -71,13 +68,6 @@ export default async function VillaList({
           review_count: c.review_count,
         }))
       : autoVillas;
-
-  /* 🛡️ PHASE 11 — rozet çevirileri TEK batch sorguda (N+1 YOK).
-     TR'de sorgu HİÇ atılmaz → davranış ve maliyet BİREBİR eskisi gibi. */
-  const badgeByVillaId = await getVillaBadgesByLocale(
-    villas.map((v) => v.id),
-    locale
-  );
 
   if (!villas.length) {
     return (
@@ -125,7 +115,6 @@ export default async function VillaList({
               price={villa.price}
               currency={villa.currency || "TRY"}
               images={villa.images}
-              badge={badgeByVillaId.get(villa.id) ?? villa.badge}
               bedrooms={villa.bedrooms || 1}
               bathrooms={villa.bathrooms || 1}
               guests={villa.guests || 2}

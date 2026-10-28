@@ -5,18 +5,10 @@ import VillaCard from "@/app/components/villa/VillaCard";
 import { villaAdminRepository } from "@/lib/db/villa.repository.server";
 import { resolveVillaImageUrl } from "@/lib/storage.helpers";
 import { getStartingPrice } from "@/lib/price.engine";
-/* 🛡️ PHASE 10G — locale-aware bölüm başlığı + badge çevirisi.
-   `locale` OPSİYONEL, default "tr". TR'de `getTranslationsForParents`
-   daha ilk satırda boş Map döner (DEFAULT_LOCALE guard) → EK DB SORGUSU
-   YOK, çıktı BİREBİR AYNI. `findSimilarCards` sorgusu/repository
-   DEĞİŞTİRİLMEDİ.
+/* 🛡️ PHASE 10G — locale-aware bölüm başlığı. `locale` OPSİYONEL,
+   default "tr".
    🛡️ PHASE 10I — ÇEVRİLMEYEN ÖZEL İSİMLER: villa ADI (`villa.title`) ve
-   BÖLGE ADI (`villa_locations.name`) her locale'de canonical gösterilir;
-   yalnız `badge` çevrilir. */
-import {
-  getTranslationsForParents,
-  resolveTranslatedField,
-} from "@/lib/i18n/get-translation.server";
+   BÖLGE ADI (`villa_locations.name`) her locale'de canonical gösterilir. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -53,7 +45,6 @@ type SimilarRow = {
   id: string;
   slug: string | null;
   title: string | null;
-  badge: string | null;
   currency: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -84,7 +75,6 @@ export default async function SimilarVillasSection({
   locale,
 }: Props) {
   const dict = getDictionary(locale);
-  const effectiveLocale: Locale = locale ?? "tr";
   /* Query 1 — aynı bölge (location_id varsa). */
   const primary = locationId
     ? await fetchCardVillas({
@@ -108,17 +98,6 @@ export default async function SimilarVillasSection({
   }
 
   if (rows.length === 0) return null;
-
-  /* 🛡️ PHASE 10G — koleksiyon başına TAM 1 batch çeviri sorgusu
-     (Phase 8D-1 deseni, `.in()`); item başına sorgu YOK (N+1 yok).
-     TR'de DB'ye HİÇ gidilmez (DEFAULT_LOCALE guard).
-     🛡️ PHASE 10I — `villa_location` okuması KALDIRILDI: bölge adı özel
-     isimdir, çevrilmez (aşağıda canonical değer kullanılır). */
-  const villaTranslations = await getTranslationsForParents(
-    "villa",
-    rows.map((r) => r.id),
-    effectiveLocale
-  );
 
   const villas = rows.map((v) => {
     let images: string[] = [];
@@ -149,11 +128,6 @@ export default async function SimilarVillasSection({
       price: sp?.price,
       currency: sp?.currency || v.currency || "TRY",
       images,
-      badge:
-        resolveTranslatedField(
-          villaTranslations.get(v.id)?.badge,
-          v.badge ?? undefined
-        ) ?? undefined,
       bedrooms: v.bedrooms || 1,
       bathrooms: v.bathrooms || 1,
       guests: v.guests || 2,
@@ -178,7 +152,6 @@ export default async function SimilarVillasSection({
               price={villa.price}
               currency={villa.currency}
               images={villa.images}
-              badge={villa.badge}
               bedrooms={villa.bedrooms}
               bathrooms={villa.bathrooms}
               guests={villa.guests}

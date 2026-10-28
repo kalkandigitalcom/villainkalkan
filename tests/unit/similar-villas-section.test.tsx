@@ -16,13 +16,13 @@
      1) TR / EN locale render
      2) Bölüm başlığı dictionary'den (locale-aware)
      3) Bölge adı CANONICAL kalır (villa_location çevirisi YOK)
-     4) Badge çevirisi (villa) + fallback
+     4) Villa rozeti GÖSTERİLMEZ (villa.badge kaldırıldı)
      5) VillaCard'a locale aktarımı → locale-prefixed detay linki
      6) Villa ADI ÇEVRİLMEZ (canonical villa.title)
      7) Mevcut "benzer villa" sorgu kontratı BOZULMADI
         (location_id öncelikli 1. sorgu + 3'e tamamlama 2. sorgusu,
          excludeIds, limit)
-     8) TR'de ÇEVİRİ SORGUSU HİÇ ATILMAZ (DEFAULT_LOCALE guard)
+     8) Çeviri sorgusu HİÇ ATILMAZ (rozet kaldırıldı; ad/bölge canonical)
    =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -88,7 +88,6 @@ const ROW = {
   slug: "villa-in-love",
   title: "Villa In Love",
   location_id: "loc-1",
-  badge: "Popüler",
   currency: "TRY",
   bedrooms: 3,
   bathrooms: 2,
@@ -226,7 +225,6 @@ describe("SimilarVillasSection — villa adı canonical", () => {
                   /* `title` alanı tipte YOK; olası bir DB kalıntısı
                      bile okunmamalı. */
                   title: `TRANSLATED TITLE (${loc})`,
-                  badge: null,
                 },
               ],
               error: null,
@@ -245,13 +243,13 @@ describe("SimilarVillasSection — villa adı canonical", () => {
 });
 
 /* ===============================================================
-   4) BÖLGE ADI (canonical) + BADGE ÇEVİRİSİ
+   4) BÖLGE ADI (canonical) + ROZET YOK
    ===============================================================
    🛡️ PHASE 10I — Bölge adları ÖZEL İSİMDİR (Kalkan, Kaş, Fethiye,
    Çavdır …); EN karşılıkları yoktur ve çevrilmez. Aşağıdaki ilk iki
    test, eski "lokasyon çevirisi" davranışının TERSİNİ kilitler.
    =============================================================== */
-describe("SimilarVillasSection — bölge adı canonical, badge çevrilir", () => {
+describe("SimilarVillasSection — bölge adı canonical, rozet yok", () => {
   it.each(["en"] as const)(
     "%s: bölge adı canonical kalır — villa_location için sorgu HİÇ atılmaz",
     async (locale) => {
@@ -262,25 +260,21 @@ describe("SimilarVillasSection — bölge adı canonical, badge çevrilir", () =
     }
   );
 
-  it("EN: badge çevirisi varsa çevrilmiş badge render edilir", async () => {
-    findManyForLocaleMock.mockImplementation((entity: string) => {
-      if (entity === "villa") {
-        return Promise.resolve({
-          data: [{ villa_id: "villa-2", locale: "en", badge: "Popular", description: null }],
-          error: null,
-        });
-      }
-      return Promise.resolve({ data: [], error: null });
-    });
-    await renderSection("en");
-    expect(screen.getByText("Popular")).toBeInTheDocument();
-    expect(screen.queryByText("Popüler")).not.toBeInTheDocument();
-  });
-
-  it("EN: badge çevirisi YOKSA orijinal TR badge kalır", async () => {
-    await renderSection("en");
-    expect(screen.getByText("Popüler")).toBeInTheDocument();
-  });
+  it.each(["tr", "en"] as const)(
+    "%s: satırda eski bir rozet değeri olsa bile rozet render edilmez",
+    async (locale) => {
+      findSimilarCardsMock.mockImplementation(
+        (opts: { locationId: string | null }) =>
+          Promise.resolve({
+            data: opts.locationId ? [{ ...ROW, badge: "Popüler" }] : [],
+            error: null,
+          })
+      );
+      await renderSection(locale);
+      expect(screen.getByText("Villa In Love")).toBeInTheDocument();
+      expect(screen.queryByText("Popüler")).not.toBeInTheDocument();
+    }
+  );
 
   it("location_id null olan satırda da embed bölge adı kullanılır (çökmez)", async () => {
     findSimilarCardsMock.mockImplementation(
@@ -309,13 +303,9 @@ describe("SimilarVillasSection — TR'de ek sorgu yok", () => {
     expect(findManyForLocaleMock).not.toHaveBeenCalled();
   });
 
-  it("EN: TEK batch sorgu — yalnız `villa` (badge); villa_location YOK", async () => {
+  it("EN: çeviri sorgusu da atılmaz (rozet kaldırıldı; ad ve bölge canonical)", async () => {
     await renderSection("en");
-    const entities = findManyForLocaleMock.mock.calls.map((c) => c[0]);
-    expect(entities).toEqual(["villa"]);
-    /* 🛡️ PHASE 10I — bölge çevirisi kaldırıldığı için sorgu sayısı 2 → 1. */
-    expect(findManyForLocaleMock.mock.calls.length).toBe(1);
-    expect(findManyForLocaleMock.mock.calls[0][2]).toBe("en");
+    expect(findManyForLocaleMock).not.toHaveBeenCalled();
   });
 });
 

@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 
 import {
   normalizeCustomPrepaymentRate,
-  normalizeTourismDocumentNumber,
   normalizeMinimumStayNights,
   normalizeYouTubeVideosForDb,
   normalizeCommissionRate,
@@ -12,7 +11,7 @@ import {
 /* ===============================================================
    🛡️ FAZ 5 — VILLA ADMIN NORMALIZER UNIT TESTS
    ===============================================================
-   5 pure normalizer. Eski createVillaFull + updateVillaFull
+   4 pure normalizer. Eski createVillaFull + updateVillaFull
    inline body'sinden BYTE-IDENTICAL extract edildi. Bu testler
    regression guard.
 =============================================================== */
@@ -39,19 +38,6 @@ describe("normalizeCustomPrepaymentRate", () => {
     /* Eski inline kod: `=== "" || === null || === undefined ? null : Number(raw)`
        "abc" → Number("abc") → NaN. Davranış preserve. */
     expect(Number.isNaN(normalizeCustomPrepaymentRate("abc"))).toBe(true);
-  });
-});
-
-describe("normalizeTourismDocumentNumber", () => {
-  it("returns null for empty string, null, undefined", () => {
-    expect(normalizeTourismDocumentNumber("")).toBeNull();
-    expect(normalizeTourismDocumentNumber(null)).toBeNull();
-    expect(normalizeTourismDocumentNumber(undefined)).toBeNull();
-  });
-
-  it("passes string as-is (no sanitize/format)", () => {
-    expect(normalizeTourismDocumentNumber("ABC-123-XYZ")).toBe("ABC-123-XYZ");
-    expect(normalizeTourismDocumentNumber("  spaced  ")).toBe("  spaced  ");
   });
 });
 

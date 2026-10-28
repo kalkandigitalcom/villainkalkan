@@ -58,7 +58,6 @@ type Props = {
   pageSize: number;
   q: string;
   status?: string;
-  document?: string;
   allowedPageSizes: number[];
 };
 
@@ -71,7 +70,6 @@ export default function VillaOperationsList({
   pageSize,
   q,
   status,
-  document,
   allowedPageSizes,
 }: Props) {
   const router = useRouter();
@@ -107,7 +105,6 @@ export default function VillaOperationsList({
       pageSize?: number;
       q?: string;
       status?: string | null;
-      document?: string | null;
     }) => {
       const sp = new URLSearchParams(searchParams?.toString() || "");
 
@@ -127,14 +124,6 @@ export default function VillaOperationsList({
       if (next.status !== undefined) {
         if (next.status === null || next.status === "all") sp.delete("status");
         else sp.set("status", next.status);
-      }
-      /* document: "all"/null → param sil (default); licensed/unlicensed → set. */
-      if (next.document !== undefined) {
-        if (next.document === null || next.document === "all") {
-          sp.delete("document");
-        } else {
-          sp.set("document", next.document);
-        }
       }
 
       const qs = sp.toString();
@@ -163,17 +152,6 @@ export default function VillaOperationsList({
     router.replace(buildHref({ pageSize: newSize, page: 1 }), {
       scroll: false,
     });
-  }
-
-  /* Belge filtresi değişimi → page=1 reset (q/status/pageSize korunur). */
-  function handleDocumentChange(next: string) {
-    router.replace(
-      buildHref({
-        document: next === "all" ? null : next,
-        page: 1,
-      }),
-      { scroll: false }
-    );
   }
 
   /* Sayfa değişimi (önceki/sonraki/sayfa tıklama). */
@@ -225,25 +203,6 @@ export default function VillaOperationsList({
             <option value="all">Tümü</option>
             <option value="active">Aktif</option>
             <option value="passive">Pasif</option>
-          </select>
-        </label>
-
-        {/* BELGE FILTER — Tümü / Belgeli / Belgesiz (URL-driven, page=1 reset) */}
-        <label className="inline-flex items-center gap-2 text-[12px] text-[var(--admin-muted-2)]">
-          <span>Belge</span>
-          <select
-            value={document ?? "all"}
-            onChange={(e) => handleDocumentChange(e.target.value)}
-            className="
-              text-[12.5px] rounded-lg border border-[var(--admin-border)]
-              bg-white px-2 py-1
-              text-[var(--admin-text)]
-              focus:outline-none focus:ring-2 focus:ring-[var(--admin-accent-soft,rgba(0,0,0,0.08))]
-            "
-          >
-            <option value="all">Tümü</option>
-            <option value="licensed">Belgeli</option>
-            <option value="unlicensed">Belgesiz</option>
           </select>
         </label>
 

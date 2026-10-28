@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 
 import Section from "./shared/Section";
 import Label from "./shared/Label";
 import RichTextEditor from "./RichTextEditor";
 import VillaCombobox from "@/app/(admin)/maki-admin/manual-reservations/ekle/VillaCombobox";
-
-import { getPropertyOwnersForSelectAction as getPropertyOwnersForSelect } from "@/app/services/property-owner.action";
-import type { PropertyOwner } from "@/app/services/property-owner.service";
 
 import type {
   VillaFormShape,
@@ -18,12 +14,8 @@ import type {
 /* ===============================================================
    🔥 BasicInfoStep — Wizard Adım 1 (Step 1).
    İki Section render eder:
-     - Adım 1 → Detaylar (villa adı, bölge, kişi, oda, banyo,
-                öne çıkan etiket)
+     - Adım 1 → Detaylar (villa adı, bölge, kişi, oda, banyo)
      - Adım 2 → Açıklama
-   Öne çıkan etiket (badge) Detaylar grid'inin son satırına
-   taşındı; ayrı Section yok. Davranış (state, validation,
-   responsive) birebir korunur.
    =============================================================== */
 
 export default function BasicInfoStep({
@@ -45,26 +37,6 @@ export default function BasicInfoStep({
   selectedLocation: string;
   setSelectedLocation: (next: string) => void;
 }) {
-  /* 🛡️ MÜLK SAHİBİ listesi — self-contained fetch (parent wiring'e
-     dokunulmaz; locations prop pattern'i değiştirilmez). admin-only RLS,
-     authenticated admin session ile çekilir. owner_id forma bağlanır. */
-  const [owners, setOwners] = useState<PropertyOwner[]>([]);
-  useEffect(() => {
-    let cancelled = false;
-    getPropertyOwnersForSelect().then((data) => {
-      if (!cancelled) setOwners(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const ownerLabel = (o: PropertyOwner) =>
-    `${o.first_name ?? ""} ${o.last_name ?? ""}`.trim() ||
-    o.email ||
-    o.phone ||
-    "—";
-
   return (
     <>
       {/* DETAYLAR — Adım 1 */}
@@ -101,21 +73,6 @@ export default function BasicInfoStep({
             </div>
           </div>
 
-          {/* 🛡️ Migration 072 — "Villanın Gerçek Adı": admin-only, bilgi
-              amaçlı. "Villa adı" input'undan TAMAMEN bağımsız; slug/
-              onChange zincirine dokunmaz, opsiyonel (boş bırakılabilir). */}
-          <div className="space-y-2">
-            <Label>Mülkün Gerçek Adı</Label>
-            <input
-              placeholder="Villanın gerçek/mülk adı"
-              className="input"
-              value={form.real_title || ""}
-              onChange={(e) =>
-                setForm({ ...form, real_title: e.target.value })
-              }
-            />
-          </div>
-
           <div className="space-y-2">
             <Label>Bölge</Label>
             {/* 🛡️ Searchable combobox — Manual Reservation paritesi.
@@ -133,42 +90,6 @@ export default function BasicInfoStep({
               onChange={setSelectedLocation}
               placeholder="Bölge seç"
             />
-          </div>
-
-          {/* 🛡️ MÜLK SAHİBİ — nullable select (zorunlu değil). Boş → null. */}
-          <div className="space-y-2">
-            <Label>Mülk Sahibi</Label>
-            <select
-              value={(form.owner_id as string) || ""}
-              onChange={(e) =>
-                setForm({ ...form, owner_id: e.target.value || null })
-              }
-              className="input"
-            >
-              <option value="">Mülk sahibi yok</option>
-              {owners.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {ownerLabel(o)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Öne çıkan etiket — Detaylar grid'inin tam genişliğinde
-              son satır. Ayrı Section'dan buraya taşındı. */}
-          <div className="space-y-2">
-            <Label>Öne çıkan etiket</Label>
-            <input
-              placeholder="Örn: Muhafazakar"
-              className="input max-w-md"
-              value={form.badge || ""}
-              onChange={(e) =>
-                setForm({ ...form, badge: e.target.value })
-              }
-            />
-            <p className="text-[11px] text-[var(--color-stone-400)]">
-              Mülk kartında üstte gösterilen rozet (opsiyonel).
-            </p>
           </div>
 
           <div className="space-y-2">
@@ -287,33 +208,6 @@ export default function BasicInfoStep({
                 </>
               );
             })()}
-          </div>
-
-          {/* 🛡️ FAZ 23 — T.C. Kültür ve Turizm Bakanlığı Belge No.
-             Badge field'ı ile birebir aynı layout/pattern (md:col-span-3
-             + max-w-md + Label + helper text). Service katmanı (Faz 22)
-             zaten ham passthrough yapıyor; UI sadece binding ekler.
-             Validation/sanitize/uppercase YAPILMAZ (kullanıcı kuralı). */}
-          <div className="space-y-2">
-            <Label>T.C. Kültür ve Turizm Bakanlığı Belge No</Label>
-            <input
-              type="text"
-              placeholder="Örn: 07-3388"
-              className="input max-w-md"
-              value={form.tourism_document_number ?? ""}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  tourism_document_number: e.target.value,
-                })
-              }
-              autoComplete="off"
-              spellCheck={false}
-              aria-label="T.C. Kültür ve Turizm Bakanlığı işletme belge numarası"
-            />
-            <p className="text-[11px] text-[var(--color-stone-400)]">
-              Varsa resmi turizm belge numarasını girin (opsiyonel).
-            </p>
           </div>
         </div>
       </Section>

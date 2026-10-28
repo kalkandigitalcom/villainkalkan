@@ -130,7 +130,6 @@ function villa(
     price: null,
     currency: null,
     images: [],
-    badge: null,
     guests: 4,
     bedrooms: 2,
     bathrooms: 1,

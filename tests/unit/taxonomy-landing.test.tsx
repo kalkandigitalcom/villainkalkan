@@ -67,9 +67,6 @@ const typeNamesMock = vi.fn();
 vi.mock("@/lib/i18n/get-villa-type-translations.server", () => ({
   getVillaTypeNamesByLocale: (ids: string[]) => typeNamesMock(ids),
 }));
-vi.mock("@/lib/i18n/get-villa-badge-translations.server", () => ({
-  getVillaBadgesByLocale: async () => new Map(),
-}));
 vi.mock("@/lib/db/villa-feature.repository", () => ({
   villaFeatureRepository: { findAllForPublicTaxonomy: async () => ({ data: [], error: null }) },
 }));
@@ -122,7 +119,7 @@ const LOCATIONS = [
 ];
 const villa = (id: string, title: string) => ({
   id, slug: id, title, location: "x", price: 1000, currency: "TRY",
-  images: [], badge: "", bedrooms: 2, bathrooms: 1, guests: 4,
+  images: [], bedrooms: 2, bathrooms: 1, guests: 4,
 });
 const VILLAS = Array.from({ length: 15 }, (_, i) => villa(`v${i + 1}`, `Villa ${i + 1}`));
 

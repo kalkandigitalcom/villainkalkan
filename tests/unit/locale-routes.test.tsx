@@ -268,7 +268,6 @@ beforeEach(() => {
     guests: 6,
     bedrooms: 3,
     bathrooms: 2,
-    tourism_document_number: null as string | null,
   });
   /* 🛡️ PHASE 8D-2 — varsayılan: boş koleksiyonlar + boş çeviri Map'i
      (TR fallback olmadan da sayfa çökmemeli — bkz. "empty collections"
@@ -690,7 +689,6 @@ describe.each(VILLA_DETAIL_ROUTES)(
         guests: 6,
         bedrooms: 3,
         bathrooms: 2,
-        tourism_document_number: null,
       });
       getTranslationsForParentsMock.mockImplementation((entity: string) => {
         if (entity === "villa_location") {
@@ -731,7 +729,6 @@ describe.each(VILLA_DETAIL_ROUTES)(
         guests: 6,
         bedrooms: 3,
         bathrooms: 2,
-        tourism_document_number: null,
       });
       /* getTranslationsForParentsMock varsayılan (beforeEach'ten) boş Map
          döner — loc-2 için çeviri YOK. */
@@ -990,7 +987,6 @@ describe.each(VILLA_DETAIL_ROUTES)(
       guests: 6,
       bedrooms: 3,
       bathrooms: 2,
-      tourism_document_number: null as string | null,
       bedroom_layout: [
         { name: "Ana Yatak Odası", beds: [{ type: "double", count: 1 }] },
         { name: "Çocuk Odası", beds: [{ type: "single", count: 2 }] },

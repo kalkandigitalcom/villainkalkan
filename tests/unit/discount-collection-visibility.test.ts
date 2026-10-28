@@ -109,7 +109,6 @@ function publicRow(villaId: string, discounts: Discount[]) {
       id: villaId,
       slug: villaId,
       title: villaId,
-      badge: null,
       bedrooms: 3,
       bathrooms: 2,
       guests: 6,

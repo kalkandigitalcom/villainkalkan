@@ -59,7 +59,7 @@ function row(overrides: Record<string, unknown> = {}) {
     pool_heating_selected: false,
     pool_heating_total_try: null,
     payment_method: { id: PM_ID, name: "Havale / EFT", type: "bank_transfer" },
-    villa: { title: "Test Villa", villa_images: [], owner: null },
+    villa: { title: "Test Villa", villa_images: [] },
     ...overrides,
   };
 }

@@ -56,8 +56,6 @@ export type Villa = {
 
   description: string;
 
-  badge?: string;
-
   location?: {
     name: string;
   };
@@ -151,11 +149,6 @@ export type Villa = {
   is_active?: boolean | null;
   deleted_at?: string | null;
 
-  /* 🛡️ TOURISM DOCUMENT NO (db/migrations/017 — Faz 22).
-   *  T.C. Kültür ve Turizm Bakanlığı belge no, opsiyonel ham text.
-   *  Eski kayıtlarda null; UI ekleme bu fazda yapılmadı (sadece pipeline). */
-  tourism_document_number?: string | null;
-
   /* 🛡️ MINIMUM STAY NIGHTS (Faz 26B).
    *  Opsiyonel; null/<=1 → enforcement yok. */
   minimum_stay_nights?: number | null;
@@ -209,8 +202,6 @@ export type VillaDTO = {
 
   /* 🛡️ Benzer villa eşleştirmesi için FK (additive, opsiyonel). */
   location_id?: string | null;
-
-  badge?: string;
 
   // 🔥 FİYAT
   price: number;
@@ -300,11 +291,6 @@ export type VillaDTO = {
   // 🛡️ VISIBILITY DTO (db/migrations/003)
   is_active?: boolean;
   deleted_at?: string | null;
-
-  /* 🛡️ TOURISM DOCUMENT NO DTO (db/migrations/017 — Faz 22).
-   *  Eski villalarda null/undefined. Henüz frontend render edilmiyor;
-   *  pipeline through. */
-  tourism_document_number?: string | null;
 
   /* 🛡️ MINIMUM STAY NIGHTS DTO (Faz 26B).
    *  BookingSidebar bunu kullanarak selection validation yapar.
@@ -406,9 +392,6 @@ function mapVilla(
 
     /* 🛡️ FK passthrough — benzer villa (aynı bölge) eşleştirmesi için. */
     location_id: villa.location_id ?? null,
-
-    badge:
-      villa.badge || "",
 
     // 🔥 FİYAT
     price:
@@ -536,11 +519,6 @@ function mapVilla(
         ? true
         : !!villa.is_active,
     deleted_at: villa.deleted_at ?? null,
-
-    // 🛡️ TOURISM DOCUMENT NO (db/migrations/017 — Faz 22).
-    // Pure passthrough; undefined/null → null (eski villalar için).
-    // Henüz frontend render YOK; bu pipeline yalnız altyapı.
-    tourism_document_number: villa.tourism_document_number ?? null,
 
     // 🛡️ MINIMUM STAY NIGHTS (Faz 26B).
     // Number ise olduğu gibi; undefined/null/0/negative → null
@@ -727,7 +705,6 @@ export async function getVillasForAdminPage(opts: {
   pageSize: number;
   q?: string;
   active?: boolean;
-  document?: "licensed" | "unlicensed";
 }): Promise<{
   items: VillaDTO[];
   total: number;
@@ -740,8 +717,6 @@ export async function getVillasForAdminPage(opts: {
   const q = opts.q && opts.q.trim().length > 0 ? opts.q.trim() : undefined;
   /* active undefined → filtre YOK (tüm villalar; eski davranış). */
   const active = opts.active;
-  /* document undefined → filtre YOK (eski davranış). */
-  const document = opts.document;
 
   /* Paralel: liste + count tek round-trip yerine eşzamanlı.
      Sıralama (sort_order ASC, created_at DESC) listForAdmin'in
@@ -753,9 +728,8 @@ export async function getVillasForAdminPage(opts: {
       offset,
       q,
       active,
-      document,
     }),
-    villaAdminRepository.countForAdmin({ q, active, document }),
+    villaAdminRepository.countForAdmin({ q, active }),
   ]);
 
   const items = (rows as unknown as Villa[]).map(mapVilla);

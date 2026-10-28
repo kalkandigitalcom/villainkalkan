@@ -202,8 +202,6 @@ export const en: Dictionary = {
     similarVillasTitle: "Similar Villas",
     readMore: "Read More",
     readLess: "Show Less",
-    tourismCertificate: "Tourism Licence",
-    documentNumber: "Licence No: {n}",
   },
   /* PHASE 10D Batch 4 — canonical mesafe title EN karşılıkları */
   distanceLabels: {
@@ -417,8 +415,6 @@ export const en: Dictionary = {
     locationEyebrow: "Location",
     approximateLocation: "Approximate location shown",
     openInGoogleMaps: "Open in Google Maps",
-    tourismAuthority: "Republic of Türkiye, Ministry of Culture and Tourism",
-    documentNumberLabel: "Licence No:",
   },
   sharedList: {
     eyebrow: "Handpicked for you",
@@ -1044,8 +1040,6 @@ export const en: Dictionary = {
     shareDeposit: "Damage Deposit",
     shareDepositNote:
       "A damage deposit is collected separately at check-in. It is refunded in full at check-out provided no damage has occurred in the villa.",
-    shareOwnerHeading: "Property Owner Contact Details",
-    shareOwnerEmpty: "No property owner contact details available.",
     shareGuestHeading: "Guest Contact Details",
     shareGuestName: "Full Name",
     shareGuestPhone: "Phone",

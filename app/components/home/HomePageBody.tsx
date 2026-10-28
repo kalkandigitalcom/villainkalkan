@@ -39,7 +39,6 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
      • Statik UI metni      → dictionary (`home.*`)
      • Hero admin içeriği   → settings + settings_translations (mig. 085)
      • Villa tipi adları    → villa_type_translations (Phase 10H helper)
-     • Villa kart rozeti    → villa_translations.badge
      • Villa ADI / BÖLGE    → CANONICAL (çevrilmez — proje kararı)
    =============================================================== */
 

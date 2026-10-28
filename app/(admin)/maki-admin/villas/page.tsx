@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getVillasForAdminPage } from "@/app/services/villa.service";
-import { Plus, Home, Trash as TrashBin, ArrowDownUp, FileCheck } from "lucide-react";
+import { Plus, Home, Trash as TrashBin, ArrowDownUp } from "lucide-react";
 import VillaOperationsList from "./_components/VillaOperationsList";
 import { authorizeAdminSession } from "@/lib/admin-route-auth";
 import AdminPageSessionRefresh from "@/app/components/admin/AdminPageSessionRefresh";
@@ -31,7 +31,6 @@ type SearchParams = Promise<{
   pageSize?: string;
   q?: string;
   status?: string;
-  document?: string;
 }>;
 
 function parsePage(raw: string | undefined): number {
@@ -65,14 +64,6 @@ function parseStatus(value?: string): boolean | undefined {
   return undefined;
 }
 
-/* document → belge filtresi. "licensed"/"unlicensed" geçerli, aksi
-   halde undefined (filtre YOK; tüm villalar; eski davranış korunur). */
-function parseDocument(value?: string): "licensed" | "unlicensed" | undefined {
-  if (value === "licensed") return "licensed";
-  if (value === "unlicensed") return "unlicensed";
-  return undefined;
-}
-
 export default async function VillasPage({
   searchParams,
 }: {
@@ -93,8 +84,6 @@ export default async function VillasPage({
   const q = parseQ(sp.q);
   const status = sp.status;
   const active = parseStatus(status);
-  const document = sp.document;
-  const documentFilter = parseDocument(document);
 
   /* 🛡️ Admin listing: pasif villalar dahil; soft-deleted hariç.
      YENİ service: pagination + search. Sıralama paneli'nin kullandığı
@@ -109,7 +98,6 @@ export default async function VillasPage({
     pageSize,
     q,
     active,
-    document: documentFilter,
   });
 
   return (
@@ -139,14 +127,6 @@ export default async function VillasPage({
           >
             <ArrowDownUp size={14} />
             Sıralamayı Düzenle
-          </Link>
-          {/* 🛡️ KTB belge kontrolü — /maki-admin/villas/belge-kontrol. */}
-          <Link
-            href="/maki-admin/villas/belge-kontrol"
-            className="admin-btn-ghost"
-          >
-            <FileCheck size={14} />
-            Belge Kontrolü
           </Link>
           <Link
             href="/maki-admin/villas/trash"
@@ -193,7 +173,6 @@ export default async function VillasPage({
           pageSize={serverPageSize}
           q={q}
           status={status}
-          document={document}
           allowedPageSizes={ALLOWED_PAGE_SIZES as unknown as number[]}
         />
       )}

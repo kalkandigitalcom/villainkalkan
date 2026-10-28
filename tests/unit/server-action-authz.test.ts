@@ -112,7 +112,7 @@ import { deleteVillaFeatureAction } from "@/app/(admin)/maki-admin/features/feat
 const ADMIN_ID = "admin-1";
 const ALL_PERMISSIONS = [
   "dashboard", "villas", "villa_types", "features", "rules", "price_includes",
-  "locations", "villa_lists", "property_owners", "reservations",
+  "locations", "villa_lists", "reservations",
   "manual_reservations", "external_calendars", "offer_requests",
   "payment_methods", "payment_accounts", "finance", "pages", "blog", "menu",
   "homepage_collection", "discount_collection", "messages", "faqs",
@@ -390,7 +390,6 @@ const PUBLIC_ALLOWLIST: Record<string, string[]> = {
   "app/services/villa-review.action.ts": ["createVillaReviewAction"],
   "app/services/villa.action.ts": [
     "getVillasByIdsAction",
-    "getVillaBadgesAction",
   ],
 };
 

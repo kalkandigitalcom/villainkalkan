@@ -130,14 +130,6 @@ const menuGroups: MenuGroup[] = [
         icon: Share2,
         permissionKey: "villa_lists",
       },
-      {
-        /* 🛡️ Mülk Sahipleri — minimal owner kaydı + villa bağlantısı.
-           İkon: mevcut import'lu Users (reuse; import churn yok). */
-        name: "Mülk Sahipleri",
-        href: "/maki-admin/property-owners",
-        icon: Users,
-        permissionKey: "property_owners",
-      },
     ],
   },
   {

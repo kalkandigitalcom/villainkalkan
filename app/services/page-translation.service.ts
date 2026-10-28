@@ -11,7 +11,7 @@ import { parsePageSections, type PageSection } from "@/lib/page-sections";
  *
  * `app/services/villa-translation.service.ts` (Phase 10A) ile BİREBİR
  * AYNI desen — aynı gerekçeler:
- *   - çok alanlı entity (villa: description/badge/seo_*, page:
+ *   - çok alanlı entity (villa: description/seo_*, page:
  *     title/excerpt/body/seo_*),
  *   - parent existence pre-check VAR (`pagesServerRepository.findById`,
  *     villa'daki `findSlugById` muadili),

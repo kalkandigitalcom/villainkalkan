@@ -73,7 +73,6 @@ export const discountRepository = {
           id,
           slug,
           title,
-          badge,
           bedrooms,
           bathrooms,
           guests,

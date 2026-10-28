@@ -60,9 +60,6 @@ import type {
 export type VillaFormData = VillaFormShape & {
   /* Basic */
   title: string;
-  /* 🛡️ Migration 072 — admin-only, bilgi amaçlı. Public'e aktarılmaz,
-     slug üretiminde kullanılmaz, title davranışını etkilemez. */
-  real_title: string;
   description: string;
   guests: number;
   bedrooms: number;
@@ -87,9 +84,6 @@ export type VillaFormData = VillaFormShape & {
      değerini (mevcut ~1595 villada NULL) atar. commission_rate ile
      BİREBİR AYNI conditional-initial deseni. */
   pool_heating_months?: number[] | null;
-
-  /* Badge */
-  badge: string;
 
   /* Pool (4 × 3 havuz) */
   pool_type: string;
@@ -117,13 +111,6 @@ export type VillaFormData = VillaFormShape & {
   /* Accounting — OPTIONAL (create'te 20 initial, edit'te DB'den) */
   commission_rate?: number | null;
 
-  /* 🛡️ MÜLK SAHİBİ — OPTIONAL (edit'te DB owner_id spread'inden hydrate;
-     create'te undefined → payload'da null). property_owners FK (044). */
-  owner_id?: string | null;
-
-  /* Legal */
-  tourism_document_number: string;
-
   /* Booking cfg */
   minimum_stay_nights: number | null;
 };
@@ -136,9 +123,9 @@ export type VillaFormData = VillaFormShape & {
    spread (`...(mode === "create" ? { commission_rate: 20 } : {})`)
    JS object insertion order'ını korur:
      - mode="create": ..., custom_prepayment_rate, COMMISSION_RATE,
-                       tourism_document_number, minimum_stay_nights
-     - mode="edit"  : ..., custom_prepayment_rate, tourism_document_number,
-                       minimum_stay_nights (commission_rate KEY YOK)
+                       minimum_stay_nights
+     - mode="edit"  : ..., custom_prepayment_rate, minimum_stay_nights
+                       (commission_rate KEY YOK)
 
    commission_rate runtime davranışı:
      - create: ekle initial 20, admin değiştirmezse service-side 20 fallback
@@ -151,7 +138,6 @@ export function initialVillaFormData(
 ): VillaFormData {
   return {
     title: "",
-    real_title: "",
     description: "",
     guests: 0,
     bedrooms: 0,
@@ -182,8 +168,6 @@ export function initialVillaFormData(
       ? { pool_heating_months: [1, 2, 3, 4, 5, 9, 10, 11, 12] }
       : {}),
 
-    badge: "",
-
     pool_type: "",
     pool_depth: "",
     pool_width: "",
@@ -212,11 +196,6 @@ export function initialVillaFormData(
        Edit modunda key YOK (fetchVilla setForm spread DB değerini
        atar). Conditional spread ile insertion order korunur. */
     ...(mode === "create" ? { commission_rate: 20 } : {}),
-
-    /* 🛡️ TOURISM DOCUMENT NO (db/migrations/017 — Faz 22).
-       Form state'inde initialize; UI input bu fazda eklenmedi.
-       Boş string → service katmanında null'a normalize edilir. */
-    tourism_document_number: "",
 
     /* 🛡️ MINIMUM STAY NIGHTS (Faz 26C).
        null = "enforcement yok" canonical. PricingStep UI input

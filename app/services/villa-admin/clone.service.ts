@@ -31,14 +31,14 @@ import { setVillaDistancesServer } from "../villa-distance.service.server";
      ve `setV*ServerÔ helper'ları paylaşılır → kod tekrarı yok.
 
    KOPYALANAN ALANLAR (master villa row — 40+):
-     title, description, location_id, badge, slug, guests, bedrooms,
+     title, description, location_id, slug, guests, bedrooms,
      bathrooms, deposit, cleaning_fee, cleaning_currency,
      cleaning_limit, map_type/latitude/longitude/map_embed,
      pool_type/depth/width/length, indoor_pool*, child_pool*,
      pool_sheltered,
      seo_title, seo_description, noindex, custom_prepayment_rate,
-     tourism_document_number, minimum_stay_nights, youtube_videos,
-     commission_rate, owner_id, bedroom_layout, bathroom_layout
+     minimum_stay_nights, youtube_videos,
+     commission_rate, bedroom_layout, bathroom_layout
      + RELATION TABLOLARI:
        villa_type_relations, villa_feature_relations,
        villa_rule_relations, villa_price_include_relations
@@ -143,9 +143,6 @@ export async function cloneVilla(
        into column search_title" reddi verir. Hariç tutulunca PostgreSQL
        clone sonrası yeniden üretir. */
     "search_title",
-    /* 🛡️ GENERATED ALWAYS kolon (mig 078) — DB `real_title`'dan otomatik
-       hesaplar; search_title ile aynı gerekçe. */
-    "real_title_search",
   ]);
   const corePayload: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(original)) {

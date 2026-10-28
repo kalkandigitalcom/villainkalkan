@@ -49,7 +49,7 @@ export const dynamic = "force-dynamic";
 /* Raw row shape — slim payload optimizasyonu sonrası villa kolonları
    render'da gerçekten tüketilen 13 alana indirildi (description,
    pool_*, indoor_pool_*, child_pool_*, bedroom_layout, bathroom_layout,
-   youtube_videos, tourism_document_number, owner_id, commission_rate,
+   youtube_videos, commission_rate,
    deposit, rules, included_items, address, vb. — VillaCard'da
    kullanılmayan ~45 kolon artık çekilmez). villa_images embed cover-
    only (lib/db/villa.repository.ts:120-134 slim-embed pattern). */
@@ -60,7 +60,6 @@ type RawVilla = {
   /* Kapsam kuralı için (aktif / pasif). */
   is_active: boolean | null;
   location_id: string | null;
-  badge: string | null;
   guests: number | null;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -240,7 +239,6 @@ export default async function VillaListesiPage() {
       price: null,
       currency: null,
       images,
-      badge: v.badge,
       guests: v.guests,
       bedrooms: v.bedrooms,
       bathrooms: v.bathrooms,
@@ -252,9 +250,8 @@ export default async function VillaListesiPage() {
       is_active: v.is_active === true,
     };
   })
-    /* 🛡️ KAPSAM — AKTİF veya PASİF + güncel/gelecek fiyatlı (belge no
-       fark etmez). Fiyatsız / yalnız geçmiş fiyatlı pasif villa istemciye
-       HİÇ gönderilmez → filtre, seçim ve paylaşım bu havuzla çalışır. */
+    /* 🛡️ KAPSAM — AKTİF veya PASİF + güncel/gelecek fiyatlı. Fiyatsız /
+       yalnız geçmiş fiyatlı pasif villa istemciye HİÇ gönderilmez → filtre, seçim ve paylaşım bu havuzla çalışır. */
     .filter((row) => isInVillaListesiScope(row, todayYmd));
 
   const locations: LocationOption[] = ((locationsRes.data || []) as Array<{

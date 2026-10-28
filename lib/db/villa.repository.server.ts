@@ -162,32 +162,6 @@ export const villaAdminRepository = {
   },
 
   /* ===============================================================
-     READ — KTB belge kontrolü adayları (ADDITIVE)
-     ===============================================================
-     Yalnız "Mülkler → Belge Kontrolü" (app/services/villa-license-
-     check.service.ts) kullanır. Aktif + silinmemiş villalar; belge
-     numarası BOŞ olanlar da döner ("Belge No Yok" sayımı için).
-     Minimal projection; mevcut sorgular DEĞİŞMEDİ. */
-  async findLicenseCheckCandidates() {
-    return await dbAdmin
-      .from("villa")
-      .select("id, title, tourism_document_number, is_active")
-      .eq("is_active", true)
-      .is("deleted_at", null)
-      .order("title", { ascending: true });
-  },
-
-  /** Tek villa (tek belge kontrolü) — silinmemiş olmalı. */
-  async findLicenseCheckCandidateById(id: string) {
-    return await dbAdmin
-      .from("villa")
-      .select("id, title, tourism_document_number, is_active")
-      .eq("id", id)
-      .is("deleted_at", null)
-      .maybeSingle();
-  },
-
-  /* ===============================================================
      READ — public availability config by id (NATIVE twin, Migration S3)
      ===============================================================
      Anon `villaRepository.findAvailabilityConfigById` (eski sağlayıcı) karşılığı.
@@ -804,7 +778,7 @@ export const villaAdminRepository = {
      cover-slim + top-level order; tek fark `db` → `dbAdmin`.
 
      ⚠️ YENİ ELEMAN: top-level **SLIM kolon listesi** (`*` DEĞİL) — id, slug,
-        title, location_id, badge, guests, bedrooms, bathrooms, cleaning_fee,
+        title, location_id, guests, bedrooms, bathrooms, cleaning_fee,
         cleaning_currency, cleaning_limit. compiler `compileColumns` her
         kolonu quote'lar (query-compiler:257); FROM villa tek tablo + embed
         subquery → qualification/ambiguity yok. PostgREST slim select ile
@@ -831,7 +805,7 @@ export const villaAdminRepository = {
       .from("villa")
       .select(
         `
-        id, slug, title, location_id, badge, is_active,
+        id, slug, title, location_id, is_active,
         guests, bedrooms, bathrooms,
         cleaning_fee, cleaning_currency, cleaning_limit,
         location:villa_locations(name),
@@ -859,7 +833,7 @@ export const villaAdminRepository = {
      ===============================================================
      Anon `villaRepository.listForAdmin` karşılığı. BYTE-IDENTICAL:
      SELECT_WITH_PRICES embed + cover-slim + koşullu `.eq(is_active)` /
-     `.not/.is(tourism_document_number)` / `.or(buildVillaSearchOrClause)` +
+     `.or(buildVillaSearchOrClause)` +
      top-level order + koşullu `.range`; tek fark `db` → `dbAdmin`. Return
      UNWRAPPED `Record<string,unknown>[]` (error→[]); count YOK (countForAdmin
      ayrı). opts undefined → tam liste (range yok), byte-identical eski davranış.
@@ -876,7 +850,6 @@ export const villaAdminRepository = {
     offset?: number;
     q?: string;
     active?: boolean;
-    document?: "licensed" | "unlicensed";
   }): Promise<Record<string, unknown>[]> {
     let query = dbAdmin
       .from("villa")
@@ -900,12 +873,6 @@ export const villaAdminRepository = {
 
     if (opts?.active !== undefined) {
       query = query.eq("is_active", opts.active);
-    }
-
-    if (opts?.document === "licensed") {
-      query = query.not("tourism_document_number", "is", null);
-    } else if (opts?.document === "unlicensed") {
-      query = query.is("tourism_document_number", null);
     }
 
     if (opts?.q && opts.q.trim().length > 0) {
@@ -999,7 +966,7 @@ export const villaAdminRepository = {
      ===============================================================
      Anon `villaRepository.countForAdmin` karşılığı. BYTE-IDENTICAL:
      `.select("id", { count: "exact", head: true })` + AYNI koşullu filtreler
-     (deleted_at + is_active + tourism_document_number + or(search)) +
+     (deleted_at + is_active + or(search)) +
      `buildVillaSearchOrClauseNative` (listForAdmin ile AYNI helper → count↔
      items filter parity); tek fark `db` → `dbAdmin`. Return `number` (error→0).
 
@@ -1013,7 +980,6 @@ export const villaAdminRepository = {
   async countForAdmin(opts?: {
     q?: string;
     active?: boolean;
-    document?: "licensed" | "unlicensed";
   }): Promise<number> {
     let query = dbAdmin
       .from("villa")
@@ -1022,12 +988,6 @@ export const villaAdminRepository = {
 
     if (opts?.active !== undefined) {
       query = query.eq("is_active", opts.active);
-    }
-
-    if (opts?.document === "licensed") {
-      query = query.not("tourism_document_number", "is", null);
-    } else if (opts?.document === "unlicensed") {
-      query = query.is("tourism_document_number", null);
     }
 
     if (opts?.q && opts.q.trim().length > 0) {
@@ -1238,37 +1198,6 @@ export const villaAdminRepository = {
        order/limit yok (consumer cover seçer).
      Row-tip generic (dönüş tipiyle aynı) → `as any[]` cast GEREKMEZ. Tek
      fark `db` → `dbAdmin`.
-
-     🛡️ MIGRATION 072 GENİŞLETMESİ — real_title OR eşleşmesi:
-       Eskiden tek `.ilike("search_title", pattern)`. Şimdi AYNI `pattern`
-       değeri `.or()` ile İKİ koluna uygulanıyor:
-         search_title.ilike.<pattern>  OR  real_title_search.ilike.<pattern>
-       `.or(...)` önceki `.eq("is_active",true).is("deleted_at",null)`
-       filtreleriyle AND olarak birleşir (bkz. listForAdmin/S6A aynı
-       zincir deseni, satır ~756). Quoting/escape `buildVillaSearchOrClauseNative`
-       (satır ~104) ile AYNI güvenli desen: escapeLikePattern zaten
-       backslash + `%`/`_` escape ediyor; `.or()` taşıma-string'i için
-       AYRICA çift tırnak escape edilip değer `"..."` içine sarılıyor
-       (query-builder `unquoteOrValue`'nun tersi — round-trip doğrulandı).
-
-       🛡️ MIGRATION 078 DÜZELTMESİ — Türkçe karakterli real_title araması:
-       Önceden bu OR-kolu ham `real_title` kolonuna karşı çalışıyordu.
-       Ama `pattern` HER ZAMAN `normalizeSearchText` ile ASCII'ye
-       foldlanmış oluyor (TR-fold, arama TERİMİNE uygulanıyor) — ham
-       `real_title` ise Türkçe karakterleri OLDUĞU GİBİ tutuyor. Bu
-       asimetri yüzünden "Villa Aydoğdu" gibi bir real_title'da
-       "Aydoğdu" da "Aydogdu" da BULUNAMIYORDU (audit: bu migration'ın
-       hazırlandığı konuşma). Migration 078, search_title ile BİREBİR
-       AYNI normalize formülünü kullanan `real_title_search` GENERATED
-       STORED kolonunu ekledi; artık OR-kolu bu normalize edilmiş
-       kolona karşı çalışıyor → pattern (ASCII) ile kolon (ASCII) AYNI
-       kanonda → simetrik eşleşme. `real_title`'ın KENDİSİ hâlâ hiç
-       değişmedi, hâlâ yalnız admin panelinde ham gösteriliyor.
-       `real_title_search` SADECE WHERE/OR filtresinde kullanılıyor;
-       `.select()` listesine EKLENMEDİ → response'a asla dahil olmaz
-       (title, mevcut public villa adı olarak dönmeye devam eder).
-       search_title kolu davranışça birebir korunur (aynı pattern,
-       aynı normalize, HİÇ dokunulmadı).
   =============================================================== */
   async searchByTitle(
     term: string,
@@ -1294,13 +1223,6 @@ export const villaAdminRepository = {
     const needle = normalizeSearchText(term);
     if (needle.length === 0) return [];
     const pattern = `%${escapeLikePattern(needle)}%`;
-    /* 🛡️ Migration 072 — .or() taşıma-quoting'i (buildVillaSearchOrClauseNative
-       ile BİREBİR desen, satır ~104): escapeLikePattern zaten \ ve %/_
-       escape etti; burada SADECE .or() string parser'ı için çift tırnak
-       escape edilip `"..."` içine sarılıyor. real_title_search (migration
-       078 — search_title ile aynı normalize edilmiş GENERATED STORED
-       kolon) WHERE'de kullanılır, SELECT'e eklenmez. */
-    const orQuoted = `"${pattern.replace(/"/g, '\\"')}"`;
     const { data, error } = await dbAdmin
       .from<{
         id: string;
@@ -1318,7 +1240,7 @@ export const villaAdminRepository = {
       )
       .eq("is_active", true)
       .is("deleted_at", null)
-      .or(`search_title.ilike.${orQuoted},real_title_search.ilike.${orQuoted}`)
+      .ilike("search_title", pattern)
       .limit(limit);
 
     if (error) {

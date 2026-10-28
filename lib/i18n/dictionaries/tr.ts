@@ -210,8 +210,6 @@ export const tr: Dictionary = {
     similarVillasTitle: "Benzer Villalar",
     readMore: "Devamını Oku",
     readLess: "Daha Az Göster",
-    tourismCertificate: "Turizm Belgesi",
-    documentNumber: "Belge No: {n}",
   },
   /* PHASE 10D Batch 4 — canonical mesafe title identity-map (TR kaynak = kendisi) */
   distanceLabels: {
@@ -431,8 +429,6 @@ export const tr: Dictionary = {
     locationEyebrow: "Konum",
     approximateLocation: "Yaklaşık konum gösterilmektedir",
     openInGoogleMaps: "Google Maps'te aç",
-    tourismAuthority: "T.C. Kültür ve Turizm Bakanlığı",
-    documentNumberLabel: "Belge No:",
   },
   sharedList: {
     eyebrow: "Sizin için özel seçildi",
@@ -1072,8 +1068,6 @@ export const tr: Dictionary = {
     shareDeposit: "Hasar Depozitosu",
     shareDepositNote:
       "Girişte hasar depozitosu ek olarak alınır. Villada herhangi bir hasar oluşmaması durumunda çıkışta eksiksiz olarak iade edilir.",
-    shareOwnerHeading: "Mülk Sahibi İletişim Bilgileri",
-    shareOwnerEmpty: "Mülk sahibi iletişim bilgileri bulunmuyor.",
     shareGuestHeading: "Misafir İletişim Bilgileri",
     shareGuestName: "Ad Soyad",
     shareGuestPhone: "Telefon",

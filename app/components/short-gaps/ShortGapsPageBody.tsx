@@ -29,7 +29,6 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import type { MonthNumber } from "@/lib/i18n/dictionaries/types";
-import { getVillaBadgesByLocale } from "@/lib/i18n/get-villa-badge-translations.server";
 /* 🛡️ VİLLA TİPİ ADI (EN/DE) — `AramaPageBody` / `KiralikVillalarPageBody`
    ile AYNI, ZATEN VAR OLAN iki helper. Yeni translation sistemi veya DB
    katmanı YAZILMADI. */
@@ -110,7 +109,6 @@ type VillaRow = {
   id: string;
   slug: string | null;
   title: string | null;
-  badge: string | null;
   price: number | null;
   currency: string | null;
   bedrooms: number | null;
@@ -185,7 +183,6 @@ export default async function ShortGapsPageBody({
     price: number | null;
     currency: string;
     images: string[];
-    badge?: string;
     bedrooms: number;
     bathrooms: number;
     guests: number;
@@ -295,7 +292,6 @@ export default async function ShortGapsPageBody({
         price: starting?.price ?? null,
         currency: starting?.currency || "TRY",
         images,
-        badge: v.badge ?? undefined,
         bedrooms: v.bedrooms || 1,
         bathrooms: v.bathrooms || 1,
         guests: v.guests || 2,
@@ -311,15 +307,6 @@ export default async function ShortGapsPageBody({
      edilecek gap'ler (villası filtreyi geçmeyen gap'ler elenir). */
   const villaById = new Map(villas.map((v) => [v.id, v]));
   const visibleGaps = gapRows.filter((g) => villaById.has(g.villa_id));
-
-  /* 🛡️ Kart rozeti (villa_translations.badge) TEK batch sorguda
-     çözülür — `VillaList` / `DiscountCollection` ile AYNI desen,
-     N+1 YOK. TR'de sorgu HİÇ atılmaz → TR çıktısı ve maliyeti
-     BİREBİR eskisi gibi. Çeviri yoksa canonical rozet gösterilir. */
-  const badgeByVillaId = await getVillaBadgesByLocale(
-    villas.map((v) => v.id),
-    locale
-  );
 
   const basePath = `${localePrefix}/kisa-sureli-tarihler/${ay}/${nights}`;
   /* Sidebar — /arama FilterSidebar replikası ile aynı prop şekli.
@@ -441,7 +428,6 @@ export default async function ShortGapsPageBody({
                         price={villa.price ?? undefined}
                         currency={villa.currency}
                         images={villa.images}
-                        badge={badgeByVillaId.get(villa.id) ?? villa.badge}
                         bedrooms={villa.bedrooms}
                         bathrooms={villa.bathrooms}
                         guests={villa.guests}

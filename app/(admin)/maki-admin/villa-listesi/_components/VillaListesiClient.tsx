@@ -115,7 +115,6 @@ export type VillaListesiRow = {
   price: number | null;
   currency: string | null;
   images: string[];
-  badge: string | null;
   guests: number | null;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -714,7 +713,6 @@ export default function VillaListesiClient({
             price={fallback?.price ?? undefined}
             currency={fallback?.currency || "TRY"}
             images={v.images}
-            badge={v.badge ?? undefined}
             bedrooms={v.bedrooms || 1}
             bathrooms={v.bathrooms || 1}
             guests={v.guests || 2}

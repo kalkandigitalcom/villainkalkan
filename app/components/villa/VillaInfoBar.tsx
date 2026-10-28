@@ -36,10 +36,9 @@
      dosyanın artık ilgili prop'ları YOK.
 
    VERİ KONTRATI (DEĞİŞMEDİ):
-     - Props: villaTitle, location, guests, bedrooms, bathrooms,
-       tourismDocumentNumber.
-     - Conditional'lar AYNEN: guests>0 / bedrooms>0 / bathrooms>0 /
-       certificateNo boş değilse. Yeni API/DB sorgusu YOK, fake veri YOK.
+     - Props: villaTitle, location, guests, bedrooms, bathrooms.
+     - Conditional'lar AYNEN: guests>0 / bedrooms>0 / bathrooms>0.
+       Yeni API/DB sorgusu YOK, fake veri YOK.
 
    ANİMASYON (yalnız bu component içinde scoped, <style> ile; globals.css
    DEĞİŞMEDİ, yeni dependency YOK):
@@ -62,7 +61,6 @@ import { MapPin, Users, BedDouble, Bath } from "lucide-react";
 /* 🛡️ PHASE 10G — locale-aware bilgi etiketleri. `locale` OPSİYONEL,
    default "tr" → TR çıktısı BİREBİR AYNI. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import type { Locale } from "@/lib/i18n/config";
 
 type Props = {
@@ -71,9 +69,6 @@ type Props = {
   guests: number;
   bedrooms: number;
   bathrooms: number;
-  /* T.C. Kültür ve Turizm Bakanlığı belge no — opsiyonel ham text.
-     null/boş → belge item'ı render edilmez. */
-  tourismDocumentNumber?: string | null;
   /** 🛡️ PHASE 10G — opsiyonel; verilmezse "tr" (eski davranış). */
   locale?: Locale;
 };
@@ -84,31 +79,23 @@ export default function VillaInfoBar({
   guests,
   bedrooms,
   bathrooms,
-  tourismDocumentNumber,
   locale,
 }: Props) {
   const dict = getDictionary(locale);
-  const certificateNo = tourismDocumentNumber?.trim() || "";
-  const hasCertificate = certificateNo.length > 0;
-  const hasAnyInfoItem =
-    guests > 0 || bedrooms > 0 || bathrooms > 0 || hasCertificate;
-  /* 🛡️ Görünen kutu sayısına göre kolon sayısı — belge (veya başka bir
-     kutu) yoksa boş grid hücresi / dikey boşluk KALMAZ. 4 kutuda sınıf
-     BİREBİR eskisi gibi ("grid-cols-2 md:grid-cols-4"). Tailwind'in
-     statik taraması için sınıflar tam string olarak yazıldı. */
+  const hasAnyInfoItem = guests > 0 || bedrooms > 0 || bathrooms > 0;
+  /* 🛡️ Görünen kutu sayısına göre kolon sayısı — eksik kutu varsa boş
+     grid hücresi / dikey boşluk KALMAZ. Tailwind'in statik taraması
+     için sınıflar tam string olarak yazıldı. */
   const infoItemCount =
     (guests > 0 ? 1 : 0) +
     (bedrooms > 0 ? 1 : 0) +
-    (bathrooms > 0 ? 1 : 0) +
-    (hasCertificate ? 1 : 0);
+    (bathrooms > 0 ? 1 : 0);
   const infoGridCols =
-    infoItemCount >= 4
-      ? "grid-cols-2 md:grid-cols-4"
-      : infoItemCount === 3
-        ? "grid-cols-3 md:grid-cols-3"
-        : infoItemCount === 2
-          ? "grid-cols-2 md:grid-cols-2"
-          : "grid-cols-1 md:grid-cols-1";
+    infoItemCount === 3
+      ? "grid-cols-3 md:grid-cols-3"
+      : infoItemCount === 2
+        ? "grid-cols-2 md:grid-cols-2"
+        : "grid-cols-1 md:grid-cols-1";
 
   return (
       <div
@@ -161,8 +148,8 @@ export default function VillaInfoBar({
             korundu, yalnız boyutu/konumu değişti. Masaüstünde SOL kart
             shrink-0, 4'lü grid flex-1 ile kalan alanı dolduruyor;
             mobilde satır flex-col'a döner (kart üstte, tam genişlik;
-            bilgi kutuları altında). 4 kutunun kendi tasarımı
-            (InfoItem/CertificateItem, grid-cols, koşullar) DEĞİŞMEDİ —
+            bilgi kutuları altında). Kutuların kendi tasarımı
+            (InfoItem, grid-cols, koşullar) DEĞİŞMEDİ —
             yalnızca villa adının yeri/boyutu ve lokasyon kartı değişti. */}
         {(villaTitle || location || hasAnyInfoItem) && (
           <div className="mt-5 md:mt-6 flex flex-col md:flex-row md:items-stretch gap-4 md:gap-6">
@@ -225,15 +212,6 @@ export default function VillaInfoBar({
                     label={dict.card.bathroom}
                   />
                 )}
-                {hasCertificate && (
-                  <CertificateItem
-                    label={dict.villa.tourismCertificate}
-                    documentNumberLabel={formatDictionaryString(
-                      dict.villa.documentNumber,
-                      { n: certificateNo }
-                    )}
-                  />
-                )}
               </div>
             )}
           </div>
@@ -291,64 +269,6 @@ function InfoItem({
       </p>
       <p className="mt-1 text-[11px] md:text-[11.5px] font-medium text-[var(--color-stone-500)] leading-snug">
         {label}
-      </p>
-    </div>
-  );
-}
-
-/* ───────────────────────────────────────────────────────────────
-   CertificateItem — T.C. Kültür ve Turizm Bakanlığı belge item'ı.
-   Diğer InfoItem'lardan biraz daha premium: turuncu→mavi çok hafif
-   gradient zemin + ince brand-renkli border. Mevcut bakanlık SVG
-   ikonu (daha önce CertificateCard'da kullanılan gerçek asset) geri
-   getirildi — yeni ikon paketi/dependency YOK. Belge no gerçek
-   veriden (tourismDocumentNumber) gelir; koşul AYNEN (boş değilse).
-─────────────────────────────────────────────────────────────── */
-function CertificateItem({
-  label,
-  documentNumberLabel,
-}: {
-  label: string;
-  documentNumberLabel: string;
-}) {
-  return (
-    <div
-      className="
-        group/cert relative overflow-hidden
-        flex flex-col items-center justify-center text-center
-        rounded-2xl
-        border border-ink/15
-        bg-gradient-to-br from-brand/[0.07] via-white to-accent/[0.06]
-        hover:shadow-[0_12px_28px_-18px_rgba(27,46,94,0.28)]
-        hover:-translate-y-0.5
-        transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0
-        px-3.5 py-3.5 md:py-4
-        min-w-0
-      "
-    >
-      <span
-        aria-hidden="true"
-        className="
-          inline-flex items-center justify-center w-8 h-8 rounded-xl
-          bg-white shadow-[inset_0_0_0_1px_rgba(27,46,94,0.06)]
-          overflow-hidden
-          transition-transform duration-300 motion-reduce:transition-none
-          group-hover/cert:scale-110
-        "
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/brand/trust/turizm-bakanligi.svg"
-          alt=""
-          aria-hidden
-          className="w-4 h-4 object-contain"
-        />
-      </span>
-      <p className="mt-2.5 text-[9.5px] font-semibold uppercase tracking-[0.08em] text-ink leading-snug">
-        {label}
-      </p>
-      <p className="mt-0.5 w-full text-[10.5px] md:text-[11px] font-medium text-[var(--color-stone-700)] leading-snug truncate">
-        {documentNumberLabel}
       </p>
     </div>
   );

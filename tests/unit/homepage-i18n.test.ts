@@ -7,7 +7,7 @@
      B) Hero çeviri fallback zinciri (settings_translations → canonical
         → dictionary default) + CTA href'lerinin DİL BAĞIMSIZ kalması
      C) SSS (faq_translations) çeviri fallback'i + batch/N+1 davranışı
-     D) Villa rozeti (villa_translations.badge) çevirisi
+     D) Villa rozeti (villa.badge / villa_translations.badge) kaldırıldı
      E) Villa ADI ve BÖLGE ADI'nın CANONICAL kalması (regresyon kilidi)
      F) Ay adları — locale'e göre, TR çıktısı değişmeden
      G) JSON-LD `inLanguage` (WebSite + FAQPage)
@@ -313,47 +313,37 @@ describe("C) applyFaqTranslations", () => {
 });
 
 /* ===============================================================
-   D) VILLA ROZETİ + E) CANONICAL KİLİTLERİ
+   D) VILLA ROZETİ KALDIRILDI + E) CANONICAL KİLİTLERİ
    =============================================================== */
-describe("D) getVillaBadgesByLocale", () => {
-  it("18) TR → sorgu YOK, boş Map", async () => {
-    const { getVillaBadgesByLocale } = await import(
-      "@/lib/i18n/get-villa-badge-translations.server"
-    );
-    const m = await getVillaBadgesByLocale(["v1", "v2"], "tr");
-    expect(m.size).toBe(0);
-    expect(getTranslationsForParentsMock).not.toHaveBeenCalled();
+describe("D) villa rozeti (villa.badge / villa_translations.badge) kaldırıldı", () => {
+  it("18) rozet çeviri helper'ı yok", () => {
+    expect(
+      existsSync(join(process.cwd(), "lib/i18n/get-villa-badge-translations.server.ts"))
+    ).toBe(false);
   });
 
-  it("19) EN → TEK batch sorgu; boş/whitespace rozet Map'e GİRMEZ", async () => {
-    getTranslationsForParentsMock.mockResolvedValue(
-      new Map([
-        ["v1", { badge: "EN Badge" }],
-        ["v2", { badge: "  " }],
-      ])
+  it("19) VillaList rozet okumuyor ve VillaCard'a rozet geçirmiyor", () => {
+    const src = readFileSync(
+      join(process.cwd(), "app/components/villa/VillaList.tsx"),
+      "utf8"
     );
-    const { getVillaBadgesByLocale } = await import(
-      "@/lib/i18n/get-villa-badge-translations.server"
-    );
-    const m = await getVillaBadgesByLocale(["v1", "v2", "v1"], "en");
-    expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(1);
-    /* Tekrarlı id tekilleştirilir. */
-    expect(getTranslationsForParentsMock.mock.calls[0][1]).toEqual(["v1", "v2"]);
-    expect(m.get("v1")).toBe("EN Badge");
-    expect(m.has("v2")).toBe(false);
+    expect(src).not.toMatch(/getVillaBadges/);
+    expect(src).not.toMatch(/\bbadge\b/);
   });
 });
 
 describe("E) 🔒 CANONICAL KİLİTLERİ", () => {
-  it("20) villa ADI için çeviri yolu YOK — `title` rozet helper'ında okunmaz", async () => {
-    const src = await import("fs").then((fs) =>
-      fs.readFileSync(
-        "lib/i18n/get-villa-badge-translations.server.ts",
-        "utf-8"
-      )
+  it("20) villa ADI için çeviri yolu YOK — VillaTranslationRow `title` içermez", () => {
+    const src = readFileSync(
+      join(process.cwd(), "lib/i18n/translations.types.ts"),
+      "utf8"
     );
-    expect(src).not.toMatch(/rows\.get\([^)]*\)\?\.title/);
-    expect(src).toMatch(/rows\.get\(id\)\?\.badge/);
+    const row = src.slice(
+      src.indexOf("export type VillaTranslationRow"),
+      src.indexOf("};", src.indexOf("export type VillaTranslationRow"))
+    );
+    expect(row).not.toMatch(/^\s*title:/m);
+    expect(row).not.toMatch(/^\s*badge:/m);
   });
 
   it("21) bölge adı için çeviri entity'si YOK", async () => {

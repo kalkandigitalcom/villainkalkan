@@ -79,7 +79,6 @@ export type VillaEmbedBase = {
   id: string;
   slug: string | null;
   title: string | null;
-  badge?: string | null;
   is_active?: boolean | null;
   deleted_at?: string | null;
   bedrooms?: number | null;

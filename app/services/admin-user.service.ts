@@ -197,7 +197,6 @@ export const SIDEBAR_PERMISSIONS: PermissionItem[] = [
   { key: "price_includes", label: "Fiyata Dahil", group: "Mülkler" },
   { key: "locations", label: "Bölgeler", group: "Mülkler" },
   { key: "villa_lists", label: "Mülk Listesi", group: "Mülkler" },
-  { key: "property_owners", label: "Mülk Sahipleri", group: "Mülkler" },
 
   // Rezervasyon
   {

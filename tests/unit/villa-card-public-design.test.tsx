@@ -80,9 +80,8 @@ describe("Public villa kartı — yeni tasarım", () => {
     expect(screen.queryByText(/İNDİRİM/)).toBeNull();
   });
 
-  it("4) villa rozeti ve gerçek puan varsa gösterilir", () => {
-    render(<VillaCard {...BASE} badge="Kapalı ısıtmalı havuz" reviewAverage={4.86} reviewCount={23} />);
-    expect(screen.getByText("Kapalı ısıtmalı havuz")).toBeTruthy();
+  it("4) gerçek puan varsa gösterilir (villa rozeti artık yok)", () => {
+    render(<VillaCard {...BASE} reviewAverage={4.86} reviewCount={23} />);
     expect(screen.getByLabelText("Ortalama puan 4.9 / 5, 23 misafir yorumu")).toBeTruthy();
   });
 

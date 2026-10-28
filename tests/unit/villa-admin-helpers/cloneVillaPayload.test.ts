@@ -2,8 +2,8 @@
    🛡️ cloneVilla — INSERT payload regresyon kilidi
    ===============================================================
    `select("*")` ile okunan kaynak satır blacklist ile INSERT
-   payload'ına taşınır. GENERATED ALWAYS kolonlar (search_title —
-   mig 065, real_title_search — mig 078) payload'a GİRMEMELİ; aksi
+   payload'ına taşınır. GENERATED ALWAYS kolon (search_title —
+   mig 065) payload'a GİRMEMELİ; aksi
    halde PostgreSQL "cannot insert a non-DEFAULT value into column"
    hatası verir. DB default'lu id/created_at/sort_order ve güvenlik
    gereği private_access_token da taşınmaz.
@@ -17,9 +17,7 @@ const { insertVilla, emptyList, SOURCE_ROW } = vi.hoisted(() => ({
     id: "11111111-1111-4111-8111-111111111111",
     title: "Villa Aydoğdu",
     slug: "villa-aydogdu",
-    real_title: "Villa Aydoğdu Gerçek",
     search_title: "villa aydogdu",
-    real_title_search: "villa aydogdu gercek",
     is_active: true,
     deleted_at: null,
     created_at: "2026-01-01T00:00:00Z",
@@ -28,7 +26,6 @@ const { insertVilla, emptyList, SOURCE_ROW } = vi.hoisted(() => ({
     description: "Açıklama",
     guests: 6,
     bedrooms: 3,
-    owner_id: "owner-1",
     pool_sheltered: true,
   } as Record<string, unknown>,
 }));
@@ -77,7 +74,6 @@ describe("cloneVilla — INSERT payload", () => {
     const payload = insertVilla.mock.calls[0][0] as Record<string, unknown>;
     for (const key of [
       "search_title",
-      "real_title_search",
       "id",
       "created_at",
       "sort_order",
@@ -88,18 +84,16 @@ describe("cloneVilla — INSERT payload", () => {
     }
   });
 
-  it("title '… - Kopya', is_active false, real_title ve diğer alanlar kopyalanır", async () => {
+  it("title '… - Kopya', is_active false, diğer alanlar kopyalanır", async () => {
     await cloneVilla(String(SOURCE_ROW.id));
     const payload = insertVilla.mock.calls[0][0] as Record<string, unknown>;
     expect(payload.title).toBe("Villa Aydoğdu - Kopya");
     expect(payload.slug).toBe("villa-aydogdu-kopya");
     expect(payload.is_active).toBe(false);
-    expect(payload.real_title).toBe("Villa Aydoğdu Gerçek");
     expect(payload).toMatchObject({
       description: "Açıklama",
       guests: 6,
       bedrooms: 3,
-      owner_id: "owner-1",
       pool_sheltered: true,
     });
   });

@@ -58,7 +58,7 @@ const getVillaTranslationCached = cache(
 
 /* 🛡️ VİLLA ADI (title) ÇEVİRİSİ KALDIRILDI — villa adı özel isimdir ve
    her locale'de canonical `villa.title` olarak gösterilir. Bu dosyadaki
-   diğer getter'lar (description / seo_description / badge / seo_title)
+   diğer getter'lar (description / seo_description / seo_title)
    DEĞİŞMEDİ ve aynı cache'lenmiş satırı paylaşmaya devam eder. */
 
 /**
@@ -175,30 +175,8 @@ export async function getVillaTranslatedSeoDescription(
 }
 
 /**
- * 🛡️ PHASE 10B — Bir villanın, verilen locale için GÖSTERİLECEK
- * badge'ini döner. `getVillaTranslatedDescription`
- * ile BİREBİR AYNI desen — AYNI `getVillaTranslationCached(villaId, locale)`
- * çağrısını reuse eder (AYRI bir DB sorgusu EKLENMEZ).
- *   - `locale` TR'ye çözümleniyorsa → `originalBadge` (sorgu YOK).
- *   - Çeviri satırı yoksa / `badge` kolonu boş/whitespace ise →
- *     `originalBadge`.
- *   - DB hatası olursa → `originalBadge` (asla throw etmez).
- * `originalBadge` null/undefined olabilir (villa.badge nullable) —
- * bu durumda `resolveTranslatedField` `parentValue` tipini AYNEN
- * korur (null kalır, boş string'e ZORLANMAZ).
- */
-export async function getVillaTranslatedBadge(
-  villaId: string,
-  originalBadge: string | null | undefined,
-  locale: Locale
-): Promise<string | null | undefined> {
-  const translation = await getVillaTranslationCached(villaId, locale);
-  return resolveTranslatedField(translation?.badge, originalBadge);
-}
-
-/**
  * 🛡️ PHASE 10B — Bir villanın, verilen locale için `seo_title`
- * çevirisini döner. `getVillaTranslatedBadge` ile AYNI desen — AYNI
+ * çevirisini döner. `getVillaTranslatedDescription` ile AYNI desen — AYNI
  * `getVillaTranslationCached(villaId, locale)` çağrısını reuse eder.
  *   - `locale` TR'ye çözümleniyorsa → `originalSeoTitle` (sorgu YOK).
  *   - Çeviri satırı yoksa / `seo_title` kolonu boş/whitespace ise →

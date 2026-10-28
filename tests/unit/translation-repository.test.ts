@@ -187,7 +187,6 @@ beforeEach(() => {
         locale: "en",
         title: "Mock Title",
         description: null,
-        badge: null,
         seo_title: null,
         seo_description: null,
         created_at: "2026-01-01T00:00:00.000Z",
@@ -386,7 +385,6 @@ describe("translationRepository.upsertOne", () => {
     await translationRepository.upsertOne("villa", "villa-uuid-1", "en", {
       title: "Test Villa",
       description: "Açıklama",
-      badge: null,
       seo_title: null,
       seo_description: null,
     });
@@ -398,7 +396,6 @@ describe("translationRepository.upsertOne", () => {
         locale: "en",
         title: "Test Villa",
         description: "Açıklama",
-        badge: null,
         seo_title: null,
         seo_description: null,
       },

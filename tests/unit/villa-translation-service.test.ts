@@ -35,7 +35,6 @@ const VALID_ROW = {
   villa_id: "villa-uuid-1",
   locale: "en",
   description: null,
-  badge: null,
   seo_title: null,
   seo_description: null,
   created_at: "2026-01-01T00:00:00.000Z",
@@ -175,7 +174,7 @@ describe("upsertVillaTranslation", () => {
      testleri KALDIRILDI — `title` artık çeviri girdisi DEĞİL (villa adı
      özel isimdir, çevrilmez). Diğer alanların doğrulaması aşağıda. */
 
-  it("boş string alanlar null'a normalize edilir (description/badge/seoTitle/seoDescription)", async () => {
+  it("boş string alanlar null'a normalize edilir (description/seoTitle/seoDescription)", async () => {
     const { upsertVillaTranslation } = await import(
       "@/app/services/villa-translation.service"
     );
@@ -184,7 +183,6 @@ describe("upsertVillaTranslation", () => {
       villaId: "villa-uuid-1",
       locale: "en",
       description: "   ",
-      badge: "",
       seoTitle: undefined,
       seoDescription: null,
     });
@@ -195,7 +193,6 @@ describe("upsertVillaTranslation", () => {
       "en",
       {
         description: null,
-        badge: null,
         seo_title: null,
         seo_description: null,
       }
@@ -211,7 +208,6 @@ describe("upsertVillaTranslation", () => {
       villaId: "villa-uuid-1",
       locale: "en",
       description: "Açıklama",
-      badge: "Yeni",
       seoTitle: "SEO Başlık",
       seoDescription: "SEO Açıklama",
     });

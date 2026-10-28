@@ -141,15 +141,6 @@ describe("buildVillaCorePayload — string defaults", () => {
     });
     expect(p.cleaning_currency).toBe("EUR");
   });
-
-  it("badge defaults to empty string", () => {
-    const p = buildVillaCorePayload({
-      form: { ...minimalForm },
-      mapData: coordsMap,
-      slug: "v",
-    });
-    expect(p.badge).toBe("");
-  });
 });
 
 describe("buildVillaCorePayload — map type encoding (CRITICAL)", () => {
@@ -303,7 +294,7 @@ describe("buildVillaCorePayload — delegated normalizers", () => {
 });
 
 describe("buildVillaCorePayload — key set invariant", () => {
-  it("returns EXACTLY 44 expected keys (regression guard)", () => {
+  it("returns EXACTLY 40 expected keys (regression guard)", () => {
     /* Bu test payload object'in key set'inin sabit kaldığını
        garantiler. Yeni alan eklenirse buradaki sayı + listenin
        bilinçli güncellenmesi gerekir. DB write surface kontrolü. */
@@ -314,7 +305,6 @@ describe("buildVillaCorePayload — key set invariant", () => {
     });
     const keys = Object.keys(p).sort();
     const EXPECTED = [
-      "badge",
       "bathroom_layout",
       "bathrooms",
       "bedroom_layout",
@@ -342,7 +332,6 @@ describe("buildVillaCorePayload — key set invariant", () => {
       "map_type",
       "minimum_stay_nights",
       "noindex",
-      "owner_id",
       "pool_depth",
       "pool_heating_currency",
       "pool_heating_fee",
@@ -351,12 +340,10 @@ describe("buildVillaCorePayload — key set invariant", () => {
       "pool_sheltered",
       "pool_type",
       "pool_width",
-      "real_title",
       "seo_description",
       "seo_title",
       "slug",
       "title",
-      "tourism_document_number",
       "youtube_videos",
     ].sort();
     /* 🛡️ SABİT LİSTE GÜNCELLEMESİ (FAZ 1/A): testin kendi yorumunun
@@ -365,8 +352,12 @@ describe("buildVillaCorePayload — key set invariant", () => {
        pool_heating_fee/_currency/_months (074-076), real_title (072),
        owner_id (property owners) — listeye eklendi. Anahtar SİLİNMEDİ;
        `toEqual(EXPECTED)` tam-küme kontrolü AYNEN duruyor, yani guard
-       gevşemedi. Üretim kodu DEĞİŞMEDİ. */
-    expect(keys.length).toBe(44);
+       gevşemedi. Üretim kodu DEĞİŞMEDİ.
+       🛡️ ALAN KALDIRMA: badge, real_title, owner_id ve
+       tourism_document_number (villa alanları DB'den düşürüldü)
+       listeden çıkarıldı.
+       Tam-küme kontrolü AYNEN duruyor. */
+    expect(keys.length).toBe(40);
     expect(keys).toEqual(EXPECTED);
   });
 });

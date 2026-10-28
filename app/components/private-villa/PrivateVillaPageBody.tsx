@@ -248,10 +248,7 @@ export default async function PrivateVillaPageBody({
   return (
     <VillaDetailBody
       locale={locale}
-      /* 🛡️ Gizli linkte turizm belge numarası HİÇBİR KOŞULDA gösterilmez.
-         Alan yalnız VillaInfoBar'da (belge kartı) okunur; null verilince
-         kart + kolonu render edilmez. Diğer hiçbir prop/mantık etkilenmez. */
-      villa={{ ...villa, tourism_document_number: null }}
+      villa={villa}
       villaTitle={villa.title}
       displayLocation={villa.location}
       displayDescription={description}

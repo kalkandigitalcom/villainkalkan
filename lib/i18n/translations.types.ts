@@ -27,7 +27,6 @@ export type VillaTranslationRow = {
      edilmemesi, yanlışlıkla yeniden okunmasını derleme zamanında
      engeller. */
   description: string | null;
-  badge: string | null;
   seo_title: string | null;
   seo_description: string | null;
   created_at: string;

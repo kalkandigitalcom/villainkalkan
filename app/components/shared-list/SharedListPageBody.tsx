@@ -18,7 +18,6 @@ import { getSharedVillaListByToken } from "@/app/services/shared-villa-list.serv
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import { getVillaBadgesByLocale } from "@/lib/i18n/get-villa-badge-translations.server";
 
 /* ===============================================================
    🛡️ /liste/[token] — admin curator share landing
@@ -54,7 +53,6 @@ type RawVilla = {
   /* Pasif villa özel linki (/v/[token]) — mevcut sistem. */
   private_access_token?: string | null;
   deleted_at: string | null;
-  badge: string | null;
   guests: number | null;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -215,15 +213,6 @@ export default async function SharedListPageBody({
     notFound();
   }
 
-  /* 🛡️ Kart rozeti (villa_translations.badge) TEK batch sorguda
-     çözülür — `VillaList` / `DiscountCollection` ile AYNI desen,
-     N+1 YOK. TR'de sorgu HİÇ atılmaz → TR çıktısı ve maliyeti
-     BİREBİR eskisi gibi. Çeviri yoksa canonical rozet gösterilir. */
-  const badgeByVillaId = await getVillaBadgesByLocale(
-    sorted.map((v) => v.id),
-    locale
-  );
-
   /* 3) Pricing context — search_params snapshot'ından. */
   const sp = list.searchParams;
   const hasDateRange = !!sp?.start && !!sp?.end;
@@ -371,7 +360,6 @@ export default async function SharedListPageBody({
                   price={fallback?.price ?? undefined}
                   currency={fallback?.currency || "TRY"}
                   images={images}
-                  badge={badgeByVillaId.get(v.id) ?? v.badge ?? undefined}
                   bedrooms={v.bedrooms || 1}
                   bathrooms={v.bathrooms || 1}
                   guests={v.guests || 2}

@@ -34,8 +34,6 @@ export type VillaForm = {
    *  aylarda aktif. Ay numarası: 1=Ocak. */
   pool_heating_months?: number[] | null;
 
-  badge?: string;
-
   pool_type?: string;
   pool_depth?: string;
   pool_width?: string;
@@ -60,11 +58,6 @@ export type VillaForm = {
   /** Boş string runtime'da → null fallback (global rate). */
   custom_prepayment_rate?: number | string | null;
 
-  /* 🛡️ TOURISM DOCUMENT NO (db/migrations/017 — Faz 22).
-   *  T.C. Kültür ve Turizm Bakanlığı belge no, ham text.
-   *  Opsiyonel; UI input bu fazda eklenmedi (sadece pipeline). */
-  tourism_document_number?: string | null;
-
   /* 🛡️ MINIMUM STAY NIGHTS (Faz 26B/C).
    *  Admin number input → null veya >=1 integer.
    *  BookingSidebar enforcement: >=2 ise aktif.
@@ -85,12 +78,6 @@ export type VillaForm = {
    *  Booking/pricing/availability/reservation engine'lere etki YOK.
    *  Range: 0-100; invalid/boş → 20 fallback (DEFAULT_COMMISSION_RATE). */
   commission_rate?: number | string | null;
-
-  /* 🛡️ MÜLK SAHİBİ (property_owners FK — migration 044, nullable).
-   *  "Bu villa kimin?" bağlantısı. Booking/pricing/availability/
-   *  reservation engine'lerine etkisi YOK; yalnız admin form passthrough.
-   *  Boş/seçilmemiş → null. */
-  owner_id?: string | null;
 
   /* 🛡️ KONAKLAMA DÜZENİ (db/migrations/047 — JSONB).
    *  Airbnb tarzı detaylı oda düzeni. Mevcut bedrooms/bathrooms

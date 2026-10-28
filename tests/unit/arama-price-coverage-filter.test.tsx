@@ -77,9 +77,6 @@ vi.mock("@/app/services/villa-review.service", () => ({
 vi.mock("@/lib/i18n/get-villa-type-translations.server", () => ({
   getVillaTypeNamesByLocale: async () => ({}),
 }));
-vi.mock("@/lib/i18n/get-villa-badge-translations.server", () => ({
-  getVillaBadgesByLocale: async () => new Map<string, string>(),
-}));
 vi.mock("@/lib/storage.helpers", () => ({
   resolveVillaImageUrl: (u: string | null) => u || "",
   appendAssetVersion: (u: string) => u,
@@ -157,7 +154,6 @@ function villa(id: string, prices: PriceRow[], discounts: DiscountRow[] = []) {
     title: `Villa ${id}`,
     price: null,
     currency: "TRY",
-    badge: null,
     bedrooms: 3,
     bathrooms: 2,
     guests: 6,

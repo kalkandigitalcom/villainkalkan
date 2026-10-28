@@ -347,10 +347,11 @@ describe("kapatılan bulgular geri gelmiyor", () => {
 });
 
 /* ---------------------------------------------------------------
-   TEST 4 — villa.badge çevirisi TÜM kart yüzeylerinde bağlı
+   TEST 4 — villa rozeti (villa.badge / villa_translations.badge)
+   sistemden kaldırıldı; hiçbir public kart yüzeyi geri getirmiyor
 --------------------------------------------------------------- */
 
-const BADGE_SURFACES = [
+const CARD_SURFACES = [
   "app/components/search/AramaPageBody.tsx",
   "app/components/search/KiralikVillalarPageBody.tsx",
   "app/(public)/favoriler/FavoritesGrid.tsx",
@@ -358,49 +359,32 @@ const BADGE_SURFACES = [
   "app/components/short-gaps/ShortGapsPageBody.tsx",
   "app/components/shared-list/SharedListPageBody.tsx",
   "app/components/villa/VillaList.tsx",
-  /* DiscountCollection listeden çıkarıldı: indirim kartları villa
-     rozetini GÖSTERMEZ (önceki VillaCard discount branch'i de
-     göstermiyordu); rozet çevirisi sorgusu orada artık yok. */
   "app/components/villa/SimilarVillasSection.tsx",
+  "app/components/home/DiscountCollection.tsx",
 ];
 
-describe("villa.badge — tüm public kart yüzeylerinde locale-aware", () => {
-  it.each(BADGE_SURFACES)("%s badge'i locale'e göre çözüyor", (f) => {
+describe("villa rozeti kaldırıldı — public kart yüzeyleri", () => {
+  it.each(CARD_SURFACES)("%s villa rozeti okumuyor/geçirmiyor", (f) => {
     const src = readFileSync(join(ROOT, f), "utf8");
-    const resolved =
-      src.includes("getVillaBadgesByLocale") ||
-      src.includes("getVillaBadgesAction") ||
-      /resolveTranslatedField\(\s*\n?\s*villaTranslations\.get\([^)]*\)\?\.badge/.test(
-        src
-      );
-    expect(resolved, `${f} badge çevirisini okumuyor`).toBe(true);
+    expect(src).not.toMatch(/getVillaBadges/);
+    expect(src).not.toMatch(/\bbadge=\{/);
+    expect(src).not.toMatch(/\?\.badge\b|\bv(illa)?\.badge\b/);
   });
 
-  it.each(BADGE_SURFACES)("%s canonical fallback'i koruyor", (f) => {
-    const src = readFileSync(join(ROOT, f), "utf8");
-    /* Çeviri yoksa canonical rozet gösterilmeli → `?? <canonical>`
-       veya `resolveTranslatedField(..., canonical)` deseni. */
-    const hasFallback =
-      /badgeBy(VillaId|Id)(\.get\([^)]*\)|\[[^\]]*\])\s*\?\?/.test(src) ||
-      /resolveTranslatedField\(/.test(src);
-    expect(hasFallback, `${f} canonical fallback'i kaybetmiş`).toBe(true);
+  it("VillaCard artık `badge` prop'u kabul etmiyor", () => {
+    const src = readFileSync(
+      join(ROOT, "app/components/villa/VillaCard.tsx"),
+      "utf8"
+    );
+    expect(src).not.toMatch(/^\s*badge\?: string;/m);
+    expect(src).not.toMatch(/\{badge\}/);
   });
 
-  it("badge çözümü villa BAŞINA değil, BATCH (N+1 yok)", () => {
-    for (const f of BADGE_SURFACES) {
-      const src = readFileSync(join(ROOT, f), "utf8");
-      const calls =
-        (src.match(/getVillaBadgesByLocale\(/g) || []).length +
-        (src.match(/getVillaBadgesAction\(/g) || []).length;
-      /* Her yüzeyde EN FAZLA 1 batch çağrısı (AramaPageBody iki listeyi
-         TEK çağrıda birleştirir). 0 ise `resolveTranslatedField` üst
-         seviyede batch ile çözüyor demektir (SimilarVillasSection). */
-      expect(calls, `${f} ${calls} kez badge sorgusu yapıyor`).toBeLessThanOrEqual(1);
-      /* `.map(` içinden çağrı YAPILMAMALI (klasik N+1 imzası). */
-      expect(
-        /\.map\([^)]*\)\s*=>[\s\S]{0,200}?getVillaBadges/.test(src),
-        `${f} map içinde badge sorgusu yapıyor (N+1)`
-      ).toBe(false);
-    }
+  it("rozet çeviri helper'ı silindi", () => {
+    expect(
+      existsSync(
+        join(ROOT, "lib/i18n/get-villa-badge-translations.server.ts")
+      )
+    ).toBe(false);
   });
 });

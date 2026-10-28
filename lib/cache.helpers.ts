@@ -138,7 +138,6 @@ export type PublicVillaCard = Pick<
   | "price"
   | "currency"
   | "images"
-  | "badge"
   | "bedrooms"
   | "bathrooms"
   | "guests"
@@ -155,7 +154,6 @@ function toPublicVillaCard(v: VillaDTO): PublicVillaCard {
     price: v.price,
     currency: v.currency,
     images: v.images,
-    badge: v.badge,
     bedrooms: v.bedrooms,
     bathrooms: v.bathrooms,
     guests: v.guests,
@@ -306,7 +304,6 @@ export type HomepageCollectionVilla = {
   location: string;
   price: number | null;
   currency: string;
-  badge: string | null;
   bedrooms: number;
   bathrooms: number;
   guests: number;
@@ -395,7 +392,6 @@ export const getCachedHomepageCollectionVillas = unstable_cache(
         id: string;
         slug: string | null;
         title: string | null;
-        badge: string | null;
         bedrooms: number | null;
         bathrooms: number | null;
         guests: number | null;
@@ -467,7 +463,6 @@ export const getCachedHomepageCollectionVillas = unstable_cache(
             ? Number(firstPrice.price)
             : null,
         currency: firstPrice?.currency || "TRY",
-        badge: v.badge,
         bedrooms: v.bedrooms ?? 1,
         bathrooms: v.bathrooms ?? 1,
         guests: v.guests ?? 2,
@@ -574,7 +569,6 @@ export const getCachedDiscountCollectionVillas = unstable_cache(
         id: string;
         slug: string | null;
         title: string | null;
-        badge: string | null;
         bedrooms: number | null;
         bathrooms: number | null;
         guests: number | null;
@@ -825,7 +819,6 @@ export const getCachedDiscountCollectionVillas = unstable_cache(
             ? Number(referencePrice.price)
             : null,
         currency: referencePrice?.currency || "TRY",
-        badge: v.badge,
         bedrooms: v.bedrooms ?? 1,
         bathrooms: v.bathrooms ?? 1,
         guests: v.guests ?? 2,

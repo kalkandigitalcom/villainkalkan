@@ -50,8 +50,6 @@ const baseDTO: ReservationShareDTO = {
   cleaningFee: 3500,
   poolHeatingFee: null,
   paymentMethodLabel: null,
-  ownerName: null,
-  ownerPhone: null,
   guestName: "Ahmet Yılmaz",
   guestPhone: null,
   guestEmail: null,

@@ -53,8 +53,8 @@ import type {
    yorumlar + "Benzer Villalar" TR ile birebir aynı sırada geliyor.
 
    Tüm UI metinleri i18n dictionary'den çözülür (hardcoded TR metin
-   KALMADI). DB-backed içerik (features/rules/priceIncludes/location/
-   badge) Phase 8D-1'in batch helper'ı ile KOLEKSİYON BAŞINA TEK
+   KALMADI). DB-backed içerik (features/rules/priceIncludes/location)
+   Phase 8D-1'in batch helper'ı ile KOLEKSİYON BAŞINA TEK
    sorguda çözülür; villa ADI çevrilmez (özel isim → canonical
    `villa.title`).
 

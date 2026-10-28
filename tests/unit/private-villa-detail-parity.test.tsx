@@ -41,7 +41,6 @@ const VILLA = {
   map_embed: null,
   latitude: null,
   longitude: null,
-  tourism_document_number: null as string | null,
   youtube_videos: [],
   bedroom_layout: [],
   bathroom_layout: [],
@@ -251,51 +250,35 @@ describe("DOM paritesi — /v/[token] == /kiralik-villa/[slug] (JSON-LD hariç)"
   );
 });
 
-describe("Turizm belge numarası görünürlüğü", () => {
+describe("Turizm belge numarası kaldırıldı", () => {
   const CERT = "07-1234";
   const infoGrid = (c: HTMLElement) =>
     c.querySelector("div.flex-1.min-w-0.grid") as HTMLElement | null;
-
-  /* Üst tanıtım bandı: belge no YALNIZ varsa "Belge No: …" satırı. */
   const docLine = (c: HTMLElement) =>
     c.querySelector("[data-villa-document-number]") as HTMLElement | null;
+  /* Satırda eski bir değer kalmış olsa bile hiçbir yüzey göstermez. */
+  const LEGACY = { ...VILLA, tourism_document_number: CERT } as typeof VILLA;
 
-  it("normal detay + belge VAR → 'Belge No' satırı görünür", async () => {
-    state.villa = { ...VILLA, tourism_document_number: CERT } as typeof VILLA;
+  it("normal detay → belge satırı / numarası yok", async () => {
+    state.villa = LEGACY;
     const el = await NormalVillaDetail({
       params: Promise.resolve({ slug: VILLA.slug }),
       searchParams: Promise.resolve({}),
     });
     const { container } = render(el as React.ReactElement);
-    const line = docLine(container);
-    expect(line).not.toBeNull();
-    expect(line!.textContent).toContain(`Belge No: ${CERT}`);
+    expect(docLine(container)).toBeNull();
+    expect(container.innerHTML).not.toContain(CERT);
+    expect(container.textContent).not.toContain("Belge No");
   });
 
-  it.each([null, "   "])(
-    "normal detay + belge=%s → satır hiç render edilmez",
-    async (doc) => {
-      state.villa = { ...VILLA, tourism_document_number: doc } as typeof VILLA;
-      const el = await NormalVillaDetail({
-        params: Promise.resolve({ slug: VILLA.slug }),
-        searchParams: Promise.resolve({}),
-      });
-      const { container } = render(el as React.ReactElement);
-      expect(docLine(container)).toBeNull();
-    }
-  );
+  it("/v/[token] → belge satırı / numarası yok", async () => {
+    state.villa = LEGACY;
+    const { container } = await renderPrivate();
+    expect(docLine(container)).toBeNull();
+    expect(container.innerHTML).not.toContain(CERT);
+  });
 
-  it.each([CERT, null, "   "])(
-    "/v/[token] + belge=%s → belge HİÇ gösterilmez",
-    async (doc) => {
-      state.villa = { ...VILLA, tourism_document_number: doc } as typeof VILLA;
-      const { container } = await renderPrivate();
-      expect(docLine(container)).toBeNull();
-      expect(container.innerHTML).not.toContain(CERT);
-    }
-  );
-
-  it("belge VAR iken /v/[token] DOM'u = belgesiz normal detay DOM'u", async () => {
+  it("/v/[token] DOM'u = normal detay DOM'u", async () => {
     const strip = (c: HTMLElement) => {
       c.querySelectorAll('script[type="application/ld+json"]').forEach((n) => n.remove());
       return c.innerHTML;
@@ -307,16 +290,14 @@ describe("Turizm belge numarası görünürlüğü", () => {
     const n = render(normalEl as React.ReactElement);
     const normalHtml = strip(n.container);
     n.unmount();
-    state.villa = { ...VILLA, tourism_document_number: CERT } as typeof VILLA;
     const p = await renderPrivate();
     expect(strip(p.container)).toBe(normalHtml);
   });
 
   it.each([
-    [{ guests: 6, bedrooms: 3, bathrooms: 2, doc: CERT }, 4, "grid-cols-2 md:grid-cols-4"],
-    [{ guests: 6, bedrooms: 3, bathrooms: 2, doc: null }, 3, "grid-cols-3 md:grid-cols-3"],
-    [{ guests: 6, bedrooms: 0, bathrooms: 2, doc: null }, 2, "grid-cols-2 md:grid-cols-2"],
-    [{ guests: 6, bedrooms: 0, bathrooms: 0, doc: null }, 1, "grid-cols-1 md:grid-cols-1"],
+    [{ guests: 6, bedrooms: 3, bathrooms: 2 }, 3, "grid-cols-3 md:grid-cols-3"],
+    [{ guests: 6, bedrooms: 0, bathrooms: 2 }, 2, "grid-cols-2 md:grid-cols-2"],
+    [{ guests: 6, bedrooms: 0, bathrooms: 0 }, 1, "grid-cols-1 md:grid-cols-1"],
   ])("VillaInfoBar kolon sayısı görünen kutu sayısına eşit (%o)", (v, count, cls) => {
     const { container } = render(
       <VillaInfoBar
@@ -325,12 +306,12 @@ describe("Turizm belge numarası görünürlüğü", () => {
         guests={v.guests}
         bedrooms={v.bedrooms}
         bathrooms={v.bathrooms}
-        tourismDocumentNumber={v.doc}
       />
     );
     const grid = infoGrid(container)!;
     expect(grid.children).toHaveLength(count);
     expect(grid.className).toContain(cls);
+    expect(container.innerHTML).not.toContain("turizm-bakanligi");
   });
 });
 

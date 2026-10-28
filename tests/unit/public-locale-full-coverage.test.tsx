@@ -146,7 +146,6 @@ describe("3) TR değerleri eski hardcoded metinlerle BİREBİR", () => {
     expect(d.badge).toBe("Özel Paylaşım");
     expect(d.badgeNote).toBe("Sadece bağlantıyı bilen kişilere açık");
     expect(d.dimensionsCaption).toBe("Genişlik × Uzunluk × Derinlik");
-    expect(d.tourismAuthority).toBe("T.C. Kültür ve Turizm Bakanlığı");
   });
 });
 

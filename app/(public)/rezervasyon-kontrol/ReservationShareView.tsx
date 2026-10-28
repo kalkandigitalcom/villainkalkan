@@ -338,38 +338,8 @@ export default async function ReservationShareView({
         </section>
       )}
 
-      {/* MÜLK SAHİBİ + MİSAFİR İLETİŞİM — tek kart, ince divider ile. */}
+      {/* MİSAFİR İLETİŞİM */}
       <section className="mt-5 rounded-2xl border border-[var(--color-stone-100)] bg-white p-5 md:p-6">
-        <h2 className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--color-stone-500)]">
-          <User size={15} className="text-[var(--brand-coral)]" aria-hidden />
-          {dict.shareOwnerHeading}
-        </h2>
-        {data.ownerName || data.ownerPhone ? (
-          <div className="mt-3 space-y-1">
-            {data.ownerName && (
-              <p className="text-[15px] font-medium text-[var(--color-stone-900)]">
-                {data.ownerName}
-              </p>
-            )}
-            {data.ownerPhone && (
-              <div className="flex items-center flex-wrap gap-x-3 gap-y-2 text-[14px] text-[var(--color-stone-600)]">
-                <span className="tabular-nums">{data.ownerPhone}</span>
-                <PhoneActions
-                  phone={data.ownerPhone}
-                  whatsappAriaLabel={dict.shareWhatsappAriaLabel}
-                  phoneAriaLabel={dict.sharePhoneAriaLabel}
-                />
-              </div>
-            )}
-          </div>
-        ) : (
-          <p className="mt-3 text-[13.5px] text-[var(--color-stone-500)]">
-            {dict.shareOwnerEmpty}
-          </p>
-        )}
-
-        <div className="my-5 border-t border-[var(--color-stone-100)]" />
-
         <h2 className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--color-stone-500)]">
           <User size={15} className="text-[var(--brand-coral)]" aria-hidden />
           {dict.shareGuestHeading}

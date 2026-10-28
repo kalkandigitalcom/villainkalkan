@@ -46,7 +46,7 @@ export const homepageRepository = {
   /** PUBLIC CARDS — yalnız aktif (is_active=true); embedded villa +
    *  location + images + prices; sort_order ASC. cache.helpers >
    *  getCachedHomepageCollectionVillas delege. `findAllForAdmin`'den
-   *  FARKLI: public is_active filter + ZENGİN embed (badge/bedrooms/
+   *  FARKLI: public is_active filter + ZENGİN embed (bedrooms/
    *  bathrooms/guests/location/villa_prices). Embedded select string +
    *  .eq + order BİREBİR cache.helpers'tan kopyalandı; visibility filter
    *  / image sort / firstPrice / review-merge mapping caller'da KALIR. */
@@ -64,7 +64,6 @@ export const homepageRepository = {
           id,
           slug,
           title,
-          badge,
           bedrooms,
           bathrooms,
           guests,

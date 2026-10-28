@@ -163,14 +163,10 @@ describe("TR byte-identity — VillaReviewsSection", () => {
 });
 
 describe("TR byte-identity — VillaInfoBar", () => {
-  it("bilgi etiketleri ve belge metni değişmedi", () => {
+  it("bilgi etiketleri değişmedi", () => {
     expect(tr.card.person).toBe("Kişi");
     expect(tr.card.bedroom).toBe("Yatak Odası");
     expect(tr.card.bathroom).toBe("Banyo");
-    expect(tr.villa.tourismCertificate).toBe("Turizm Belgesi");
-    expect(formatDictionaryString(tr.villa.documentNumber, { n: "12345" })).toBe(
-      "Belge No: 12345"
-    );
   });
 });
 
@@ -309,7 +305,6 @@ describe("EN — Türkçe hardcoded metin kalmadı (regresyon kilidi)", () => {
     ["villa.checkInLabel", tr.villa.checkInLabel, en.villa.checkInLabel],
     ["villa.checkOutLabel", tr.villa.checkOutLabel, en.villa.checkOutLabel],
     ["villa.similarVillasTitle", tr.villa.similarVillasTitle, en.villa.similarVillasTitle],
-    ["villa.tourismCertificate", tr.villa.tourismCertificate, en.villa.tourismCertificate],
     ["villaTabs.prices", tr.villaTabs.prices, en.villaTabs.prices],
     ["villaTabs.distances", tr.villaTabs.distances, en.villaTabs.distances],
     ["villaTabs.reviews", tr.villaTabs.reviews, en.villaTabs.reviews],

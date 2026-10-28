@@ -18,9 +18,6 @@ import type { Dispatch, SetStateAction } from "react";
 /* ---------------- VILLA FORM SHAPE ---------------- */
 export type VillaFormShape = {
   title?: string;
-  /* 🛡️ Migration 072 — admin-only, bilgi amaçlı. Public'e aktarılmaz,
-     slug üretiminde kullanılmaz. */
-  real_title?: string;
   description?: string;
   guests?: number;
   bedrooms?: number;
@@ -45,8 +42,6 @@ export type VillaFormShape = {
    *  aylarda aktif. Ay numarası: 1=Ocak. */
   pool_heating_months?: number[] | null;
 
-  badge?: string;
-
   pool_type?: string;
   pool_depth?: string;
   pool_width?: string;
@@ -70,11 +65,6 @@ export type VillaFormShape = {
 
   custom_prepayment_rate?: string | number;
 
-  /* 🛡️ TOURISM DOCUMENT NO (db/migrations/017 — Faz 23 UI binding).
-   *  Form state'inde initialize boş string; DB-level kolon TEXT NULL.
-   *  Validation YOK (Faz 22 altyapı kararı). */
-  tourism_document_number?: string;
-
   /* 🛡️ MINIMUM STAY NIGHTS (Faz 26B/C).
    *  null → enforcement YOK (BookingSidebar bypass).
    *  >=2 → BookingSidebar warning + CTA disable enforcement aktif.
@@ -88,10 +78,6 @@ export type VillaFormShape = {
    *  (villa.commission_rate). Range: 0-100 (form-side validation).
    *  Boş/invalid → service'te 20 fallback (DEFAULT_COMMISSION_RATE). */
   commission_rate?: number | null;
-
-  /* 🛡️ MÜLK SAHİBİ (property_owners FK — migration 044, nullable).
-   *  BasicInfoStep select binding'i; boş seçim → null. */
-  owner_id?: string | null;
 } & Record<string, unknown>;
 
 export type VillaFormSetter = Dispatch<SetStateAction<VillaFormShape>>;

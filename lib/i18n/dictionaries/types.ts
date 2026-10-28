@@ -326,9 +326,6 @@ export type Dictionary = {
     /* 🛡️ PHASE 10G — CollapsibleDescription.tsx */
     readMore: string;
     readLess: string;
-    tourismCertificate: string;
-    /** template: {n} */
-    documentNumber: string;
   };
   /* 🛡️ PHASE 10D — BATCH 4: LocationStep canonical mesafe başlıklarının
      (yalnız TITLE — mesafe DEĞERİ "5 km"/"500 m" ASLA buraya girmez)
@@ -595,8 +592,6 @@ export type Dictionary = {
     locationEyebrow: string;
     approximateLocation: string;
     openInGoogleMaps: string;
-    tourismAuthority: string;
-    documentNumberLabel: string;
   };
   /* ===============================================================
      🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — /liste/[token]
@@ -1401,8 +1396,6 @@ export type Dictionary = {
     shareRemaining: string;
     shareDeposit: string;
     shareDepositNote: string;
-    shareOwnerHeading: string;
-    shareOwnerEmpty: string;
     shareGuestHeading: string;
     shareGuestName: string;
     shareGuestPhone: string;

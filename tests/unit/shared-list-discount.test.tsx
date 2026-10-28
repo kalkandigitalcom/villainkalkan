@@ -49,7 +49,6 @@ const ROW = {
   title: "Villa Bir",
   is_active: true,
   deleted_at: null,
-  badge: null,
   guests: 4,
   bedrooms: 2,
   bathrooms: 1,
@@ -85,9 +84,6 @@ vi.mock("@/lib/db/villa.repository.server", () => ({
   villaAdminRepository: {
     findCardsByIds: async () => ({ data: [ROW], error: null }),
   },
-}));
-vi.mock("@/lib/i18n/get-villa-badge-translations.server", () => ({
-  getVillaBadgesByLocale: async () => new Map(),
 }));
 
 import SharedListPageBody from "@/app/components/shared-list/SharedListPageBody";

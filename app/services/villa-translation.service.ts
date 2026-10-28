@@ -6,7 +6,7 @@ import type { VillaTranslationRow } from "@/lib/i18n/translations.types";
  * 🛡️ PHASE 10A — Admin Villa Translation UI
  *
  * Bu servis yalnızca EN/DE villa çevirilerinin (villa_translations —
- * description/badge/seo_title/seo_description; `title` ÇEVRİLMEZ)
+ * description/seo_title/seo_description; `title` ÇEVRİLMEZ)
  * okunması/yazılması için var. TR bu UI üzerinden YAZILAMAZ (locale
  * whitelist aşağıda "en" | "de" ile kapatılmış durumda).
  *
@@ -22,7 +22,6 @@ function isWritableLocale(value: unknown): value is WritableTranslationLocale {
 }
 
 const MAX_DESCRIPTION_LEN = 5000;
-const MAX_BADGE_LEN = 60;
 const MAX_SEO_TITLE_LEN = 120; // SeoStep.tsx ile AYNI
 const MAX_SEO_DESCRIPTION_LEN = 300; // SeoStep.tsx ile AYNI
 
@@ -32,7 +31,6 @@ export type VillaTranslationInput = {
   /* 🛡️ `title` KALDIRILDI — villa adı özel isimdir, çevrilmez.
      Her locale'de canonical `villa.title` gösterilir. */
   description?: string | null;
-  badge?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
 };
@@ -79,11 +77,6 @@ export async function upsertVillaTranslation(
     return { ok: false, error: `Açıklama ${MAX_DESCRIPTION_LEN} karakteri geçemez` };
   }
 
-  const badge = normalize(input.badge);
-  if (badge && badge.length > MAX_BADGE_LEN) {
-    return { ok: false, error: `Rozet ${MAX_BADGE_LEN} karakteri geçemez` };
-  }
-
   const seoTitle = normalize(input.seoTitle);
   if (seoTitle && seoTitle.length > MAX_SEO_TITLE_LEN) {
     return { ok: false, error: `SEO başlık ${MAX_SEO_TITLE_LEN} karakteri geçemez` };
@@ -102,7 +95,6 @@ export async function upsertVillaTranslation(
      (migration 082) duruyor ama bu koddan asla yazılmaz/okunmaz. */
   const { data, error } = await translationRepository.upsertOne("villa", villaId, locale, {
     description,
-    badge,
     seo_title: seoTitle,
     seo_description: seoDescription,
   });

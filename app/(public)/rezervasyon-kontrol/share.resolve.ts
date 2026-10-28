@@ -78,9 +78,6 @@ export type ReservationShareDTO = {
   poolHeatingFee: number | null;
   /** "Havale/EFT" | "Kredi Kartı" | null (yöntem tanımlı değilse). */
   paymentMethodLabel: string | null;
-  /* Mülk sahibi — yalnız ad + telefon (email/iban ASLA). villa.owner yoksa null. */
-  ownerName: string | null;
-  ownerPhone: string | null;
   /* Misafir — rezervasyonun kendi kaydı (name/phone/email). */
   guestName: string | null;
   guestPhone: string | null;
@@ -182,11 +179,6 @@ export async function resolveReservationShare(
                   sort_order: number | null;
                 }>
               | null;
-            owner: {
-              first_name: string | null;
-              last_name: string | null;
-              phone: string | null;
-            } | null;
           } | null;
         })
       : null;
@@ -267,16 +259,6 @@ export async function resolveReservationShare(
     );
   }
 
-  /* Mülk sahibi — yalnız ad + telefon (email/iban embed edilmedi). */
-  const owner = row.villa?.owner ?? null;
-  const ownerName = owner
-    ? [owner.first_name, owner.last_name]
-        .map((s) => (s || "").trim())
-        .filter(Boolean)
-        .join(" ") || null
-    : null;
-  const ownerPhone = owner?.phone?.trim() || null;
-
   /* Misafir — rezervasyonun kendi kaydı. */
   const guestName = row.name?.trim() || null;
   const guestPhone = row.phone?.trim() || null;
@@ -304,8 +286,6 @@ export async function resolveReservationShare(
       cleaningFee: cleaningFeeVal > 0 ? cleaningFeeVal : null,
       poolHeatingFee: poolHeatingFeeVal > 0 ? poolHeatingFeeVal : null,
       paymentMethodLabel,
-      ownerName,
-      ownerPhone,
       guestName,
       guestPhone,
       guestEmail,

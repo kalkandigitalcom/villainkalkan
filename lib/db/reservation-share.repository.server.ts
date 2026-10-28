@@ -66,12 +66,6 @@ export type ReservationShareRow = {
           sort_order: number | null;
         }>
       | null;
-    /* Mülk sahibi — YALNIZ güvenli alanlar (email/iban embed EDİLMEZ). */
-    owner: {
-      first_name: string | null;
-      last_name: string | null;
-      phone: string | null;
-    } | null;
   } | null;
 };
 
@@ -173,7 +167,7 @@ export const reservationShareRepository = {
          pool_heating_selected,
          pool_heating_total_try,
          payment_method:payment_method_id ( id, name, type ),
-         villa:villa_id ( title, villa_images ( image_url, is_cover, sort_order ), owner:owner_id ( first_name, last_name, phone ) )`
+         villa:villa_id ( title, villa_images ( image_url, is_cover, sort_order ) )`
       )
       .eq("id", id)
       .limit(1);

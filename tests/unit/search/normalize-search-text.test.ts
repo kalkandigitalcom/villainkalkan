@@ -2,27 +2,23 @@
    🔎 lib/search.ts — normalizeSearchText REGRESSION TEST
    ===============================================================
    AMAÇ:
-     Migration 078 (villa.real_title_search) + searchByTitle düzeltmesi
-     ("real_title" yerine "real_title_search" ile ILIKE), bu fonksiyonun
-     ürettiği `needle`'ın search_title (migration 065) VE real_title_search
-     (migration 078) ile AYNI SQL formülünü (translate ç/Ç→c ğ/Ğ→g ı→i
-     İ→i ö/Ö→o ş/Ş→s ü/Ü→u â/Â→a î/Î→i û/Û→u → lower → whitespace
-     sadeleştir → btrim) üretmesine bağımlıdır. Bu test o varsayımı
-     KİLİTLER — DB'ye bağımlı DEĞİL, saf fonksiyon testi.
+     villa adı araması (`searchByTitle`), `normalizeSearchText` ile
+     üretilen `needle`'ı search_title (migration 065, GENERATED STORED)
+     kolonuna karşı ILIKE ile arar. Kolon formülü (translate ç/Ç→c ğ/Ğ→g
+     ı→i İ→i ö/Ö→o ş/Ş→s ü/Ü→u â/Â→a î/Î→i û/Û→u → lower → whitespace
+     sadeleştir → btrim) ile bu fonksiyonun AYNI kanonu üretmesi gerekir.
+     Bu test o varsayımı KİLİTLER — DB'ye bağımlı DEĞİL, saf fonksiyon testi.
 
-   Audit senaryosu (real_title = "Villa Aydoğdu"):
+   Senaryo (title = "Villa Aydoğdu"):
     "Aydoğdu" / "Aydogdu" / "aydoğdu" / "aydogdu" → AYNI needle "aydogdu"
     "Doğdu" / "Dogdu" / "doğdu" / "dogdu"         → AYNI needle "dogdu"
-   Bu 8 terimin HER BİRİ aynı needle'a foldlandığı için, real_title_search
-   (aynı formülle üretilmiş) üzerinde ILIKE '%needle%' hepsi için AYNI
-   şekilde davranır — simetrik, güvenilir eşleşme.
    =============================================================== */
 
 import { describe, it, expect } from "vitest";
 import { normalizeSearchText, escapeLikePattern } from "@/lib/search";
 
-describe("normalizeSearchText — real_title_search (Migration 078) needle kanonu", () => {
-  it("audit senaryosu — 'Villa Aydoğdu' real_title için 8 terim de AYNI needle'a foldlanır", () => {
+describe("normalizeSearchText — search_title needle kanonu", () => {
+  it("'Villa Aydoğdu' için 8 terim de AYNI needle'a foldlanır", () => {
     const aydogduVariants = ["Aydoğdu", "Aydogdu", "aydoğdu", "aydogdu"];
     const dogduVariants = ["Doğdu", "Dogdu", "doğdu", "dogdu"];
 
@@ -34,11 +30,11 @@ describe("normalizeSearchText — real_title_search (Migration 078) needle kanon
     }
   });
 
-  it("normalize edilmiş real_title ('villa aydogdu') tüm 8 terimin needle'ını substring olarak içerir", () => {
-    // real_title_search GENERATED STORED kolonunun üreteceği değeri simüle eder
-    // (aynı translate/lower formülü — migration 078, coalesce(real_title,'') + TR-fold + lower).
-    const simulatedRealTitleSearch = normalizeSearchText("Villa Aydoğdu");
-    expect(simulatedRealTitleSearch).toBe("villa aydogdu");
+  it("normalize edilmiş title ('villa aydogdu') tüm 8 terimin needle'ını substring olarak içerir", () => {
+    // search_title GENERATED STORED kolonunun üreteceği değeri simüle eder
+    // (aynı translate/lower formülü — migration 065, TR-fold + lower).
+    const simulatedSearchTitle = normalizeSearchText("Villa Aydoğdu");
+    expect(simulatedSearchTitle).toBe("villa aydogdu");
 
     const terms = [
       "Aydoğdu",
@@ -52,7 +48,7 @@ describe("normalizeSearchText — real_title_search (Migration 078) needle kanon
     ];
     for (const term of terms) {
       const needle = normalizeSearchText(term);
-      expect(simulatedRealTitleSearch.includes(needle)).toBe(true);
+      expect(simulatedSearchTitle.includes(needle)).toBe(true);
     }
   });
 

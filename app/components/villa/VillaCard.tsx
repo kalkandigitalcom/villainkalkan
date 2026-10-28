@@ -110,7 +110,6 @@ type Props = {
   price?: number;
   currency?: string;
   images?: string[];
-  badge?: string;
   bedrooms?: number;
   bathrooms?: number;
   guests?: number;
@@ -222,7 +221,6 @@ export default function VillaCard({
   price,
   currency: villaCurrency = "TRY",
   images = [],
-  badge,
   bedrooms = 1,
   bathrooms = 1,
   guests = 2,
@@ -606,19 +604,6 @@ export default function VillaCard({
             className="absolute inset-0 ring-1 ring-inset ring-white/15 pointer-events-none"
           />
 
-          {/* BADGE — glass pill + coral indicator dot.
-              🛡️ Curation variant: admin curator listesinde "Öne Çıkan"
-              tarzı pazarlama etiketi görsel noise → render edilmez. */}
-          {badge && !isCuration && (
-            <span className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 bg-white/95 backdrop-blur-sm text-[var(--color-stone-900)] text-[10px] tracking-[0.18em] uppercase font-medium px-3 py-1.5 rounded-full shadow-[0_6px_18px_-6px_rgb(27_26_23/0.30)] ring-1 ring-white/40">
-              <span
-                aria-hidden="true"
-                className="inline-block w-1 h-1 rounded-full bg-[var(--brand-coral)]"
-              />
-              {badge}
-            </span>
-          )}
-
           {/* FAV BUTTON — top-right (FAZ 36 white glass).
               🛡️ Curation variant: admin curator listesinde favori
               gereksiz → render edilmez. */}
@@ -967,15 +952,9 @@ export default function VillaCard({
             className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/[0.28] via-black/[0.06] to-transparent pointer-events-none"
           />
 
-          {/* SOL ÜST — rozetler (yalnız gerçek veri). */}
-          {(badge || (isDiscount && discountBadgePercent !== null)) && (
+          {/* SOL ÜST — indirim rozeti (yalnız gerçek veri). */}
+          {isDiscount && discountBadgePercent !== null && (
             <div className="absolute left-0 top-4 z-10 flex max-w-[calc(100%-6.5rem)] flex-col items-start gap-2">
-              {badge && !isDiscount && (
-                <span className="inline-flex max-w-full items-center gap-2 rounded-r-full bg-ink/75 backdrop-blur-md py-1.5 pl-3.5 pr-4 text-[10.5px] font-semibold uppercase leading-snug tracking-[0.1em] text-white">
-                  <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-                  <span className="line-clamp-2">{badge}</span>
-                </span>
-              )}
               {isDiscount && discountBadgePercent !== null && (
                 <span
                   className="inline-flex items-center rounded-r-full bg-accent py-1.5 pl-3.5 pr-4 text-[11px] font-bold uppercase tracking-[0.08em] text-ink shadow-[0_8px_18px_-10px_rgba(26,40,56,0.6)]"

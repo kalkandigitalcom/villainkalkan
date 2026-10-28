@@ -9,10 +9,7 @@ import { useFavorites } from "@/hooks/use-favorites";
 /* 🛡️ Villa Migration S1 — client boundary: runtime villa.service import'u
    yerine server action. Tip (VillaDTO) type-only import → erase edilir,
    client bundle'a villa.service SIZMAZ. Call-site alias ile değişmez. */
-import {
-  getVillasByIdsAction as getVillasByIds,
-  getVillaBadgesAction,
-} from "@/app/services/villa.action";
+import { getVillasByIdsAction as getVillasByIds } from "@/app/services/villa.action";
 /* 🔒 Action artık tam VillaDTO değil, yalnız kart alanlarını döndürür
    (bkz. villa.action.ts PUBLIC PAYLOAD SINIRI). Tip action'dan türetilir. */
 type FavoriteVilla = Awaited<ReturnType<typeof getVillasByIds>>[number];
@@ -75,10 +72,6 @@ export default function FavoritesGrid({
   } = useFavorites();
 
   const [villas, setVillas] = useState<FavoriteVilla[]>([]);
-  /* 🛡️ Kart rozeti çevirileri — villa fetch'i ile AYNI effect'te TEK
-     batch çağrısı (villa başına istek YOK). TR'de action boş obje
-     döner (sorgu atılmaz) → TR davranışı BİREBİR eskisi gibi. */
-  const [badgeById, setBadgeById] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   /* 🛡️ FAZ 37 — Share state.
@@ -110,12 +103,6 @@ export default function FavoritesGrid({
       try {
         const result = await getVillasByIds(favorites);
         if (cancelled) return;
-        const badges = await getVillaBadgesAction(
-          result.map((v) => v.id),
-          locale
-        ).catch(() => ({}));
-        if (cancelled) return;
-        setBadgeById(badges);
         /* localStorage insertion order'a göre kullanıcının "son
            eklediği üstte" beklentisini karşıla. favorites array'i
            append-order; villaResult'ı bu sıraya göre yeniden ord et. */
@@ -476,7 +463,6 @@ export default function FavoritesGrid({
             price={villa.price}
             currency={villa.currency || "TRY"}
             images={villa.images}
-            badge={badgeById[villa.id] ?? villa.badge}
             bedrooms={villa.bedrooms || 1}
             bathrooms={villa.bathrooms || 1}
             guests={villa.guests || 2}

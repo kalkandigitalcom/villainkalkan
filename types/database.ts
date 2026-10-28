@@ -43,7 +43,6 @@ export interface VillaRow {
   title: string;
   description: string | null;
   location_id: string | null;
-  badge: string | null;
   slug: string | null;
   guests: number | null;
   bedrooms: number | null;
@@ -93,9 +92,6 @@ export interface VillaRow {
   deleted_at: string | null;
   /* Ordering — migration 006 */
   sort_order: number;
-  /* 🛡️ Migration 017 — T.C. Kültür ve Turizm Bakanlığı belge no.
-   *  Opsiyonel; eski kayıtlarda NULL. Read path'leri etkilenmez. */
-  tourism_document_number: string | null;
   /* 🛡️ FAZ 26B — Minimum konaklama gece sayısı.
    *  NULL veya <=1 → enforcement YOK (eski davranış aynen).
    *  >=2 → BookingSidebar selection validation aktif. */

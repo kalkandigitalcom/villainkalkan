@@ -1,6 +1,5 @@
 import {
   normalizeCustomPrepaymentRate,
-  normalizeTourismDocumentNumber,
   normalizeMinimumStayNights,
   normalizeYouTubeVideosForDb,
   normalizeCommissionRate,
@@ -42,7 +41,6 @@ import type { VillaForm, VillaMapData } from "../types";
      Pricing meta    : deposit, cleaning_fee, cleaning_currency, cleaning_limit
      Pool heating    : pool_heating_fee, pool_heating_currency (migration 074 —
                         3. adım, sadece veri modeli; hesaplama YAPILMAZ)
-     Visual badge    : badge
      Slug            : slug (caller'dan input olarak gelir)
      Map             : map_type, latitude, longitude, map_embed
      Pool            : pool_type/depth/width/length
@@ -51,7 +49,6 @@ import type { VillaForm, VillaMapData } from "../types";
      Pool sheltered  : pool_sheltered
      SEO             : seo_title, seo_description, noindex
      Reservation cfg : custom_prepayment_rate
-     Legal           : tourism_document_number
      Booking cfg     : minimum_stay_nights
      Media           : youtube_videos
      Accounting      : commission_rate
@@ -71,9 +68,6 @@ import type { VillaForm, VillaMapData } from "../types";
  *  loose; key set 40+ alanlı. */
 export type VillaCorePayload = {
   title: VillaForm["title"];
-  /* 🛡️ Migration 072 — admin-only, bilgi amaçlı. Public mapVilla()/
-     VillaDTO'ya EKLENMEZ; slug üretiminde kullanılmaz. */
-  real_title: string | null;
   description: VillaForm["description"];
   location_id: string | null;
   guests: number;
@@ -89,7 +83,6 @@ export type VillaCorePayload = {
   pool_heating_currency: string;
   /* 🛡️ Migration 076 — sezonluk ay kısıtı. NULL = kısıtlama yok. */
   pool_heating_months: number[] | null;
-  badge: string;
   slug: string;
   map_type: VillaMapData["map_type"];
   latitude: VillaMapData["latitude"] | null;
@@ -112,12 +105,9 @@ export type VillaCorePayload = {
   seo_description: string | null;
   noindex: boolean;
   custom_prepayment_rate: number | null;
-  tourism_document_number: string | null;
   minimum_stay_nights: number | null;
   youtube_videos: { id: string; url: string }[] | null;
   commission_rate: number;
-  /* 🛡️ MÜLK SAHİBİ (property_owners FK — migration 044, nullable). */
-  owner_id: string | null;
   /* 🛡️ KONAKLAMA DÜZENİ (db/migrations/047 — JSONB). Boş → null. */
   bedroom_layout: BedroomLayoutItem[] | null;
   bathroom_layout: BathroomLayoutItem[] | null;
@@ -137,15 +127,6 @@ export function buildVillaCorePayload(
 
   return {
     title: form.title,
-    /* 🛡️ Migration 072 — trim + boş string → NULL (backfill/uydurma yok).
-       ⚠️ `VillaForm` (app/services/villa-admin/types.ts) kapsam dışı
-       (SADECE bu dosya + 4 dosya değiştirilecek); `real_title` orada
-       tanımlı değil. Kaynak dosyayı değiştirmeden yerel intersection
-       cast ile okunuyor — runtime davranışı `form.title` ile birebir
-       aynı, yalnızca type-level bir genişletme. */
-    real_title:
-      (form as VillaForm & { real_title?: string }).real_title?.trim() ||
-      null,
     description: sanitizeHtml(form.description),
 
     location_id:
@@ -188,9 +169,6 @@ export function buildVillaCorePayload(
     pool_heating_months: normalizePoolHeatingMonths(
       form.pool_heating_months
     ),
-
-    badge:
-      form.badge || "",
 
     slug,
 
@@ -268,11 +246,6 @@ export function buildVillaCorePayload(
       form.custom_prepayment_rate
     ),
 
-    /* 🛡️ TOURISM DOCUMENT NO (db/migrations/017 — Faz 22). */
-    tourism_document_number: normalizeTourismDocumentNumber(
-      form.tourism_document_number
-    ),
-
     /* 🛡️ MINIMUM STAY NIGHTS (Faz 26C). */
     minimum_stay_nights: normalizeMinimumStayNights(
       form.minimum_stay_nights
@@ -287,10 +260,6 @@ export function buildVillaCorePayload(
     commission_rate: normalizeCommissionRate(
       form.commission_rate
     ),
-
-    /* 🛡️ MÜLK SAHİBİ — nullable FK. Seçilmemiş/boş → null. Booking/
-       pricing/reservation engine'lerine etkisi YOK. */
-    owner_id: form.owner_id ? String(form.owner_id) : null,
 
     /* 🛡️ KONAKLAMA DÜZENİ (db/migrations/047 — JSONB). Normalize +
        boş array → null (youtube_videos paterni). bedrooms/bathrooms

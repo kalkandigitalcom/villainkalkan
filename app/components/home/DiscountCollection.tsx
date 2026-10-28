@@ -84,12 +84,6 @@ export default async function DiscountCollection({
      aynı metin (dictionary'ye taşındı); EN'de çevirisi kullanılır. */
   const title = dict.title;
 
-  /* ℹ️ Villa rozeti (badge) bu bölümde GÖSTERİLMEZ — önceki indirim
-     kartı (VillaCard discount branch) da rozeti render etmiyordu.
-     Bu yüzden, sonucu hiçbir yerde kullanılmayan rozet çevirisi
-     sorgusu (getVillaBadgesByLocale) kaldırıldı; indirim verisi
-     sorgusu (getCachedDiscountCollectionVillas) AYNEN duruyor. */
-
   const Card = design === "b" ? DiscountVillaCardB : DiscountVillaCardA;
   const layout = LAYOUT[design];
 

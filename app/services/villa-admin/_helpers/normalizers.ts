@@ -104,20 +104,6 @@ export function normalizePoolHeatingMonths(
 }
 
 /* ---------------------------------------------------------------
-   🛡️ TOURISM DOCUMENT NUMBER (db/migrations/017 — Faz 22)
-   ---------------------------------------------------------------
-   T.C. Kültür ve Turizm Bakanlığı belge no — ham text passthrough.
-   Boş string / null / undefined → null (DB tutarlılığı).
-   Sanitize / uppercase / formatting YAPILMIYOR.
-*/
-export function normalizeTourismDocumentNumber(
-  raw: VillaForm["tourism_document_number"]
-): string | null {
-  if (raw === "" || raw === null || raw === undefined) return null;
-  return String(raw);
-}
-
-/* ---------------------------------------------------------------
    🛡️ MINIMUM STAY NIGHTS (Faz 26B/C)
    ---------------------------------------------------------------
    NULL / non-number / <=0 / non-finite → null (enforcement YOK).

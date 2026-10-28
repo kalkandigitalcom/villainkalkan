@@ -69,7 +69,6 @@ const VILLA = {
   map_embed: null,
   latitude: null,
   longitude: null,
-  tourism_document_number: null,
   youtube_videos: [],
   about: null,
   calendar: null,

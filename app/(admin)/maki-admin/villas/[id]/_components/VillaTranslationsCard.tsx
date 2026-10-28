@@ -3,7 +3,7 @@
 /* ===============================================================
    🛡️ PHASE 10A — ADMIN VILLA TRANSLATION UI
    ===============================================================
-   EN / DE çeviri alanlarını (description, badge, seo_title,
+   EN / DE çeviri alanlarını (description, seo_title,
    seo_description) düzenlemek için self-contained kart.
    🛡️ VİLLA ADI (title) BURADA DÜZENLENMEZ — özel isimdir, her locale'de
    canonical `villa.title` gösterilir. IcalSyncCard.tsx
@@ -28,14 +28,12 @@ type WritableLocale = "en";
 
 type LocaleFormState = {
   description: string;
-  badge: string;
   seoTitle: string;
   seoDescription: string;
 };
 
 const EMPTY_FORM: LocaleFormState = {
   description: "",
-  badge: "",
   seoTitle: "",
   seoDescription: "",
 };
@@ -82,7 +80,6 @@ export default function VillaTranslationsCard({ villaId }: Props) {
           if (row.locale !== "en") continue;
           next[row.locale] = {
             description: row.description ?? "",
-            badge: row.badge ?? "",
             seoTitle: row.seo_title ?? "",
             seoDescription: row.seo_description ?? "",
           };
@@ -114,7 +111,6 @@ export default function VillaTranslationsCard({ villaId }: Props) {
         villaId,
         locale: activeLocale,
         description: current.description,
-        badge: current.badge,
         seoTitle: current.seoTitle,
         seoDescription: current.seoDescription,
       });
@@ -189,18 +185,6 @@ export default function VillaTranslationsCard({ villaId }: Props) {
               maxLength={5000}
               value={form.description}
               onChange={(e) => setField("description", e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="text-[12px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-500)] block">
-              Rozet
-            </label>
-            <input
-              className="input"
-              maxLength={60}
-              value={form.badge}
-              onChange={(e) => setField("badge", e.target.value)}
             />
           </div>
 
