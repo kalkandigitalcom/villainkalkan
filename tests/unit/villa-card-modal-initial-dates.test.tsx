@@ -86,7 +86,7 @@ function renderModal(props: {
   initialEnd?: string | null;
 }) {
   return render(
-    <VillaCardBookingModal
+    <VillaCardBookingModal locale="tr"
       isOpen={true}
       onClose={vi.fn()}
       villaId="v1"

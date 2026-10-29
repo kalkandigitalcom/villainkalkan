@@ -74,27 +74,27 @@ const PAGE_ID = "page-uuid-1";
 
 const PAGE_ROW = {
   id: PAGE_ID,
-  title: "Kaş'ta Unutulmaz Bir Tatil",
+  title: "An Unforgettable Holiday in Kas",
   slug: "kasta-unutulmaz-bir-tatil",
-  body: "Türkçe gövde",
-  excerpt: "Türkçe özet",
-  seo_title: "TR SEO",
-  seo_description: "TR SEO açıklama",
+  body: "EN body",
+  excerpt: "EN excerpt",
+  seo_title: "EN seo",
+  seo_description: "EN seo desc",
   noindex: false,
   is_active: true,
   show_in_menu: false,
   cover_image: null,
 };
 
-const EN_ROW = {
-  id: "t-en",
+const TR_ROW = {
+  id: "t-tr",
   page_id: PAGE_ID,
-  locale: "en",
-  title: "An Unforgettable Holiday in Kas",
-  excerpt: "EN excerpt",
-  body: "EN body",
-  seo_title: "EN seo",
-  seo_description: "EN seo desc",
+  locale: "tr",
+  title: "Kaş'ta Unutulmaz Bir Tatil",
+  excerpt: "Türkçe özet",
+  body: "Türkçe gövde",
+  seo_title: "TR SEO",
+  seo_description: "TR SEO açıklama",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
 };
@@ -110,7 +110,7 @@ beforeEach(() => {
   loadPageTranslationsMock.mockResolvedValue({ ok: true, rows: [] });
   savePageTranslationMock.mockResolvedValue({
     ok: true,
-    row: { ...EN_ROW },
+    row: { ...TR_ROW },
   });
 });
 
@@ -123,40 +123,40 @@ async function renderEdit() {
   );
 }
 
-const CARD_HEADING = "Çeviriler (EN)";
+const CARD_HEADING = "Türkçe Çeviri (TR)";
 
 /** Kart görünür VE `loading` bitmiş (alanlar render edilmiş) olana
  *  kadar bekler — `findBy*` deterministiktir, `waitFor(heading)` kartın
  *  yalnız başlığını (yükleniyor durumunda da var) yakalar. */
 async function cardReady() {
   await screen.findByText(CARD_HEADING);
-  await screen.findByText("English sürümünü kaydet");
+  await screen.findByText("Türkçe sürümünü kaydet");
 }
 
 describe("Phase 12C — multilingual_enabled kapısı", () => {
-  it("1) multilingual_enabled=false → Çeviriler kartı RENDER EDİLMEZ", async () => {
+  /* Site yapısal olarak iki dilli (EN `/`, TR `/tr`): eski
+     `multilingual_enabled` değeri Türkçe çeviri kartını GİZLEMEZ. */
+  it("1) multilingual_enabled=false → Türkçe çeviri kartı YİNE render edilir", async () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: false });
     await renderEdit();
-    await waitFor(() => expect(getPublicSettingsMock).toHaveBeenCalled());
-    expect(screen.queryByText(CARD_HEADING)).toBeNull();
-    expect(loadPageTranslationsMock).not.toHaveBeenCalled();
+    await cardReady();
+    expect(loadPageTranslationsMock).toHaveBeenCalledWith(PAGE_ID);
   });
 
-  it("2) settings null → fail-safe KAPALI", async () => {
+  it("2) settings null → kart YİNE render edilir", async () => {
     getPublicSettingsMock.mockResolvedValue(null);
     await renderEdit();
-    await waitFor(() => expect(getPublicSettingsMock).toHaveBeenCalled());
-    expect(screen.queryByText(CARD_HEADING)).toBeNull();
+    await cardReady();
   });
 
   it("3) multilingual_enabled=true → kart render edilir ve çeviriler yüklenir", async () => {
     await renderEdit();
     await cardReady();
     expect(loadPageTranslationsMock).toHaveBeenCalledWith(PAGE_ID);
-    expect(screen.getByText("English")).toBeTruthy();
+    expect(screen.getByText("Türkçe")).toBeTruthy();
     expect(screen.queryByText("Deutsch")).toBeNull();
-    /* TR referans salt okunur gösterilir */
-    expect(screen.getByText("Türkçe (referans, salt okunur)")).toBeTruthy();
+    /* EN ana içerik referansı salt okunur gösterilir */
+    expect(screen.getByText("English (ana içerik, salt okunur)")).toBeTruthy();
     expect(screen.getAllByText(PAGE_ROW.title).length).toBeGreaterThan(0);
   });
 });
@@ -165,35 +165,35 @@ describe("Phase 12C — kayıtlı çevirilerin yüklenmesi", () => {
   it("4) kayıtlı EN çevirisi forma gelir", async () => {
     loadPageTranslationsMock.mockResolvedValue({
       ok: true,
-      rows: [EN_ROW],
+      rows: [TR_ROW],
     });
     await renderEdit();
     await cardReady();
 
     expect(
-      (screen.getByLabelText("English başlık") as HTMLInputElement).value
-    ).toBe(EN_ROW.title);
+      (screen.getByLabelText("Türkçe başlık") as HTMLInputElement).value
+    ).toBe(TR_ROW.title);
     expect(
-      (screen.getByLabelText("English kısa açıklama") as HTMLTextAreaElement)
+      (screen.getByLabelText("Türkçe kısa açıklama") as HTMLTextAreaElement)
         .value
-    ).toBe("EN excerpt");
+    ).toBe("Türkçe özet");
     expect(
-      (screen.getByLabelText("English içerik") as HTMLTextAreaElement).value
-    ).toBe("EN body");
+      (screen.getByLabelText("Türkçe içerik") as HTMLTextAreaElement).value
+    ).toBe("Türkçe gövde");
     expect(
-      (screen.getByLabelText("English SEO başlık") as HTMLInputElement).value
-    ).toBe("EN seo");
+      (screen.getByLabelText("Türkçe SEO başlık") as HTMLInputElement).value
+    ).toBe("TR SEO");
     expect(
-      (screen.getByLabelText("English SEO açıklama") as HTMLTextAreaElement)
+      (screen.getByLabelText("Türkçe SEO açıklama") as HTMLTextAreaElement)
         .value
-    ).toBe("EN seo desc");
+    ).toBe("TR SEO açıklama");
   });
 
   it("6) çeviri yoksa alanlar boş gelir", async () => {
     await renderEdit();
     await cardReady();
     expect(
-      (screen.getByLabelText("English başlık") as HTMLInputElement).value
+      (screen.getByLabelText("Türkçe başlık") as HTMLInputElement).value
     ).toBe("");
   });
 
@@ -218,33 +218,33 @@ describe("Phase 12C — kayıt", () => {
     await renderEdit();
     await cardReady();
 
-    fireEvent.change(screen.getByLabelText("English başlık"), {
-      target: { value: "An Unforgettable Holiday in Kas" },
+    fireEvent.change(screen.getByLabelText("Türkçe başlık"), {
+      target: { value: "Kaş'ta Unutulmaz Bir Tatil" },
     });
-    fireEvent.change(screen.getByLabelText("English kısa açıklama"), {
-      target: { value: "EN excerpt" },
+    fireEvent.change(screen.getByLabelText("Türkçe kısa açıklama"), {
+      target: { value: "Türkçe özet" },
     });
-    fireEvent.change(screen.getByLabelText("English içerik"), {
-      target: { value: "EN body" },
+    fireEvent.change(screen.getByLabelText("Türkçe içerik"), {
+      target: { value: "Türkçe gövde" },
     });
-    fireEvent.change(screen.getByLabelText("English SEO başlık"), {
-      target: { value: "EN seo" },
+    fireEvent.change(screen.getByLabelText("Türkçe SEO başlık"), {
+      target: { value: "TR SEO" },
     });
-    fireEvent.change(screen.getByLabelText("English SEO açıklama"), {
-      target: { value: "EN seo desc" },
+    fireEvent.change(screen.getByLabelText("Türkçe SEO açıklama"), {
+      target: { value: "TR SEO açıklama" },
     });
 
-    fireEvent.click(screen.getByText("English sürümünü kaydet"));
+    fireEvent.click(screen.getByText("Türkçe sürümünü kaydet"));
 
     await waitFor(() => expect(savePageTranslationMock).toHaveBeenCalled());
     expect(savePageTranslationMock).toHaveBeenCalledWith({
       pageId: PAGE_ID,
-      locale: "en",
-      title: "An Unforgettable Holiday in Kas",
-      excerpt: "EN excerpt",
-      body: "EN body",
-      seoTitle: "EN seo",
-      seoDescription: "EN seo desc",
+      locale: "tr",
+      title: "Kaş'ta Unutulmaz Bir Tatil",
+      excerpt: "Türkçe özet",
+      body: "Türkçe gövde",
+      seoTitle: "TR SEO",
+      seoDescription: "TR SEO açıklama",
       /* 🛡️ MIGRATION 091 — kart artık bölüm çevirisini de gönderir.
          Bu testte `canonicalSections` prop'u VERİLMEDİĞİ için canonical
          yapı boştur → `buildTranslatedSections` `null` döner ve public
@@ -253,7 +253,7 @@ describe("Phase 12C — kayıt", () => {
     });
     await waitFor(() =>
       expect(notifySuccessMock).toHaveBeenCalledWith(
-        "English çevirisi kaydedildi",
+        "Türkçe çevirisi kaydedildi",
         expect.anything()
       )
     );
@@ -263,7 +263,7 @@ describe("Phase 12C — kayıt", () => {
     savePageTranslationMock.mockResolvedValue({
       ok: true,
       row: {
-        ...EN_ROW,
+        ...TR_ROW,
         title: null,
         excerpt: null,
         body: null,
@@ -274,11 +274,11 @@ describe("Phase 12C — kayıt", () => {
     await renderEdit();
     await cardReady();
 
-    fireEvent.click(screen.getByText("English sürümünü kaydet"));
+    fireEvent.click(screen.getByText("Türkçe sürümünü kaydet"));
     await waitFor(() => expect(savePageTranslationMock).toHaveBeenCalled());
     expect(savePageTranslationMock).toHaveBeenCalledWith({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "",
       excerpt: "",
       body: "",
@@ -289,7 +289,7 @@ describe("Phase 12C — kayıt", () => {
     });
     await waitFor(() =>
       expect(
-        (screen.getByLabelText("English başlık") as HTMLInputElement).value
+        (screen.getByLabelText("Türkçe başlık") as HTMLInputElement).value
       ).toBe("")
     );
     expect(notifyErrorMock).not.toHaveBeenCalled();
@@ -298,19 +298,19 @@ describe("Phase 12C — kayıt", () => {
   it("11) kayıt sonrası sunucunun normalize ettiği değerlerle senkronlanır", async () => {
     savePageTranslationMock.mockResolvedValue({
       ok: true,
-      row: { ...EN_ROW, title: "About Us" },
+      row: { ...TR_ROW, title: "About Us" },
     });
     await renderEdit();
     await cardReady();
 
-    fireEvent.change(screen.getByLabelText("English başlık"), {
+    fireEvent.change(screen.getByLabelText("Türkçe başlık"), {
       target: { value: "   About Us   " },
     });
-    fireEvent.click(screen.getByText("English sürümünü kaydet"));
+    fireEvent.click(screen.getByText("Türkçe sürümünü kaydet"));
 
     await waitFor(() =>
       expect(
-        (screen.getByLabelText("English başlık") as HTMLInputElement).value
+        (screen.getByLabelText("Türkçe başlık") as HTMLInputElement).value
       ).toBe("About Us")
     );
   });
@@ -323,7 +323,7 @@ describe("Phase 12C — kayıt", () => {
     await renderEdit();
     await cardReady();
 
-    fireEvent.click(screen.getByText("English sürümünü kaydet"));
+    fireEvent.click(screen.getByText("Türkçe sürümünü kaydet"));
     await waitFor(() =>
       expect(notifyErrorMock).toHaveBeenCalledWith(
         "Kaydedilemedi",
@@ -331,31 +331,31 @@ describe("Phase 12C — kayıt", () => {
       )
     );
     expect(notifySuccessMock).not.toHaveBeenCalled();
-    expect(screen.getByLabelText("English başlık")).toBeTruthy();
+    expect(screen.getByLabelText("Türkçe başlık")).toBeTruthy();
   });
 
   it("13) TEKRAR kaydetme çalışır (idempotent, 2. çağrı)", async () => {
     await renderEdit();
     await cardReady();
 
-    fireEvent.change(screen.getByLabelText("English başlık"), {
+    fireEvent.change(screen.getByLabelText("Türkçe başlık"), {
       target: { value: "v1" },
     });
-    fireEvent.click(screen.getByText("English sürümünü kaydet"));
+    fireEvent.click(screen.getByText("Türkçe sürümünü kaydet"));
     await waitFor(() =>
       expect(savePageTranslationMock).toHaveBeenCalledTimes(1)
     );
 
-    fireEvent.change(screen.getByLabelText("English başlık"), {
+    fireEvent.change(screen.getByLabelText("Türkçe başlık"), {
       target: { value: "v2" },
     });
-    fireEvent.click(screen.getByText("English sürümünü kaydet"));
+    fireEvent.click(screen.getByText("Türkçe sürümünü kaydet"));
     await waitFor(() =>
       expect(savePageTranslationMock).toHaveBeenCalledTimes(2)
     );
     expect(savePageTranslationMock.mock.calls[1][0]).toMatchObject({
       title: "v2",
-      locale: "en",
+      locale: "tr",
     });
   });
 });
@@ -368,7 +368,7 @@ describe("Phase 12C — mevcut TR davranışı korunuyor", () => {
     expect(screen.getByText("Başlık, içerik, SEO ve yayın durumu.")).toBeTruthy();
     expect(screen.getByDisplayValue(PAGE_ROW.title)).toBeTruthy();
     expect(screen.getByDisplayValue(PAGE_ROW.slug)).toBeTruthy();
-    expect(screen.getByDisplayValue("Türkçe gövde")).toBeTruthy();
+    expect(screen.getByDisplayValue("EN body")).toBeTruthy();
     expect(screen.getByText("Yayın")).toBeTruthy();
     expect(screen.getByText("Kaydet")).toBeTruthy();
   });
@@ -388,7 +388,7 @@ describe("Phase 12C — mevcut TR davranışı korunuyor", () => {
     await cardReady();
 
     adminFetchMock.mockClear();
-    fireEvent.click(screen.getByText("English sürümünü kaydet"));
+    fireEvent.click(screen.getByText("Türkçe sürümünü kaydet"));
     await waitFor(() => expect(savePageTranslationMock).toHaveBeenCalled());
     expect(adminFetchMock).not.toHaveBeenCalled();
   });

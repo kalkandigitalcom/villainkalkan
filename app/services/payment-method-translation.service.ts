@@ -1,5 +1,6 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import type { PaymentMethodTranslationRow } from "@/lib/i18n/translations.types";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ ÖDEME YÖNTEMİ ADI ÇEVİRİ SERVİSİ (migration 088)
@@ -21,10 +22,11 @@ import type { PaymentMethodTranslationRow } from "@/lib/i18n/translations.types"
    değeri DEĞİŞTİRMEZ.
    =============================================================== */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 export type PaymentMethodTranslationInput = {
@@ -74,7 +76,7 @@ export async function upsertPaymentMethodTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     };
   }
   const locale = input.locale;

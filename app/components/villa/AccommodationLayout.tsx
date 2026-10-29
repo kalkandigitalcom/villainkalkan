@@ -11,7 +11,7 @@ import {
    TR çıktısı DEĞİŞMEZ (tests/unit/villa-layout-label.helper.test.ts bunu kilitliyor). */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import {
   getBedTypeLabel,
   getBathroomTypeLabel,
@@ -41,7 +41,7 @@ type Props = {
 export default function AccommodationLayout({
   bedrooms,
   bathrooms,
-  locale = "tr",
+  locale = DEFAULT_LOCALE,
 }: Props) {
   const hasBedrooms = bedrooms.length > 0;
   const hasBathrooms = bathrooms.length > 0;

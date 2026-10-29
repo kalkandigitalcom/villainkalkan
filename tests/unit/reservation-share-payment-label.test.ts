@@ -1,8 +1,8 @@
 /* ===============================================================
-   🛡️ /rezervasyon-kontrol — ÖDEME YÖNTEMİ ETİKETİ (TR/EN)
+   🛡️ /rezervasyon-kontrol — ÖDEME YÖNTEMİ ETİKETİ (EN/TR)
    ===============================================================
    Public audit bulgusu: etiket `"Kredi Kartı"` / `"Havale/EFT"` olarak
-   hardcoded TR üretiliyordu ve EN/DE paylaşım görünümünde Türkçe
+   hardcoded EN üretiliyordu ve TR/DE paylaşım görünümünde Türkçe
    kalıyordu. Artık CANONICAL `payment_methods.name` + MEVCUT generic
    `payment_method_translations` (migration 088) üzerinden çözülür.
 
@@ -58,13 +58,13 @@ function row(overrides: Record<string, unknown> = {}) {
     cleaning_fee_try: null,
     pool_heating_selected: false,
     pool_heating_total_try: null,
-    payment_method: { id: PM_ID, name: "Havale / EFT", type: "bank_transfer" },
+    payment_method: { id: PM_ID, name: "Bank Transfer", type: "bank_transfer" },
     villa: { title: "Test Villa", villa_images: [] },
     ...overrides,
   };
 }
 
-async function label(locale?: "tr" | "en", pm?: unknown) {
+async function label(locale?: "en" | "tr", pm?: unknown) {
   findReservationForShareMock.mockResolvedValue({
     data: [pm === undefined ? row() : row({ payment_method: pm })],
     error: null,
@@ -78,66 +78,66 @@ beforeEach(() => {
   vi.clearAllMocks();
   resolveByTokenHashMock.mockResolvedValue({ data: "res-1", error: null });
   getPaymentMethodNamesByLocaleMock.mockResolvedValue({
-    [PM_ID]: { en: "Bank Transfer" },
+    [PM_ID]: { tr: "Havale / EFT" },
   });
 });
 
 describe("paymentMethodLabel — locale çözümü", () => {
-  it("1) TR → canonical payment_methods.name", async () => {
-    expect(await label("tr")).toBe("Havale / EFT");
-  });
-
-  it("2) locale verilmezse TR (backward compatibility)", async () => {
-    expect(await label()).toBe("Havale / EFT");
-  });
-
-  it("3) EN → admin'in girdiği çeviri", async () => {
+  it("1) EN → canonical payment_methods.name", async () => {
     expect(await label("en")).toBe("Bank Transfer");
   });
 
-  it("5) EN çeviri YOKSA canonical TR fallback", async () => {
+  it("2) locale verilmezse varsayılan dil (EN) → canonical", async () => {
+    expect(await label()).toBe("Bank Transfer");
+  });
+
+  it("3) TR → admin'in girdiği çeviri", async () => {
+    expect(await label("tr")).toBe("Havale / EFT");
+  });
+
+  it("5) TR çeviri YOKSA canonical EN fallback", async () => {
     getPaymentMethodNamesByLocaleMock.mockResolvedValue({});
-    expect(await label("en")).toBe("Havale / EFT");
+    expect(await label("tr")).toBe("Bank Transfer");
   });
 
   it.each(["", "   "])(
-    "6) boş/whitespace çeviri → canonical TR fallback (%s)",
+    "6) boş/whitespace çeviri → canonical EN fallback (%s)",
     async (v) => {
       getPaymentMethodNamesByLocaleMock.mockResolvedValue({
-        [PM_ID]: { en: v },
+        [PM_ID]: { tr: v },
       });
-      expect(await label("en")).toBe("Havale / EFT");
+      expect(await label("tr")).toBe("Bank Transfer");
     }
   );
 
   it("7) ödeme yöntemi yoksa null (parantez gösterilmez — eski davranış)", async () => {
-    expect(await label("en", null)).toBeNull();
+    expect(await label("tr", null)).toBeNull();
   });
 
   it("8) adı boş olan yöntem → null", async () => {
     expect(
-      await label("en", { id: PM_ID, name: "   ", type: "bank_transfer" })
+      await label("tr", { id: PM_ID, name: "   ", type: "bank_transfer" })
     ).toBeNull();
   });
 
-  it("9) 🔒 TR'de çeviri sorgusu HİÇ atılmaz (ek DB maliyeti yok)", async () => {
-    await label("tr");
+  it("9) 🔒 EN'de çeviri sorgusu HİÇ atılmaz (ek DB maliyeti yok)", async () => {
+    await label("en");
     expect(getPaymentMethodNamesByLocaleMock).not.toHaveBeenCalled();
   });
 
-  it("10) 🔒 EN'de TEK batch çağrısı, tek id ile (N+1 yok)", async () => {
-    await label("en");
+  it("10) 🔒 TR'de TEK batch çağrısı, tek id ile (N+1 yok)", async () => {
+    await label("tr");
     expect(getPaymentMethodNamesByLocaleMock).toHaveBeenCalledTimes(1);
     expect(getPaymentMethodNamesByLocaleMock).toHaveBeenCalledWith([PM_ID]);
   });
 
-  it("11) çeviri okuma hatası fail-soft → canonical TR, DTO bozulmaz", async () => {
+  it("11) çeviri okuma hatası fail-soft → canonical EN, DTO bozulmaz", async () => {
     getPaymentMethodNamesByLocaleMock.mockRejectedValue(new Error("db"));
-    expect(await label("en")).toBe("Havale / EFT");
+    expect(await label("tr")).toBe("Bank Transfer");
   });
 
   it("12) 🔒 hardcoded 'Kredi Kartı' / 'Havale/EFT' ÜRETİLMEZ (type'tan türetme yok)", async () => {
-    const l = await label("tr", {
+    const l = await label("en", {
       id: PM_ID,
       name: "Kredi Kartı (Sanal POS)",
       type: "credit_card",

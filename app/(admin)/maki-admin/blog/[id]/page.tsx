@@ -12,6 +12,7 @@ import BlogPostForm, { type BlogFormInitial } from "../BlogPostForm";
    akışına sahiptir → mevcut BlogPostForm CRUD'una KARIŞMAZ. */
 import BlogTranslationsCard from "../BlogTranslationsCard";
 import { getPublicSettingsAction } from "@/app/services/settings.action";
+import { isMultilingualEnabled } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ Blog — Yazı Düzenle (admin). GET /api/admin/blog/[id] → form.
@@ -31,7 +32,7 @@ export default function EditBlogPost() {
     (async () => {
       const settings = await getPublicSettingsAction();
       if (cancelled) return;
-      setMultilingualEnabled(!!settings?.multilingual_enabled);
+      setMultilingualEnabled(isMultilingualEnabled(settings));
     })();
 
     return () => {

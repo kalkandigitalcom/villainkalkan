@@ -103,10 +103,10 @@ describe("buildLocaleAlternates", () => {
     }
   });
 
-  it("12b) geçersiz/desteklenmeyen bir locale değeri (TS bypass) throw ETMEZ, güvenli şekilde TR'ye düşer", () => {
+  it("12b) geçersiz/desteklenmeyen bir locale değeri (TS bypass) throw ETMEZ, güvenli şekilde varsayılan dile (EN, prefix'siz) düşer", () => {
     const invalidLocale = "fr" as unknown as Locale;
     const result = buildLocaleAlternates(TR_PATH, invalidLocale);
-    expect(result.canonical).toBe(TR_PATH);
+    expect(result.canonical).toBe("/kiralik-villa/villa-in-love");
   });
 
   /* --- 13) path sonundaki slash davranışı --- */

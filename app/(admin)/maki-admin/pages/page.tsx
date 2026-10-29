@@ -16,11 +16,11 @@ import { logActivity } from "@/lib/activity-log.client";
    `getDictionary` saf/senkron bir fonksiyondur (Phase 2) → client
    component içinde güvenle çağrılır, server/client sınırı bozulmaz.
    Bu fazda cookie/localStorage/middleware/DB locale alanı EKLENMEDİ;
-   bilinçli olarak DEFAULT_LOCALE sabit kullanılır → render çıktısı
+   bilinçli olarak ADMIN_UI_LOCALE sabit kullanılır → render çıktısı
    Phase 12 öncesiyle BYTE-IDENTICAL. İleride tek bir admin locale
    kaynağı bağlandığında yalnız bu argüman değişir. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { ADMIN_UI_LOCALE } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ ADMIN > SAYFALAR — UNIFIED CONFIRM DIALOG (Faz: confirm parity)
@@ -60,7 +60,7 @@ export default function AdminPages() {
   const toast = useNotify();
   const confirm = useConfirm();
 
-  const adminDict = getDictionary(DEFAULT_LOCALE).admin;
+  const adminDict = getDictionary(ADMIN_UI_LOCALE).admin;
   const pagesDict = adminDict.pages;
 
   const [pages, setPages] = useState<PageRow[]>([]);

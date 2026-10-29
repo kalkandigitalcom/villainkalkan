@@ -1,6 +1,7 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import { menuServerRepository } from "@/lib/db/menu.repository.server";
 import type { MenuTranslationRow } from "@/lib/i18n/translations.types";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ MENÜ ADI ÇEVİRİ SERVİSİ (migration 086)
@@ -31,10 +32,11 @@ import type { MenuTranslationRow } from "@/lib/i18n/translations.types";
    bu servise HİÇ girmez — menü linki canonical kalır.
    =============================================================== */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 export type MenuTranslationInput = {
@@ -84,7 +86,7 @@ export async function upsertMenuTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     };
   }
   const locale = input.locale;

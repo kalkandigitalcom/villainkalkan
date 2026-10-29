@@ -11,6 +11,7 @@ import {
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ===============================================================
    🛡️ /iletisim METADATA (TR / EN / DE ORTAK)
@@ -47,7 +48,7 @@ export async function buildContactMetadata(
   const dict = getDictionary(locale).contact.meta;
 
   const settings = await getCachedSettings().catch(() => null);
-  const brand = settings?.site_name?.trim() || "Villa Kiralama";
+  const brand = settings?.site_name?.trim() || SITE_NAME_FALLBACK;
 
   const title = formatDictionaryString(dict.title, { brand });
   const ogTitle = formatDictionaryString(dict.ogTitle, { brand });

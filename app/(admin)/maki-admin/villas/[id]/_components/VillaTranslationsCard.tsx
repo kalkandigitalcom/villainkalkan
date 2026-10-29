@@ -24,7 +24,7 @@ import {
   saveVillaTranslationAction,
 } from "./villa-translations.action";
 
-type WritableLocale = "en";
+type WritableLocale = "tr";
 
 type LocaleFormState = {
   description: string;
@@ -39,7 +39,7 @@ const EMPTY_FORM: LocaleFormState = {
 };
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
-  en: "English",
+  tr: "Türkçe",
 };
 
 type Props = {
@@ -51,9 +51,9 @@ export default function VillaTranslationsCard({ villaId }: Props) {
   const toast = useNotify();
 
   const [forms, setForms] = useState<Record<WritableLocale, LocaleFormState>>({
-    en: EMPTY_FORM,
+    tr: EMPTY_FORM,
   });
-  const [activeLocale, setActiveLocale] = useState<WritableLocale>("en");
+  const [activeLocale, setActiveLocale] = useState<WritableLocale>("tr");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -77,7 +77,7 @@ export default function VillaTranslationsCard({ villaId }: Props) {
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en") continue;
+          if (row.locale !== "tr") continue;
           next[row.locale] = {
             description: row.description ?? "",
             seoTitle: row.seo_title ?? "",
@@ -142,12 +142,10 @@ export default function VillaTranslationsCard({ villaId }: Props) {
         <div>
           <p className="eyebrow">Çok Dilli İçerik</p>
           <h2 className="text-lg font-semibold text-[var(--color-stone-900)]">
-            Çeviriler (EN)
+            Türkçe Çeviri (TR)
           </h2>
           <p className="mt-1 text-sm text-[var(--color-stone-500)]">
-            Bu alanlar yalnızca İngilizce ve Almanca sürümler içindir. Türkçe
-            içerik buradan düzenlenemez; boş bırakılan alanlar public
-            tarafta Türkçe içeriğe geri döner.
+            Bu alanlar Türkçe sayfalar (/tr) içindir. İngilizce ana içerik ana formdan düzenlenir; boş bırakılan alanlar Türkçe sayfada İngilizce ana içeriğe geri döner.
           </p>
         </div>
       </header>

@@ -21,7 +21,7 @@ vi.mock("@/lib/db/translation.repository.server", () => ({
 const VALID_ROW = {
   id: "row-1",
   type_id: "type-uuid-1",
-  locale: "en",
+  locale: "tr",
   name: "Test Type",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
@@ -36,14 +36,14 @@ beforeEach(() => {
 });
 
 describe("upsertTypeTranslation", () => {
-  it("EN upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("TR upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
     const { upsertTypeTranslation } = await import(
       "@/app/services/villa-type-translation.service"
     );
 
     const result = await upsertTypeTranslation({
       typeId: "type-uuid-1",
-      locale: "en",
+      locale: "tr",
       name: "Test Type",
     });
 
@@ -51,7 +51,7 @@ describe("upsertTypeTranslation", () => {
     expect(upsertOneMock).toHaveBeenCalledWith(
       "villa_type",
       "type-uuid-1",
-      "en",
+      "tr",
       { name: "Test Type" }
     );
   });
@@ -69,24 +69,24 @@ describe("upsertTypeTranslation", () => {
 
     expect(result).toEqual({
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     });
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("mevcut EN çeviriyi günceller", async () => {
+  it("mevcut TR çeviriyi günceller", async () => {
     const { upsertTypeTranslation } = await import(
       "@/app/services/villa-type-translation.service"
     );
 
-    await upsertTypeTranslation({ typeId: "type-uuid-1", locale: "en", name: "V1" });
-    await upsertTypeTranslation({ typeId: "type-uuid-1", locale: "en", name: "V2 güncel" });
+    await upsertTypeTranslation({ typeId: "type-uuid-1", locale: "tr", name: "V1" });
+    await upsertTypeTranslation({ typeId: "type-uuid-1", locale: "tr", name: "V2 güncel" });
 
     expect(upsertOneMock).toHaveBeenCalledTimes(2);
     expect(upsertOneMock).toHaveBeenLastCalledWith(
       "villa_type",
       "type-uuid-1",
-      "en",
+      "tr",
       { name: "V2 güncel" }
     );
   });
@@ -106,14 +106,14 @@ describe("upsertTypeTranslation", () => {
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("locale 'tr' reddedilir", async () => {
+  it("locale 'en' reddedilir", async () => {
     const { upsertTypeTranslation } = await import(
       "@/app/services/villa-type-translation.service"
     );
 
     const result = await upsertTypeTranslation({
       typeId: "type-uuid-1",
-      locale: "tr",
+      locale: "en",
       name: "Türkçe İsim",
     });
 
@@ -128,7 +128,7 @@ describe("upsertTypeTranslation", () => {
 
     const result = await upsertTypeTranslation({
       typeId: "   ",
-      locale: "en",
+      locale: "tr",
       name: "Test",
     });
 
@@ -143,7 +143,7 @@ describe("upsertTypeTranslation", () => {
 
     const result = await upsertTypeTranslation({
       typeId: "type-uuid-1",
-      locale: "en",
+      locale: "tr",
       name: "   ",
     });
 
@@ -158,7 +158,7 @@ describe("upsertTypeTranslation", () => {
 
     const result = await upsertTypeTranslation({
       typeId: "type-uuid-1",
-      locale: "en",
+      locale: "tr",
       name: "Test Type",
     });
 
@@ -170,8 +170,8 @@ describe("getTypeTranslations", () => {
   it("yalnız en satırlarını döner (tr / eski de satırları filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
-        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "en" },
+        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "de" },
       ],
       error: null,
@@ -185,7 +185,7 @@ describe("getTypeTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["tr"]);
     }
   });
 

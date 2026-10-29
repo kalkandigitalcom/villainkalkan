@@ -19,21 +19,29 @@
         bağlı. Aynı soyutlamaya zorlamak yanlış eşleştirme olurdu.
    =============================================================== */
 
+import {
+  TRANSLATION_LOCALE,
+  TRANSLATION_LOCALES,
+  type TranslationLocale,
+} from "./config";
+
 /** Bu tablodan yazılabilen/okunabilen diller. TR KASITLI OLARAK YOK —
  *  TR canonical değer `settings` satırının kendisidir (migration 083
  *  CHECK (locale IN ('en','de')) ile DB seviyesinde de zorlanır; Almanca
  *  desteği kaldırıldığından uygulama yalnız 'en' yazar/okur). */
-export type SettingsTranslationLocale = "en";
+/** Ayar çevirileri yalnız çeviri dilinde (Türkçe) tutulur; İngilizce ana
+ *  içerik `settings` tablosunun canonical kolonlarındadır. */
+export type SettingsTranslationLocale = TranslationLocale;
 
 export const SETTINGS_TRANSLATION_LOCALES: readonly SettingsTranslationLocale[] =
-  ["en"];
+  TRANSLATION_LOCALES;
 
 /** Runtime type guard — güvenilmeyen (client'tan gelen) locale değeri
  *  için TEK doğrulama noktası. */
 export function isSettingsTranslationLocale(
   value: unknown
 ): value is SettingsTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 /* ---------------- ALAN WHITELIST'İ (TEK DOĞRULUK KAYNAĞI) ---------------- */

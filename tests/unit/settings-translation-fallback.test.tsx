@@ -28,14 +28,14 @@ import { resolveSettingsText } from "@/lib/i18n/settings-translation.helper";
 import type { SettingsTranslationsByLocale } from "@/lib/i18n/settings-translations.types";
 import Footer from "@/app/components/layout/Footer";
 
-const TR_COPYRIGHT = "© {year} {site_name} · Tüm hakları saklıdır.";
 const EN_COPYRIGHT = "© {year} {site_name} · All rights reserved.";
+const TR_COPYRIGHT = "© {year} {site_name} · Tüm hakları saklıdır.";
 
 const TRANSLATIONS: SettingsTranslationsByLocale = {
-  en: {
-    footer_copyright: EN_COPYRIGHT,
-    default_meta_title: "Luxury Villa Rentals",
-    default_meta_description: "Handpicked villas on the Mediterranean coast.",
+  tr: {
+    footer_copyright: TR_COPYRIGHT,
+    default_meta_title: "Lüks Villa Kiralama",
+    default_meta_description: "Akdeniz kıyısında özenle seçilmiş villalar.",
     hero_title: null,
     hero_subtitle: null,
     hero_badge_text: null,
@@ -49,59 +49,59 @@ const TRANSLATIONS: SettingsTranslationsByLocale = {
    A) resolveSettingsText — fallback zinciri
    =============================================================== */
 describe("resolveSettingsText — §6 fallback zinciri", () => {
-  it("1) locale 'tr' → canonical AYNEN (aynı string referansı, trim YOK)", () => {
+  it("1) locale 'en' → canonical AYNEN (aynı string referansı, trim YOK)", () => {
     const canonical = "  boşluklu canonical  ";
     const out = resolveSettingsText(
       canonical,
       TRANSLATIONS,
-      "tr",
+      "en",
       "footer_copyright"
     );
     expect(out).toBe(canonical);
   });
 
-  it("2) locale 'tr' → çeviri VARSA BİLE canonical döner", () => {
+  it("2) locale 'en' → çeviri VARSA BİLE canonical döner", () => {
     expect(
-      resolveSettingsText(TR_COPYRIGHT, TRANSLATIONS, "tr", "footer_copyright")
-    ).toBe(TR_COPYRIGHT);
-  });
-
-  it("3) locale 'tr' + canonical null/undefined → AYNEN null/undefined (çağıranın falsy kontrolü korunur)", () => {
-    expect(resolveSettingsText(null, TRANSLATIONS, "tr", "footer_copyright")).toBeNull();
-    expect(
-      resolveSettingsText(undefined, TRANSLATIONS, "tr", "footer_copyright")
-    ).toBeUndefined();
-  });
-
-  it("4) locale 'en' + çeviri var → çeviri", () => {
-    expect(
-      resolveSettingsText(TR_COPYRIGHT, TRANSLATIONS, "en", "footer_copyright")
+      resolveSettingsText(EN_COPYRIGHT, TRANSLATIONS, "en", "footer_copyright")
     ).toBe(EN_COPYRIGHT);
   });
 
-  it("6) locale 'en' + çeviri YOK (translations null) → TR canonical", () => {
+  it("3) locale 'en' + canonical null/undefined → AYNEN null/undefined (çağıranın falsy kontrolü korunur)", () => {
+    expect(resolveSettingsText(null, TRANSLATIONS, "en", "footer_copyright")).toBeNull();
     expect(
-      resolveSettingsText(TR_COPYRIGHT, null, "en", "footer_copyright")
-    ).toBe(TR_COPYRIGHT);
+      resolveSettingsText(undefined, TRANSLATIONS, "en", "footer_copyright")
+    ).toBeUndefined();
+  });
+
+  it("4) locale 'tr' + çeviri var → çeviri", () => {
     expect(
-      resolveSettingsText(TR_COPYRIGHT, undefined, "en", "footer_copyright")
+      resolveSettingsText(EN_COPYRIGHT, TRANSLATIONS, "tr", "footer_copyright")
     ).toBe(TR_COPYRIGHT);
   });
 
-  it("7) locale 'en' + o dil hiç yok ({}) → TR canonical", () => {
+  it("6) locale 'tr' + çeviri YOK (translations null) → EN canonical", () => {
+    expect(
+      resolveSettingsText(EN_COPYRIGHT, null, "tr", "footer_copyright")
+    ).toBe(EN_COPYRIGHT);
+    expect(
+      resolveSettingsText(EN_COPYRIGHT, undefined, "tr", "footer_copyright")
+    ).toBe(EN_COPYRIGHT);
+  });
+
+  it("7) locale 'tr' + o dil hiç yok ({}) → EN canonical", () => {
     expect(
       resolveSettingsText(
-        TR_COPYRIGHT,
+        EN_COPYRIGHT,
         {},
-        "en",
+        "tr",
         "footer_copyright"
       )
-    ).toBe(TR_COPYRIGHT);
+    ).toBe(EN_COPYRIGHT);
   });
 
-  it("8) çeviri null → TR canonical", () => {
+  it("8) çeviri null → EN canonical", () => {
     const partial: SettingsTranslationsByLocale = {
-      en: {
+      tr: {
         footer_copyright: null,
         default_meta_title: null,
         default_meta_description: null,
@@ -114,14 +114,14 @@ describe("resolveSettingsText — §6 fallback zinciri", () => {
   },
     };
     expect(
-      resolveSettingsText(TR_COPYRIGHT, partial, "en", "footer_copyright")
-    ).toBe(TR_COPYRIGHT);
+      resolveSettingsText(EN_COPYRIGHT, partial, "tr", "footer_copyright")
+    ).toBe(EN_COPYRIGHT);
   });
 
-  it("9) çeviri '' veya yalnız boşluk → TR canonical", () => {
+  it("9) çeviri '' veya yalnız boşluk → EN canonical", () => {
     for (const empty of ["", "   ", "\n\t"]) {
       const partial: SettingsTranslationsByLocale = {
-        en: {
+        tr: {
           footer_copyright: empty,
           default_meta_title: null,
           default_meta_description: null,
@@ -134,15 +134,15 @@ describe("resolveSettingsText — §6 fallback zinciri", () => {
     },
       };
       expect(
-        resolveSettingsText(TR_COPYRIGHT, partial, "en", "footer_copyright")
-      ).toBe(TR_COPYRIGHT);
+        resolveSettingsText(EN_COPYRIGHT, partial, "tr", "footer_copyright")
+      ).toBe(EN_COPYRIGHT);
     }
   });
 
   it("10) her alan BAĞIMSIZ çözülür (biri çevrili, diğeri değil)", () => {
     const partial: SettingsTranslationsByLocale = {
-      en: {
-        footer_copyright: EN_COPYRIGHT,
+      tr: {
+        footer_copyright: TR_COPYRIGHT,
         default_meta_title: "Luxury Villa Rentals",
         default_meta_description: "",
         hero_title: null,
@@ -154,14 +154,14 @@ describe("resolveSettingsText — §6 fallback zinciri", () => {
   },
     };
     expect(
-      resolveSettingsText(TR_COPYRIGHT, partial, "en", "footer_copyright")
-    ).toBe(EN_COPYRIGHT);
+      resolveSettingsText(EN_COPYRIGHT, partial, "tr", "footer_copyright")
+    ).toBe(TR_COPYRIGHT);
     expect(
-      resolveSettingsText("TR başlık", partial, "en", "default_meta_title")
+      resolveSettingsText("EN başlık", partial, "tr", "default_meta_title")
     ).toBe("Luxury Villa Rentals");
     expect(
-      resolveSettingsText("TR açıklama", partial, "en", "default_meta_description")
-    ).toBe("TR açıklama");
+      resolveSettingsText("EN açıklama", partial, "tr", "default_meta_description")
+    ).toBe("EN açıklama");
   });
 });
 
@@ -180,41 +180,25 @@ const FOOTER_BASE = {
 describe("Footer — footer_copyright locale-aware (§7)", () => {
   beforeEach(() => usePathnameMock.mockReset());
 
-  it("11) TR — canonical metin, {year}/{site_name} ikamesi AYNEN", () => {
-    usePathnameMock.mockReturnValue("/tr");
+  it("11) EN — canonical metin, {year}/{site_name} ikamesi AYNEN", () => {
+    usePathnameMock.mockReturnValue("/");
     render(
       <Footer
         {...FOOTER_BASE}
-        settings={{ footer_copyright: TR_COPYRIGHT, translations: TRANSLATIONS }}
-      />
-    );
-    expect(
-      screen.getByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır.")
-    ).toBeInTheDocument();
-  });
-
-  it("12) EN — çeviri kullanılır ve yer tutucular ÇEVİRİDE DE ikame edilir", () => {
-    usePathnameMock.mockReturnValue("/kiralik-villalar");
-    render(
-      <Footer
-        {...FOOTER_BASE}
-        settings={{ footer_copyright: TR_COPYRIGHT, translations: TRANSLATIONS }}
+        settings={{ footer_copyright: EN_COPYRIGHT, translations: TRANSLATIONS }}
       />
     );
     expect(
       screen.getByText("© 2026 Tatilin Yeri · All rights reserved.")
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır.")
-    ).not.toBeInTheDocument();
   });
 
-  it("13) '/tr/...' → TR canonical metin (EN sızmaz)", () => {
+  it("12) TR — çeviri kullanılır ve yer tutucular ÇEVİRİDE DE ikame edilir", () => {
     usePathnameMock.mockReturnValue("/tr/kiralik-villalar");
     render(
       <Footer
         {...FOOTER_BASE}
-        settings={{ footer_copyright: TR_COPYRIGHT, translations: TRANSLATIONS }}
+        settings={{ footer_copyright: EN_COPYRIGHT, translations: TRANSLATIONS }}
       />
     );
     expect(
@@ -225,20 +209,36 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("14) EN + çeviri YOK → TR canonical metin gösterilir", () => {
-    usePathnameMock.mockReturnValue("/");
+  it("13) EN alt sayfa ('/kiralik-villalar') → EN canonical metin (TR sızmaz)", () => {
+    usePathnameMock.mockReturnValue("/kiralik-villalar");
     render(
       <Footer
         {...FOOTER_BASE}
-        settings={{ footer_copyright: TR_COPYRIGHT, translations: null }}
+        settings={{ footer_copyright: EN_COPYRIGHT, translations: TRANSLATIONS }}
       />
     );
     expect(
-      screen.getByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır.")
+      screen.getByText("© 2026 Tatilin Yeri · All rights reserved.")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır.")
+    ).not.toBeInTheDocument();
+  });
+
+  it("14) TR + çeviri YOK → EN canonical metin gösterilir", () => {
+    usePathnameMock.mockReturnValue("/tr");
+    render(
+      <Footer
+        {...FOOTER_BASE}
+        settings={{ footer_copyright: EN_COPYRIGHT, translations: null }}
+      />
+    );
+    expect(
+      screen.getByText("© 2026 Tatilin Yeri · All rights reserved.")
     ).toBeInTheDocument();
   });
 
-  it("15) canonical BOŞ + çeviri yok → ESKİ hardcoded Türkçe fallback (DEĞİŞMEDİ)", () => {
+  it("15) TR sayfa: canonical BOŞ + çeviri yok → sözlük (TR) fallback", () => {
     usePathnameMock.mockReturnValue("/tr");
     render(<Footer {...FOOTER_BASE} settings={{ footer_copyright: "" }} />);
     expect(
@@ -246,7 +246,7 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
     ).toBeInTheDocument();
   });
 
-  it("16) settings null → ESKİ hardcoded Türkçe fallback (DEĞİŞMEDİ)", () => {
+  it("16) TR sayfa: settings null → sözlük (TR) fallback", () => {
     usePathnameMock.mockReturnValue("/tr");
     render(<Footer {...FOOTER_BASE} settings={null} />);
     expect(
@@ -254,8 +254,8 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
     ).toBeInTheDocument();
   });
 
-  it("17) EN + canonical boş + çeviri VAR → çeviri gösterilir", () => {
-    usePathnameMock.mockReturnValue("/");
+  it("17) TR + canonical boş + çeviri VAR → çeviri gösterilir", () => {
+    usePathnameMock.mockReturnValue("/tr");
     render(
       <Footer
         {...FOOTER_BASE}
@@ -263,33 +263,33 @@ describe("Footer — footer_copyright locale-aware (§7)", () => {
       />
     );
     expect(
-      screen.getByText("© 2026 Tatilin Yeri · All rights reserved.")
+      screen.getByText("© 2026 Tatilin Yeri · Tüm hakları saklıdır.")
     ).toBeInTheDocument();
   });
 });
 
 /* ===============================================================
-   C) TR BİT-BİRE AYNILIK — regresyon kilidi
+   C) EN BİT-BİRE AYNILIK — regresyon kilidi
    =============================================================== */
-describe("TR bit-bire aynılık (§6) — çeviri VARKEN bile TR çıktısı değişmez", () => {
+describe("EN bit-bire aynılık (§6) — çeviri VARKEN bile EN çıktısı değişmez", () => {
   beforeEach(() => usePathnameMock.mockReset());
 
-  it("24) Footer TR DOM'u, translations=null ve translations=DOLU durumlarında AYNI", () => {
-    usePathnameMock.mockReturnValue("/tr");
+  it("24) Footer EN DOM'u, translations=null ve translations=DOLU durumlarında AYNI", () => {
+    usePathnameMock.mockReturnValue("/");
     const { container: withoutT, unmount } = render(
       <Footer
         {...FOOTER_BASE}
-        settings={{ footer_copyright: TR_COPYRIGHT, translations: null }}
+        settings={{ footer_copyright: EN_COPYRIGHT, translations: null }}
       />
     );
     const htmlWithout = withoutT.innerHTML;
     unmount();
 
-    usePathnameMock.mockReturnValue("/tr");
+    usePathnameMock.mockReturnValue("/");
     const { container: withT } = render(
       <Footer
         {...FOOTER_BASE}
-        settings={{ footer_copyright: TR_COPYRIGHT, translations: TRANSLATIONS }}
+        settings={{ footer_copyright: EN_COPYRIGHT, translations: TRANSLATIONS }}
       />
     );
     expect(withT.innerHTML).toBe(htmlWithout);

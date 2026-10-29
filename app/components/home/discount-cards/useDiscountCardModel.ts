@@ -25,7 +25,7 @@ import {
 import { useCurrency } from "@/app/context/CurrencyContext";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import {
   computeDiscountCardPricing,
   type DiscountCardDiscount,
@@ -62,7 +62,7 @@ export function useDiscountCardModel(props: DiscountVillaCardProps) {
   } = props;
 
   const dict = getDictionary(locale);
-  const effectiveLocale: Locale = locale ?? "tr";
+  const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
   const { currency, rates } = useCurrency();
 
   /* 🛡️ Kur kapısı — yalnız ilgili kaynak para birimleri (TRY → TRY her

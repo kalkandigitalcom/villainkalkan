@@ -73,7 +73,7 @@ const SETTINGS = {
   phone: "+90 555 111 22 33",
   email: "info@ornek.com",
   address: "Kalkan Mahallesi, Kaş / Antalya",
-  business_hours: "Hafta içi 09:00 - 18:00",
+  business_hours: "Weekdays 09:00 - 18:00",
   whatsapp_link: "https://wa.me/905551112233",
   instagram: "https://instagram.com/tatilinyeri",
   facebook: "https://facebook.com/tatilinyeri",
@@ -457,21 +457,10 @@ describe("Settings verisi", () => {
     expect(hrefs).toContain(`mailto:${SETTINGS.email}`);
   });
 
-  it("23) TR → canonical business_hours", async () => {
+  it("23) EN (ana dil) → canonical business_hours", async () => {
     getCachedSettingsMock.mockResolvedValue(
       settingsWith({
-        translations: { en: { business_hours: "Weekdays 09:00 - 18:00" } },
-      })
-    );
-    await renderBody("tr");
-    expect(screen.getByText("Hafta içi 09:00 - 18:00")).toBeInTheDocument();
-    expect(screen.queryByText("Weekdays 09:00 - 18:00")).toBeNull();
-  });
-
-  it("24) EN → business_hours çevirisi gösterilir", async () => {
-    getCachedSettingsMock.mockResolvedValue(
-      settingsWith({
-        translations: { en: { business_hours: "Weekdays 09:00 - 18:00" } },
+        translations: { tr: { business_hours: "Hafta içi 09:00 - 18:00" } },
       })
     );
     await renderBody("en");
@@ -479,20 +468,31 @@ describe("Settings verisi", () => {
     expect(screen.queryByText("Hafta içi 09:00 - 18:00")).toBeNull();
   });
 
-  it("26) çeviri YOK → TR canonical fallback", async () => {
-    getCachedSettingsMock.mockResolvedValue(settingsWith({ translations: {} }));
-    await renderBody("en");
-    expect(screen.getByText("Hafta içi 09:00 - 18:00")).toBeInTheDocument();
-  });
-
-  it("27) BOŞ / WHITESPACE çeviri → TR canonical fallback", async () => {
+  it("24) TR → business_hours çevirisi gösterilir", async () => {
     getCachedSettingsMock.mockResolvedValue(
       settingsWith({
-        translations: { en: { business_hours: "   " } },
+        translations: { tr: { business_hours: "Hafta içi 09:00 - 18:00" } },
       })
     );
-    await renderBody("en");
+    await renderBody("tr");
     expect(screen.getByText("Hafta içi 09:00 - 18:00")).toBeInTheDocument();
+    expect(screen.queryByText("Weekdays 09:00 - 18:00")).toBeNull();
+  });
+
+  it("26) çeviri YOK → EN canonical fallback", async () => {
+    getCachedSettingsMock.mockResolvedValue(settingsWith({ translations: {} }));
+    await renderBody("tr");
+    expect(screen.getByText("Weekdays 09:00 - 18:00")).toBeInTheDocument();
+  });
+
+  it("27) BOŞ / WHITESPACE çeviri → EN canonical fallback", async () => {
+    getCachedSettingsMock.mockResolvedValue(
+      settingsWith({
+        translations: { tr: { business_hours: "   " } },
+      })
+    );
+    await renderBody("tr");
+    expect(screen.getByText("Weekdays 09:00 - 18:00")).toBeInTheDocument();
   });
 
   it("28) settings okunamazsa sayfa ÇÖKMEZ (defensive empty-state)", async () => {
@@ -525,10 +525,10 @@ describe("ContactForm — çoklu dil", () => {
     }
   );
 
-  it("30) locale verilmezse TR (mevcut çağıranlar bozulmaz)", () => {
+  it("30) locale verilmezse varsayılan dil (EN)", () => {
     render(<ContactForm />);
-    expect(screen.getByText("Ad Soyad")).toBeInTheDocument();
-    expect(screen.getByText("Gönder")).toBeInTheDocument();
+    expect(screen.getByText(en.contact.form.nameLabel)).toBeInTheDocument();
+    expect(screen.getByText(en.contact.form.submit)).toBeInTheDocument();
   });
 
   it.each(["tr", "en"] as const)(
@@ -726,10 +726,10 @@ describe("Metadata", () => {
     });
   });
 
-  it("42) settings okunamazsa brand fallback'i korunur", async () => {
+  it("42) settings okunamazsa marka fallback'i (Villa In Kalkan) kullanılır", async () => {
     getCachedSettingsMock.mockRejectedValue(new Error("db"));
     const meta = await buildContactMetadata("tr");
-    expect(meta.title).toBe("İletişim · Villa Kiralama");
+    expect(meta.title).toBe("İletişim · Villa In Kalkan");
   });
 });
 

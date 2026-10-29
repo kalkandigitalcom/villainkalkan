@@ -56,7 +56,8 @@ export default function SeoStep({
         SEO &amp; Sosyal Paylaşım
       </h2>
       <p className="text-sm text-[var(--color-stone-500)] mt-1.5 mb-6">
-        Arama motorları ve sosyal paylaşım önizlemesini özelleştir.
+        Arama motorları ve sosyal paylaşım önizlemesini özelleştir. Bu alanlar
+        İngilizce ana içeriktir; Türkçe SEO metinleri “Türkçe Çeviri” kartından girilir.
       </p>
 
       {/* SEO TITLE */}

@@ -26,6 +26,7 @@ import {
   type SitePopupRow,
   type SitePopupTranslationRow,
 } from "@/lib/site-popup";
+import { TRANSLATION_LOCALE } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ SITE POPUP SERVICE (server-only)
@@ -66,7 +67,7 @@ export type SitePopupAdminValues = {
   startDate: string;
   endDate: string;
   updatedAt: string | null;
-  /** EN/DE (migration 096). Boş alan → public'te Türkçe değer. */
+  /** Türkçe çeviri (migration 096/102). Boş alan → public'te İngilizce ana değer. */
   translations: Record<PopupTranslationLocale, SitePopupTextValues>;
 };
 
@@ -74,7 +75,7 @@ export type SitePopupSaveResult =
   | { ok: true; values: SitePopupAdminValues }
   | { ok: false; error: string };
 
-const LOCALE_LABELS: Record<PopupTranslationLocale, string> = { en: "English" };
+const LOCALE_LABELS: Record<PopupTranslationLocale, string> = { tr: "Türkçe" };
 
 const EMPTY_TEXT: SitePopupTextValues = {
   title: "",
@@ -86,7 +87,7 @@ const EMPTY_TEXT: SitePopupTextValues = {
 };
 
 function emptyTranslations(): Record<PopupTranslationLocale, SitePopupTextValues> {
-  return { en: { ...EMPTY_TEXT, stats: [] } };
+  return { tr: { ...EMPTY_TEXT, stats: [] } };
 }
 
 const IMAGE_PATH_RE = new RegExp(`^${POPUP_IMAGE_FOLDER}/[a-z0-9-]{1,64}\\.webp$`);
@@ -114,7 +115,7 @@ function toAdminTranslations(
 ): Record<PopupTranslationLocale, SitePopupTextValues> {
   const out = emptyTranslations();
   for (const r of rows || []) {
-    if (r.locale !== "en") continue;
+    if (r.locale !== TRANSLATION_LOCALE) continue;
     out[r.locale] = {
       title: r.title || "",
       description: r.description || "",

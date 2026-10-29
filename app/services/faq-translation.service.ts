@@ -1,5 +1,6 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import type { FaqTranslationRow } from "@/lib/i18n/translations.types";
+import { TRANSLATION_LOCALE, TRANSLATION_LOCALES, type TranslationLocale } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ SSS (FAQ) ÇEVİRİ SERVİSİ — ADMIN YAZMA/OKUMA
@@ -25,10 +26,11 @@ import type { FaqTranslationRow } from "@/lib/i18n/translations.types";
    — DEĞİŞTİRİLMEDİ.
    =============================================================== */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 export type FaqTranslationInput = {
@@ -53,7 +55,7 @@ export type FaqTranslationsMapResult =
   | { ok: true; map: Record<string, FaqTranslationsByLocale> }
   | { ok: false; error: string };
 
-const WRITABLE_LOCALES: readonly WritableTranslationLocale[] = ["en"];
+const WRITABLE_LOCALES: readonly WritableTranslationLocale[] = TRANSLATION_LOCALES;
 
 function normalize(value: string | null | undefined): string | null {
   const trimmed = (value ?? "").toString().trim();
@@ -112,7 +114,7 @@ export async function upsertFaqTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     };
   }
   const locale = input.locale;

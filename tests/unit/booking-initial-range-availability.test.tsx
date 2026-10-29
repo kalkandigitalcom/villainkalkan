@@ -127,6 +127,7 @@ afterEach(() => {
 function renderEngine(extra: Partial<Parameters<typeof useBookingEngine>[0]> = {}) {
   return renderHook(() =>
     useBookingEngine({
+      locale: "tr",
       villaSlug: "test-villa",
       villaId: "v1",
       prices: PRICES,
@@ -320,7 +321,7 @@ describe("BookingSidebar", () => {
 
   it("B) dolu başlangıç: tarih seçili değil, özet yok, mesaj var, tıklama yönlendirmez", async () => {
     setRanges([{ kind: "manual", status: null, start_date: ymd(7), end_date: ymd(10) }]);
-    render(<BookingSidebar {...props} />);
+    render(<BookingSidebar locale="tr" {...props} />);
     await screen.findByText(TR_CONFLICT);
     expect(screen.queryByText(/Toplam Tutar/)).toBeNull();
     expect(screen.queryByText(/9 (Haz|Oca|Şub|Mar|Nis|May|Tem|Ağu|Eyl|Eki|Kas|Ara)/)).toBeNull();
@@ -332,7 +333,7 @@ describe("BookingSidebar", () => {
 
   it("B) çakışmadan sonra takvim aranan ayda açılır (bugünün ayına düşmez), seçili gün yok", async () => {
     setRanges([{ kind: "manual", status: null, start_date: ymd(7), end_date: ymd(10) }]);
-    const { container } = render(<BookingSidebar {...props} />);
+    const { container } = render(<BookingSidebar locale="tr" {...props} />);
     await screen.findByText(TR_CONFLICT);
     fireEvent.click(container.querySelector("#booking-date-field > div") as HTMLElement);
     const monthName = new Intl.DateTimeFormat("tr-TR", { month: "long" }).format(
@@ -349,7 +350,7 @@ describe("BookingSidebar", () => {
   it("F) müsaitlik yüklenirken CTA disabled ve özet yok; temiz çıkınca aktif + özet", async () => {
     let resolve!: (v: { ok: boolean; json: () => Promise<unknown> }) => void;
     rangesImpl = () => new Promise((r) => (resolve = r));
-    render(<BookingSidebar {...props} />);
+    render(<BookingSidebar locale="tr" {...props} />);
     const cta = screen.getByRole("button", { name: "Rezervasyon Yap" }) as HTMLButtonElement;
     expect(cta.disabled).toBe(true);
     expect(screen.queryByText(/Toplam Tutar/)).toBeNull();
@@ -363,7 +364,7 @@ describe("BookingSidebar", () => {
 
   it("B) çakışmadan sonra kullanıcı takvimden müsait aralık seçince CTA tekrar aktif", async () => {
     setRanges([{ kind: "manual", status: null, start_date: ymd(7), end_date: ymd(10) }]);
-    const { container } = render(<BookingSidebar {...props} />);
+    const { container } = render(<BookingSidebar locale="tr" {...props} />);
     await screen.findByText(TR_CONFLICT);
     fireEvent.click(container.querySelector("#booking-date-field > div") as HTMLElement);
     const day = async (n: number) => {
@@ -395,7 +396,7 @@ describe("BookingSidebar", () => {
 describe("VillaCardBookingModal", () => {
   function renderModal() {
     return render(
-      <VillaCardBookingModal
+      <VillaCardBookingModal locale="tr"
         isOpen={true}
         onClose={vi.fn()}
         villaId="v1"

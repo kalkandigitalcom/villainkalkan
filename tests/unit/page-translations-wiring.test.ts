@@ -63,12 +63,12 @@ const PAGE_ID = "page-uuid-1";
 const SAVED_ROW: PageTranslationRow = {
   id: "row-1",
   page_id: PAGE_ID,
-  locale: "en",
+  locale: "tr",
   title: "An Unforgettable Holiday in Kas",
-  body: "EN body",
-  excerpt: "EN excerpt",
-  seo_title: "EN seo",
-  seo_description: "EN seo desc",
+  body: "TR body",
+  excerpt: "TR excerpt",
+  seo_title: "TR seo",
+  seo_description: "TR seo desc",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
 };
@@ -141,7 +141,7 @@ describe("Phase 12C — registry", () => {
   });
 });
 
-describe("Phase 12C — EN çeviri kaydı uçtan uca", () => {
+describe("Phase 12C — TR çeviri kaydı uçtan uca", () => {
   it("action → servis → repository → page_translations UPSERT", async () => {
     const { savePageTranslationAction } = await import(
       "@/app/(admin)/maki-admin/pages/[id]/page-translations.action"
@@ -149,12 +149,12 @@ describe("Phase 12C — EN çeviri kaydı uçtan uca", () => {
 
     const result = await savePageTranslationAction({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "  An Unforgettable Holiday in Kas  ",
-      excerpt: "EN excerpt",
-      body: "EN body",
-      seoTitle: "EN seo",
-      seoDescription: "EN seo desc",
+      excerpt: "TR excerpt",
+      body: "TR body",
+      seoTitle: "TR seo",
+      seoDescription: "TR seo desc",
     });
 
     expect(result.ok).toBe(true);
@@ -172,12 +172,12 @@ describe("Phase 12C — EN çeviri kaydı uçtan uca", () => {
     expect(upsertMock).toHaveBeenCalledWith(
       {
         page_id: PAGE_ID,
-        locale: "en",
+        locale: "tr",
         title: "An Unforgettable Holiday in Kas",
-        excerpt: "EN excerpt",
-        body: "EN body",
-        seo_title: "EN seo",
-        seo_description: "EN seo desc",
+        excerpt: "TR excerpt",
+        body: "TR body",
+        seo_title: "TR seo",
+        seo_description: "TR seo desc",
       },
       { onConflict: "page_id,locale" }
     );
@@ -208,7 +208,7 @@ describe("Phase 12C — EN çeviri kaydı uçtan uca", () => {
 
     const result = await savePageTranslationAction({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "x",
     });
 
@@ -217,14 +217,14 @@ describe("Phase 12C — EN çeviri kaydı uçtan uca", () => {
     expect(adminFromMock).not.toHaveBeenCalled();
   });
 
-  it("locale='tr' DB'ye ulaşmaz (TR canonical korunur)", async () => {
+  it("locale='en' DB'ye ulaşmaz (EN canonical korunur)", async () => {
     const { savePageTranslationAction } = await import(
       "@/app/(admin)/maki-admin/pages/[id]/page-translations.action"
     );
 
     const result = await savePageTranslationAction({
       pageId: PAGE_ID,
-      locale: "tr",
+      locale: "en",
       title: "Hakkımızda",
     });
 

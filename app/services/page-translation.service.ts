@@ -5,6 +5,7 @@ import type { PageTranslationRow } from "@/lib/i18n/translations.types";
    Canonical tarafın ZATEN kullandığı defansif parser REUSE edilir;
    yeni bir section şeması/DSL'i İCAT EDİLMEDİ. */
 import { parsePageSections, type PageSection } from "@/lib/page-sections";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /**
  * 🛡️ PHASE 12C — Admin Sayfa (pages) Çeviri Servisi
@@ -35,10 +36,11 @@ import { parsePageSections, type PageSection } from "@/lib/page-sections";
  * bırakılan alanlar `null` yazılır → public tarafta TR'ye fallback.
  */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 /* Limitler: SEO alanları proje genelindeki değerlerle AYNI
@@ -129,7 +131,7 @@ export async function upsertPageTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     };
   }
   const locale = input.locale;

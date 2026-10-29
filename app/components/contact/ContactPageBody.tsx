@@ -35,6 +35,7 @@ import { localeHref } from "@/lib/i18n/locale-href";
    çözülür — yeni resolver YAZILMADI. Telefon/e-posta/adres/sosyal URL'ler
    VERİdir ve ÇEVRİLMEZ. */
 import { resolveSettingsText } from "@/lib/i18n/settings-translation.helper";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ===============================================================
    🛡️ /iletisim — ORTAK GÖVDE (settings-driven, no hardcoded data)
@@ -94,7 +95,7 @@ export default async function ContactPageBody({
   const facebook = settings?.facebook?.trim() || null;
   const youtube = settings?.youtube?.trim() || null;
   const tiktok = settings?.tiktok?.trim() || null;
-  const brand = settings?.site_name?.trim() || "Villa Kiralama";
+  const brand = settings?.site_name?.trim() || SITE_NAME_FALLBACK;
 
   /* CONTACT ROWS — filter(Boolean), sadece dolu olanlar DOM'a. */
   const contactRows: Row[] = (

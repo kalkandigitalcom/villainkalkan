@@ -64,7 +64,7 @@ function renderCalendar(locale?: "tr" | "en") {
 
 describe("dış nav strip", () => {
   it("1) 🔒 dış '[Ay Yıl … Bugün]' şeridi ARTIK YOK", () => {
-    const { container, queryByText } = renderCalendar();
+    const { container, queryByText } = renderCalendar("tr");
     /* "Bugün" butonu yalnız dış şeritte vardı. */
     expect(queryByText(tr.booking.calendarToday)).toBeNull();
     /* Dış şeridin başlığı `<h3>` idi — kalmadı. */
@@ -72,14 +72,14 @@ describe("dış nav strip", () => {
   });
 
   it("2) takvimin İÇİNDEKİ ay/yıl başlığı (RDP caption) DURUYOR", () => {
-    const { container } = renderCalendar();
+    const { container } = renderCalendar("tr");
     const caption = container.querySelector(".rdp-caption");
     expect(caption).toBeTruthy();
     expect(caption?.textContent || "").toMatch(/Ekim\s*2026/i);
   });
 
   it("3) ay değiştirme çalışıyor (iç nav → onCurrentMonthChange)", () => {
-    const { getByLabelText, onMonthChange } = renderCalendar();
+    const { getByLabelText, onMonthChange } = renderCalendar("tr");
     fireEvent.click(getByLabelText(tr.availability.nextMonth));
     expect(onMonthChange).toHaveBeenCalled();
     fireEvent.click(getByLabelText(tr.availability.prevMonth));
@@ -101,7 +101,7 @@ describe("dış nav strip", () => {
   });
 
   it("5) 🔒 günler ve tarih seçimi DEĞİŞMEDİ", () => {
-    const { container, engine } = renderCalendar();
+    const { container, engine } = renderCalendar("tr");
     const cells = Array.from(container.querySelectorAll('[role="gridcell"]'));
     expect(cells.length).toBeGreaterThan(20);
     const day9 = cells.find((el) => /^9₺/.test(el.textContent || ""));
@@ -111,7 +111,7 @@ describe("dış nav strip", () => {
   });
 
   it("6) 🔒 günlük fiyat gösterimi DEĞİŞMEDİ", () => {
-    const { container } = renderCalendar();
+    const { container } = renderCalendar("tr");
     expect(container.textContent).toContain("₺10.000");
   });
 });
@@ -165,9 +165,9 @@ describe("datepicker dili — locale paritesi", () => {
     expect(trDays).not.toBe(enDays);
   });
 
-  it("11) locale verilmezse MEVCUT güvenli default (TR) korunur", () => {
-    const { container } = renderCalendar();
-    expect(captionText(container)).toMatch(/Ekim\s*2026/i);
+  it("11) locale verilmezse varsayılan dil (EN)", () => {
+    const { container } = renderCalendar(undefined);
+    expect(captionText(container)).toMatch(/October\s*2026/i);
   });
 
   it("12) 🔒 kaynak kilidi — modal ve sidebar `locale` prop'unu GEÇER", async () => {

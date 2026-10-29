@@ -55,7 +55,7 @@ export default function NewMenu() {
      hiç yazılmaz; public tarafta TR adı gösterilir. Kaynağa bağlı
      türlerde de geçerlidir — bu alan menünün GÖRÜNEN ETİKETİDİR,
      kaynak kaydın kendi çevirisini değiştirmez. */
-  const [nameEn, setNameEn] = useState("");
+  const [nameTr, setNameTr] = useState("");
 
   // option lists
   const [pageOptions, setPageOptions] = useState<
@@ -252,8 +252,8 @@ export default function NewMenu() {
        (state'te değer kalabilir) istek ATILMAZ; servis tarafında da
        aynı kural parent ön-kontrolüyle ayrıca uygulanır. */
     if (newMenuId && sourceType === "manual") {
-      const pending: Array<{ locale: "en"; name: string }> = [];
-      if (nameEn.trim()) pending.push({ locale: "en", name: nameEn });
+      const pending: Array<{ locale: "tr"; name: string }> = [];
+      if (nameTr.trim()) pending.push({ locale: "tr", name: nameTr });
 
       for (const t of pending) {
         const tr = await saveMenuTranslationAction({
@@ -348,7 +348,7 @@ export default function NewMenu() {
                     /* 🛡️ MIGRATION 086 — tür değişince çeviri taslağı
                        temizlenir (yalnız manual'de anlamlı). */
                     if (card.value !== "manual") {
-                      setNameEn("");
+                      setNameTr("");
                     }
                   }}
                   className={
@@ -386,7 +386,7 @@ export default function NewMenu() {
                 Menü adı
               </label>
               <input
-                placeholder="Örn: İletişim"
+                placeholder="Örn: Contact"
                 className="input"
                 value={manualName}
                 onChange={(e) => setManualName(e.target.value)}
@@ -464,18 +464,18 @@ export default function NewMenu() {
 
           <div className="space-y-1.5">
             <label className="text-[12px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-500)] block">
-              {MENU_LOCALE_LABELS.en}
+              {MENU_LOCALE_LABELS.tr}
             </label>
             <input
-              aria-label={MENU_LOCALE_LABELS.en}
-              placeholder="Örn: Rental Villas"
+              aria-label={MENU_LOCALE_LABELS.tr}
+              placeholder="Örn: Kiralık Villalar"
               className="input"
               maxLength={MENU_TRANSLATION_MAX_LEN}
-              value={nameEn}
-              onChange={(e) => setNameEn(e.target.value)}
+              value={nameTr}
+              onChange={(e) => setNameTr(e.target.value)}
             />
             <p className="text-xs text-[var(--color-stone-400)]">
-              Boş bırakılan dilde Türkçe menü adı gösterilir. Bağlantı
+              Boş bırakılırsa Türkçe sayfada İngilizce menü adı gösterilir. Bağlantı
               adresi çevrilmez.
             </p>
           </div>

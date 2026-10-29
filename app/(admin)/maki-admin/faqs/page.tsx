@@ -42,21 +42,21 @@ const MAX_FAQS = 15;
 /* 🛡️ ÇOKLU DİL — EN OPSİYONEL. Kaynak tablo `faq_translations`
    (migration 082, ZATEN VAR). TR alanları canonical `faqs` tablosunda
    kalır ve bu bloktan ETKİLENMEZ. */
-type WritableLocale = "en";
+type WritableLocale = "tr";
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
-  en: "English",
+  tr: "Türkçe",
 };
 
 const LOCALE_FIELD_LABELS: Record<
   WritableLocale,
   { question: string; answer: string }
 > = {
-  en: { question: "Question", answer: "Answer" },
+  tr: { question: "Soru", answer: "Cevap" },
 };
 
 const EMPTY_TRANSLATIONS: Record<WritableLocale, FaqTranslationFields> = {
-  en: { question: "", answer: "" },
+  tr: { question: "", answer: "" },
 };
 
 type FaqTranslationFields = { question: string; answer: string };
@@ -108,9 +108,9 @@ export default function FaqsAdminPage() {
               question: d.question,
               answer: d.answer,
               translations: {
-                en: {
-                  question: translationMap[d.id]?.en?.question ?? "",
-                  answer: translationMap[d.id]?.en?.answer ?? "",
+                tr: {
+                  question: translationMap[d.id]?.tr?.question ?? "",
+                  answer: translationMap[d.id]?.tr?.answer ?? "",
                 },
               },
             }))
@@ -210,7 +210,7 @@ export default function FaqsAdminPage() {
     for (let idx = 0; idx < nextItems.length; idx++) {
       const row = nextItems[idx];
       if (!row.id) continue;
-      for (const locale of ["en"] as WritableLocale[]) {
+      for (const locale of ["tr"] as WritableLocale[]) {
         const t = row.translations[locale];
         const originallyHadId = !!kept[idx].id;
         /* Yeni satırda boş çeviri için gereksiz istek atma. */
@@ -334,7 +334,7 @@ export default function FaqsAdminPage() {
                   <div className="flex-1 min-w-0 space-y-3">
                     <div className="space-y-1.5">
                       <label className="block text-[10px] tracking-[0.16em] uppercase font-semibold text-[var(--admin-muted-2)]">
-                        Soru
+                        Soru (English — ana içerik)
                       </label>
                       <input
                         type="text"
@@ -342,21 +342,21 @@ export default function FaqsAdminPage() {
                         onChange={(e) =>
                           updateRow(idx, "question", e.target.value)
                         }
-                        placeholder="Örn: Rezervasyon nasıl yapılır?"
+                        placeholder="Örn: How do I make a reservation?"
                         className="input w-full"
                         autoComplete="off"
                       />
                     </div>
                     <div className="space-y-1.5">
                       <label className="block text-[10px] tracking-[0.16em] uppercase font-semibold text-[var(--admin-muted-2)]">
-                        Cevap
+                        Cevap (English — ana içerik)
                       </label>
                       <textarea
                         value={row.answer}
                         onChange={(e) =>
                           updateRow(idx, "answer", e.target.value)
                         }
-                        placeholder="Cevabı buraya yazın…"
+                        placeholder="Cevabı İngilizce yazın…"
                         className="input w-full !rounded-xl !p-3 min-h-[90px] resize-y leading-relaxed text-[13.5px]"
                         rows={3}
                       />
@@ -439,7 +439,7 @@ export default function FaqsAdminPage() {
                             </div>
                           ))}
                           <p className="text-[11px] text-[var(--admin-muted-2)] leading-relaxed">
-                            Boş bırakılan dilde Türkçe metin gösterilir.
+                            Boş bırakılırsa Türkçe sayfada İngilizce metin gösterilir.
                             Çeviriler &ldquo;Kaydet&rdquo; ile birlikte
                             kaydedilir.
                           </p>

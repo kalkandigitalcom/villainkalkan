@@ -19,16 +19,16 @@ import { parsePageSections } from "@/lib/page-sections";
    ince bir "çöz ve fallback'le" sarmalayıcısı. Yeni repository,
    yeni tablo, yeni cache YOK.
 
-   TR KISAYOLU: `locale === "tr"` (veya geçersiz bir değer →
-   `toLocale` ile TR'ye düşer) ise `page_translations` tablosuna
-   HİÇ SORGU ATILMAZ; canonical değerler aynen döner. Mevcut TR
-   `/p/[slug]` davranışına SIFIR ek DB maliyeti.
+   ANA DİL KISAYOLU: `locale === DEFAULT_LOCALE` ("en"; geçersiz bir
+   değer de `toLocale` ile ona düşer) ise `page_translations`
+   tablosuna HİÇ SORGU ATILMAZ; canonical (İngilizce ana içerik)
+   değerler aynen döner.
 
-   FALLBACK: Alan bazında. Çeviri satırı olsa bile boş/NULL bir
-   kolon canonical TR değerine düşer (`resolveTranslatedField`
+   FALLBACK: Alan bazında. Türkçe çeviri satırı olsa bile boş/NULL
+   bir kolon canonical İngilizce değere düşer (`resolveTranslatedField`
    semantiği, migration 082'de tüm çevrilebilir kolonlar nullable).
-   Çeviri satırı hiç yoksa TÜM alanlar TR'ye düşer — ancak URL
-   (`/en/p/...`) korunur.
+   Çeviri satırı hiç yoksa TÜM alanlar İngilizceye düşer — ancak URL
+   (`/tr/p/...`) korunur.
 
    KAPSAM: `page_translations` kolonlarıyla BİREBİR —
    title · excerpt · body · seo_title · seo_description (migration 082)
@@ -116,7 +116,7 @@ function canonicalContent(page: PageCanonicalContent): ResolvedPageContent {
  * Bir `pages` satırını + hedef locale'i alır, public tarafta
  * gösterilecek NİHAİ metinleri döner.
  *
- * - TR (veya geçersiz locale) → canonical değerler, sorgu YOK.
+ * - EN ana dil (veya geçersiz locale) → canonical değerler, sorgu YOK.
  * - `page.id` yoksa → canonical değerler, sorgu YOK (savunmacı).
  * - Çeviri okunamazsa (`getTranslation` hata halinde `null` döner,
  *   asla throw etmez) → canonical değerler. Public render bir

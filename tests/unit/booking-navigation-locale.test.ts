@@ -107,9 +107,9 @@ describe("1-3) Rezervasyon hedefi aktif locale prefix'ini TAŞIR", () => {
     expect(url).not.toContain("locale=");
   });
 
-  it("1b) locale HİÇ verilmezse de TR canonical (geriye dönük uyum)", async () => {
+  it("1b) locale HİÇ verilmezse varsayılan dil (EN) → prefix'siz", async () => {
     const url = await reserveWith(undefined);
-    expect(url.startsWith("/tr/rezervasyon/deniz-villa?")).toBe(true);
+    expect(url.startsWith("/rezervasyon/deniz-villa?")).toBe(true);
     expect(url).not.toContain("locale=");
   });
 

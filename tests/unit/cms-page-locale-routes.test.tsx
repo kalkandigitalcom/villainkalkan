@@ -88,29 +88,30 @@ import CmsPageBody from "@/app/components/cms/CmsPageBody";
 const PAGE_ID = "page-uuid-1";
 const SLUG = "kasta-unutulmaz-bir-tatil";
 
-/* Kurumsal OLMAYAN + cover'lı sayfa → editorial hero dalı (h1 doğrudan). */
-const TR_PAGE = {
+/* Kurumsal OLMAYAN + cover'lı sayfa → editorial hero dalı (h1 doğrudan).
+   İngilizce ANA içerik = `pages`; Türkçe = `page_translations` ('tr'). */
+const EN_PAGE = {
   id: PAGE_ID,
   slug: SLUG,
-  title: "Kaş'ta Unutulmaz Bir Tatil",
-  excerpt: "Türkçe özet",
-  body: "Türkçe gövde",
-  seo_title: "TR SEO başlık",
-  seo_description: "TR SEO açıklama",
-  noindex: false,
-  cover_image: "pages/kas.webp",
-  sections: [],
-};
-
-const EN_ROW = {
-  id: "t-en",
-  page_id: PAGE_ID,
-  locale: "en",
   title: "An Unforgettable Holiday in Kas",
   excerpt: "EN excerpt",
   body: "EN body paragraph",
   seo_title: "EN SEO title",
   seo_description: "EN SEO description",
+  noindex: false,
+  cover_image: "pages/kas.webp",
+  sections: [],
+};
+
+const TR_ROW = {
+  id: "t-tr",
+  page_id: PAGE_ID,
+  locale: "tr",
+  title: "Kaş'ta Unutulmaz Bir Tatil",
+  excerpt: "Türkçe özet",
+  body: "Türkçe gövde",
+  seo_title: "TR SEO başlık",
+  seo_description: "TR SEO açıklama",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
 };
@@ -118,7 +119,7 @@ const EN_ROW = {
 beforeEach(() => {
   vi.clearAllMocks();
   requirePublicLocaleEnabledMock.mockResolvedValue(undefined);
-  getPageBySlugMock.mockResolvedValue(TR_PAGE);
+  getPageBySlugMock.mockResolvedValue(EN_PAGE);
   getTranslationMock.mockResolvedValue(null);
   notFoundMock.mockImplementation(() => {
     throw new Error("NEXT_NOT_FOUND");
@@ -126,52 +127,39 @@ beforeEach(() => {
 });
 
 const params = Promise.resolve({ slug: SLUG });
+const EN_ROUTE = "@/app/(public)/p/[slug]/page";
+const TR_ROUTE = "@/app/(public)/tr/p/[slug]/page";
 
 /* ===============================================================
-   A + B) ROUTE DAVRANIŞI
+   A) EN (ana dil, prefix'siz) ROUTE
    =============================================================== */
-const LOCALE_ROUTES: Array<[string, "en", typeof EN_ROW]> = [
-  ["@/app/(public)/p/[slug]/page", "en", EN_ROW],
-];
-
-describe.each(LOCALE_ROUTES)("%s", (modulePath, locale, row) => {
-  it(`1) gate geçerse ORTAK CmsPageBody'yi locale="${locale}" ile render eder`, async () => {
-    getTranslationMock.mockResolvedValue(row);
-    const { default: Page } = await import(modulePath);
+describe(EN_ROUTE, () => {
+  it(`1) gate geçerse ORTAK CmsPageBody'yi locale="en" ile, canonical içerikle render eder`, async () => {
+    const { default: Page } = await import(EN_ROUTE);
     const element = await Page({ params: Promise.resolve({ slug: SLUG }) });
 
-    expect(setRequestLocaleMock).toHaveBeenCalledWith(locale);
+    expect(setRequestLocaleMock).toHaveBeenCalledWith("en");
     expect(requirePublicLocaleEnabledMock).toHaveBeenCalledTimes(1);
     expect(element.type).toBe(CmsPageBody);
-    expect(element.props.locale).toBe(locale);
+    expect(element.props.locale).toBe("en");
     expect(element.props.slug).toBe(SLUG);
-    expect(element.props.title).toBe(row.title);
-    expect(element.props.resolvedExcerpt).toBe(row.excerpt);
-    expect(element.props.body).toBe(row.body);
+    expect(element.props.title).toBe(EN_PAGE.title);
+    expect(element.props.resolvedExcerpt).toBe(EN_PAGE.excerpt);
+    expect(element.props.body).toBe(EN_PAGE.body);
   });
 
-  it(`2) çeviri okuması DOĞRU entity/locale ile yapılır`, async () => {
-    getTranslationMock.mockResolvedValue(row);
-    const { default: Page } = await import(modulePath);
+  it(`2) EN ana dil → çeviri okuması YAPILMAZ`, async () => {
+    getTranslationMock.mockResolvedValue(TR_ROW);
+    const { default: Page } = await import(EN_ROUTE);
     await Page({ params: Promise.resolve({ slug: SLUG }) });
-    expect(getTranslationMock).toHaveBeenCalledWith("page", PAGE_ID, locale);
+    expect(getTranslationMock).not.toHaveBeenCalled();
   });
 
-  it(`3) çeviri YOKSA TR'ye fallback — URL/locale korunur`, async () => {
-    getTranslationMock.mockResolvedValue(null);
-    const { default: Page } = await import(modulePath);
-    const element = await Page({ params: Promise.resolve({ slug: SLUG }) });
-    expect(element.props.locale).toBe(locale);
-    expect(element.props.slug).toBe(SLUG);
-    expect(element.props.title).toBe(TR_PAGE.title);
-    expect(element.props.body).toBe(TR_PAGE.body);
-  });
-
-  it(`4) multilingual KAPALI → gate'in notFound()'u PROPAGATE eder`, async () => {
+  it(`4) gate notFound() fırlatırsa PROPAGATE eder`, async () => {
     requirePublicLocaleEnabledMock.mockRejectedValue(
       new Error("NEXT_NOT_FOUND")
     );
-    const { default: Page } = await import(modulePath);
+    const { default: Page } = await import(EN_ROUTE);
     await expect(
       Page({ params: Promise.resolve({ slug: SLUG }) })
     ).rejects.toThrow("NEXT_NOT_FOUND");
@@ -179,7 +167,7 @@ describe.each(LOCALE_ROUTES)("%s", (modulePath, locale, row) => {
 
   it(`5) sayfa yoksa notFound() çağrılır`, async () => {
     getPageBySlugMock.mockResolvedValue(null);
-    const { default: Page } = await import(modulePath);
+    const { default: Page } = await import(EN_ROUTE);
     await expect(
       Page({ params: Promise.resolve({ slug: SLUG }) })
     ).rejects.toThrow("NEXT_NOT_FOUND");
@@ -187,33 +175,49 @@ describe.each(LOCALE_ROUTES)("%s", (modulePath, locale, row) => {
   });
 
   it(`6) generateMetadata mevcut (statik metadata YOK)`, async () => {
-    const mod = await import(modulePath);
+    const mod = await import(EN_ROUTE);
     expect(mod.metadata).toBeUndefined();
     expect(typeof mod.generateMetadata).toBe("function");
   });
 });
 
-describe("app/p/[slug]/page.tsx — TR", () => {
-  it("7) ORTAK CmsPageBody'yi locale='tr' ile render eder", async () => {
-    const { default: Page } = await import("@/app/(public)/tr/p/[slug]/page");
+/* ===============================================================
+   B) TR (çeviri, /tr) ROUTE
+   =============================================================== */
+describe("app/(public)/tr/p/[slug]/page.tsx — TR", () => {
+  it("7) ORTAK CmsPageBody'yi locale='tr' ile, Türkçe çeviriyle render eder", async () => {
+    getTranslationMock.mockResolvedValue(TR_ROW);
+    const { default: Page } = await import(TR_ROUTE);
     const element = await Page({ params });
     expect(element.type).toBe(CmsPageBody);
     expect(element.props.locale).toBe("tr");
-    expect(element.props.title).toBe(TR_PAGE.title);
-    expect(element.props.body).toBe(TR_PAGE.body);
+    expect(element.props.slug).toBe(SLUG);
+    expect(element.props.title).toBe(TR_ROW.title);
+    expect(element.props.resolvedExcerpt).toBe(TR_ROW.excerpt);
+    expect(element.props.body).toBe(TR_ROW.body);
   });
 
-  it("8) TR'de locale gate'i ve çeviri okuması ÇAĞRILMAZ", async () => {
-    const { default: Page } = await import("@/app/(public)/tr/p/[slug]/page");
+  it("8) TR'de çeviri DOĞRU entity/locale ile okunur; locale gate'i çağrılmaz", async () => {
+    getTranslationMock.mockResolvedValue(TR_ROW);
+    const { default: Page } = await import(TR_ROUTE);
     await Page({ params });
-    expect(setRequestLocaleMock).not.toHaveBeenCalled();
+    expect(getTranslationMock).toHaveBeenCalledWith("page", PAGE_ID, "tr");
     expect(requirePublicLocaleEnabledMock).not.toHaveBeenCalled();
-    expect(getTranslationMock).not.toHaveBeenCalled();
+  });
+
+  it("3) TR çevirisi YOKSA İngilizce ana içeriğe fallback — URL/locale korunur", async () => {
+    getTranslationMock.mockResolvedValue(null);
+    const { default: Page } = await import(TR_ROUTE);
+    const element = await Page({ params });
+    expect(element.props.locale).toBe("tr");
+    expect(element.props.slug).toBe(SLUG);
+    expect(element.props.title).toBe(EN_PAGE.title);
+    expect(element.props.body).toBe(EN_PAGE.body);
   });
 
   it("9) TR 404: kendine özgü inline blok KORUNDU (notFound() DEĞİL)", async () => {
     getPageBySlugMock.mockResolvedValue(null);
-    const { default: Page } = await import("@/app/(public)/tr/p/[slug]/page");
+    const { default: Page } = await import(TR_ROUTE);
     const element = await Page({ params });
     expect(notFoundMock).not.toHaveBeenCalled();
     expect(element.type).not.toBe(CmsPageBody);
@@ -226,7 +230,7 @@ describe("app/p/[slug]/page.tsx — TR", () => {
 });
 
 /* ===============================================================
-   D) GERÇEK DOM RENDER — çeviri metni sayfada görünüyor mu?
+   D) GERÇEK DOM RENDER — doğru dildeki metin sayfada görünüyor mu?
    =============================================================== */
 describe("CmsPageBody — gerçek render (çeviri metinleri)", () => {
   async function renderRoute(modulePath: string) {
@@ -235,88 +239,79 @@ describe("CmsPageBody — gerçek render (çeviri metinleri)", () => {
     render(element);
   }
 
-  it("10) TR: Türkçe başlık/excerpt/gövde render edilir", async () => {
-    await renderRoute("@/app/(public)/tr/p/[slug]/page");
-    /* Başlık hem breadcrumb'da hem <h1>'de geçer → heading role ile. */
-    expect(
-      screen.getByRole("heading", { name: TR_PAGE.title })
-    ).toBeTruthy();
-    expect(screen.getByText(TR_PAGE.excerpt)).toBeTruthy();
-    expect(screen.getByText(TR_PAGE.body)).toBeTruthy();
+  it("10) EN: İngilizce başlık/excerpt/gövde render edilir, TR çeviri sızmaz", async () => {
+    getTranslationMock.mockResolvedValue(TR_ROW);
+    await renderRoute(EN_ROUTE);
+    expect(screen.getByRole("heading", { name: EN_PAGE.title })).toBeTruthy();
+    expect(screen.getByText(EN_PAGE.excerpt)).toBeTruthy();
+    expect(screen.getByText(EN_PAGE.body)).toBeTruthy();
+    expect(screen.queryAllByText(TR_ROW.title)).toHaveLength(0);
+    expect(screen.queryAllByText(TR_ROW.body)).toHaveLength(0);
   });
 
-  it("11) EN: İngilizce başlık/excerpt/gövde render edilir", async () => {
-    getTranslationMock.mockResolvedValue(EN_ROW);
-    await renderRoute("@/app/(public)/p/[slug]/page");
-
-    expect(screen.getByRole("heading", { name: EN_ROW.title })).toBeTruthy();
-    expect(screen.getByText(EN_ROW.excerpt)).toBeTruthy();
-    expect(screen.getByText(EN_ROW.body)).toBeTruthy();
-    /* TR içerik SAYFADA YOK */
-    expect(screen.queryAllByText(TR_PAGE.title)).toHaveLength(0);
-    expect(screen.queryAllByText(TR_PAGE.body)).toHaveLength(0);
+  it("11) TR: Türkçe başlık/excerpt/gövde render edilir, EN içerik sayfada YOK", async () => {
+    getTranslationMock.mockResolvedValue(TR_ROW);
+    await renderRoute(TR_ROUTE);
+    expect(screen.getByRole("heading", { name: TR_ROW.title })).toBeTruthy();
+    expect(screen.getByText(TR_ROW.excerpt)).toBeTruthy();
+    expect(screen.getByText(TR_ROW.body)).toBeTruthy();
+    expect(screen.queryAllByText(EN_PAGE.title)).toHaveLength(0);
+    expect(screen.queryAllByText(EN_PAGE.body)).toHaveLength(0);
   });
 
-  it("13) EN çevirisi YOKSA sayfa TR içerikle render edilir (fallback)", async () => {
+  it("13) TR çevirisi YOKSA sayfa İngilizce içerikle render edilir (fallback)", async () => {
     getTranslationMock.mockResolvedValue(null);
-    await renderRoute("@/app/(public)/p/[slug]/page");
-    expect(
-      screen.getByRole("heading", { name: TR_PAGE.title })
-    ).toBeTruthy();
-    expect(screen.getByText(TR_PAGE.body)).toBeTruthy();
+    await renderRoute(TR_ROUTE);
+    expect(screen.getByRole("heading", { name: EN_PAGE.title })).toBeTruthy();
+    expect(screen.getByText(EN_PAGE.body)).toBeTruthy();
   });
 
-  it("14) ALAN BAZINDA fallback: EN başlık var, gövde TR", async () => {
-    getTranslationMock.mockResolvedValue({ ...EN_ROW, body: null });
-    await renderRoute("@/app/(public)/p/[slug]/page");
-    expect(screen.getByRole("heading", { name: EN_ROW.title })).toBeTruthy();
-    expect(screen.getByText(TR_PAGE.body)).toBeTruthy();
+  it("14) ALAN BAZINDA fallback: TR başlık var, gövde EN", async () => {
+    getTranslationMock.mockResolvedValue({ ...TR_ROW, body: null });
+    await renderRoute(TR_ROUTE);
+    expect(screen.getByRole("heading", { name: TR_ROW.title })).toBeTruthy();
+    expect(screen.getByText(EN_PAGE.body)).toBeTruthy();
   });
 
-  it("15) SLUG ÇEVRİLMEZ — cover alt/başlık değişse de slug TR kalır", async () => {
-    getTranslationMock.mockResolvedValue(EN_ROW);
-    const { default: Page } = await import(
-      "@/app/(public)/p/[slug]/page"
-    );
+  it("15) SLUG ÇEVRİLMEZ — başlık değişse de slug aynı kalır", async () => {
+    getTranslationMock.mockResolvedValue(TR_ROW);
+    const { default: Page } = await import(TR_ROUTE);
     const element = await Page({ params: Promise.resolve({ slug: SLUG }) });
     expect(element.props.slug).toBe(SLUG);
     expect(element.props.page.slug).toBe(SLUG);
   });
 
-  it("16) SECTIONS ÇEVRİLMEZ — EN sayfasında TR sections render edilir", async () => {
+  it("16) TR satırında bölüm yoksa canonical (EN) sections render edilir", async () => {
     getPageBySlugMock.mockResolvedValue({
-      ...TR_PAGE,
-      sections: [{ type: "richtext", content: "TR bölüm metni" }],
+      ...EN_PAGE,
+      sections: [{ type: "richtext", content: "EN section text" }],
     });
-    getTranslationMock.mockResolvedValue(EN_ROW);
-    await renderRoute("@/app/(public)/p/[slug]/page");
+    getTranslationMock.mockResolvedValue(TR_ROW);
+    await renderRoute(TR_ROUTE);
 
-    /* Başlık EN, section içeriği TR (page_translations'ta kolon YOK). */
-    expect(screen.getByRole("heading", { name: EN_ROW.title })).toBeTruthy();
-    expect(screen.getByTestId("section").textContent).toBe("TR bölüm metni");
+    expect(screen.getByRole("heading", { name: TR_ROW.title })).toBeTruthy();
+    expect(screen.getByTestId("section").textContent).toBe("EN section text");
     /* sections varken body render EDİLMEZ (mevcut davranış). */
-    expect(screen.queryByText(EN_ROW.body)).toBeNull();
+    expect(screen.queryByText(TR_ROW.body)).toBeNull();
   });
 
-  it("17) kurumsal sayfa kararı canonical TR başlığa bağlı kalır (EN'de de PageHero)", async () => {
+  it("17) kurumsal sayfa kararı canonical slug/başlığa bağlı kalır (TR'de de PageHero)", async () => {
     getPageBySlugMock.mockResolvedValue({
-      ...TR_PAGE,
+      ...EN_PAGE,
       slug: "hakkimizda",
-      title: "Hakkımızda",
+      title: "About Us",
       cover_image: "pages/x.webp",
     });
-    getTranslationMock.mockResolvedValue({ ...EN_ROW, title: "About Us" });
+    getTranslationMock.mockResolvedValue({ ...TR_ROW, title: "Hakkımızda" });
 
-    const { default: Page } = await import(
-      "@/app/(public)/p/[slug]/page"
-    );
+    const { default: Page } = await import(TR_ROUTE);
     const element = await Page({
       params: Promise.resolve({ slug: "hakkimizda" }),
     });
     render(element);
 
-    /* Kurumsal hero KORUNDU (cover'a rağmen PageHero) ve başlık EN. */
+    /* Kurumsal hero KORUNDU (cover'a rağmen PageHero) ve başlık TR. */
     expect(screen.getByTestId("page-hero")).toBeTruthy();
-    expect(screen.getByText("About Us")).toBeTruthy();
+    expect(screen.getByText("Hakkımızda")).toBeTruthy();
   });
 });

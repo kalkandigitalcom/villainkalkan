@@ -576,9 +576,16 @@ describe.each(VILLA_DETAIL_GATE_ROUTES)(
    page.tsx'in resolve edilen description'ı doğru şekilde
    `CollapsibleDescription`'a/fallback'e ilettiği doğrulanıyor.
    =============================================================== */
-const VILLA_DETAIL_ROUTES: Array<[string, "en"]> = [
-  ["@/app/(public)/kiralik-villa/[slug]/page", "en"],
+/* 🔄 İNGİLİZCE ANA DİL — çeviri katmanı yalnız Türkçe (/tr) sayfada
+   devreye girer; EN sayfa canonical (İngilizce ana içerik) gösterir.
+   Bu yüzden çeviri overlay testleri TR route'u üzerinden koşar; EN
+   route'un çeviri UYGULAMADIĞI ayrıca aşağıda kilitlenir. */
+const VILLA_DETAIL_ROUTES: Array<[string, "tr"]> = [
+  ["@/app/(public)/tr/kiralik-villa/[slug]/page", "tr"],
 ];
+/* Statik sözlük etiketlerinin (oda/mesafe/havuz) TR literal'lerinin
+   yerine geçtiği ve JSON-LD `inLanguage` kontrolleri EN sayfada koşar. */
+const EN_VILLA_DETAIL_ROUTE = "@/app/(public)/kiralik-villa/[slug]/page";
 
 describe.each(VILLA_DETAIL_ROUTES)(
   "%s — Phase 8B description overlay",
@@ -784,6 +791,21 @@ describe.each(VILLA_DETAIL_ROUTES)(
       expect(screen.getByText("Havuz")).toBeInTheDocument();
     });
 
+    it("13b) EN (ana dil) sayfası çeviri UYGULAMAZ — canonical isimler gösterilir", async () => {
+      getVillaFeaturesByVillaMock.mockResolvedValue([
+        { id: "f1", name: "Deniz Manzarası" },
+      ]);
+      getTranslationsForParentsMock.mockResolvedValue(new Map());
+
+      const { default: Page } = await import(EN_VILLA_DETAIL_ROUTE);
+      render(await Page({ params: Promise.resolve({ slug: "test-villa" }) }));
+
+      expect(screen.getByText("Deniz Manzarası")).toBeInTheDocument();
+      for (const call of getTranslationsForParentsMock.mock.calls) {
+        expect(call[2]).toBe("en");
+      }
+    });
+
     it("14) rules: çevirisi olan çevrilmiş başlıkla, olmayan orijinal TR başlıkla render edilir", async () => {
       getRuleItemsByVillaMock.mockResolvedValue([
         { id: "r1", title: "Evcil hayvan kabul edilmez" },
@@ -938,13 +960,13 @@ describe.each(VILLA_DETAIL_ROUTES)(
         },
       ]);
 
-      const { default: Page } = await import(modulePath);
+      const { default: Page } = await import(EN_VILLA_DETAIL_ROUTE);
       const element = await Page({
         params: Promise.resolve({ slug: "test-villa" }),
       });
       render(element);
 
-      const dict = getDictionary(locale);
+      const dict = getDictionary("en");
       /* ORİJİNAL TR title ile çağrılmalı ... */
       expect(getDistanceIconKeyMock).toHaveBeenCalledWith("Restoran");
       /* ... ÇEVRİLMİŞ (dictionary'den gelen) displayTitle ile ASLA
@@ -1009,10 +1031,10 @@ describe.each(VILLA_DETAIL_ROUTES)(
     it("20) 🛡️ PHASE 10F — oda/banyo adları SÖZLÜKTEN çevrilir (villa bazlı çeviri YOK)", async () => {
       getVillaBySlugMock.mockResolvedValueOnce(VILLA_WITH_LAYOUT);
 
-      const { default: Page } = await import(modulePath);
+      const { default: Page } = await import(EN_VILLA_DETAIL_ROUTE);
       render(await Page({ params: Promise.resolve({ slug: "test-villa" }) }));
 
-      const dict = getDictionary(locale);
+      const dict = getDictionary("en");
       expect(
         screen.getByText(dict.roomNameLabels["Ana Yatak Odası"])
       ).toBeInTheDocument();
@@ -1071,10 +1093,10 @@ describe.each(VILLA_DETAIL_ROUTES)(
         child_pool: true,
       });
 
-      const { default: Page } = await import(modulePath);
+      const { default: Page } = await import(EN_VILLA_DETAIL_ROUTE);
       render(await Page({ params: Promise.resolve({ slug: "test-villa" }) }));
 
-      const dict = getDictionary(locale);
+      const dict = getDictionary("en");
       expect(screen.getByText(dict.pool.sectionTitle)).toBeInTheDocument();
       expect(
         screen.getByText(dict.poolTypeLabels.private_sheltered)
@@ -1188,7 +1210,7 @@ describe.each(VILLA_DETAIL_ROUTES)(
     });
 
     it("22) JSON-LD: vacationRentalLd + breadcrumbLd 'inLanguage' alanı sayfanın locale'iyle eşleşir", async () => {
-      const { default: Page } = await import(modulePath);
+      const { default: Page } = await import(EN_VILLA_DETAIL_ROUTE);
       const element = await Page({
         params: Promise.resolve({ slug: "test-villa" }),
       });
@@ -1212,8 +1234,8 @@ describe.each(VILLA_DETAIL_ROUTES)(
 
       expect(vacationRental).toBeTruthy();
       expect(breadcrumb).toBeTruthy();
-      expect(vacationRental?.inLanguage).toBe(locale);
-      expect(breadcrumb?.inLanguage).toBe(locale);
+      expect(vacationRental?.inLanguage).toBe("en");
+      expect(breadcrumb?.inLanguage).toBe("en");
     });
 
     it("23) JSON-LD breadcrumb isimleri locale-aware (dict.header.home/villas + çevrilmiş title)", async () => {

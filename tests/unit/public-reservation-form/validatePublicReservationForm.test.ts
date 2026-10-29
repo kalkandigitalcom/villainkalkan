@@ -1,6 +1,16 @@
 import { describe, it, expect } from "vitest";
 
-import { validatePublicReservationForm } from "@/app/components/reservation/_helpers/validatePublicReservationForm";
+import { validatePublicReservationForm as validateRaw } from "@/app/components/reservation/_helpers/validatePublicReservationForm";
+import type { Locale } from "@/lib/i18n/config";
+
+/* 🔄 İngilizce ana dil — helper'ın locale verilmezse varsayılanı artık
+   EN (DEFAULT_LOCALE). Bu dosyadaki kural/mesaj testlerinin çoğu Türkçe
+   metinleri doğrular; bu yüzden yerel sarmalayıcı locale verilmediğinde
+   "tr" geçirir. Gerçek varsayılan (EN) ayrıca aşağıda kilitlenir. */
+const validatePublicReservationForm = (
+  input: Parameters<typeof validateRaw>[0],
+  locale: Locale = "tr"
+) => validateRaw(input, locale);
 import { initialPublicReservationFormData } from "@/app/components/reservation/_types/reservation-form-data";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
@@ -301,6 +311,10 @@ describe("validatePublicReservationForm — locale (TR/EN)", () => {
     expect(errors.identity).toBe("TC zorunlu");
     expect(errors.payment_method_id).toBe("Ödeme yöntemi seç");
     expect(errors.date).toBe("Tarih seçmelisin");
+  });
+
+  it("locale verilmezse helper'ın varsayılanı EN (DEFAULT_LOCALE)", () => {
+    expect(validateRaw(allInvalid())).toEqual(validateRaw(allInvalid(), "en"));
   });
 
   it('locale="tr" açıkça verildiğinde de AYNI TR mesajları', () => {

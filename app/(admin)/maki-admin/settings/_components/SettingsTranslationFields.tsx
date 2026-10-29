@@ -20,9 +20,10 @@ import { SettingsSection, FieldShell } from "./SettingsField";
    aynen korunur — kapsam dışı gruplar (Hero, çalışma saatleri, adres)
    bu sayede hiç değişmeden kalır.
 
-   TR HER DURUMDA SALT OKUNURDUR: canonical kaynak `settings` satırıdır
-   ve ilgili ayar alt sayfasından düzenlenir. `locale === "tr"` dalı
-   `onChange` verilse bile düzenlemeye İZİN VERMEZ.
+   İNGİLİZCE (ana içerik) HER DURUMDA SALT OKUNURDUR: canonical kaynak
+   `settings` satırıdır ve ilgili ayar alt sayfasından düzenlenir.
+   Ana dil dalı `onChange` verilse bile düzenlemeye İZİN VERMEZ;
+   yalnız Türkçe çeviri yazılır (settings_translations, locale='tr').
 
    ⚠️ Mevcut settings save akışı (tek form + tek SaveButton + atomik PUT
    /api/admin/settings) bu ekrandan HİÇ ETKİLENMEZ — çeviriler AYRI bir
@@ -31,20 +32,20 @@ import { SettingsSection, FieldShell } from "./SettingsField";
 
 /* ---------- Locale modeli ---------- */
 
-/** Bu ekranın dil kümesi. TR canonical kaynaktır (salt okunur). */
+/** Bu ekranın dil kümesi. EN canonical (ana) kaynaktır (salt okunur). */
 export type TranslationLocale = "tr" | "en";
 
 /** TR canonical olduğu için yazılabilir locale yalnız EN —
  *  projedeki diğer çeviri panelleriyle (types/features/rules/
  *  price-includes/villas) AYNI kural. */
-export type WritableTranslationLocale = Exclude<TranslationLocale, "tr">;
+export type WritableTranslationLocale = Exclude<TranslationLocale, "en">;
 
 export const TRANSLATION_LOCALES: ReadonlyArray<{
   code: TranslationLocale;
   label: string;
 }> = [
-  { code: "tr", label: "Türkçe" },
-  { code: "en", label: "English" },
+  { code: "en", label: "English (ana içerik)" },
+  { code: "tr", label: "Türkçe (çeviri)" },
 ];
 
 /* ---------- TranslationLanguageTabs ---------- */
@@ -86,7 +87,7 @@ export function TranslationLanguageTabs({
                   : "text-[var(--color-stone-600)] hover:bg-[var(--color-sand-50)] hover:text-[var(--color-stone-900)]")
               }
             >
-              {loc.code === "tr" && (
+              {loc.code === "en" && (
                 <Lock
                   size={11}
                   aria-hidden="true"
@@ -270,33 +271,33 @@ export function TranslationField({
   placeholderHint?: string;
   multiline?: boolean;
   rows?: number;
-  /** Seçili EN/DE değeri. TR'de YOK SAYILIR. */
+  /** Seçili Türkçe çeviri değeri. Ana dilde (EN) YOK SAYILIR. */
   value?: string;
-  /** Verilirse alan EN/DE'de düzenlenebilir olur. */
+  /** Verilirse alan Türkçe çeviride düzenlenebilir olur. */
   onChange?: (next: string) => void;
   /** Kayıt sürerken input'lar kilitlenir. */
   saving?: boolean;
 }) {
-  const isTr = locale === "tr";
-  /* 🛡️ TR asla düzenlenemez — `onChange` geçilse bile. */
-  const editable = !isTr && typeof onChange === "function";
+  const isMain = locale === "en";
+  /* 🛡️ Ana içerik (İngilizce) burada düzenlenemez — `onChange` geçilse bile. */
+  const editable = !isMain && typeof onChange === "function";
   const hasCanonical = canonicalValue.trim().length > 0;
 
-  const shownValue = isTr ? canonicalValue : value ?? "";
+  const shownValue = isMain ? canonicalValue : value ?? "";
 
-  const placeholder = isTr
+  const placeholder = isMain
     ? "Bu alan henüz doldurulmamış"
     : editable
-      ? "Boş bırakılırsa Türkçe metin gösterilir"
+      ? "Boş bırakılırsa İngilizce ana metin gösterilir"
       : "Çeviri sistemi henüz bağlanmadı";
 
   const composedHint = [
     hint,
     placeholderHint,
-    isTr
-      ? "Türkçe canonical içeriktir; ilgili ayar sayfasından düzenlenir."
+    isMain
+      ? "İngilizce ana içeriktir; ilgili ayar sayfasından düzenlenir."
       : editable
-        ? "Boş bırakılırsa bu dilde Türkçe canonical metin gösterilir."
+        ? "Boş bırakılırsa Türkçe sayfada İngilizce ana metin gösterilir."
         : "Bu alan çeviri veritabanı bağlantısı tamamlandığında aktif olacak.",
   ]
     .filter((part): part is string => !!part)
@@ -304,7 +305,7 @@ export function TranslationField({
 
   const sharedClassName =
     "input disabled:cursor-not-allowed " +
-    (isTr && hasCanonical
+    (isMain && hasCanonical
       ? "disabled:opacity-100 disabled:text-[var(--color-stone-700)]"
       : "disabled:opacity-70");
 

@@ -336,7 +336,7 @@ describe("Fotoğrafları Göster → mevcut galeri lightbox'ı", () => {
 
   it("varsayılan grid düzeni değişmedi (kolaj + Tüm Fotoğraflar)", () => {
     const { container } = render(
-      <Gallery images={images} villaTitle="Villa Test" />,
+      <Gallery images={images} villaTitle="Villa Test" locale="tr" />,
     );
     expect(container.querySelector("[data-gallery-single]")).toBeNull();
     expect(

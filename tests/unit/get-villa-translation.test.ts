@@ -8,7 +8,7 @@
 
    Mock SEVİYESİ bilinçli seçildi: Phase 5'in `get-translation.test.ts`'i
    gibi, en ALT sınırda — `@/lib/db/translation.repository.server`'ın
-   `findOne`'ı — mock'lanır. Böylece `getTranslation` (Phase 5, TR
+   `findOne`'ı — mock'lanır. Böylece `getTranslation` (Phase 5, EN
    kısayolu dahil) ve `resolveTranslatedField` (fallback) GERÇEK
    kodlarıyla çalışır; bu dosya yalnız "doğru villaId/locale ile doğru
    sorgu + doğru fallback" ZİNCİRİNİ uçtan uca doğrular. GERÇEK DB'YE
@@ -49,7 +49,7 @@ beforeEach(() => {
 const VILLA_ID = "villa-uuid-1";
 
 /* 🛡️ `getVillaTranslatedTitle` KALDIRILDI — villa adı özel isimdir,
-   hiçbir locale'de çevrilmez; EN sayfalar canonical `villa.title`
+   hiçbir locale'de çevrilmez; TR sayfalar canonical `villa.title`
    kullanır. Bu dosyadaki diğer getter testleri DEĞİŞMEDİ. */
 
 /* ===============================================================
@@ -59,29 +59,29 @@ const VILLA_ID = "villa-uuid-1";
    yalnız `translationRepository.findOne` mock'lanır, `getTranslation`
    ve `resolveTranslatedField` GERÇEK kodlarıyla çalışır.
    =============================================================== */
-const ORIGINAL_DESCRIPTION = "<p>Muhteşem bir villa açıklaması.</p>";
+const ORIGINAL_DESCRIPTION = "<p>A wonderful villa description.</p>";
 
 describe("getVillaTranslatedDescription", () => {
-  /* --- 1) TR --- */
-  it("1) locale='tr' → orijinal villa.description döner, translation sorgusu ATILMAZ", async () => {
+  /* --- 1) EN --- */
+  it("1) locale='en' → orijinal villa.description döner, translation sorgusu ATILMAZ", async () => {
     const result = await getVillaTranslatedDescription(
       VILLA_ID,
       ORIGINAL_DESCRIPTION,
-      "tr"
+      "en"
     );
     expect(result).toBe(ORIGINAL_DESCRIPTION);
     expect(findOneMock).not.toHaveBeenCalled();
   });
 
-  /* --- 2) EN + mevcut --- */
-  it("2) locale='en' + çeviri mevcut → çevrilmiş description döner", async () => {
+  /* --- 2) TR + mevcut --- */
+  it("2) locale='tr' + çeviri mevcut → çevrilmiş description döner", async () => {
     findOneMock.mockResolvedValue({
       data: {
         id: "t1",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: null,
-        description: "<p>A wonderful villa description.</p>",
+        description: "<p>Muhteşem bir villa açıklaması.</p>",
         seo_title: null,
         seo_description: null,
         created_at: "",
@@ -92,9 +92,9 @@ describe("getVillaTranslatedDescription", () => {
     const result = await getVillaTranslatedDescription(
       VILLA_ID,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
-    expect(result).toBe("<p>A wonderful villa description.</p>");
+    expect(result).toBe("<p>Muhteşem bir villa açıklaması.</p>");
   });
 
   /* --- 4) çeviri satırı yok --- */
@@ -103,7 +103,7 @@ describe("getVillaTranslatedDescription", () => {
     const result = await getVillaTranslatedDescription(
       VILLA_ID,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
     expect(result).toBe(ORIGINAL_DESCRIPTION);
   });
@@ -114,7 +114,7 @@ describe("getVillaTranslatedDescription", () => {
       data: {
         id: "t3",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: "Villa In Love",
         description: null,
         seo_title: null,
@@ -127,7 +127,7 @@ describe("getVillaTranslatedDescription", () => {
     const result = await getVillaTranslatedDescription(
       VILLA_ID,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
     expect(result).toBe(ORIGINAL_DESCRIPTION);
   });
@@ -137,7 +137,7 @@ describe("getVillaTranslatedDescription", () => {
       data: {
         id: "t3b",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: null,
         description: "   ",
         seo_title: null,
@@ -150,7 +150,7 @@ describe("getVillaTranslatedDescription", () => {
     const result = await getVillaTranslatedDescription(
       VILLA_ID,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
     expect(result).toBe(ORIGINAL_DESCRIPTION);
   });
@@ -162,15 +162,15 @@ describe("getVillaTranslatedDescription", () => {
       error: { message: "connection lost" },
     });
     await expect(
-      getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "en")
+      getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "tr")
     ).resolves.toBe(ORIGINAL_DESCRIPTION);
   });
 
   /* --- 7) doğru locale + entity ile çağrılır --- */
-  it("7) helper, findOne'ı TAM OLARAK geçirilen locale ile çağırır ('en')", async () => {
+  it("7) helper, findOne'ı TAM OLARAK geçirilen locale ile çağırır ('tr')", async () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
-    await getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "en");
-    expect(findOneMock).toHaveBeenCalledWith("villa", VILLA_ID, "en");
+    await getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "tr");
+    expect(findOneMock).toHaveBeenCalledWith("villa", VILLA_ID, "tr");
   });
 
   /* --- 8) title + description AYNI cache-anahtarını (entity/villaId/locale)
@@ -193,9 +193,9 @@ describe("getVillaTranslatedDescription", () => {
       data: {
         id: "t4",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: "Villa In Love",
-        description: "<p>A wonderful villa description.</p>",
+        description: "<p>Muhteşem bir villa açıklaması.</p>",
         seo_title: null,
         seo_description: null,
         created_at: "",
@@ -204,13 +204,13 @@ describe("getVillaTranslatedDescription", () => {
       error: null,
     });
 
-    await getVillaTranslatedSeoTitle(VILLA_ID, "Orijinal SEO Başlık", "en");
-    await getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "en");
+    await getVillaTranslatedSeoTitle(VILLA_ID, "Orijinal SEO Başlık", "tr");
+    await getVillaTranslatedDescription(VILLA_ID, ORIGINAL_DESCRIPTION, "tr");
 
     expect(findOneMock).toHaveBeenCalledTimes(2);
     const [seoTitleCallArgs, descriptionCallArgs] = findOneMock.mock.calls;
-    expect(seoTitleCallArgs).toEqual(["villa", VILLA_ID, "en"]);
-    expect(descriptionCallArgs).toEqual(["villa", VILLA_ID, "en"]);
+    expect(seoTitleCallArgs).toEqual(["villa", VILLA_ID, "tr"]);
+    expect(descriptionCallArgs).toEqual(["villa", VILLA_ID, "tr"]);
     expect(seoTitleCallArgs).toEqual(descriptionCallArgs);
   });
 });
@@ -227,7 +227,7 @@ describe("getVillaTranslatedDescription", () => {
    çalışır (locale-routes.test.tsx'in Phase 8B'deki page-body
    testlerinde zaten aynı şekilde unmocked kullanılıyor).
    =============================================================== */
-const ORIGINAL_SEO_DESCRIPTION = "Orijinal TR seo açıklaması.";
+const ORIGINAL_SEO_DESCRIPTION = "Orijinal EN seo açıklaması.";
 const LONG_DESCRIPTION_HTML =
   "<p>" +
   "Bu villa, muhteşem deniz manzarası, geniş özel havuzu ve modern " +
@@ -238,24 +238,24 @@ const LONG_DESCRIPTION_HTML =
   "</p>";
 
 describe("getVillaTranslatedSeoDescription", () => {
-  /* --- 1) TR --- */
-  it("1) locale='tr' → translation sorgusu ATILMAZ, orijinal seo_description (trim'lenmiş) döner", async () => {
+  /* --- 1) EN --- */
+  it("1) locale='en' → translation sorgusu ATILMAZ, orijinal seo_description (trim'lenmiş) döner", async () => {
     const result = await getVillaTranslatedSeoDescription(
       VILLA_ID,
-      "  Orijinal TR seo açıklaması.  ",
+      "  Orijinal EN seo açıklaması.  ",
       ORIGINAL_DESCRIPTION,
-      "tr"
+      "en"
     );
-    expect(result).toBe("Orijinal TR seo açıklaması.");
+    expect(result).toBe("Orijinal EN seo açıklaması.");
     expect(findOneMock).not.toHaveBeenCalled();
   });
 
-  it("1b) locale='tr' + seo_description boş/null → orijinal description'dan 160 karakter excerpt", async () => {
+  it("1b) locale='en' + seo_description boş/null → orijinal description'dan 160 karakter excerpt", async () => {
     const result = await getVillaTranslatedSeoDescription(
       VILLA_ID,
       null,
       LONG_DESCRIPTION_HTML,
-      "tr"
+      "en"
     );
     expect(findOneMock).not.toHaveBeenCalled();
     expect(result.length).toBeLessThanOrEqual(160);
@@ -263,15 +263,15 @@ describe("getVillaTranslatedSeoDescription", () => {
     expect(result.endsWith("…")).toBe(true);
   });
 
-  /* --- 2) EN + translation.seo_description mevcut (A) --- */
-  it("2) locale='en' + çeviri seo_description'ı DOLU → AYNEN döner (excerpt ÜRETİLMEZ)", async () => {
+  /* --- 2) TR + translation.seo_description mevcut (A) --- */
+  it("2) locale='tr' + çeviri seo_description'ı DOLU → AYNEN döner (excerpt ÜRETİLMEZ)", async () => {
     findOneMock.mockResolvedValue({
       data: {
         id: "t1",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: null,
-        description: "<p>A wonderful villa description.</p>",
+        description: "<p>Muhteşem bir villa açıklaması.</p>",
         seo_title: null,
         seo_description: "A stunning villa with sea view.",
         created_at: "",
@@ -283,7 +283,7 @@ describe("getVillaTranslatedSeoDescription", () => {
       VILLA_ID,
       ORIGINAL_SEO_DESCRIPTION,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
     expect(result).toBe("A stunning villa with sea view.");
   });
@@ -294,7 +294,7 @@ describe("getVillaTranslatedSeoDescription", () => {
       data: {
         id: "t3",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: null,
         description: LONG_DESCRIPTION_HTML.replace("Bu villa", "This villa"),
         seo_title: null,
@@ -308,7 +308,7 @@ describe("getVillaTranslatedSeoDescription", () => {
       VILLA_ID,
       ORIGINAL_SEO_DESCRIPTION,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
     expect(result).not.toMatch(/<[^>]*>/); // HTML strip edilmiş
     expect(result.length).toBeLessThanOrEqual(160);
@@ -321,9 +321,9 @@ describe("getVillaTranslatedSeoDescription", () => {
       data: {
         id: "t3b",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: null,
-        description: "<p>Short EN description.</p>",
+        description: "<p>Short TR description.</p>",
         seo_title: null,
         seo_description: "   ",
         created_at: "",
@@ -335,30 +335,39 @@ describe("getVillaTranslatedSeoDescription", () => {
       VILLA_ID,
       ORIGINAL_SEO_DESCRIPTION,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
-    expect(result).toBe("Short EN description.");
+    expect(result).toBe("Short TR description.");
   });
 
   /* --- 5) çeviri satırı HİÇ yok (C) --- */
-  it("5) çeviri satırı YOK (translation null) → orijinal (TR) description'dan excerpt üretir", async () => {
+  it("5) çeviri satırı YOK (translation null) → ana içerik (EN) seo_description'ına düşer", async () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
     const result = await getVillaTranslatedSeoDescription(
       VILLA_ID,
       ORIGINAL_SEO_DESCRIPTION,
       LONG_DESCRIPTION_HTML,
-      "en"
+      "tr"
+    );
+    /* Alan bazında fallback: TR seo/açıklama yok → EN seo_description. */
+    expect(result).toBe(ORIGINAL_SEO_DESCRIPTION.trim());
+  });
+
+  it("5b) çeviri ve EN seo_description YOK → EN description'dan excerpt", async () => {
+    findOneMock.mockResolvedValue({ data: null, error: null });
+    const result = await getVillaTranslatedSeoDescription(
+      VILLA_ID,
+      null,
+      LONG_DESCRIPTION_HTML,
+      "tr"
     );
     expect(result).not.toMatch(/<[^>]*>/);
     expect(result.length).toBeLessThanOrEqual(160);
     expect(result.endsWith("…")).toBe(true);
-    // ÖNEMLİ: orijinal seo_description KULLANILMAZ (yalnız TR dalında kullanılır) —
-    // EN'de çeviri yoksa excerpt DAİMA description'dan üretilir.
-    expect(result).not.toBe(ORIGINAL_SEO_DESCRIPTION);
   });
 
   /* --- 6) DB hatası (E) --- */
-  it("6) DB hatası dönerse → exception FIRLATMADAN orijinal description'dan excerpt üretir", async () => {
+  it("6) DB hatası dönerse → exception FIRLATMADAN ana içerik (EN) seo_description'ı döner", async () => {
     findOneMock.mockResolvedValue({
       data: null,
       error: { message: "connection lost" },
@@ -367,10 +376,10 @@ describe("getVillaTranslatedSeoDescription", () => {
       VILLA_ID,
       ORIGINAL_SEO_DESCRIPTION,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
     expect(result).not.toMatch(/<[^>]*>/);
-    expect(result).not.toBe(ORIGINAL_SEO_DESCRIPTION);
+    expect(result).toBe(ORIGINAL_SEO_DESCRIPTION.trim());
   });
 
   /* --- 7) doğru locale + entity ile çağrılır, title/description ile AYNI
@@ -381,9 +390,9 @@ describe("getVillaTranslatedSeoDescription", () => {
       data: {
         id: "t4",
         villa_id: VILLA_ID,
-        locale: "en",
+        locale: "tr",
         title: "Villa In Love",
-        description: "<p>A wonderful villa description.</p>",
+        description: "<p>Muhteşem bir villa açıklaması.</p>",
         seo_title: null,
         seo_description: "A stunning villa with sea view.",
         created_at: "",
@@ -392,31 +401,31 @@ describe("getVillaTranslatedSeoDescription", () => {
       error: null,
     });
 
-    await getVillaTranslatedSeoTitle(VILLA_ID, "Orijinal SEO Başlık", "en");
+    await getVillaTranslatedSeoTitle(VILLA_ID, "Orijinal SEO Başlık", "tr");
     await getVillaTranslatedSeoDescription(
       VILLA_ID,
       ORIGINAL_SEO_DESCRIPTION,
       ORIGINAL_DESCRIPTION,
-      "en"
+      "tr"
     );
 
     expect(findOneMock).toHaveBeenCalledTimes(2);
     const [titleCallArgs, seoDescriptionCallArgs] = findOneMock.mock.calls;
-    expect(titleCallArgs).toEqual(["villa", VILLA_ID, "en"]);
-    expect(seoDescriptionCallArgs).toEqual(["villa", VILLA_ID, "en"]);
+    expect(titleCallArgs).toEqual(["villa", VILLA_ID, "tr"]);
+    expect(seoDescriptionCallArgs).toEqual(["villa", VILLA_ID, "tr"]);
     expect(titleCallArgs).toEqual(seoDescriptionCallArgs);
   });
 
-  /* --- 8) 160 karakter + "…" davranışı TR'nin makeExcerpt'iyle
+  /* --- 8) 160 karakter + "…" davranışı EN'nin makeExcerpt'iyle
      BİREBİR AYNI (uzunluk sınırı + ellipsis karakteri) --- */
-  it("8) excerpt TAM OLARAK 160 karaktere kırpılır ve '…' ile biter (TR makeExcerpt ile aynı davranış)", async () => {
+  it("8) excerpt TAM OLARAK 160 karaktere kırpılır ve '…' ile biter (EN makeExcerpt ile aynı davranış)", async () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
     const veryLong = "A".repeat(300);
     const result = await getVillaTranslatedSeoDescription(
       VILLA_ID,
       null,
       veryLong,
-      "en"
+      "tr"
     );
     expect(result.length).toBe(160);
     expect(result.endsWith("…")).toBe(true);
@@ -430,7 +439,7 @@ describe("getVillaTranslatedSeoDescription", () => {
       VILLA_ID,
       null,
       short,
-      "en"
+      "tr"
     );
     expect(result).toBe(short);
   });

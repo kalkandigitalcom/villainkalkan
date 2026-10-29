@@ -144,7 +144,7 @@ function makeEngine(discounts: DiscountRange[] | null): UseBookingEngineReturn {
 
 function renderBookingCalendar(discounts: DiscountRange[] | null) {
   return render(
-    <BookingCalendar
+    <BookingCalendar locale="tr"
       engine={makeEngine(discounts)}
       currentMonth={MONTH}
       onCurrentMonthChange={vi.fn()}
@@ -216,7 +216,7 @@ describe("A) BookingCalendar — günlük indirim gösterimi", () => {
   it("6) tarih seçme davranışı DEĞİŞMEDİ (gün tıklaması engine'e gider)", () => {
     const engine = makeEngine(DISCOUNTS);
     const { container } = render(
-      <BookingCalendar
+      <BookingCalendar locale="tr"
         engine={engine}
         currentMonth={MONTH}
         onCurrentMonthChange={vi.fn()}
@@ -268,7 +268,7 @@ describe("B) AvailabilityInlineCalendar — günlük indirim gösterimi", () => 
 
   async function renderInline(discounts?: DiscountRange[]) {
     const r = render(
-      <AvailabilityInlineCalendar
+      <AvailabilityInlineCalendar locale="tr"
         villaId="v1"
         prices={WIDE_PRICES}
         discounts={discounts}

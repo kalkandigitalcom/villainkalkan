@@ -158,7 +158,7 @@ describe("menu-translation.service", () => {
     });
     findAllForParentMock.mockResolvedValue({ data: [], error: null });
     upsertOneMock.mockResolvedValue({
-      data: { id: "x", menu_id: "m1", locale: "en", name: "Rental Villas" },
+      data: { id: "x", menu_id: "m1", locale: "tr", name: "Kiralık Villalar" },
       error: null,
     });
   });
@@ -171,8 +171,8 @@ describe("menu-translation.service", () => {
   it("11) getMenuTranslations yalnız en satırlarını döner (tr/de sızmaz)", async () => {
     findAllForParentMock.mockResolvedValue({
       data: [
-        { locale: "tr", name: "Kiralık Villalar" },
         { locale: "en", name: "Rental Villas" },
+        { locale: "tr", name: "Kiralık Villalar" },
         { locale: "de", name: "Mietvillen" },
       ],
       error: null,
@@ -180,7 +180,7 @@ describe("menu-translation.service", () => {
     const res = await getMenuTranslations("m1");
     expect(res.ok).toBe(true);
     if (!res.ok) return;
-    expect(res.rows.map((r) => r.locale)).toEqual(["en"]);
+    expect(res.rows.map((r) => r.locale)).toEqual(["tr"]);
   });
 
   it("12) boş menuId → hata, DB'ye gidilmez", async () => {
@@ -189,15 +189,15 @@ describe("menu-translation.service", () => {
     expect(findAllForParentMock).not.toHaveBeenCalled();
   });
 
-  it("13) upsert — EN adı yazılır", async () => {
+  it("13) upsert — TR adı yazılır", async () => {
     const res = await upsertMenuTranslation({
       menuId: "m1",
-      locale: "en",
-      name: "Rental Villas",
+      locale: "tr",
+      name: "Kiralık Villalar",
     });
     expect(res.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith("menu", "m1", "en", {
-      name: "Rental Villas",
+    expect(upsertOneMock).toHaveBeenCalledWith("menu", "m1", "tr", {
+      name: "Kiralık Villalar",
     });
   });
 
@@ -214,28 +214,28 @@ describe("menu-translation.service", () => {
   it("15) upsert — ad TRIM edilir", async () => {
     await upsertMenuTranslation({
       menuId: "m1",
-      locale: "en",
-      name: "  Rental Villas  ",
+      locale: "tr",
+      name: "  Kiralık Villalar  ",
     });
-    expect(upsertOneMock.mock.calls[0][3]).toEqual({ name: "Rental Villas" });
+    expect(upsertOneMock.mock.calls[0][3]).toEqual({ name: "Kiralık Villalar" });
   });
 
   it("16) upsert — BOŞ/whitespace değer çeviriyi TEMİZLER (null), hata DEĞİL", async () => {
     upsertOneMock.mockResolvedValue({
-      data: { id: "x", menu_id: "m1", locale: "en", name: null },
+      data: { id: "x", menu_id: "m1", locale: "tr", name: null },
       error: null,
     });
     const res = await upsertMenuTranslation({
       menuId: "m1",
-      locale: "en",
+      locale: "tr",
       name: "   ",
     });
     expect(res.ok).toBe(true);
     expect(upsertOneMock.mock.calls[0][3]).toEqual({ name: null });
   });
 
-  it("17) upsert — 'tr' ve geçersiz locale REDDEDİLİR (DB'ye gidilmez)", async () => {
-    for (const locale of ["tr", "fr", "", "EN"]) {
+  it("17) upsert — 'en' ve geçersiz locale REDDEDİLİR (DB'ye gidilmez)", async () => {
+    for (const locale of ["en", "fr", "", "TR"]) {
       const res = await upsertMenuTranslation({
         menuId: "m1",
         locale,
@@ -250,7 +250,7 @@ describe("menu-translation.service", () => {
     upsertOneMock.mockResolvedValue({ data: null, error: new Error("fk") });
     const res = await upsertMenuTranslation({
       menuId: "m1",
-      locale: "en",
+      locale: "tr",
       name: "X",
     });
     expect(res).toEqual({ ok: false, error: "Çeviri kaydedilemedi" });
@@ -266,8 +266,8 @@ describe("menu-translation.service", () => {
       });
       const res = await upsertMenuTranslation({
         menuId: "m1",
-        locale: "en",
-        name: "Rental Villas",
+        locale: "tr",
+        name: "Kiralık Villalar",
       });
       expect(res.ok).toBe(false);
       expect(upsertOneMock).not.toHaveBeenCalled();
@@ -278,7 +278,7 @@ describe("menu-translation.service", () => {
     findSourceTypeByIdMock.mockResolvedValue({ data: null, error: null });
     const res = await upsertMenuTranslation({
       menuId: "m1",
-      locale: "en",
+      locale: "tr",
       name: "X",
     });
     expect(res).toEqual({ ok: false, error: "Menü bulunamadı" });
@@ -292,7 +292,7 @@ describe("menu-translation.service", () => {
     });
     const res = await upsertMenuTranslation({
       menuId: "m1",
-      locale: "en",
+      locale: "tr",
       name: "X",
     });
     expect(res).toEqual({ ok: false, error: "Menü okunamadı" });
@@ -302,7 +302,7 @@ describe("menu-translation.service", () => {
   it("18f) geçersiz locale ön-kontrolden ÖNCE reddedilir (gereksiz sorgu yok)", async () => {
     const res = await upsertMenuTranslation({
       menuId: "m1",
-      locale: "tr",
+      locale: "en",
       name: "X",
     });
     expect(res.ok).toBe(false);
@@ -324,7 +324,7 @@ describe("getMenuNamesByLocale — batch okuma (N+1 YOK)", () => {
       expect(call[1]).toEqual(["m1", "m2", "m3", "m4", "m5"]);
     }
     expect(findManyForLocaleMock.mock.calls.map((c) => c[2]).sort()).toEqual([
-      "en",
+      "tr",
     ]);
   });
 
@@ -338,7 +338,7 @@ describe("getMenuNamesByLocale — batch okuma (N+1 YOK)", () => {
     expect(findManyForLocaleMock.mock.calls[0][1]).toEqual(["m1", "m2"]);
   });
 
-  it("22) satırlar menu_id → {en} haritasına dönüşür", async () => {
+  it("22) satırlar menu_id → {tr} haritasına dönüşür", async () => {
     findManyForLocaleMock.mockImplementation(
       (_e: string, _ids: string[], locale: string) =>
         Promise.resolve({
@@ -346,18 +346,18 @@ describe("getMenuNamesByLocale — batch okuma (N+1 YOK)", () => {
             {
               menu_id: "m1",
               locale,
-              name: "Rental Villas",
+              name: "Kiralık Villalar",
             },
           ],
           error: null,
         })
     );
     expect(await getMenuNamesByLocale(["m1"])).toEqual({
-      m1: { en: "Rental Villas" },
+      m1: { tr: "Kiralık Villalar" },
     });
   });
 
-  it("23) boş/whitespace çeviri haritaya GİRMEZ → TR fallback", async () => {
+  it("23) boş/whitespace çeviri haritaya GİRMEZ → EN fallback", async () => {
     findManyForLocaleMock.mockImplementation(
       (_e: string, _ids: string[], locale: string) =>
         Promise.resolve({
@@ -428,7 +428,7 @@ import HeaderWrapper from "@/app/components/layout/HeaderWrapper";
 /** Manuel menü satırı — adı `menu.name`'den gelir. */
 const MANUAL_ITEM = {
   id: "m1",
-  name: "Kiralık Villalar",
+  name: "Rental Villas",
   href: "/tr/kiralik-villalar",
   source_type: "manual",
   source_id: null,
@@ -437,7 +437,7 @@ const MANUAL_ITEM = {
 /** Villa tipi kaynaklı satır — adı `villa_types.name`'den gelir. */
 const CATEGORY_ITEM = {
   id: "m9",
-  name: "Lüks Villa",
+  name: "Luxury Villa",
   href: "/tr/arama?villa-turleri=luks-villa",
   source_type: "category",
   source_id: "type-1",
@@ -445,11 +445,11 @@ const CATEGORY_ITEM = {
 
 /** `findManyForLocale` — entity'ye göre farklı satır döndüren mock. */
 function mockTranslations(opts: {
-  menu?: Record<string, { en?: string }>;
-  villaType?: Record<string, { en?: string }>;
+  menu?: Record<string, { tr?: string }>;
+  villaType?: Record<string, { tr?: string }>;
 }) {
   findManyForLocaleMock.mockImplementation(
-    (entity: string, ids: string[], locale: "en") => {
+    (entity: string, ids: string[], locale: "tr") => {
       const src = entity === "menu" ? opts.menu : opts.villaType;
       if (!src) return Promise.resolve({ data: [], error: null });
       const idCol = entity === "menu" ? "menu_id" : "type_id";
@@ -464,7 +464,7 @@ function mockTranslations(opts: {
 describe("HeaderWrapper — menü adı çevirisi", () => {
   beforeEach(() => {
     usePathnameMock.mockReset();
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     getPublicSettingsMock.mockReset();
     getMenuMock.mockReset();
     findManyForLocaleMock.mockReset();
@@ -473,67 +473,67 @@ describe("HeaderWrapper — menü adı çevirisi", () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: true });
   });
 
-  it("25) multilingual KAPALI olsa bile EN sayfada çeviri okunur (URL yapısı gereği iki dilli)", async () => {
+  it("25) multilingual KAPALI olsa bile TR sayfada çeviri okunur (URL yapısı gereği iki dilli)", async () => {
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: false });
-    mockTranslations({ menu: { m1: { en: "Rental Villas" } } });
+    mockTranslations({ menu: { m1: { tr: "Kiralık Villalar" } } });
     render(await HeaderWrapper());
     expect(findManyForLocaleMock).toHaveBeenCalled();
-    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
   });
 
-  it("26) EN → menü çevirisi gösterilir", async () => {
+  it("26) TR → menü çevirisi gösterilir", async () => {
     mockTranslations({
-      menu: { m1: { en: "Rental Villas" } },
-    });
-    render(await HeaderWrapper());
-    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
-    expect(screen.queryByText("Kiralık Villalar")).not.toBeInTheDocument();
-  });
-
-  it("27) '/de' artık desteklenmiyor → varsayılan EN (çeviri gösterilir)", async () => {
-    usePathnameMock.mockReturnValue("/de");
-    mockTranslations({
-      menu: { m1: { en: "Rental Villas" } },
-    });
-    render(await HeaderWrapper());
-    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
-    expect(screen.queryByText("Kiralık Villalar")).not.toBeInTheDocument();
-  });
-
-  it("28) TR → canonical `menu.name` (çeviri DOLU olsa bile)", async () => {
-    usePathnameMock.mockReturnValue("/tr");
-    mockTranslations({
-      menu: { m1: { en: "Rental Villas" } },
+      menu: { m1: { tr: "Kiralık Villalar" } },
     });
     render(await HeaderWrapper());
     expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
     expect(screen.queryByText("Rental Villas")).not.toBeInTheDocument();
   });
 
-  it("29) çeviri YOKSA → TR fallback", async () => {
-    mockTranslations({ menu: {} });
+  it("27) '/de' artık desteklenmiyor → varsayılan EN (canonical gösterilir)", async () => {
+    usePathnameMock.mockReturnValue("/de");
+    mockTranslations({
+      menu: { m1: { tr: "Kiralık Villalar" } },
+    });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Kiralık Villalar")).not.toBeInTheDocument();
   });
 
-  it("30) BOŞ/whitespace çeviri → TR fallback", async () => {
-    mockTranslations({ menu: { m1: { en: "   " } } });
+  it("28) EN → canonical `menu.name` (çeviri DOLU olsa bile)", async () => {
+    usePathnameMock.mockReturnValue("/");
+    mockTranslations({
+      menu: { m1: { tr: "Kiralık Villalar" } },
+    });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Kiralık Villalar")).not.toBeInTheDocument();
+  });
+
+  it("29) çeviri YOKSA → EN fallback", async () => {
+    mockTranslations({ menu: {} });
+    render(await HeaderWrapper());
+    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
+  });
+
+  it("30) BOŞ/whitespace çeviri → EN fallback", async () => {
+    mockTranslations({ menu: { m1: { tr: "   " } } });
+    render(await HeaderWrapper());
+    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
   });
 
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — sözleşme güncellendi: menü
      href'inin SLUG/TOKEN kısmı hâlâ ÇEVRİLMEZ (canonical), ancak link
-     aktif locale prefix'ini taşır — aksi halde EN'de menüye
-     tıklayan kullanıcı TR route'una düşüyordu. */
+     aktif locale prefix'ini taşır — aksi halde TR'de menüye
+     tıklayan kullanıcı EN route'una düşüyordu. */
   it("31) href SLUG'ı ÇEVRİLMEZ; yalnız locale prefix'i eklenir", async () => {
     mockTranslations({
-      menu: { m1: { en: "Rental Villas" } },
+      menu: { m1: { tr: "Kiralık Villalar" } },
     });
     render(await HeaderWrapper());
-    for (const link of screen.getAllByRole("link", { name: "Rental Villas" })) {
-      /* slug canonical TR ("kiralik-villalar") KALIR. */
-      expect(link).toHaveAttribute("href", "/kiralik-villalar");
+    for (const link of screen.getAllByRole("link", { name: "Kiralık Villalar" })) {
+      /* slug canonical ("kiralik-villalar") KALIR; TR sayfada /tr prefix'i. */
+      expect(link).toHaveAttribute("href", "/tr/kiralik-villalar");
     }
   });
 
@@ -542,18 +542,18 @@ describe("HeaderWrapper — menü adı çevirisi", () => {
     /* Kasıtlı olarak bu category satırı için bir menü çevirisi de
        "var" gibi davranılır; kaynak ayrışması gereği KULLANILMAMALI. */
     mockTranslations({
-      menu: { m9: { en: "Signature Collection" } },
-      villaType: { "type-1": { en: "Luxury Villa" } },
+      menu: { m9: { tr: "İmza Koleksiyonu" } },
+      villaType: { "type-1": { tr: "Lüks Villa" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Luxury Villa").length).toBeGreaterThan(0);
-    expect(screen.queryByText("Signature Collection")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Lüks Villa").length).toBeGreaterThan(0);
+    expect(screen.queryByText("İmza Koleksiyonu")).not.toBeInTheDocument();
   });
 
   it("32b) menüde manual satır YOKSA `menu_translations` sorgusu HİÇ atılmaz", async () => {
     getMenuMock.mockResolvedValue([CATEGORY_ITEM]);
     mockTranslations({
-      villaType: { "type-1": { en: "Luxury Villa" } },
+      villaType: { "type-1": { tr: "Lüks Villa" } },
     });
     render(await HeaderWrapper());
     expect(
@@ -583,7 +583,7 @@ describe("HeaderWrapper — menü adı çevirisi", () => {
       },
       MANUAL_ITEM,
     ]);
-    mockTranslations({ menu: { m1: { en: "Rental Villas" } } });
+    mockTranslations({ menu: { m1: { tr: "Kiralık Villalar" } } });
     render(await HeaderWrapper());
 
     const menuCalls = findManyForLocaleMock.mock.calls.filter(
@@ -596,16 +596,16 @@ describe("HeaderWrapper — menü adı çevirisi", () => {
     /* page ve region adları canonical kalır. */
     expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Kalkan").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
   });
 
   it("33) menü çevirisi YOKSA villa tipi çevirisi KORUNUR (Phase 10H regresyon)", async () => {
     getMenuMock.mockResolvedValue([CATEGORY_ITEM]);
     mockTranslations({
-      villaType: { "type-1": { en: "Luxury Villa" } },
+      villaType: { "type-1": { tr: "Lüks Villa" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Luxury Villa").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lüks Villa").length).toBeGreaterThan(0);
   });
 
   it("35) PARENT/CHILD yapısı korunur; manual alt menü de çevrilir — TEK batch", async () => {
@@ -625,14 +625,14 @@ describe("HeaderWrapper — menü adı çevirisi", () => {
     ]);
     mockTranslations({
       menu: {
-        m1: { en: "Rental Villas" },
-        m2: { en: "Signature Collection" },
+        m1: { tr: "Kiralık Villalar" },
+        m2: { tr: "İmza Koleksiyonu" },
       },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
     expect(
-      screen.getAllByText("Signature Collection").length
+      screen.getAllByText("İmza Koleksiyonu").length
     ).toBeGreaterThan(0);
     /* Parent + child TEK `.in()` sorgusunda (locale başına 1) → N+1 YOK. */
     const menuCalls = findManyForLocaleMock.mock.calls.filter(
@@ -642,13 +642,13 @@ describe("HeaderWrapper — menü adı çevirisi", () => {
     expect(menuCalls[0][1].sort()).toEqual(["m1", "m2"]);
   });
 
-  it("36) çeviri okuması patlarsa header ÇÖKMEZ, TR adına düşer", async () => {
+  it("36) çeviri okuması patlarsa header ÇÖKMEZ, EN adına düşer", async () => {
     findManyForLocaleMock.mockRejectedValue(new Error("db down"));
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
   });
 
-  it("37) legacy auto-include sayfa düğümleri çeviri haritasında YOK → TR adı", async () => {
+  it("37) legacy auto-include sayfa düğümleri çeviri haritasında YOK → EN adı", async () => {
     getMenuMock.mockResolvedValue([
       {
         id: "page-uuid-1",
@@ -671,45 +671,44 @@ describe("Header (client) — nameByLocale sözleşmesi", () => {
 
   const ITEM = {
     id: "m1",
-    name: "Kiralık Villalar",
+    name: "Rental Villas",
     href: "/tr/kiralik-villalar",
-    nameByLocale: { en: "Rental Villas" },
+    nameByLocale: { tr: "Kiralık Villalar" },
   };
 
-  it("38) TR path → canonical ad (ÖNCEKİ davranış, DEĞİŞMEDİ)", () => {
-    usePathnameMock.mockReturnValue("/tr");
+  it("38) EN path → canonical ad (ÖNCEKİ davranış, DEĞİŞMEDİ)", () => {
+    usePathnameMock.mockReturnValue("/");
     render(<Header menu={[ITEM]} />);
-    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
   });
 
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — sözleşme güncellendi: menü
      href'inin SLUG/TOKEN kısmı hâlâ ÇEVRİLMEZ (canonical), ancak link
-     aktif locale prefix'ini taşır — aksi halde EN'de menüye
-     tıklayan kullanıcı TR route'una düşüyordu. */
-  it("39) EN path → EN adı; href slug'ı canonical, prefix '/'", () => {
-    usePathnameMock.mockReturnValue("/");
+     aktif locale prefix'ini taşır — aksi halde TR'de menüye
+     tıklayan kullanıcı EN route'una düşüyordu. */
+  it("39) TR path → TR adı; href slug'ı canonical, prefix '/tr'", () => {
+    usePathnameMock.mockReturnValue("/tr");
     render(<Header menu={[ITEM]} />);
-    const links = screen.getAllByRole("link", { name: "Rental Villas" });
+    const links = screen.getAllByRole("link", { name: "Kiralık Villalar" });
     expect(links.length).toBeGreaterThan(0);
-    expect(links[0]).toHaveAttribute("href", "/kiralik-villalar");
-    expect(links[0]).not.toHaveAttribute("href", "/tr/kiralik-villalar");
+    expect(links[0]).toHaveAttribute("href", "/tr/kiralik-villalar");
   });
 
-  it("40) '/de' path (desteklenmiyor) → varsayılan EN ad", () => {
+  it("40) '/de' path (desteklenmiyor) → varsayılan EN (canonical) ad", () => {
     usePathnameMock.mockReturnValue("/de");
     render(<Header menu={[ITEM]} />);
     expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
     expect(screen.queryByText("Kiralık Villalar")).not.toBeInTheDocument();
   });
 
-  it("41) nameByLocale HİÇ YOKSA (eski caller) → TR adı, çökme yok", () => {
-    usePathnameMock.mockReturnValue("/tr");
+  it("41) nameByLocale HİÇ YOKSA (eski caller) → EN adı, çökme yok", () => {
+    usePathnameMock.mockReturnValue("/");
     render(<Header menu={[{ id: "m1", name: "İletişim", href: "/tr/iletisim" }]} />);
     expect(screen.getAllByText("İletişim").length).toBeGreaterThan(0);
   });
 
   it("42) dropdown (children) yapısı korunur; child href'i aktif locale'i taşır", () => {
-    usePathnameMock.mockReturnValue("/");
+    usePathnameMock.mockReturnValue("/tr");
     render(
       <Header
         menu={[
@@ -718,20 +717,20 @@ describe("Header (client) — nameByLocale sözleşmesi", () => {
             children: [
               {
                 id: "m2",
-                name: "Lüks Villa",
+                name: "Luxury Villa",
                 href: "/tr/arama?villa-turleri=luks-villa",
-                nameByLocale: { en: "Luxury Villa" },
+                nameByLocale: { tr: "Lüks Villa" },
               },
             ],
           },
         ]}
       />
     );
-    const child = screen.getAllByRole("link", { name: "Luxury Villa" })[0];
+    const child = screen.getAllByRole("link", { name: "Lüks Villa" })[0];
     /* Token (`luks-villa`) ve query kontratı AYNEN; yalnız prefix. */
     expect(child).toHaveAttribute(
       "href",
-      "/arama?villa-turleri=luks-villa"
+      "/tr/arama?villa-turleri=luks-villa"
     );
   });
 });

@@ -36,10 +36,10 @@ vi.mock("next/link", () => ({
 vi.mock("@/app/services/blog.service", () => ({
   getBlogPostBySlug: async () => ({
     id: "p1",
-    title: "TR başlık",
+    title: "EN title",
     slug: "x",
     excerpt: null,
-    body: "<p>TR</p>",
+    body: "<p>EN</p>",
     cover_image: null,
     is_active: true,
     published_at: "2026-10-01T00:00:00Z",
@@ -56,7 +56,7 @@ vi.mock("@/app/services/blog.service", () => ({
 }));
 vi.mock("@/lib/i18n/get-blog-translation.server", () => ({
   resolveBlogContent: async () => ({
-    title: "EN title",
+    title: "TR başlık",
     excerpt: null,
     body: "<h2>Why Kalkan</h2><h3>Sub</h3><p><strong>Bold</strong> <em>it</em> <u>u</u> <a href=\"https://e.com\">link</a></p><ul><li><p>One</p></li></ul><ol><li><p>Two</p></li></ol><blockquote><p>Quote</p></blockquote>",
     seoTitle: null,
@@ -91,12 +91,12 @@ const TOOLBAR = [
 const toolbarTitles = (root: HTMLElement) =>
   Array.from(root.querySelectorAll("button[title]")).map((b) => b.getAttribute("title"));
 
-const enRow = (body: string | null) => ({
+const trRow = (body: string | null) => ({
   ok: true,
   rows: [
     {
-      locale: "en",
-      title: "Hidden Paradise",
+      locale: "tr",
+      title: "Gizli Cennet",
       excerpt: null,
       body,
       seo_title: null,
@@ -125,87 +125,87 @@ describe("toEditorHtml — mevcut içerik korunur", () => {
   });
 });
 
-describe("Admin — İngilizce içerik alanı", () => {
-  it("Türkçe editörle aynı toolbar görünür (aynı bileşen)", async () => {
-    const { container: trBox } = render(<RichTextEditor value="<p>tr</p>" onChange={() => {}} />);
+describe("Admin — Türkçe çeviri içerik alanı", () => {
+  it("ana (İngilizce) editörle aynı toolbar görünür (aynı bileşen)", async () => {
+    const { container: trBox } = render(<RichTextEditor value="<p>en</p>" onChange={() => {}} />);
     await waitFor(() => expect(toolbarTitles(trBox).length).toBeGreaterThan(0));
     const trTitles = toolbarTitles(trBox);
     for (const t of TOOLBAR) expect(trTitles).toContain(t);
 
-    loadMock.mockResolvedValueOnce(enRow("<p>en</p>"));
-    render(<BlogTranslationsCard postId="p1" postTitle="TR" />);
-    const group = await screen.findByRole("group", { name: "English içerik" });
+    loadMock.mockResolvedValueOnce(trRow("<p>tr</p>"));
+    render(<BlogTranslationsCard postId="p1" postTitle="EN" />);
+    const group = await screen.findByRole("group", { name: "Türkçe içerik" });
     await waitFor(() => expect(toolbarTitles(group).length).toBeGreaterThan(0));
     expect(toolbarTitles(group)).toEqual(trTitles);
     /* Eski düz textarea kalmadı. */
-    expect(within(group).queryByRole("textbox", { name: "English içerik" })).toBeNull();
+    expect(within(group).queryByRole("textbox", { name: "Türkçe içerik" })).toBeNull();
     expect(group.querySelector("textarea")).toBeNull();
     expect(group.querySelector(".villa-rte[contenteditable='true']")).not.toBeNull();
   });
 
-  it("kayıtlı biçimli EN içerik editöre yüklenir ve kaydette biçimiyle EN olarak gönderilir", async () => {
-    const html = "<h2>Why Kalkan</h2><p><strong>Clear</strong> <em>water</em></p><ul><li><p>One</p></li></ul>";
-    loadMock.mockResolvedValueOnce(enRow(html));
+  it("kayıtlı biçimli TR içerik editöre yüklenir ve kaydette biçimiyle TR olarak gönderilir", async () => {
+    const html = "<h2>Neden Kalkan</h2><p><strong>Berrak</strong> <em>su</em></p><ul><li><p>Bir</p></li></ul>";
+    loadMock.mockResolvedValueOnce(trRow(html));
     saveMock.mockResolvedValueOnce({
       ok: true,
-      row: { title: "Hidden Paradise", excerpt: null, body: html, seo_title: null, seo_description: null },
+      row: { title: "Gizli Cennet", excerpt: null, body: html, seo_title: null, seo_description: null },
     });
-    render(<BlogTranslationsCard postId="p1" postTitle="TR" />);
-    const group = await screen.findByRole("group", { name: "English içerik" });
-    await waitFor(() => expect(group.querySelector(".villa-rte h2")?.textContent).toBe("Why Kalkan"));
-    expect(group.querySelector(".villa-rte strong")?.textContent).toBe("Clear");
+    render(<BlogTranslationsCard postId="p1" postTitle="EN" />);
+    const group = await screen.findByRole("group", { name: "Türkçe içerik" });
+    await waitFor(() => expect(group.querySelector(".villa-rte h2")?.textContent).toBe("Neden Kalkan"));
+    expect(group.querySelector(".villa-rte strong")?.textContent).toBe("Berrak");
     expect(group.querySelector(".villa-rte ul li")).not.toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "English sürümünü kaydet" }));
+    fireEvent.click(screen.getByRole("button", { name: "Türkçe sürümünü kaydet" }));
     await waitFor(() => expect(saveMock).toHaveBeenCalledTimes(1));
     const payload = saveMock.mock.calls[0][0];
-    expect(payload.locale).toBe("en");
+    expect(payload.locale).toBe("tr");
     expect(payload.postId).toBe("p1");
     expect(payload.body).toBe(html);
   });
 
-  it("eski düz metin EN içerik paragraflarıyla yüklenir", async () => {
-    loadMock.mockResolvedValueOnce(enRow("First paragraph\n\nSecond paragraph"));
+  it("eski düz metin TR içerik paragraflarıyla yüklenir", async () => {
+    loadMock.mockResolvedValueOnce(trRow("Birinci paragraf\n\nİkinci paragraf"));
     render(<BlogTranslationsCard postId="p1" />);
-    const group = await screen.findByRole("group", { name: "English içerik" });
+    const group = await screen.findByRole("group", { name: "Türkçe içerik" });
     await waitFor(() => expect(group.querySelectorAll(".villa-rte p")).toHaveLength(2));
   });
 });
 
-describe("Kayıt — EN gövde TR ile aynı sözleşme", () => {
+describe("Kayıt — TR çeviri gövdesi EN ana içerikle aynı sözleşme", () => {
   beforeEach(() => {
     findByIdMock.mockResolvedValue({ data: { id: "p1" }, error: null });
     upsertMock.mockImplementation(async (_e: string, _id: string, _l: string, v: Record<string, unknown>) => ({
-      data: { locale: "en", ...v },
+      data: { locale: "tr", ...v },
       error: null,
     }));
   });
 
-  it("biçimler korunur, zararlı içerik temizlenir; yalnız 'en' satırı yazılır", async () => {
+  it("biçimler korunur, zararlı içerik temizlenir; yalnız 'tr' satırı yazılır", async () => {
     const r = await upsertBlogTranslation({
       postId: "p1",
-      locale: "en",
+      locale: "tr",
       body: '<h2>H</h2><p><strong>b</strong><u>u</u></p><ol><li>x</li></ol><blockquote>q</blockquote><script>alert(1)</script>',
     });
     expect(r.ok).toBe(true);
     const [entity, id, locale, values] = upsertMock.mock.calls[0];
-    expect([entity, id, locale]).toEqual(["blog_post", "p1", "en"]);
+    expect([entity, id, locale]).toEqual(["blog_post", "p1", "tr"]);
     const body = (values as { body: string }).body;
     for (const tag of ["<h2>", "<strong>", "<u>", "<ol>", "<blockquote>"]) expect(body).toContain(tag);
     expect(body).not.toContain("<script");
-    /* TR alanları (blog_posts) bu kayıtta yazılmaz. */
+    /* Ana (EN) alanları (blog_posts) bu kayıtta yazılmaz. */
     expect(Object.keys(values as object)).toEqual(["title", "excerpt", "body", "seo_title", "seo_description"]);
   });
 
-  it("boş editör çıktısı NULL kaydedilir (Türkçe içeriğe fallback korunur)", async () => {
-    await upsertBlogTranslation({ postId: "p1", locale: "en", body: "<p></p>" });
+  it("boş editör çıktısı NULL kaydedilir (İngilizce ana içeriğe fallback korunur)", async () => {
+    await upsertBlogTranslation({ postId: "p1", locale: "tr", body: "<p></p>" });
     expect((upsertMock.mock.calls[0][3] as { body: unknown }).body).toBeNull();
   });
 });
 
-describe("Ön yüz — EN blog detayında biçimlendirme", () => {
+describe("Ön yüz — TR blog detayında (çeviri) biçimlendirme", () => {
   it("başlık, kalın, italik, altı çizili, bağlantı, listeler ve alıntı HTML olarak render edilir", async () => {
-    const ui = await BlogDetailPageBody({ params: Promise.resolve({ slug: "x" }), locale: "en" });
+    const ui = await BlogDetailPageBody({ params: Promise.resolve({ slug: "x" }), locale: "tr" });
     const { container } = render(ui);
     const content = container.querySelector(".villa-description") as HTMLElement;
     expect(content).not.toBeNull();

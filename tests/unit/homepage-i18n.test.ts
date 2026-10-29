@@ -125,70 +125,70 @@ describe("A2) EN gerçekten ÇEVRİLMİŞ (TR ile aynı değil)", () => {
    =============================================================== */
 const HERO_SETTINGS = {
   hero_enabled: true,
-  hero_badge_text: "TR Rozet",
-  hero_title: "TR Başlık",
-  hero_subtitle: "TR Alt Başlık",
-  hero_primary_cta_text: "TR Birincil",
+  hero_badge_text: "EN Badge",
+  hero_title: "EN Title",
+  hero_subtitle: "EN Subtitle",
+  hero_primary_cta_text: "EN Primary",
   hero_primary_cta_href: "#kisa-sureli-firsatlar",
-  hero_secondary_cta_text: "TR İkincil",
+  hero_secondary_cta_text: "EN Secondary",
   business_hours: null,
   hero_secondary_cta_href: "#sss",
   hero_background_image: "https://cdn.example/hero.webp",
 };
 
-const EN_HERO: SettingsTranslationsByLocale = {
-  en: {
+const TR_HERO: SettingsTranslationsByLocale = {
+  tr: {
     footer_copyright: null,
     default_meta_title: null,
     default_meta_description: null,
-    hero_title: "EN Title",
-    hero_subtitle: "EN Subtitle",
-    hero_badge_text: "EN Badge",
-    hero_primary_cta_text: "EN Primary",
-    hero_secondary_cta_text: "EN Secondary",
+    hero_title: "TR Başlık",
+    hero_subtitle: "TR Alt Başlık",
+    hero_badge_text: "TR Rozet",
+    hero_primary_cta_text: "TR Birincil",
+    hero_secondary_cta_text: "TR İkincil",
     business_hours: null,
   },
 };
 
 describe("B) resolveHeroContent — locale fallback", () => {
-  it("6) TR — çeviri VARKEN BİLE canonical değerler (bit-bire aynı)", () => {
+  it("6) EN (ana dil) — çeviri VARKEN BİLE canonical değerler (bit-bire aynı)", () => {
     const a = resolveHeroContent(HERO_SETTINGS, { cacheKey: 1 });
     const b = resolveHeroContent(HERO_SETTINGS, {
       cacheKey: 1,
-      locale: "tr",
-      translations: EN_HERO,
+      locale: "en",
+      translations: TR_HERO,
     });
     expect(b).toEqual(a);
-    expect(b.title).toBe("TR Başlık");
-    expect(b.primaryCta?.text).toBe("TR Birincil");
+    expect(b.title).toBe("EN Title");
+    expect(b.primaryCta?.text).toBe("EN Primary");
   });
 
-  it("7) EN — çeviri varsa çeviri kullanılır", () => {
+  it("7) TR — çeviri varsa çeviri kullanılır", () => {
     const r = resolveHeroContent(HERO_SETTINGS, {
-      locale: "en",
-      translations: EN_HERO,
+      locale: "tr",
+      translations: TR_HERO,
     });
-    expect(r.badge).toBe("EN Badge");
-    expect(r.title).toBe("EN Title");
-    expect(r.subtitle).toBe("EN Subtitle");
-    expect(r.primaryCta?.text).toBe("EN Primary");
-    expect(r.secondaryCta?.text).toBe("EN Secondary");
+    expect(r.badge).toBe("TR Rozet");
+    expect(r.title).toBe("TR Başlık");
+    expect(r.subtitle).toBe("TR Alt Başlık");
+    expect(r.primaryCta?.text).toBe("TR Birincil");
+    expect(r.secondaryCta?.text).toBe("TR İkincil");
   });
 
-  it("8) EN — çeviri YOKSA TR canonical'e düşer", () => {
+  it("8) TR — çeviri YOKSA EN canonical'e düşer", () => {
     const r = resolveHeroContent(HERO_SETTINGS, {
-      locale: "en",
+      locale: "tr",
       translations: null,
     });
-    expect(r.title).toBe("TR Başlık");
-    expect(r.primaryCta?.text).toBe("TR Birincil");
+    expect(r.title).toBe("EN Title");
+    expect(r.primaryCta?.text).toBe("EN Primary");
   });
 
-  it("9) EN — çeviri BOŞ string ise TR canonical'e düşer", () => {
+  it("9) TR — çeviri BOŞ string ise EN canonical'e düşer", () => {
     const r = resolveHeroContent(HERO_SETTINGS, {
-      locale: "en",
+      locale: "tr",
       translations: {
-        en: {
+        tr: {
           footer_copyright: null,
           default_meta_title: null,
           default_meta_description: null,
@@ -201,17 +201,17 @@ describe("B) resolveHeroContent — locale fallback", () => {
         },
       },
     });
-    expect(r.title).toBe("TR Başlık");
-    expect(r.subtitle).toBe("TR Alt Başlık");
-    expect(r.primaryCta?.text).toBe("TR Birincil");
+    expect(r.title).toBe("EN Title");
+    expect(r.subtitle).toBe("EN Subtitle");
+    expect(r.primaryCta?.text).toBe("EN Primary");
   });
 
   it("10) 🔒 CTA HREF'LERİ ve HERO GÖRSELİ DİL BAĞIMSIZ", () => {
-    const en = resolveHeroContent(HERO_SETTINGS, {
-      locale: "en",
-      translations: EN_HERO,
+    const tr = resolveHeroContent(HERO_SETTINGS, {
+      locale: "tr",
+      translations: TR_HERO,
     });
-    const tr = resolveHeroContent(HERO_SETTINGS, { locale: "tr" });
+    const en = resolveHeroContent(HERO_SETTINGS, { locale: "en" });
     expect(en.primaryCta?.href).toBe("#kisa-sureli-firsatlar");
     expect(en.secondaryCta?.href).toBe("#sss");
     expect(en.primaryCta?.href).toBe(tr.primaryCta?.href);
@@ -226,13 +226,15 @@ describe("B) resolveHeroContent — locale fallback", () => {
   });
 
   it("12) hero_enabled=false → locale'in dictionary default'ları", () => {
-    const en = resolveHeroContent(
+    const tr = resolveHeroContent(
       { ...HERO_SETTINGS, hero_enabled: false },
-      { locale: "en" }
+      { locale: "tr" }
     );
-    expect(en.title).toBe(getDictionary("en").home.hero.title);
-    const tr = resolveHeroContent({ ...HERO_SETTINGS, hero_enabled: false });
+    expect(tr.title).toBe(getDictionary("tr").home.hero.title);
     expect(tr.title).toBe(HERO_DEFAULTS.title);
+    /* locale verilmezse varsayılan dil İngilizce */
+    const en = resolveHeroContent({ ...HERO_SETTINGS, hero_enabled: false });
+    expect(en.title).toBe(getDictionary("en").home.hero.title);
   });
 });
 
@@ -246,8 +248,8 @@ vi.mock("@/lib/i18n/get-translation.server", () => ({
 }));
 
 const FAQS = [
-  { id: "f1", question: "TR Soru 1", answer: "TR Cevap 1" },
-  { id: "f2", question: "TR Soru 2", answer: "TR Cevap 2" },
+  { id: "f1", question: "EN Q1", answer: "EN A1" },
+  { id: "f2", question: "EN Q2", answer: "EN A2" },
 ];
 
 beforeEach(() => {
@@ -256,50 +258,50 @@ beforeEach(() => {
 });
 
 describe("C) applyFaqTranslations", () => {
-  it("13) TR → sorgu HİÇ atılmaz, liste AYNI referans", async () => {
-    const { applyFaqTranslations } = await import(
-      "@/lib/i18n/get-faq-translations.server"
-    );
-    const out = await applyFaqTranslations(FAQS, "tr");
-    expect(out).toBe(FAQS);
-    expect(getTranslationsForParentsMock).not.toHaveBeenCalled();
-  });
-
-  it("14) EN → TEK batch sorgu (N+1 YOK), tüm id'ler birlikte", async () => {
-    const { applyFaqTranslations } = await import(
-      "@/lib/i18n/get-faq-translations.server"
-    );
-    await applyFaqTranslations(FAQS, "en");
-    expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(1);
-    expect(getTranslationsForParentsMock).toHaveBeenCalledWith(
-      "faq",
-      ["f1", "f2"],
-      "en"
-    );
-  });
-
-  it("15) EN → çeviri varsa çevrilir; olmayan satır canonical kalır", async () => {
-    getTranslationsForParentsMock.mockResolvedValue(
-      new Map([["f1", { question: "EN Q1", answer: "EN A1" }]])
-    );
+  it("13) EN (ana dil) → sorgu HİÇ atılmaz, liste AYNI referans", async () => {
     const { applyFaqTranslations } = await import(
       "@/lib/i18n/get-faq-translations.server"
     );
     const out = await applyFaqTranslations(FAQS, "en");
-    expect(out[0]).toEqual({ id: "f1", question: "EN Q1", answer: "EN A1" });
+    expect(out).toBe(FAQS);
+    expect(getTranslationsForParentsMock).not.toHaveBeenCalled();
+  });
+
+  it("14) TR → TEK batch sorgu (N+1 YOK), tüm id'ler birlikte", async () => {
+    const { applyFaqTranslations } = await import(
+      "@/lib/i18n/get-faq-translations.server"
+    );
+    await applyFaqTranslations(FAQS, "tr");
+    expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(1);
+    expect(getTranslationsForParentsMock).toHaveBeenCalledWith(
+      "faq",
+      ["f1", "f2"],
+      "tr"
+    );
+  });
+
+  it("15) TR → çeviri varsa çevrilir; olmayan satır canonical kalır", async () => {
+    getTranslationsForParentsMock.mockResolvedValue(
+      new Map([["f1", { question: "TR Soru 1", answer: "TR Cevap 1" }]])
+    );
+    const { applyFaqTranslations } = await import(
+      "@/lib/i18n/get-faq-translations.server"
+    );
+    const out = await applyFaqTranslations(FAQS, "tr");
+    expect(out[0]).toEqual({ id: "f1", question: "TR Soru 1", answer: "TR Cevap 1" });
     expect(out[1]).toBe(FAQS[1]);
   });
 
   it("16) alan bazlı fallback — soru çevrili, cevap boş", async () => {
     getTranslationsForParentsMock.mockResolvedValue(
-      new Map([["f1", { question: "EN Q1", answer: "   " }]])
+      new Map([["f1", { question: "TR Soru 1", answer: "   " }]])
     );
     const { applyFaqTranslations } = await import(
       "@/lib/i18n/get-faq-translations.server"
     );
-    const out = await applyFaqTranslations(FAQS, "en");
-    expect(out[0].question).toBe("EN Q1");
-    expect(out[0].answer).toBe("TR Cevap 1");
+    const out = await applyFaqTranslations(FAQS, "tr");
+    expect(out[0].question).toBe("TR Soru 1");
+    expect(out[0].answer).toBe("EN A1");
   });
 
   it("17) okuma hata verirse canonical liste döner (sayfa ÇÖKMEZ)", async () => {
@@ -307,7 +309,7 @@ describe("C) applyFaqTranslations", () => {
     const { applyFaqTranslations } = await import(
       "@/lib/i18n/get-faq-translations.server"
     );
-    const out = await applyFaqTranslations(FAQS, "en");
+    const out = await applyFaqTranslations(FAQS, "tr");
     expect(out).toBe(FAQS);
   });
 });
@@ -432,13 +434,13 @@ describe("H) buildHomeMetadata", () => {
   beforeEach(() => {
     getCachedSettingsMock.mockReset();
     getCachedSettingsMock.mockResolvedValue({
-      default_meta_title: "TR Başlık",
-      default_meta_description: "TR Açıklama",
+      default_meta_title: "EN Title",
+      default_meta_description: "EN Description",
       translations: {
-        en: {
+        tr: {
           footer_copyright: null,
-          default_meta_title: "EN Title",
-          default_meta_description: "EN Description",
+          default_meta_title: "TR Başlık",
+          default_meta_description: "TR Açıklama",
           hero_title: null,
           hero_subtitle: null,
           hero_badge_text: null,
@@ -473,30 +475,30 @@ describe("H) buildHomeMetadata", () => {
     }
   });
 
-  it("31) title/description — EN çevirisi kullanılır", async () => {
+  it("31) title/description — TR çevirisi kullanılır", async () => {
     const { buildHomeMetadata } = await import(
       "@/app/components/home/home-metadata"
     );
-    const en = await buildHomeMetadata("en");
-    expect(en.title).toBe("EN Title");
-    expect(en.description).toBe("EN Description");
-    expect(en.openGraph?.title).toBe("EN Title");
+    const tr = await buildHomeMetadata("tr");
+    expect(tr.title).toBe("TR Başlık");
+    expect(tr.description).toBe("TR Açıklama");
+    expect(tr.openGraph?.title).toBe("TR Başlık");
   });
 
-  it("32) TR → canonical TR metin", async () => {
+  it("32) EN (ana dil) → canonical EN metin", async () => {
     const { buildHomeMetadata } = await import(
       "@/app/components/home/home-metadata"
     );
-    expect((await buildHomeMetadata("tr")).title).toBe("TR Başlık");
+    expect((await buildHomeMetadata("en")).title).toBe("EN Title");
   });
 
-  it("33) settings okunamazsa root layout ile AYNI TR fallback", async () => {
+  it("33) settings okunamazsa dil bazlı fallback (EN: root layout ile AYNI)", async () => {
     getCachedSettingsMock.mockRejectedValue(new Error("down"));
     const { buildHomeMetadata } = await import(
       "@/app/components/home/home-metadata"
     );
-    const m = await buildHomeMetadata("en");
-    expect(m.title).toBe("Villa Kiralama — Lüks Villa Deneyimi");
+    expect((await buildHomeMetadata("en")).title).toBe("Luxury Villa Rentals in Kalkan");
+    expect((await buildHomeMetadata("tr")).title).toBe("Villa Kiralama — Lüks Villa Deneyimi");
   });
 
   it("34) `robots` BURADA set EDİLMEZ (root layout politikası miras)", async () => {

@@ -1,5 +1,6 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import type { VillaFeatureTranslationRow } from "@/lib/i18n/translations.types";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /**
  * 🛡️ PHASE 10D — Batch 1 — Özellik/Olanak (villa_features) Çeviri Servisi
@@ -14,10 +15,11 @@ import type { VillaFeatureTranslationRow } from "@/lib/i18n/translations.types";
  * tekil `findById` YOK, FK constraint hatası generic mesaja çevrilir).
  */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 export type FeatureTranslationInput = {
@@ -62,7 +64,7 @@ export async function upsertFeatureTranslation(
   if (!featureId) return { ok: false, error: "Geçersiz özellik" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir" };
   }
   const locale = input.locale;
 

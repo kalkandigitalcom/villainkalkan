@@ -32,7 +32,7 @@ const PAGE_ID = "page-uuid-1";
 const VALID_ROW = {
   id: "row-1",
   page_id: PAGE_ID,
-  locale: "en",
+  locale: "tr",
   title: null,
   body: null,
   excerpt: null,
@@ -57,12 +57,12 @@ async function svc() {
 }
 
 describe("upsertPageTranslation", () => {
-  it("EN upsert — 5 alan repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("TR upsert — 5 alan repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
     const { upsertPageTranslation } = await svc();
 
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "About Us",
       excerpt: "Short intro",
       body: "Long body",
@@ -71,7 +71,7 @@ describe("upsertPageTranslation", () => {
     });
 
     expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith("page", PAGE_ID, "en", {
+    expect(upsertOneMock).toHaveBeenCalledWith("page", PAGE_ID, "tr", {
       title: "About Us",
       excerpt: "Short intro",
       body: "Long body",
@@ -91,17 +91,17 @@ describe("upsertPageTranslation", () => {
 
     expect(result).toEqual({
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     });
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("BOŞ çeviri güvenli — tüm alanlar null yazılır (TR'ye fallback)", async () => {
+  it("BOŞ çeviri güvenli — tüm alanlar null yazılır (EN'ye fallback)", async () => {
     const { upsertPageTranslation } = await svc();
 
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "   ",
       excerpt: "",
       body: null,
@@ -110,7 +110,7 @@ describe("upsertPageTranslation", () => {
     });
 
     expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith("page", PAGE_ID, "en", {
+    expect(upsertOneMock).toHaveBeenCalledWith("page", PAGE_ID, "tr", {
       title: null,
       excerpt: null,
       body: null,
@@ -123,27 +123,27 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "  About Us  ",
     });
     expect(upsertOneMock).toHaveBeenCalledWith(
       "page",
       PAGE_ID,
-      "en",
+      "tr",
       expect.objectContaining({ title: "About Us" })
     );
   });
 
-  it("locale 'tr' reddedilir — repository çağrılmaz", async () => {
+  it("locale 'en' reddedilir — repository çağrılmaz", async () => {
     const { upsertPageTranslation } = await svc();
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "tr",
+      locale: "en",
       title: "Hakkımızda",
     });
     expect(result).toEqual({
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     });
     expect(upsertOneMock).not.toHaveBeenCalled();
     expect(findByIdMock).not.toHaveBeenCalled();
@@ -164,7 +164,7 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     const result = await upsertPageTranslation({
       pageId: "   ",
-      locale: "en",
+      locale: "tr",
       title: "x",
     });
     expect(result).toEqual({ ok: false, error: "Geçersiz sayfa" });
@@ -176,7 +176,7 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "x",
     });
     expect(result).toEqual({ ok: false, error: "Sayfa bulunamadı" });
@@ -188,7 +188,7 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "x",
     });
     expect(result).toEqual({ ok: false, error: "Sayfa doğrulanamadı" });
@@ -222,7 +222,7 @@ describe("upsertPageTranslation", () => {
       upsertOneMock.mockClear();
       const result = await upsertPageTranslation({
         pageId: PAGE_ID,
-        locale: "en",
+        locale: "tr",
         ...patch,
       });
       expect(result).toEqual({ ok: false, error });
@@ -234,7 +234,7 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "a".repeat(200),
       excerpt: "a".repeat(300),
       body: "a".repeat(20000),
@@ -249,7 +249,7 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "x",
     });
     expect(result).toEqual({ ok: false, error: "Çeviri kaydedilemedi" });
@@ -259,7 +259,7 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     const result = await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "About Us",
     });
     expect(result).toEqual({ ok: true, row: VALID_ROW });
@@ -269,7 +269,7 @@ describe("upsertPageTranslation", () => {
     const { upsertPageTranslation } = await svc();
     await upsertPageTranslation({
       pageId: PAGE_ID,
-      locale: "en",
+      locale: "tr",
       title: "About Us",
     });
     const payload = upsertOneMock.mock.calls[0][3] as Record<string, unknown>;
@@ -284,11 +284,11 @@ describe("upsertPageTranslation", () => {
 });
 
 describe("getPageTranslations", () => {
-  it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
+  it("yalnız tr satırlarını döner (en/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValue({
       data: [
-        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "en" },
+        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "de" },
       ],
       error: null,
@@ -297,7 +297,7 @@ describe("getPageTranslations", () => {
     const result = await getPageTranslations(PAGE_ID);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.rows.map((r) => r.locale)).toEqual(["en"]);
+    expect(result.rows.map((r) => r.locale)).toEqual(["tr"]);
     expect(findAllForParentMock).toHaveBeenCalledWith("page", PAGE_ID);
   });
 

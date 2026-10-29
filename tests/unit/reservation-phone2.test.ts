@@ -47,12 +47,16 @@ const valid = () => ({
   payment_method_id: "pm-1",
 });
 
+/* Türkçe mesajlar doğrulandığı için locale açıkça "tr". */
 const check = (over: Record<string, unknown> = {}) =>
-  validatePublicReservationForm({
-    form: { ...valid(), ...over },
-    start: "2026-06-01",
-    end: "2026-06-08",
-  });
+  validatePublicReservationForm(
+    {
+      form: { ...valid(), ...over },
+      start: "2026-06-01",
+      end: "2026-06-08",
+    },
+    "tr"
+  );
 
 /* ===============================================================
    1-3) ZORUNLULUK

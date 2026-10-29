@@ -29,9 +29,9 @@ import PageTranslationsCard from "./PageTranslationsCard";
 /* 🛡️ PHASE 12 — ADMIN I18N (Seçenek A: admin'de locale KAYNAĞI YOK).
    `getDictionary` / `formatDictionaryString` saf fonksiyonlardır →
    client component içinde güvenle çağrılır. Bu fazda bilinçli olarak
-   DEFAULT_LOCALE sabit; render çıktısı BYTE-IDENTICAL kalır. */
+   ADMIN_UI_LOCALE sabit; render çıktısı BYTE-IDENTICAL kalır. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { ADMIN_UI_LOCALE, isMultilingualEnabled } from "@/lib/i18n/config";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 
 /* ===============================================================
@@ -96,7 +96,7 @@ export default function EditPagePage() {
 
   /* `common.save` ("Kaydet") admin metniyle BİREBİR aynı → public
      namespace'ten yeniden kullanılır; duplicate key açılmadı. */
-  const dictionary = getDictionary(DEFAULT_LOCALE);
+  const dictionary = getDictionary(ADMIN_UI_LOCALE);
   const adminDict = dictionary.admin;
   const pagesDict = adminDict.pages;
 
@@ -143,7 +143,7 @@ export default function EditPagePage() {
     (async () => {
       const settings = await getPublicSettingsAction();
       if (cancelled) return;
-      setMultilingualEnabled(!!settings?.multilingual_enabled);
+      setMultilingualEnabled(isMultilingualEnabled(settings));
     })();
 
     return () => {

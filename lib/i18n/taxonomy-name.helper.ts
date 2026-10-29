@@ -1,4 +1,8 @@
-import type { Locale } from "@/lib/i18n/config";
+import {
+  isTranslationLocale,
+  type Locale,
+  type TranslationLocale,
+} from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ PHASE 10H — TAXONOMY (VİLLA TİPİ) ADI LOCALE ÇÖZÜCÜSÜ
@@ -28,7 +32,8 @@ import type { Locale } from "@/lib/i18n/config";
    =============================================================== */
 
 /** Çevrilebilir locale'ler — TR canonical kaynak olduğu için hariç. */
-export type TranslatableLocale = Exclude<Locale, "tr">;
+/** Çeviri dili (Türkçe) — ana dil (İngilizce) canonical addır. */
+export type TranslatableLocale = TranslationLocale;
 
 /** Bir taxonomy kaydının locale → çevrilmiş ad haritası (kısmi). */
 export type TaxonomyNameByLocale = Partial<Record<TranslatableLocale, string>>;
@@ -49,7 +54,8 @@ export function resolveTaxonomyName(
   locale: Locale
 ): string {
   /* TR canonical kaynaktır — sözlüğe/DB'ye HİÇ bakılmaz. */
-  if (locale === "tr") return canonicalName;
+  /* Ana dil (İngilizce) → canonical ad; yalnız Türkçe çeviri okunur. */
+  if (!isTranslationLocale(locale)) return canonicalName;
 
   const translated = nameByLocale?.[locale];
   if (typeof translated === "string" && translated.trim() !== "") {

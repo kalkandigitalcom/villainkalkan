@@ -35,7 +35,7 @@ const BASE = {
 
 describe("Rezervasyon paneli — premium tasarım", () => {
   it("üstte gecelik fiyat (mevcut para birimi biçimi) + '/ gece'", () => {
-    const { container } = render(<BookingSidebar {...BASE} />);
+    const { container } = render(<BookingSidebar locale="tr" {...BASE} />);
     const nightly = container.querySelector("[data-booking-nightly]") as HTMLElement;
     expect(nightly.textContent).toContain("₺4.000");
     expect(nightly.textContent).toContain("/ gece");
@@ -44,13 +44,13 @@ describe("Rezervasyon paneli — premium tasarım", () => {
   });
 
   it("fiyat yoksa başlık metni gösterilir, ₺0 basılmaz", () => {
-    const { container } = render(<BookingSidebar {...BASE} prices={[]} />);
+    const { container } = render(<BookingSidebar locale="tr" {...BASE} prices={[]} />);
     expect(container.querySelector("[data-booking-nightly]")).toBeNull();
     expect(screen.getByRole("heading", { name: "Konaklamanızı planlayın" })).toBeInTheDocument();
   });
 
   it("giriş/çıkış yan yana, ikonlu; tüm alan tıklanabilir ve klavyeyle açılabilir", () => {
-    const { container } = render(<BookingSidebar {...BASE} />);
+    const { container } = render(<BookingSidebar locale="tr" {...BASE} />);
     const field = container.querySelector("#booking-date-field") as HTMLElement;
     const trigger = within(field).getAllByRole("button")[0];
     expect(trigger.className).toContain("grid-cols-2");
@@ -62,7 +62,7 @@ describe("Rezervasyon paneli — premium tasarım", () => {
   });
 
   it("misafir satırı aynı form grubunda; açılınca mevcut sayaçlar", () => {
-    const { container } = render(<BookingSidebar {...BASE} />);
+    const { container } = render(<BookingSidebar locale="tr" {...BASE} />);
     const group = container.querySelector("[data-booking-fields]") as HTMLElement;
     const guests = within(group).getByRole("button", { name: /yetişkin/ });
     expect(guests).toHaveAttribute("aria-expanded", "false");
@@ -71,7 +71,7 @@ describe("Rezervasyon paneli — premium tasarım", () => {
   });
 
   it("CTA: tam genişlik lacivert, beyaz yazı, altın detay; disabled/focus stilleri tanımlı", () => {
-    render(<BookingSidebar {...BASE} />);
+    render(<BookingSidebar locale="tr" {...BASE} />);
     const cta = screen.getByRole("button", { name: "Rezervasyon Yap" });
     expect(cta.className).toContain("w-full");
     expect(cta.className).toContain("bg-ink");
@@ -85,7 +85,7 @@ describe("Rezervasyon paneli — premium tasarım", () => {
 
   it("tarih seçiliyken döküm: ince ayırıcılı satırlar, belirgin toplam, depozito ayrı", async () => {
     const { container } = render(
-      <BookingSidebar {...BASE} initialStart="2026-10-05" initialEnd="2026-10-10" />,
+      <BookingSidebar locale="tr" {...BASE} initialStart="2026-10-05" initialEnd="2026-10-10" />,
     );
     await screen.findByText("Toplam Tutar");
     const breakdown = container.querySelector("[data-booking-breakdown]") as HTMLElement;

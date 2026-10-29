@@ -25,6 +25,7 @@ import {
 import { resolveHeroContent } from "@/lib/hero.helpers";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ===============================================================
    🛡️ PHASE 11 — ANA SAYFA GÖVDESİ (TR / EN / DE ORTAK)
@@ -54,7 +55,7 @@ export default async function HomePageBody({
      save sonrası revalidateSettings() ile invalidate. Aynı render
      lifecycle'da farklı yerlerden çağrı dedupe edilir. */
   const settings = await getCachedSettings().catch(() => null);
-  const brandName = settings?.site_name?.trim() || "Villa Kiralama";
+  const brandName = settings?.site_name?.trim() || SITE_NAME_FALLBACK;
 
 
   /* 🛡️ FAZ 39F — Hero floating review card real-data wiring.

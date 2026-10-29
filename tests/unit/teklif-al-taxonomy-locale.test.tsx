@@ -4,7 +4,7 @@
    SORUN (auditte tespit edildi):
    `/teklif-al` "Tercihleriniz" bölümündeki villa TİPİ ve
    ÖZELLİK chip'leri `/api/public/taxonomies` cevabındaki canonical
-   TR `name` alanını render ediyordu. `villa_type_translations` ve
+   EN `name` alanını render ediyordu. `villa_type_translations` ve
    `villa_feature_translations` (migration 082) DB'de MEVCUT ve
    admin'den girilebiliyor olmasına rağmen bu route onları HİÇ
    okumuyordu.
@@ -65,12 +65,12 @@ const LOCATIONS = [
   { id: "l2", name: "Kaş", slug: "kas", filter_group_name: "Kaş" },
 ];
 const TYPES = [
-  { id: "t1", name: "Balayı Villası", slug: "balayi-villasi" },
-  { id: "t2", name: "Muhafazakar Villa", slug: "muhafazakar-villa" },
+  { id: "t1", name: "Honeymoon Villa", slug: "balayi-villasi" },
+  { id: "t2", name: "Conservative Villa", slug: "muhafazakar-villa" },
 ];
 const FEATURES = [
-  { id: "f1", name: "Korunaklı Havuz" },
-  { id: "f2", name: "Deniz Manzarası" },
+  { id: "f1", name: "Sheltered Pool" },
+  { id: "f2", name: "Sea View" },
 ];
 
 beforeEach(() => {
@@ -80,12 +80,12 @@ beforeEach(() => {
   findFeaturesMock.mockResolvedValue({ data: FEATURES, error: null });
   getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
   typeNamesMock.mockResolvedValue({
-    t1: { en: "Honeymoon Villa" },
-    t2: { en: "Conservative Villa" },
+    t1: { tr: "Balayı Villası" },
+    t2: { tr: "Muhafazakar Villa" },
   });
   featureNamesMock.mockResolvedValue({
-    f1: { en: "Sheltered Pool" },
-    f2: { en: "Sea View" },
+    f1: { tr: "Korunaklı Havuz" },
+    f2: { tr: "Deniz Manzarası" },
   });
 });
 
@@ -126,10 +126,10 @@ describe("A) /api/public/taxonomies — additive name_by_locale", () => {
     const json = await callRoute();
 
     expect(json.types[0].name_by_locale).toEqual({
-      en: "Honeymoon Villa",
+      tr: "Balayı Villası",
     });
     expect(json.features[1].name_by_locale).toEqual({
-      en: "Sea View",
+      tr: "Deniz Manzarası",
     });
   });
 
@@ -143,18 +143,18 @@ describe("A) /api/public/taxonomies — additive name_by_locale", () => {
     expect(json.locations[1].name).toBe("Kaş");
   });
 
-  it("4) çevirisi olmayan satırda boş obje döner (TR fallback'e düşer)", async () => {
-    typeNamesMock.mockResolvedValue({ t1: { en: "Honeymoon Villa" } });
+  it("4) çevirisi olmayan satırda boş obje döner (EN fallback'e düşer)", async () => {
+    typeNamesMock.mockResolvedValue({ t1: { tr: "Balayı Villası" } });
     featureNamesMock.mockResolvedValue({});
 
     const json = await callRoute();
 
-    expect(json.types[0].name_by_locale).toEqual({ en: "Honeymoon Villa" });
+    expect(json.types[0].name_by_locale).toEqual({ tr: "Balayı Villası" });
     expect(json.types[1].name_by_locale).toEqual({});
     expect(json.features[0].name_by_locale).toEqual({});
     /* Canonical adlar bozulmaz. */
-    expect(json.types[1].name).toBe("Muhafazakar Villa");
-    expect(json.features[0].name).toBe("Korunaklı Havuz");
+    expect(json.types[1].name).toBe("Conservative Villa");
+    expect(json.features[0].name).toBe("Sheltered Pool");
   });
 
   it("5) multilingual_enabled=false olsa bile çeviriler okunur (URL yapısı gereği iki dilli site)", async () => {
@@ -164,7 +164,7 @@ describe("A) /api/public/taxonomies — additive name_by_locale", () => {
 
     expect(typeNamesMock).toHaveBeenCalled();
     expect(featureNamesMock).toHaveBeenCalled();
-    expect(json.types[0].name).toBe("Balayı Villası");
+    expect(json.types[0].name).toBe("Honeymoon Villa");
   });
 
   it("6) çeviri okuma hatası cevabı BOZMAZ (fail-soft)", async () => {
@@ -173,9 +173,9 @@ describe("A) /api/public/taxonomies — additive name_by_locale", () => {
     const json = await callRoute();
 
     expect(json.ok).toBe(true);
-    expect(json.types[0].name).toBe("Balayı Villası");
+    expect(json.types[0].name).toBe("Honeymoon Villa");
     expect(json.types[0].name_by_locale).toEqual({});
-    expect(json.features[0].name).toBe("Korunaklı Havuz");
+    expect(json.features[0].name).toBe("Sheltered Pool");
   });
 
   it("7) N+1 YOK — entity başına TEK batch çağrı, TÜM id'lerle", async () => {
@@ -194,9 +194,9 @@ describe("A) /api/public/taxonomies — additive name_by_locale", () => {
     const map = buildLabelMap(
       json.types as unknown as { id: string; name: string; slug?: string | null }[]
     );
-    /* Admin listesi canonical TR adı görmeye DEVAM eder. */
-    expect(map["t1"]).toBe("Balayı Villası");
-    expect(map["balayi-villasi"]).toBe("Balayı Villası");
+    /* Admin listesi canonical EN adı görmeye DEVAM eder. */
+    expect(map["t1"]).toBe("Honeymoon Villa");
+    expect(map["balayi-villasi"]).toBe("Honeymoon Villa");
   });
 });
 
@@ -213,16 +213,16 @@ const TAXONOMY_RESPONSE = {
   ok: true,
   locations: LOCATIONS,
   types: [
-    { ...TYPES[0], name_by_locale: { en: "Honeymoon Villa" } },
+    { ...TYPES[0], name_by_locale: { tr: "Balayı Villası" } },
     { ...TYPES[1], name_by_locale: {} },
   ],
   features: [
-    { ...FEATURES[0], name_by_locale: { en: "Sheltered Pool" } },
-    { ...FEATURES[1], name_by_locale: { en: "Sea View" } },
+    { ...FEATURES[0], name_by_locale: { tr: "Korunaklı Havuz" } },
+    { ...FEATURES[1], name_by_locale: { tr: "Deniz Manzarası" } },
   ],
 };
 
-async function renderForm(locale: "tr" | "en") {
+async function renderForm(locale: "en" | "tr") {
   const fetchMock = vi.fn(async (url: string) => ({
     ok: true,
     json: async () =>
@@ -242,46 +242,46 @@ async function renderForm(locale: "tr" | "en") {
 }
 
 describe("B) /teklif-al chip etiketleri", () => {
-  it("9) TR — canonical Türkçe adlar BİREBİR korunur", async () => {
-    await renderForm("tr");
+  it("9) EN — canonical Türkçe adlar BİREBİR korunur", async () => {
+    await renderForm("en");
 
-    await screen.findByText("Balayı Villası");
-    expect(screen.getByText("Muhafazakar Villa")).toBeInTheDocument();
-    expect(screen.getByText("Korunaklı Havuz")).toBeInTheDocument();
-    expect(screen.getByText("Deniz Manzarası")).toBeInTheDocument();
+    await screen.findByText("Honeymoon Villa");
+    expect(screen.getByText("Conservative Villa")).toBeInTheDocument();
+    expect(screen.getByText("Sheltered Pool")).toBeInTheDocument();
+    expect(screen.getByText("Sea View")).toBeInTheDocument();
     /* Bölgeler her locale'de canonical. */
     expect(screen.getByText("Kalkan")).toBeInTheDocument();
   });
 
-  it("10) EN — çeviri VARSA İngilizce etiket görünür", async () => {
-    await renderForm("en");
+  it("10) TR — çeviri VARSA İngilizce etiket görünür", async () => {
+    await renderForm("tr");
 
-    await screen.findByText("Honeymoon Villa");
-    expect(screen.getByText("Sheltered Pool")).toBeInTheDocument();
-    expect(screen.getByText("Sea View")).toBeInTheDocument();
-    expect(screen.queryByText("Balayı Villası")).toBeNull();
-    expect(screen.queryByText("Korunaklı Havuz")).toBeNull();
+    await screen.findByText("Balayı Villası");
+    expect(screen.getByText("Korunaklı Havuz")).toBeInTheDocument();
+    expect(screen.getByText("Deniz Manzarası")).toBeInTheDocument();
+    expect(screen.queryByText("Honeymoon Villa")).toBeNull();
+    expect(screen.queryByText("Sheltered Pool")).toBeNull();
   });
 
-  it("12) EN — çeviri YOKSA canonical TR ad FALLBACK olarak kalır", async () => {
-    await renderForm("en");
+  it("12) TR — çeviri YOKSA canonical EN ad FALLBACK olarak kalır", async () => {
+    await renderForm("tr");
 
-    await screen.findByText("Honeymoon Villa");
-    /* t2'nin `name_by_locale` boş → TR canonical görünür. */
-    expect(screen.getByText("Muhafazakar Villa")).toBeInTheDocument();
+    await screen.findByText("Balayı Villası");
+    /* t2'nin `name_by_locale` boş → EN canonical görünür. */
+    expect(screen.getByText("Conservative Villa")).toBeInTheDocument();
   });
 
-  it("13) BÖLGE adları EN'de de canonical kalır (özel isim)", async () => {
-    await renderForm("en");
+  it("13) BÖLGE adları TR'de de canonical kalır (özel isim)", async () => {
+    await renderForm("tr");
 
-    await screen.findByText("Honeymoon Villa");
+    await screen.findByText("Balayı Villası");
     expect(screen.getByText("Kalkan")).toBeInTheDocument();
     expect(screen.getByText("Kaş")).toBeInTheDocument();
   });
 
   it("14) taxonomy fetch'i TEK çağrı (N+1 yok)", async () => {
-    const fetchMock = await renderForm("en");
-    await screen.findByText("Honeymoon Villa");
+    const fetchMock = await renderForm("tr");
+    await screen.findByText("Balayı Villası");
 
     const taxonomyCalls = fetchMock.mock.calls.filter((c) =>
       String(c[0]).includes("/api/public/taxonomies")
@@ -291,7 +291,7 @@ describe("B) /teklif-al chip etiketleri", () => {
 });
 
 /* ===============================================================
-   C) SOURCE-LOCK — payload contract'ı ve hardcoded TR
+   C) SOURCE-LOCK — payload contract'ı ve hardcoded EN
    =============================================================== */
 
 describe("C) regresyon kilitleri", () => {

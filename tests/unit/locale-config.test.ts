@@ -22,6 +22,13 @@ import {
   isMultilingualEnabled,
   getPublicDefaultLocale,
   localeFromPathname,
+  CONTENT_SOURCE_LOCALE,
+  TRANSLATION_LOCALE,
+  TRANSLATION_LOCALES,
+  isTranslationLocale,
+  ADMIN_UI_LOCALE,
+  ROUTE_DEFAULT_LOCALE,
+  PREFIXED_ROUTE_LOCALE,
 } from "@/lib/i18n/config";
 
 describe("SUPPORTED_LOCALES / DEFAULT_LOCALE", () => {
@@ -29,8 +36,8 @@ describe("SUPPORTED_LOCALES / DEFAULT_LOCALE", () => {
     expect(SUPPORTED_LOCALES).toEqual(["tr", "en"]);
   });
 
-  it("DEFAULT_LOCALE tr'dir", () => {
-    expect(DEFAULT_LOCALE).toBe("tr");
+  it("DEFAULT_LOCALE en'dir (İngilizce ana dil)", () => {
+    expect(DEFAULT_LOCALE).toBe("en");
   });
 });
 
@@ -72,18 +79,18 @@ describe("toLocale", () => {
     expect(toLocale("tr")).toBe("tr");
   });
 
-  it("geçersiz/tanınmayan değer -> tr fallback", () => {
-    expect(toLocale("fr")).toBe("tr");
-    expect(toLocale("de")).toBe("tr");
+  it("geçersiz/tanınmayan değer -> en (varsayılan dil) fallback", () => {
+    expect(toLocale("fr")).toBe("en");
+    expect(toLocale("de")).toBe("en");
     /* case-sensitive — büyük harf normalize edilmez, bilinçli olarak
        geçersiz sayılır (üst katman gerekirse normalize eder). */
-    expect(toLocale("EN")).toBe("tr");
+    expect(toLocale("EN")).toBe("en");
   });
 
-  it("undefined/null/empty -> tr fallback", () => {
-    expect(toLocale(undefined)).toBe("tr");
-    expect(toLocale(null)).toBe("tr");
-    expect(toLocale("")).toBe("tr");
+  it("undefined/null/empty -> en (varsayılan dil) fallback", () => {
+    expect(toLocale(undefined)).toBe("en");
+    expect(toLocale(null)).toBe("en");
+    expect(toLocale("")).toBe("en");
   });
 });
 
@@ -93,14 +100,14 @@ describe("resolveLocale", () => {
     expect(resolveLocale("tr")).toBe("tr");
   });
 
-  it("geçersiz locale verilmişse tr'ye düşer", () => {
-    expect(resolveLocale("fr")).toBe("tr");
+  it("geçersiz locale verilmişse en'e (varsayılan dil) düşer", () => {
+    expect(resolveLocale("fr")).toBe("en");
   });
 
-  it("locale verilmemişse tr'ye düşer", () => {
-    expect(resolveLocale()).toBe("tr");
-    expect(resolveLocale(undefined)).toBe("tr");
-    expect(resolveLocale(null)).toBe("tr");
+  it("locale verilmemişse en'e (varsayılan dil) düşer", () => {
+    expect(resolveLocale()).toBe("en");
+    expect(resolveLocale(undefined)).toBe("en");
+    expect(resolveLocale(null)).toBe("en");
   });
 });
 
@@ -158,21 +165,46 @@ describe("getPublicDefaultLocale (Phase 1A settings entegrasyonu)", () => {
     );
   });
 
-  it("geçersiz/bozuk değer -> tr fallback (DB CHECK bypass edilse bile güvenli)", () => {
+  it("geçersiz/bozuk değer -> en (varsayılan dil) fallback (DB CHECK bypass edilse bile güvenli)", () => {
     expect(getPublicDefaultLocale({ public_default_locale: "fr" })).toBe(
-      "tr"
+      "en"
     );
     expect(getPublicDefaultLocale({ public_default_locale: "de" })).toBe(
-      "tr"
+      "en"
     );
   });
 
-  it("null/undefined -> tr fallback", () => {
+  it("null/undefined -> en (varsayılan dil) fallback", () => {
     expect(getPublicDefaultLocale({ public_default_locale: null })).toBe(
-      "tr"
+      "en"
     );
-    expect(getPublicDefaultLocale({})).toBe("tr");
-    expect(getPublicDefaultLocale(null)).toBe("tr");
-    expect(getPublicDefaultLocale(undefined)).toBe("tr");
+    expect(getPublicDefaultLocale({})).toBe("en");
+    expect(getPublicDefaultLocale(null)).toBe("en");
+    expect(getPublicDefaultLocale(undefined)).toBe("en");
+  });
+});
+
+describe("İngilizce ana dil / Türkçe çeviri modeli", () => {
+  it("içerik kaynağı (canonical) EN, tek çeviri dili TR", () => {
+    expect(CONTENT_SOURCE_LOCALE).toBe("en");
+    expect(CONTENT_SOURCE_LOCALE).toBe(DEFAULT_LOCALE);
+    expect(TRANSLATION_LOCALE).toBe("tr");
+    expect(TRANSLATION_LOCALES).toEqual(["tr"]);
+  });
+
+  it("isTranslationLocale yalnız 'tr' kabul eder", () => {
+    expect(isTranslationLocale("tr")).toBe(true);
+    for (const v of ["en", "de", "TR", "", null, undefined, 1]) {
+      expect(isTranslationLocale(v)).toBe(false);
+    }
+  });
+
+  it("URL: varsayılan (prefix'siz) dil EN, prefix'li dil TR", () => {
+    expect(ROUTE_DEFAULT_LOCALE).toBe("en");
+    expect(PREFIXED_ROUTE_LOCALE).toBe("tr");
+  });
+
+  it("admin arayüzü Türkçe kalır", () => {
+    expect(ADMIN_UI_LOCALE).toBe("tr");
   });
 });

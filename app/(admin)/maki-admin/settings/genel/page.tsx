@@ -379,7 +379,7 @@ export default function SettingsGeneralPage() {
         {/* ANASAYFA HERO */}
         <SettingsSection
           title="Anasayfa Hero"
-          description="Anasayfanın üst bölümündeki hero içeriği — başlık, alt başlık, arka plan ve CTA."
+          description="Anasayfanın üst bölümündeki hero içeriği — başlık, alt başlık, arka plan ve CTA. Metinler İngilizce ana içeriktir; Türkçe karşılıkları Ayarlar → Çeviriler ekranından girilir."
         >
           <ToggleField
             label="Hero özelleştirme aktif"
@@ -483,40 +483,29 @@ export default function SettingsGeneralPage() {
           </p>
         </SettingsSection>
 
-        {/* 🛡️ Migration 081 — ÇOKLU DİL (PHASE 1A: yalnız ayar altyapısı).
-            Bu bölüm yalnız admin ayarını değiştirir; henüz public tarafta
-            dil seçici / routing / çeviri YOK. multilingualEnabled=false
-            iken "Varsayılan Dil" alanı devre dışıdır (anlamsız — public
-            site zaten tr davranıyor). */}
+        {/* 🛡️ DİL YAPISI — kodla sabit, ayarla değişmez.
+            İngilizce sitenin ana ve varsayılan dilidir (prefix'siz URL'ler,
+            canonical içerik alanları); Türkçe çeviridir (`/tr`, çeviri
+            kartları). Eski `multilingual_enabled` / `public_default_locale`
+            değerleri DB'de AYNEN korunur ve kayıtta değiştirilmeden geri
+            gönderilir; public davranışı artık belirlemezler. */}
         <SettingsSection
-          title="Çoklu Dil"
-          description="Public sitenin çoklu dil (TR/EN) altyapısı için hazırlık ayarı. Bu adımda yalnız ayar kaydedilir; public site davranışı henüz değişmez."
+          title="Dil Yapısı"
+          description="Sitenin dil yapısı sabittir; bu bölümde değiştirilecek bir ayar yoktur."
         >
-          <ToggleField
-            label="Çoklu Dil Sistemi"
-            description="Kapalıyken public site yalnızca aşağıdaki Varsayılan Dil ile, mevcut haliyle çalışmaya devam eder."
-            checked={multilingualEnabled}
-            onChange={setMultilingualEnabled}
-            disabled={loading}
-          />
-          <FieldShell
-            label="Varsayılan Dil"
-            hint="Çoklu Dil açıkken public sitenin ilk-ziyaretçi varsayılan dili. Kapalıyken site bu dilde (şu an yalnız Türkçe için garanti edilir) çalışır."
-          >
-            <select
-              value={publicDefaultLocale}
-              onChange={(e) =>
-                setPublicDefaultLocale(
-                  e.target.value === "en" ? "en" : "tr"
-                )
-              }
-              disabled={loading || !multilingualEnabled}
-              className="input"
-            >
-              <option value="tr">Türkçe</option>
-              <option value="en">English</option>
-            </select>
-          </FieldShell>
+          <div className="rounded-2xl border border-[var(--color-stone-100)] bg-[var(--color-sand-50)] p-4 text-[13px] leading-relaxed text-[var(--color-stone-600)] space-y-1.5">
+            <p>
+              <strong className="text-[var(--color-stone-900)]">English — ana ve varsayılan dil.</strong>{" "}
+              Adresler önek almaz (örn. <code>/kiralik-villalar</code>). Villa, blog, sayfa,
+              menü, kategori ve ayar formlarındaki ana alanlar İngilizce içeriktir.
+            </p>
+            <p>
+              <strong className="text-[var(--color-stone-900)]">Türkçe — çeviri.</strong>{" "}
+              Adresler <code>/tr</code> altındadır. Türkçe metinler her modülün
+              “Türkçe Çeviri” kartından girilir; boş bırakılan alan Türkçe sayfada
+              İngilizce içerikle gösterilir.
+            </p>
+          </div>
         </SettingsSection>
 
         <div className="flex justify-end pt-2">

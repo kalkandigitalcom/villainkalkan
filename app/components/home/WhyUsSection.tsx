@@ -5,6 +5,7 @@ import {
   BadgePercent,
   MessageCircle,
 } from "lucide-react";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ===============================================================
    🛡️ WhyUsSection — premium güven + dönüşüm bölümü (STATİK)
@@ -56,7 +57,7 @@ const FEATURES: {
 ];
 
 export default function WhyUsSection({ brandName, phone }: Props) {
-  const brand = brandName?.trim() || "Villa Kiralama";
+  const brand = brandName?.trim() || SITE_NAME_FALLBACK;
   const phoneDigits = phone?.replace(/[^\d]/g, "") || "";
   const ctaHref = phoneDigits
     ? `https://wa.me/${phoneDigits}`

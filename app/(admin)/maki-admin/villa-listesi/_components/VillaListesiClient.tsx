@@ -22,6 +22,7 @@ import AdminDateRangePicker from "@/app/components/admin/shared/AdminDateRangePi
 import { getBlockedVillaIdsAction } from "@/lib/availability.action";
 
 import VillaCard from "@/app/components/villa/VillaCard";
+import { ADMIN_UI_LOCALE } from "@/lib/i18n/config";
 import {
   getStartingPrice,
   calculateGrandTotal,
@@ -706,6 +707,7 @@ export default function VillaListesiClient({
           }
         >
           <VillaCard
+            locale={ADMIN_UI_LOCALE}
             id={v.id}
             slug={v.slug}
             title={v.title}

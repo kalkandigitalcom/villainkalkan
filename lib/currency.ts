@@ -1,5 +1,5 @@
 import {
-  DEFAULT_LOCALE,
+  ADMIN_UI_LOCALE,
   LOCALE_BCP47,
   type Locale,
 } from "@/lib/i18n/config";
@@ -96,7 +96,8 @@ export function convertPrice(
    ===============================================================
    `locale` OPSİYONEL ve son parametre → mevcut `formatCurrency(a, c)`
    çağrılarının TAMAMI (admin, mail, voucher, offer humanize, testler)
-   `DEFAULT_LOCALE` = "tr" ile eskisiyle BYTE-IDENTICAL çalışır.
+   `ADMIN_UI_LOCALE` ("tr") ile eskisiyle BYTE-IDENTICAL çalışır
+   (içerik ana dili İngilizce olsa da admin/mail biçimi değişmez).
 
    Değişen TEK şey görüntüleme biçimi: BCP-47 etiketi MEVCUT
    `LOCALE_BCP47` haritasından gelir (tr → "tr-TR" AYNEN). Tutarın
@@ -106,7 +107,7 @@ export function convertPrice(
 export function formatCurrency(
   amount: number,
   currency: string,
-  locale: Locale = DEFAULT_LOCALE
+  locale: Locale = ADMIN_UI_LOCALE
 ) {
 
   return new Intl.NumberFormat(
@@ -255,7 +256,7 @@ export const PRICE_PENDING_PLACEHOLDER = "…";
 export function formatDisplayPrice(
   amount: number,
   currency: string,
-  locale: Locale = DEFAULT_LOCALE,
+  locale: Locale = ADMIN_UI_LOCALE,
   ratesReady = true
 ): string {
   return ratesReady

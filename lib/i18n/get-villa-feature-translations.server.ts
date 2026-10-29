@@ -1,4 +1,5 @@
 import "server-only";
+import { TRANSLATION_LOCALES } from "@/lib/i18n/config";
 
 import { getTranslationsForParents } from "@/lib/i18n/get-translation.server";
 import type {
@@ -39,7 +40,7 @@ import type {
    döner, dolayısıyla çeviri okumak GEREKSİZ bir sorgu olur.
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = TRANSLATION_LOCALES;
 
 /**
  * Verilen villa özelliği id'leri için `{ featureId: { en?, de? } }`

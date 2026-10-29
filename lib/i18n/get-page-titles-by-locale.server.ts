@@ -1,4 +1,5 @@
 import "server-only";
+import { TRANSLATION_LOCALES } from "@/lib/i18n/config";
 
 import { getTranslationsForParents } from "@/lib/i18n/get-translation.server";
 import type {
@@ -51,7 +52,7 @@ import type {
    HİÇ girmez — sayfa linki canonical kalır.
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = TRANSLATION_LOCALES;
 
 /**
  * Verilen `pages.id` listesi için `{ pageId: { en?, de? } }` haritası.

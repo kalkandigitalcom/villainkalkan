@@ -26,6 +26,7 @@ import {
    yeni bir settings-fetch sistemi İCAT EDİLMEDİ. */
 import { getPublicSettingsAction } from "@/app/services/settings.action";
 import FeatureTranslationsPanel from "./FeatureTranslationsPanel";
+import { isMultilingualEnabled } from "@/lib/i18n/config";
 
 export default function FeaturesPage() {
   const toast = useNotify();
@@ -55,7 +56,7 @@ export default function FeaturesPage() {
     (async () => {
       const settings = await getPublicSettingsAction();
       if (cancelled) return;
-      setMultilingualEnabled(!!settings?.multilingual_enabled);
+      setMultilingualEnabled(isMultilingualEnabled(settings));
     })();
 
     return () => {

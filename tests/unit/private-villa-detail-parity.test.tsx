@@ -139,6 +139,7 @@ async function renderPrivate() {
   const el = await PrivateVillaPageBody({
     params: Promise.resolve({ token: "tok-1" }),
     searchParams: Promise.resolve({}),
+    locale: "tr",
   });
   return render(el as React.ReactElement);
 }

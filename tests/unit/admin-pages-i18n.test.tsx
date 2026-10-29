@@ -16,8 +16,9 @@
         4 key doğru yerleşiyor mu? (TR/EN)
 
    BU FAZDA admin'de locale KAYNAĞI YOK: call-site'lar bilinçli
-   olarak `DEFAULT_LOCALE` kullanır, bu yüzden render testleri TR
-   metinleri bekler (davranış Phase 12 öncesiyle aynı).
+   olarak `ADMIN_UI_LOCALE` ("tr") kullanır (public varsayılan dil
+   `DEFAULT_LOCALE` = "en" olsa da admin arayüzü Türkçe kalır), bu
+   yüzden render testleri TR metinleri bekler.
    =============================================================== */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -29,7 +30,7 @@ import { tr } from "@/lib/i18n/dictionaries/tr";
 import { en } from "@/lib/i18n/dictionaries/en";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { ADMIN_UI_LOCALE, DEFAULT_LOCALE } from "@/lib/i18n/config";
 
 /* ===============================================================
    MOCK KATMANI — i18n DIŞINDAKİ her şey stub'lanır. CRUD/upload/
@@ -222,8 +223,10 @@ describe("Phase 12 — admin namespace bütünlüğü", () => {
     }
   });
 
-  it("`getDictionary(DEFAULT_LOCALE).admin` TR sözlüğünü döner", () => {
-    expect(getDictionary(DEFAULT_LOCALE).admin).toBe(tr.admin);
+  it("`getDictionary(ADMIN_UI_LOCALE).admin` TR sözlüğünü döner (admin arayüzü Türkçe; public varsayılan dil EN)", () => {
+    expect(ADMIN_UI_LOCALE).toBe("tr");
+    expect(DEFAULT_LOCALE).toBe("en");
+    expect(getDictionary(ADMIN_UI_LOCALE).admin).toBe(tr.admin);
   });
 
   /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `common` namespace'ine 3 PUBLIC
@@ -503,10 +506,10 @@ describe("Phase 12 — source-lock (hardcoded Türkçe kalmadı)", () => {
     });
   }
 
-  it("3 route dosyası da dictionary'yi DEFAULT_LOCALE ile çağırıyor", () => {
+  it("3 route dosyası da dictionary'yi ADMIN_UI_LOCALE ile çağırıyor", () => {
     for (const rel of ROUTE_FILES) {
       const code = stripComments(readRoute(rel));
-      expect(code, rel).toContain("getDictionary(DEFAULT_LOCALE)");
+      expect(code, rel).toContain("getDictionary(ADMIN_UI_LOCALE)");
       /* Seçenek A: admin'de locale kaynağı YOK. */
       expect(code, rel).not.toContain("localStorage");
       expect(code, rel).not.toContain("document.cookie");

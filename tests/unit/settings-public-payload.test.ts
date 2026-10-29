@@ -40,20 +40,21 @@ vi.mock("@/lib/db/settings-translation.repository.server", () => ({
 
 import { getPublicSettings } from "@/app/services/settings.service";
 
-const EN_ROW = {
-  id: "row-en",
+/* Türkçe çeviri satırı (İngilizce ana içerik `settings` tablosunda). */
+const TR_ROW = {
+  id: "row-tr",
   settings_id: "settings-1",
-  locale: "en",
-  footer_copyright: "© {year} {site_name} · All rights reserved",
-  default_meta_title: "Luxury Villa Rentals",
-  default_meta_description: "Handpicked villas.",
+  locale: "tr",
+  footer_copyright: "© {year} {site_name} · Tüm hakları saklıdır",
+  default_meta_title: "Lüks Villa Kiralama",
+  default_meta_description: "Özenle seçilmiş villalar.",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
-  findAllForSettingsMock.mockResolvedValue({ data: [EN_ROW], error: null });
+  findAllForSettingsMock.mockResolvedValue({ data: [TR_ROW], error: null });
 });
 
 describe("getPublicSettings — §5 çeviri payload'ı", () => {
@@ -70,8 +71,8 @@ describe("getPublicSettings — §5 çeviri payload'ı", () => {
 
     expect(findAllForSettingsMock).toHaveBeenCalledWith("settings-1");
     expect(result?.site_name).toBe("Tatilin Yeri");
-    expect(result?.translations?.en?.footer_copyright).toBe(
-      "© {year} {site_name} · All rights reserved"
+    expect(result?.translations?.tr?.footer_copyright).toBe(
+      "© {year} {site_name} · Tüm hakları saklıdır"
     );
   });
 
@@ -84,8 +85,8 @@ describe("getPublicSettings — §5 çeviri payload'ı", () => {
     const result = await getPublicSettings();
 
     expect(findAllForSettingsMock).toHaveBeenCalledWith("settings-1");
-    expect(result?.translations?.en?.footer_copyright).toBe(
-      "© {year} {site_name} · All rights reserved"
+    expect(result?.translations?.tr?.footer_copyright).toBe(
+      "© {year} {site_name} · Tüm hakları saklıdır"
     );
     /* DE desteği kaldırıldı — payload'da `de` anahtarı YOK. */
     expect("de" in (result?.translations ?? {})).toBe(false);
@@ -100,7 +101,7 @@ describe("getPublicSettings — §5 çeviri payload'ı", () => {
     });
 
     const result = await getPublicSettings();
-    expect(Object.keys(result!.translations!.en!).sort()).toEqual(
+    expect(Object.keys(result!.translations!.tr!).sort()).toEqual(
       [
         "default_meta_description",
         "default_meta_title",
@@ -146,7 +147,7 @@ describe("getPublicSettings — §5 çeviri payload'ı", () => {
       error: null,
     });
     findAllForSettingsMock.mockResolvedValue({
-      data: [{ ...EN_ROW, resend_api_key: "SECRET", mail_from: "x@y.z" }],
+      data: [{ ...TR_ROW, resend_api_key: "SECRET", mail_from: "x@y.z" }],
       error: null,
     });
 

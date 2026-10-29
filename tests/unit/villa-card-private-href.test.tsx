@@ -56,13 +56,13 @@ const hrefs = (c: HTMLElement) =>
 
 describe("VillaCard privateHref", () => {
   it("aktif kart (prop yok) → mevcut /kiralik-villa/[slug] linki", () => {
-    const { container } = render(<VillaCard {...BASE} />);
+    const { container } = render(<VillaCard locale="tr" {...BASE} />);
     expect(hrefs(container)).toContain("/tr/kiralik-villa/villa-gizli");
   });
 
   it("pasif kart → /v/[token] (+tarih); /kiralik-villa hiç yok", () => {
     const { container } = render(
-      <VillaCard
+      <VillaCard locale="tr"
         {...BASE}
         privateHref="/tr/v/ozel123"
         stayStart="2026-11-10"
@@ -75,7 +75,7 @@ describe("VillaCard privateHref", () => {
   });
 
   it("pasif kart → müsaitlik butonu modal açmaz, özel sayfaya gider", () => {
-    render(<VillaCard {...BASE} privateHref="/tr/v/ozel123" />);
+    render(<VillaCard locale="tr" {...BASE} privateHref="/tr/v/ozel123" />);
     const btns = screen.getAllByRole("button");
     for (const b of btns) fireEvent.click(b);
     expect(screen.queryByTestId("booking-modal")).toBeNull();

@@ -71,7 +71,7 @@ beforeEach(() => {
     data: {
       id: "t-1",
       payment_method_id: PM_ID,
-      locale: "en",
+      locale: "tr",
       name: "Credit Card",
     },
     error: null,
@@ -87,30 +87,30 @@ describe("upsertPaymentMethodTranslation", () => {
   it("1) generic translationRepository'yi 'payment_method' entity'siyle çağırır", async () => {
     await upsertPaymentMethodTranslation({
       paymentMethodId: PM_ID,
-      locale: "en",
+      locale: "tr",
       name: "Credit Card",
     });
 
     expect(upsertOneMock).toHaveBeenCalledTimes(1);
-    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "en", {
+    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "tr", {
       name: "Credit Card",
     });
   });
 
-  it("2) boş/whitespace değer HATA DEĞİL — null yazılır (TR fallback)", async () => {
+  it("2) boş/whitespace değer HATA DEĞİL — null yazılır (EN fallback)", async () => {
     upsertOneMock.mockResolvedValue({
-      data: { id: "t-1", payment_method_id: PM_ID, locale: "en", name: null },
+      data: { id: "t-1", payment_method_id: PM_ID, locale: "tr", name: null },
       error: null,
     });
 
     const result = await upsertPaymentMethodTranslation({
       paymentMethodId: PM_ID,
-      locale: "en",
+      locale: "tr",
       name: "   ",
     });
 
     expect(result.ok).toBe(true);
-    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "en", {
+    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "tr", {
       name: null,
     });
   });
@@ -118,16 +118,16 @@ describe("upsertPaymentMethodTranslation", () => {
   it("3) değer trim edilir", async () => {
     await upsertPaymentMethodTranslation({
       paymentMethodId: PM_ID,
-      locale: "en",
+      locale: "tr",
       name: "  Credit Card  ",
     });
 
-    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "en", {
+    expect(upsertOneMock).toHaveBeenCalledWith("payment_method", PM_ID, "tr", {
       name: "Credit Card",
     });
   });
 
-  it.each(["tr", "de", "fr", "", null, undefined])(
+  it.each(["en", "de", "fr", "", null, undefined])(
     "4) yazılabilir olmayan locale (%s) reddedilir — DB'ye HİÇ gidilmez",
     async (locale) => {
       const result = await upsertPaymentMethodTranslation({
@@ -144,7 +144,7 @@ describe("upsertPaymentMethodTranslation", () => {
   it("5) boş paymentMethodId reddedilir — DB'ye HİÇ gidilmez", async () => {
     const result = await upsertPaymentMethodTranslation({
       paymentMethodId: "   ",
-      locale: "en",
+      locale: "tr",
       name: "X",
     });
 
@@ -157,7 +157,7 @@ describe("upsertPaymentMethodTranslation", () => {
 
     const result = await upsertPaymentMethodTranslation({
       paymentMethodId: PM_ID,
-      locale: "en",
+      locale: "tr",
       name: "Credit Card",
     });
 
@@ -171,11 +171,11 @@ describe("getPaymentMethodTranslations", () => {
     expect(findAllForParentMock).toHaveBeenCalledWith("payment_method", PM_ID);
   });
 
-  it("8) yalnız en satırları döner (tr / eski de filtrelenir)", async () => {
+  it("8) yalnız tr satırları döner (en / eski de filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValue({
       data: [
-        { locale: "tr", name: "Kredi Kartı" },
-        { locale: "en", name: "Credit Card" },
+        { locale: "en", name: "Kredi Kartı" },
+        { locale: "tr", name: "Credit Card" },
         { locale: "de", name: "Kreditkarte" },
       ],
       error: null,
@@ -184,7 +184,7 @@ describe("getPaymentMethodTranslations", () => {
     const result = await getPaymentMethodTranslations(PM_ID);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.rows.map((r) => r.locale)).toEqual(["en"]);
+    expect(result.rows.map((r) => r.locale)).toEqual(["tr"]);
   });
 
   it("9) okuma hatası → { ok:false }", async () => {
@@ -211,7 +211,7 @@ describe("savePaymentMethodTranslationAction — authorizeAdminSession İLK", ()
 
     const result = await savePaymentMethodTranslationAction({
       paymentMethodId: PM_ID,
-      locale: "en",
+      locale: "tr",
       name: "Credit Card",
     });
 
@@ -222,7 +222,7 @@ describe("savePaymentMethodTranslationAction — authorizeAdminSession İLK", ()
   it("11) yetkili → servise delege eder", async () => {
     const result = await savePaymentMethodTranslationAction({
       paymentMethodId: PM_ID,
-      locale: "en",
+      locale: "tr",
       name: "Credit Card",
     });
 
@@ -289,7 +289,7 @@ describe("migration 088 — payment_method_translations şeması", () => {
     );
   });
 
-  it("19) `name` nullable (boşsa TR fallback)", () => {
+  it("19) `name` nullable (boşsa EN fallback)", () => {
     expect(sql).toMatch(/\n\s*name\s+text,\n/);
   });
 

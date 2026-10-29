@@ -21,7 +21,7 @@ vi.mock("@/lib/db/translation.repository.server", () => ({
 const VALID_ROW = {
   id: "row-1",
   feature_id: "feature-uuid-1",
-  locale: "en",
+  locale: "tr",
   name: "Test Feature",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
@@ -36,14 +36,14 @@ beforeEach(() => {
 });
 
 describe("upsertFeatureTranslation", () => {
-  it("EN upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("TR upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
     const { upsertFeatureTranslation } = await import(
       "@/app/services/villa-feature-translation.service"
     );
 
     const result = await upsertFeatureTranslation({
       featureId: "feature-uuid-1",
-      locale: "en",
+      locale: "tr",
       name: "Test Feature",
     });
 
@@ -51,7 +51,7 @@ describe("upsertFeatureTranslation", () => {
     expect(upsertOneMock).toHaveBeenCalledWith(
       "villa_feature",
       "feature-uuid-1",
-      "en",
+      "tr",
       { name: "Test Feature" }
     );
   });
@@ -71,19 +71,19 @@ describe("upsertFeatureTranslation", () => {
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("mevcut EN çeviriyi günceller", async () => {
+  it("mevcut TR çeviriyi günceller", async () => {
     const { upsertFeatureTranslation } = await import(
       "@/app/services/villa-feature-translation.service"
     );
 
-    await upsertFeatureTranslation({ featureId: "feature-uuid-1", locale: "en", name: "V1" });
-    await upsertFeatureTranslation({ featureId: "feature-uuid-1", locale: "en", name: "V2 güncel" });
+    await upsertFeatureTranslation({ featureId: "feature-uuid-1", locale: "tr", name: "V1" });
+    await upsertFeatureTranslation({ featureId: "feature-uuid-1", locale: "tr", name: "V2 güncel" });
 
     expect(upsertOneMock).toHaveBeenCalledTimes(2);
     expect(upsertOneMock).toHaveBeenLastCalledWith(
       "villa_feature",
       "feature-uuid-1",
-      "en",
+      "tr",
       { name: "V2 güncel" }
     );
   });
@@ -103,14 +103,14 @@ describe("upsertFeatureTranslation", () => {
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("locale 'tr' reddedilir", async () => {
+  it("locale 'en' reddedilir", async () => {
     const { upsertFeatureTranslation } = await import(
       "@/app/services/villa-feature-translation.service"
     );
 
     const result = await upsertFeatureTranslation({
       featureId: "feature-uuid-1",
-      locale: "tr",
+      locale: "en",
       name: "Türkçe İsim",
     });
 
@@ -125,7 +125,7 @@ describe("upsertFeatureTranslation", () => {
 
     const result = await upsertFeatureTranslation({
       featureId: "   ",
-      locale: "en",
+      locale: "tr",
       name: "Test",
     });
 
@@ -140,7 +140,7 @@ describe("upsertFeatureTranslation", () => {
 
     const result = await upsertFeatureTranslation({
       featureId: "feature-uuid-1",
-      locale: "en",
+      locale: "tr",
       name: "   ",
     });
 
@@ -155,7 +155,7 @@ describe("upsertFeatureTranslation", () => {
 
     const result = await upsertFeatureTranslation({
       featureId: "feature-uuid-1",
-      locale: "en",
+      locale: "tr",
       name: "Test Feature",
     });
 
@@ -167,8 +167,8 @@ describe("getFeatureTranslations", () => {
   it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
-        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "en" },
+        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "de" },
       ],
       error: null,
@@ -182,7 +182,7 @@ describe("getFeatureTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["tr"]);
     }
   });
 

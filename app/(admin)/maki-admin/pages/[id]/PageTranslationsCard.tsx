@@ -56,7 +56,7 @@ import { revalidateMenu } from "@/app/services/revalidate.actions";
 /* 🛡️ MIGRATION 091 — canonical bölüm yapısı için TEK parser (REUSE). */
 import { parsePageSections, type PageSection } from "@/lib/page-sections";
 
-type WritableLocale = "en";
+type WritableLocale = "tr";
 
 type LocaleFormState = {
   title: string;
@@ -165,7 +165,7 @@ function buildTranslatedSections(
 }
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
-  en: "English",
+  tr: "Türkçe",
 };
 
 type Props = {
@@ -185,7 +185,7 @@ export default function PageTranslationsCard({
   const toast = useNotify();
 
   const [forms, setForms] = useState<Record<WritableLocale, LocaleFormState>>({
-    en: EMPTY_FORM,
+    tr: EMPTY_FORM,
   });
   /* 🛡️ MIGRATION 091 — canonical yapı (yalnız OKUNUR) + locale başına
      metin taslakları. `useMemo` ile prop değişmedikçe yeniden
@@ -196,8 +196,8 @@ export default function PageTranslationsCard({
   );
   const [sectionDrafts, setSectionDrafts] = useState<
     Record<WritableLocale, SectionDraft[]>
-  >({ en: [] });
-  const [activeLocale, setActiveLocale] = useState<WritableLocale>("en");
+  >({ tr: [] });
+  const [activeLocale, setActiveLocale] = useState<WritableLocale>("tr");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -221,7 +221,7 @@ export default function PageTranslationsCard({
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en") continue;
+          if (row.locale !== "tr") continue;
           next[row.locale] = {
             title: row.title ?? "",
             excerpt: row.excerpt ?? "",
@@ -237,10 +237,10 @@ export default function PageTranslationsCard({
       setSectionDrafts(() => {
         const empty = canonical.map(() => EMPTY_DRAFT);
         const next: Record<WritableLocale, SectionDraft[]> = {
-          en: empty,
+          tr: empty,
         };
         for (const row of result.rows) {
-          if (row.locale !== "en") continue;
+          if (row.locale !== "tr") continue;
           next[row.locale] = draftsFromSaved(canonical, row.sections);
         }
         return next;
@@ -359,13 +359,10 @@ export default function PageTranslationsCard({
         <div>
           <p className="eyebrow">Çok Dilli İçerik</p>
           <h2 className="text-lg font-semibold text-[var(--color-stone-900)]">
-            Çeviriler (EN)
+            Türkçe Çeviri (TR)
           </h2>
           <p className="mt-1 text-sm text-[var(--color-stone-500)]">
-            Bu alanlar yalnızca İngilizce ve Almanca sürümler içindir. Türkçe
-            içerik buradan düzenlenemez; boş bırakılan alanlar public tarafta
-            Türkçe içeriğe geri döner. Slug çevrilmez. Bölümlerin
-            (sections) yapısı Türkçe içerikten gelir; burada yalnız
+            Bu alanlar Türkçe sayfalar (/tr) içindir. İngilizce ana içerik ana formdan düzenlenir; boş bırakılan alanlar Türkçe sayfada İngilizce ana içeriğe geri döner. Slug çevrilmez. Bölümlerin (sections) yapısı İngilizce ana içerikten gelir; burada yalnız
             metinleri çevirirsiniz.
           </p>
         </div>
@@ -374,7 +371,7 @@ export default function PageTranslationsCard({
       {pageTitle ? (
         <div>
           <p className="text-[11px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-400)]">
-            Türkçe (referans, salt okunur)
+            English (ana içerik, salt okunur)
           </p>
           <p className="text-sm text-[var(--color-stone-600)] mt-1">
             {pageTitle}
@@ -493,9 +490,7 @@ export default function PageTranslationsCard({
                   Bölümler (sections)
                 </label>
                 <p className="mt-1 text-xs text-[var(--color-stone-400)]">
-                  Sıra, tip ve görsel yolu Türkçe içerikten gelir ve
-                  değiştirilemez. Boş bıraktığınız her alan public
-                  tarafta Türkçe metne geri döner.
+                  Sıra, tip ve görsel yolu İngilizce ana içerikten gelir ve değiştirilemez. Boş bıraktığınız her alan Türkçe sayfada İngilizce metne geri döner.
                 </p>
               </div>
 

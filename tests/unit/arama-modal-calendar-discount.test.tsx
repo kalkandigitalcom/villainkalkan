@@ -105,7 +105,7 @@ function mockFetch(discounts?: DiscountRange[]) {
 async function openModal(discounts?: DiscountRange[]) {
   mockFetch(discounts);
   const r = render(
-    <VillaCardBookingModal
+    <VillaCardBookingModal locale="tr"
       isOpen={true}
       onClose={vi.fn()}
       villaId="v1"
@@ -171,7 +171,7 @@ describe("/arama modal takvimi — indirimli günlük fiyat", () => {
     const start = `${FY}-${FM}-08`;
     const end = `${FY}-${FM}-11`;
     render(
-      <VillaCardBookingModal
+      <VillaCardBookingModal locale="tr"
         isOpen={true}
         onClose={vi.fn()}
         villaId="v1"
@@ -284,7 +284,7 @@ describe("D) modal fiyat özeti — indirimli tutar", () => {
       }) as unknown as typeof fetch
     );
     const r = render(
-      <VillaCardBookingModal
+      <VillaCardBookingModal locale="tr"
         isOpen={true}
         onClose={vi.fn()}
         villaId="v1"
@@ -343,7 +343,7 @@ describe("D) modal fiyat özeti — indirimli tutar", () => {
   it("16) 🔒 tarihsiz modalda özet HİÇ render edilmez (eski davranış)", async () => {
     mockFetch(FULL_DISCOUNT);
     render(
-      <VillaCardBookingModal
+      <VillaCardBookingModal locale="tr"
         isOpen={true}
         onClose={vi.fn()}
         villaId="v1"
@@ -409,9 +409,9 @@ describe("E) modal takvim dili", () => {
     expect(weekdays).not.toMatch(/Ça|Ct|Pz/);
   });
 
-  it("20) locale verilmezse MEVCUT güvenli default (TR) korunur", async () => {
+  it("20) locale verilmezse varsayılan dil (EN)", async () => {
     const { container } = renderModalWithLocale();
     const { weekdays } = await calendarTexts(container);
-    expect(weekdays).toMatch(/Ça|Ct|Pz/);
+    expect(weekdays).toMatch(/Su|Mo|Tu/);
   });
 });

@@ -39,12 +39,12 @@ import { parseLocalDate } from "@/lib/date-format";
    sistemi YAZILMADI; locale etiketi (LOCALE_BCP47) helper içinde. */
 import { buildHeroDateLabel } from "@/app/components/ui/hero/_helpers/date-label";
 /* 🛡️ PHASE 10G — locale-aware kart metinleri + locale-prefixed detay
-   linki. `locale` OPSİYONEL, default "tr" → TR çıktısı (metin + href)
-   BİREBİR AYNI. Fiyat/indirim/availability mantığı DEĞİŞMEDİ. */
+   linki. `locale` OPSİYONEL, verilmezse varsayılan dil (DEFAULT_LOCALE,
+   İngilizce); metin, biçim ve href aynı locale'den üretilir. Fiyat/indirim/availability mantığı DEĞİŞMEDİ. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 /* 🛡️ FAZ 36 — Guest favorites button. localStorage-only;
    no DB / no API / no server action / no auth. */
 import FavoriteButton from "@/app/components/favorites/FavoriteButton";
@@ -248,8 +248,8 @@ export default function VillaCard({
   sizes: imageSizes,
   isLcp = false,
 }: Props) {
-  const dict = getDictionary(locale);
-  const effectiveLocale: Locale = locale ?? "tr";
+  const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
+  const dict = getDictionary(effectiveLocale);
   const router = useRouter();
   /* Compact variant flag — curation flow için presentation density.
      Logic (price/state/handlers/modal) hiç dokunulmaz. */
@@ -628,7 +628,7 @@ export default function VillaCard({
               🛡️ Curation variant: admin curator listesinde favori
               gereksiz → render edilmez. */}
           {id && !isCuration && (
-            <FavoriteButton villaId={id} variant="card" alwaysVisible />
+            <FavoriteButton villaId={id} variant="card" alwaysVisible locale={effectiveLocale} />
           )}
 
           {/* ════════════════════════════════════════════════
@@ -1005,7 +1005,7 @@ export default function VillaCard({
           >
             <CalendarRange size={15} strokeWidth={1.75} aria-hidden />
           </button>
-          {id && <FavoriteButton villaId={id} variant="card" alwaysVisible />}
+          {id && <FavoriteButton villaId={id} variant="card" alwaysVisible locale={effectiveLocale} />}
 
           {/* SOL ALT — gerçek puan (0/undefined → render YOK). */}
           {typeof reviewCount === "number" && reviewCount > 0 &&
@@ -1249,7 +1249,7 @@ export default function VillaCard({
         villaId={id}
         villaSlug={slug}
         villaTitle={title}
-        locale={locale}
+        locale={effectiveLocale}
         /* 🛡️ ADDITIVE — /arama URL'inden gelen konaklama aralığı
            (`stayStart`/`stayEnd`, AramaPageBody'de zaten doğrulanmış)
            modal takviminde SEÇİLİ açılsın. Yalnız İKİSİ de varsa

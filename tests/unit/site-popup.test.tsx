@@ -455,85 +455,103 @@ describe("SitePopupLoader (public davranış)", () => {
 });
 
 /* ================================================================
-   🌐 ÇOKLU DİL (migration 096) — TR canonical + EN, alan bazında
-   Türkçe fallback; locale URL prefix'inden (/en). DE desteği kaldırıldı.
+   🌐 ÇOKLU DİL (migration 096 → 102) — EN canonical (ana içerik) +
+   TR çeviri, alan bazında İngilizce fallback; locale URL prefix'inden
+   (/tr). Yalnız 'tr' çeviri satırı okunur/yazılır.
    ================================================================ */
-describe("çoklu dil — saf yardımcılar", () => {
-  const EN = tRow("en", {
-    title: "Since 2006 we have been with you.",
-    description: "The finest villas, in one place.",
-    stats: ["300,000+ guests"],
+const EN_TITLE = "Since 2006 we have been with you.";
+const TR_TITLE = "2006'dan bu yana tatilinizin yanındayız.";
+function enRow(over: Partial<SitePopupRow> = {}): SitePopupRow {
+  return row({
+    title: EN_TITLE,
+    stats: ["300,000+ guests", "4.9 guest rating", "TÜRSAB 9117"],
     button_text: "Explore All Villas",
-    button_url: "/en/kiralik-villalar",
+    button_url: "/kiralik-villalar",
+    ...over,
+  });
+}
+
+describe("çoklu dil — saf yardımcılar", () => {
+  const TR = tRow("tr", {
+    title: TR_TITLE,
+    description: "En güzel villalar, tek bir yerde.",
+    stats: ["300.000+ misafir"],
+    button_text: "Villaları inceleyin",
+    button_url: "/tr/kiralik-villalar",
   });
 
-  it("toPublicSitePopup: EN içerik + boş alanlar (vurgu) Türkçe'ye düşer; TR alanlar aynen", () => {
-    const p = toPublicSitePopup(row(), resolve, NOW, [EN])!;
-    expect(p.title).toBe("2006'dan bu yana tatilinizin yanındayız.");
-    expect(p.translations.en).toEqual({
-      title: "Since 2006 we have been with you.",
-      description: "The finest villas, in one place.",
+  it("toPublicSitePopup: TR içerik + boş alanlar (vurgu) İngilizceye düşer; EN alanlar aynen", () => {
+    const p = toPublicSitePopup(enRow(), resolve, NOW, [TR])!;
+    expect(p.title).toBe(EN_TITLE);
+    expect(p.translations.tr).toEqual({
+      title: TR_TITLE,
+      description: "En güzel villalar, tek bir yerde.",
       highlight: "20",
-      stats: ["300,000+ guests"],
-      button: { text: "Explore All Villas", url: "/en/kiralik-villalar", external: false },
+      stats: ["300.000+ misafir"],
+      button: { text: "Villaları inceleyin", url: "/tr/kiralik-villalar", external: false },
     });
-    expect(Object.keys(p.translations)).toEqual(["en"]);
+    expect(Object.keys(p.translations)).toEqual(["tr"]);
   });
 
-  it("EN kısmi: yalnız buton metni → URL/başlık/alt bilgiler Türkçe; tamamen boş satır → yok sayılır; eski 'de' satırı alınmaz", () => {
+  it("TR kısmi: yalnız buton metni → URL/başlık/alt bilgiler İngilizce; tamamen boş satır → yok sayılır; eski 'en'/'de' satırı alınmaz", () => {
     const p = toPublicSitePopup(
-      row(),
+      enRow(),
       resolve,
       NOW,
-      [tRow("en", { button_text: "Explore All Villas" }), tRow("de", { title: "Hallo" })]
+      [
+        tRow("tr", { button_text: "Villaları inceleyin" }),
+        tRow("en", { title: "Legacy EN row" }),
+        tRow("de", { title: "Hallo" }),
+      ]
     )!;
-    expect(Object.keys(p.translations)).toEqual(["en"]);
-    expect(p.translations.en?.title).toBe("2006'dan bu yana tatilinizin yanındayız.");
-    expect(p.translations.en?.stats).toEqual(["300.000+ misafir", "4.9 misafir puanı", "TÜRSAB 9117"]);
-    expect(p.translations.en?.button).toEqual({
-      text: "Explore All Villas",
+    expect(Object.keys(p.translations)).toEqual(["tr"]);
+    expect(p.translations.tr?.title).toBe(EN_TITLE);
+    expect(p.translations.tr?.stats).toEqual(["300,000+ guests", "4.9 guest rating", "TÜRSAB 9117"]);
+    expect(p.translations.tr?.button).toEqual({
+      text: "Villaları inceleyin",
       url: "/kiralik-villalar",
       external: false,
     });
+    expect(p.title).toBe(EN_TITLE);
 
-    const empty = toPublicSitePopup(row(), resolve, NOW, [tRow("en")])!;
-    expect(empty.translations.en).toBeUndefined();
+    const empty = toPublicSitePopup(enRow(), resolve, NOW, [tRow("tr")])!;
+    expect(empty.translations.tr).toBeUndefined();
   });
 
-  it("çeviride HTML temizlenir, güvensiz URL yok sayılır (TR URL'e düşer), 'tr'/bilinmeyen locale satırı alınmaz", () => {
-    const p = toPublicSitePopup(row(), resolve, NOW, [
-      tRow("en", { title: "<img src=x onerror=alert(1)>Hello", button_text: "Go", button_url: "javascript:alert(1)" }),
-      tRow("tr", { title: "HACK" }),
+  it("çeviride HTML temizlenir, güvensiz URL yok sayılır (EN URL'e düşer), 'en'/bilinmeyen locale satırı alınmaz", () => {
+    const p = toPublicSitePopup(enRow(), resolve, NOW, [
+      tRow("tr", { title: "<img src=x onerror=alert(1)>Merhaba", button_text: "Git", button_url: "javascript:alert(1)" }),
+      tRow("en", { title: "HACK" }),
       tRow("fr", { title: "Bonjour" }),
     ])!;
-    expect(p.translations.en?.title).toBe("Hello");
-    expect(p.translations.en?.button?.url).toBe("/kiralik-villalar");
-    expect(Object.keys(p.translations)).toEqual(["en"]);
+    expect(p.translations.tr?.title).toBe("Merhaba");
+    expect(p.translations.tr?.button?.url).toBe("/kiralik-villalar");
+    expect(Object.keys(p.translations)).toEqual(["tr"]);
     expect(p.title).not.toBe("HACK");
   });
 
   it("buton gizliyse çeviride de buton yok", () => {
-    const p = toPublicSitePopup(row({ show_button: false }), resolve, NOW, [EN])!;
+    const p = toPublicSitePopup(enRow({ show_button: false }), resolve, NOW, [TR])!;
     expect(p.button).toBeNull();
-    expect(p.translations.en?.button).toBeNull();
+    expect(p.translations.tr?.button).toBeNull();
   });
 
-  it("localizeSitePopup: tr/bilinmeyen (de dahil) → aynen; en → çeviri; dil-bağımsız alanlar korunur", () => {
-    const p = toPublicSitePopup(row(), resolve, NOW, [EN])!;
-    expect(localizeSitePopup(p, "tr")).toBe(p);
+  it("localizeSitePopup: en/bilinmeyen (de dahil) → aynen (ana içerik); tr → çeviri; dil-bağımsız alanlar korunur", () => {
+    const p = toPublicSitePopup(enRow(), resolve, NOW, [TR])!;
+    expect(localizeSitePopup(p, "en")).toBe(p);
     expect(localizeSitePopup(p, "xx")).toBe(p);
     expect(localizeSitePopup(p, "de")).toBe(p);
-    const en = localizeSitePopup(p, "en");
-    expect(en.title).toBe("Since 2006 we have been with you.");
-    expect(en.imageUrl).toBe(p.imageUrl);
-    expect(en.version).toBe(p.version);
-    expect(en.scope).toBe(p.scope);
-    expect(en.dismiss).toBe(p.dismiss);
+    const tr = localizeSitePopup(p, "tr");
+    expect(tr.title).toBe(TR_TITLE);
+    expect(tr.imageUrl).toBe(p.imageUrl);
+    expect(tr.version).toBe(p.version);
+    expect(tr.scope).toBe(p.scope);
+    expect(tr.dismiss).toBe(p.dismiss);
   });
 
-  it("mergePopupText: boş string/boş dizi → Türkçe değer", () => {
+  it("mergePopupText: boş string/boş dizi → İngilizce (ana) değer", () => {
     const base = { title: "T", description: "D", highlight: "20", stats: ["a"], buttonText: "B", buttonUrl: "/x" };
-    expect(mergePopupText(base, { title: "", stats: [], buttonText: "EN" })).toEqual({ ...base, buttonText: "EN" });
+    expect(mergePopupText(base, { title: "", stats: [], buttonText: "TR" })).toEqual({ ...base, buttonText: "TR" });
     expect(mergePopupText(base, null)).toBe(base);
   });
 });
@@ -542,11 +560,11 @@ describe("çoklu dil — servis", () => {
   const base = {
     isEnabled: true,
     imagePath: "popup/popup.webp",
-    title: "Başlık",
+    title: "Title",
     description: "",
     highlight: "20",
     stats: ["a"],
-    buttonText: "Villaları inceleyin",
+    buttonText: "Explore the villas",
     buttonUrl: "/kiralik-villalar",
     showButton: true,
     scope: "home",
@@ -555,44 +573,44 @@ describe("çoklu dil — servis", () => {
     endDate: "",
   };
   const translations = {
-    en: { title: "<b>Title</b>", description: "", highlight: "", stats: [" x ", ""], buttonText: "Explore All Villas", buttonUrl: "/en/kiralik-villalar" },
+    tr: { title: "<b>Başlık</b>", description: "", highlight: "", stats: [" x ", ""], buttonText: "Villaları inceleyin", buttonUrl: "/tr/kiralik-villalar" },
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(console, "warn").mockImplementation(() => {});
-    repoFind.mockResolvedValue({ data: row(), error: null });
+    repoFind.mockResolvedValue({ data: enRow(), error: null });
     repoFindTranslations.mockResolvedValue({ data: [], error: null });
     repoUpsertTranslation.mockResolvedValue({ data: null, error: null });
     repoUpdate.mockImplementation(async (values: Record<string, unknown>) => ({
-      data: { ...row(), ...values },
+      data: { ...enRow(), ...values },
       error: null,
     }));
   });
 
-  it("EN her kayıtta tam durumuyla yazılır (isimli alanlar, temizlenmiş); TR site_popup'a gider; de/fr yok sayılır", async () => {
+  it("TR her kayıtta tam durumuyla yazılır (isimli alanlar, temizlenmiş); EN site_popup'a gider; en/de/fr yok sayılır", async () => {
     const res = await saveSitePopup({
       ...base,
-      translations: { ...translations, fr: { title: "x" }, de: { title: "Hallo" } },
+      translations: { ...translations, en: { title: "x" }, fr: { title: "x" }, de: { title: "Hallo" } },
     });
     expect(res.ok).toBe(true);
     expect(repoUpsertTranslation).toHaveBeenCalledTimes(1);
     const [[l1, v1]] = repoUpsertTranslation.mock.calls as [string, Record<string, unknown>][];
-    expect(l1).toBe("en");
+    expect(l1).toBe("tr");
     expect(Object.keys(v1).sort()).toEqual(
       ["button_text", "button_url", "description", "highlight_text", "stats", "title"].sort()
     );
     expect(v1).toEqual({
-      title: "Title",
+      title: "Başlık",
       description: null,
       highlight_text: null,
       stats: ["x"],
-      button_text: "Explore All Villas",
-      button_url: "/en/kiralik-villalar",
+      button_text: "Villaları inceleyin",
+      button_url: "/tr/kiralik-villalar",
     });
-    expect((repoUpdate.mock.calls[0][0] as Record<string, unknown>).title).toBe("Başlık");
-    expect(res.ok && res.values.translations.en.title).toBe("Title");
+    expect((repoUpdate.mock.calls[0][0] as Record<string, unknown>).title).toBe("Title");
+    expect(res.ok && res.values.translations.tr.title).toBe("Başlık");
   });
 
   it("translations anahtarı yoksa çevirilere DOKUNULMAZ (geriye uyum)", async () => {
@@ -601,11 +619,11 @@ describe("çoklu dil — servis", () => {
     expect(repoUpsertTranslation).not.toHaveBeenCalled();
   });
 
-  it("EN'de güvensiz URL / URL'siz buton (TR URL de yoksa) → RED, hiçbir şey yazılmaz", async () => {
+  it("TR'de güvensiz URL / URL'siz buton (EN URL de yoksa) → RED, hiçbir şey yazılmaz", async () => {
     for (const bad of [
-      { translations: { ...translations, en: { ...translations.en, buttonUrl: "javascript:alert(1)" } } },
-      { translations: { ...translations, en: { ...translations.en, buttonUrl: "//evil.com" } } },
-      { buttonText: "", buttonUrl: "", translations: { ...translations, en: { ...translations.en, buttonUrl: "" } } },
+      { translations: { ...translations, tr: { ...translations.tr, buttonUrl: "javascript:alert(1)" } } },
+      { translations: { ...translations, tr: { ...translations.tr, buttonUrl: "//evil.com" } } },
+      { buttonText: "", buttonUrl: "", translations: { ...translations, tr: { ...translations.tr, buttonUrl: "" } } },
     ]) {
       const res = await saveSitePopup({ ...base, ...bad });
       expect(res.ok, JSON.stringify(bad)).toBe(false);
@@ -614,10 +632,10 @@ describe("çoklu dil — servis", () => {
     expect(repoUpdate).not.toHaveBeenCalled();
   });
 
-  it("EN buton metni var, EN URL boş → TR URL kullanılacağı için kabul", async () => {
+  it("TR buton metni var, TR URL boş → EN URL kullanılacağı için kabul", async () => {
     const res = await saveSitePopup({
       ...base,
-      translations: { ...translations, en: { ...translations.en, buttonUrl: "" } },
+      translations: { ...translations, tr: { ...translations.tr, buttonUrl: "" } },
     });
     expect(res.ok).toBe(true);
   });
@@ -629,21 +647,21 @@ describe("çoklu dil — servis", () => {
     expect(repoUpdate).not.toHaveBeenCalled();
   });
 
-  it("public: kapalıysa çeviri sorgusu atılmaz; çeviri okuma hatası → Türkçe popup (site etkilenmez)", async () => {
-    repoFind.mockResolvedValueOnce({ data: row({ is_enabled: false }), error: null });
+  it("public: kapalıysa çeviri sorgusu atılmaz; çeviri okuma hatası → İngilizce popup (site etkilenmez)", async () => {
+    repoFind.mockResolvedValueOnce({ data: enRow({ is_enabled: false }), error: null });
     expect(await getPublicSitePopup()).toBeNull();
     expect(repoFindTranslations).not.toHaveBeenCalled();
 
     repoFindTranslations.mockResolvedValueOnce({ data: null, error: { message: "relation does not exist" } });
     const p = await getPublicSitePopup();
-    expect(p?.title).toBe("2006'dan bu yana tatilinizin yanındayız.");
+    expect(p?.title).toBe(EN_TITLE);
     expect(p?.translations).toEqual({});
 
     repoFindTranslations.mockResolvedValueOnce({
-      data: [tRow("en", { title: "Hello" })],
+      data: [tRow("tr", { title: "Merhaba" })],
       error: null,
     });
-    expect((await getPublicSitePopup())?.translations.en?.title).toBe("Hello");
+    expect((await getPublicSitePopup())?.translations.tr?.title).toBe("Merhaba");
   });
 
   it("admin okuma: çeviri tablosu okunamazsa null (çeviriler sessizce boş görünüp ezilmesin)", async () => {
@@ -651,20 +669,20 @@ describe("çoklu dil — servis", () => {
     repoFindTranslations.mockResolvedValueOnce({ data: null, error: { message: "relation does not exist" } });
     expect(await loadSitePopupAction()).toBeNull();
     repoFindTranslations.mockResolvedValueOnce({
-      data: [tRow("en", { title: "Hello", stats: ["a", 5, "<b>b</b>"] })],
+      data: [tRow("tr", { title: "Merhaba", stats: ["a", 5, "<b>b</b>"] }), tRow("en", { title: "Legacy" })],
       error: null,
     });
     const v = await loadSitePopupAction();
-    expect(v?.translations.en).toEqual({
-      title: "Hello", description: "", highlight: "", stats: ["a", "b"], buttonText: "", buttonUrl: "",
+    expect(v?.translations.tr).toEqual({
+      title: "Merhaba", description: "", highlight: "", stats: ["a", "b"], buttonText: "", buttonUrl: "",
     });
-    expect(Object.keys(v?.translations ?? {})).toEqual(["en"]);
+    expect(Object.keys(v?.translations ?? {})).toEqual(["tr"]);
   });
 });
 
 describe("çoklu dil — SitePopupLoader", () => {
-  const popup = toPublicSitePopup(row({ dismiss_duration: "1d" }), resolve, NOW, [
-    tRow("en", { title: "Since 2006 we have been with you.", button_text: "Explore All Villas", button_url: "/en/kiralik-villalar" }),
+  const popup = toPublicSitePopup(enRow({ dismiss_duration: "1d" }), resolve, NOW, [
+    tRow("tr", { title: TR_TITLE, button_text: "Villaları inceleyin", button_url: "/tr/kiralik-villalar" }),
   ])!;
 
   beforeEach(() => {
@@ -681,39 +699,41 @@ describe("çoklu dil — SitePopupLoader", () => {
     });
   };
 
-  it("/ → İngilizce içerik (+ Türkçe vurgu fallback); site içi buton linki prefix'siz", async () => {
+  it("/ → İngilizce ana içerik; site içi buton linki prefix'siz", async () => {
     pathname = "/";
     render(<SitePopupLoader popup={popup} />);
     await openNow();
-    expect(screen.getByRole("heading", { name: "Since 2006 we have been with you." })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: EN_TITLE })).toBeTruthy();
     expect(screen.getByRole("link", { name: "Explore All Villas" }).getAttribute("href")).toBe("/kiralik-villalar");
     expect(screen.getByText("20")).toBeTruthy();
   });
 
-  it("/de artık ana sayfa değil → popup (kapsam 'home') açılmaz; /tr → Türkçe içerik", async () => {
-    pathname = "/de";
-    const { unmount } = render(<SitePopupLoader popup={popup} />);
-    await openNow();
-    expect(screen.queryByRole("heading", { name: "2006'dan bu yana tatilinizin yanındayız." })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Schließen" })).toBeNull();
-    unmount();
-    window.localStorage.clear();
+  it("/tr → Türkçe çeviri (+ İngilizce vurgu fallback); buton linki /tr prefix'li", async () => {
     pathname = "/tr";
     render(<SitePopupLoader popup={popup} />);
     await openNow();
-    expect(screen.getByRole("link", { name: "Villaları inceleyin" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: TR_TITLE })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Villaları inceleyin" }).getAttribute("href")).toBe("/tr/kiralik-villalar");
+    expect(screen.getByText("20")).toBeTruthy();
+  });
+
+  it("/de ana sayfa değil → popup (kapsam 'home') açılmaz", async () => {
+    pathname = "/de";
+    render(<SitePopupLoader popup={popup} />);
+    await openNow();
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   it("kapsam 'all': /kiralik-villalar → İngilizce; /tr/kiralik-villalar → Türkçe", async () => {
     pathname = "/kiralik-villalar";
     const { unmount } = render(<SitePopupLoader popup={{ ...popup, scope: "all" }} />);
     await openNow();
-    expect(screen.getByRole("heading", { name: "Since 2006 we have been with you." })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: EN_TITLE })).toBeTruthy();
     unmount();
     window.localStorage.clear();
     pathname = "/tr/kiralik-villalar";
     render(<SitePopupLoader popup={{ ...popup, scope: "all" }} />);
     await openNow();
-    expect(screen.getByRole("heading", { name: "2006'dan bu yana tatilinizin yanındayız." })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: TR_TITLE })).toBeTruthy();
   });
 });

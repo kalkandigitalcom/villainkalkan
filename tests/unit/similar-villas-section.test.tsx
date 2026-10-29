@@ -145,11 +145,11 @@ describe("SimilarVillasSection — bölüm başlığı", () => {
     }
   );
 
-  it("locale verilmezse TR davranışı (eski çağrılar bozulmaz)", async () => {
+  it("locale verilmezse varsayılan dil (EN)", async () => {
     await renderSection(undefined);
     expect(
       screen.getByRole("heading", {
-        name: getDictionary("tr").villa.similarVillasTitle,
+        name: getDictionary("en").villa.similarVillasTitle,
       })
     ).toBeInTheDocument();
   });

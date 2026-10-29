@@ -1105,7 +1105,7 @@ export function useBookingEngine(
       rates
     ),
     currency,
-    locale ?? "tr",
+    locale ?? DEFAULT_LOCALE,
     canConvertForDisplay(rates, currency, [prices[0]?.currency])
   );
 

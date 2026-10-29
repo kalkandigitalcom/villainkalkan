@@ -190,6 +190,11 @@ export default function BlogPostForm({
 
   return (
     <form onSubmit={handleSubmit} className="card-premium p-6 md:p-8 space-y-7">
+      <p className="text-[12px] text-[var(--color-stone-500)] leading-relaxed">
+        Başlık, özet, içerik ve SEO alanları İngilizce ana içeriktir. Türkçe
+        çeviri, yazı kaydedildikten sonra “Türkçe Çeviri (TR)” kartından girilir.
+      </p>
+
       {/* Başlık + slug */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="space-y-1.5">

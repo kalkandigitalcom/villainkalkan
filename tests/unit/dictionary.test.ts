@@ -139,18 +139,18 @@ describe("getDictionary(locale)", () => {
     expect(getDictionary("en")).toBe(en);
   });
 
-  it("getDictionary('de') → DE desteği kaldırıldı, tr fallback", () => {
-    expect(getDictionary("de")).toBe(tr);
+  it("getDictionary('de') → DE desteği kaldırıldı, varsayılan dil (en) fallback", () => {
+    expect(getDictionary("de")).toBe(en);
   });
 
-  it("desteklenmeyen locale -> tr fallback", () => {
-    expect(getDictionary("fr")).toBe(tr);
-    expect(getDictionary("xx")).toBe(tr);
+  it("desteklenmeyen locale -> varsayılan dil (en) fallback", () => {
+    expect(getDictionary("fr")).toBe(en);
+    expect(getDictionary("xx")).toBe(en);
   });
 
-  it("null/undefined/parametresiz -> tr fallback", () => {
-    expect(getDictionary(null)).toBe(tr);
-    expect(getDictionary(undefined)).toBe(tr);
-    expect(getDictionary()).toBe(tr);
+  it("null/undefined/parametresiz -> varsayılan dil (en) fallback", () => {
+    expect(getDictionary(null)).toBe(en);
+    expect(getDictionary(undefined)).toBe(en);
+    expect(getDictionary()).toBe(en);
   });
 });

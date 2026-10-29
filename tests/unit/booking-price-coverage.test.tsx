@@ -142,7 +142,7 @@ const isDisabled = (el: HTMLElement) =>
 describe("useBookingEngine — ortak fiyat kuralı", () => {
   function engine(extra: Partial<Parameters<typeof useBookingEngine>[0]> = {}) {
     return renderHook(() =>
-      useBookingEngine({ villaSlug: "v", villaId: "v1", prices: PRICES, ...extra })
+      useBookingEngine({ locale: "tr", villaSlug: "v", villaId: "v1", prices: PRICES, ...extra })
     );
   }
 
@@ -231,6 +231,7 @@ describe("referans örnek (30 Kas / 1 Ara / 2 Ara) — useBookingEngine", () => 
   function eng(s?: string, e?: string) {
     return renderHook(() =>
       useBookingEngine({
+        locale: "tr",
         villaSlug: "v",
         villaId: "v1",
         prices: REF,
@@ -291,7 +292,7 @@ describe("BookingSidebar — fiyat kuralı + mevcut doluluk kuralları", () => {
      tamamlanmış aralığı sıfırlar (mevcut "completed range reset"). */
   async function openCalendar(props: Record<string, unknown> = {}) {
     const utils = render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         villaSlug="v"
         villaId="v1"
         prices={PRICES}
@@ -349,7 +350,7 @@ describe("BookingSidebar — fiyat kuralı + mevcut doluluk kuralları", () => {
 
   it("URL'den fiyatsız aralık: uyarı + CTA kapalı + yönlendirme yok", async () => {
     render(
-      <BookingSidebar villaSlug="v" villaId="v1" prices={PRICES} initialStart={ymd(9)} initialEnd={ymd(12)} />
+      <BookingSidebar locale="tr" villaSlug="v" villaId="v1" prices={PRICES} initialStart={ymd(9)} initialEnd={ymd(12)} />
     );
     await screen.findByText(TR_PRICE_NOTICE);
     const cta = screen.getByRole("button", { name: "Rezervasyon Yap" }) as HTMLButtonElement;
@@ -391,7 +392,7 @@ describe("BookingSidebar — fiyat kuralı + mevcut doluluk kuralları", () => {
 describe("16) VillaCardBookingModal — fiyat kuralı", () => {
   function renderModal(start?: string, end?: string) {
     return render(
-      <VillaCardBookingModal
+      <VillaCardBookingModal locale="tr"
         isOpen={true}
         onClose={vi.fn()}
         villaId="v1"

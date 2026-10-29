@@ -71,7 +71,7 @@ vi.mock("@/app/components/admin/notifications/NotificationProvider", () => ({
 
 import FeaturesPage from "@/app/(admin)/maki-admin/features/page";
 
-const FEATURES = [{ id: "feature-1", name: "Havuzlu" }];
+const FEATURES = [{ id: "feature-1", name: "Pool" }];
 
 function settingsWith(multilingual_enabled: boolean | null) {
   return { multilingual_enabled };
@@ -96,8 +96,8 @@ beforeEach(() => {
     row: {
       id: "row-1",
       feature_id: "feature-1",
-      locale: "en",
-      name: "Pool",
+      locale: "tr",
+      name: "Havuzlu",
       created_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
     },
@@ -105,14 +105,14 @@ beforeEach(() => {
 });
 
 describe("FeaturesPage — Phase 10D Batch 2 — çeviri UI görünürlüğü", () => {
-  it("1) multilingual_enabled=false → 'Çeviriler' butonu RENDER EDİLMEZ", async () => {
+  it("1) multilingual_enabled=false → 'Çeviriler' butonu YİNE render edilir (site yapısal olarak iki dilli)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(false));
     render(<FeaturesPage />);
 
-    expect(await screen.findByDisplayValue("Havuzlu")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Pool")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 
   it("2) multilingual_enabled=true → 'Çeviriler' butonu render edilir", async () => {
@@ -124,14 +124,14 @@ describe("FeaturesPage — Phase 10D Batch 2 — çeviri UI görünürlüğü", 
     ).toBeInTheDocument();
   });
 
-  it("multilingual_enabled=null → fail-safe KAPALI, buton görünmez", async () => {
+  it("multilingual_enabled=null → buton YİNE görünür (Türkçe çeviri her zaman düzenlenebilir)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(null));
     render(<FeaturesPage />);
 
-    expect(await screen.findByDisplayValue("Havuzlu")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Pool")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -143,7 +143,7 @@ describe("FeaturesPage — Phase 10D Batch 2 — panel açma/kapama + tab mekani
     const btn = await screen.findByRole("button", { name: /çevirileri/i });
     fireEvent.click(btn);
 
-    expect(await screen.findByText("Türkçe (referans, salt okunur)")).toBeInTheDocument();
+    expect(await screen.findByText("English (ana içerik, salt okunur)")).toBeInTheDocument();
   });
 
   it("4) Panel açıldığında varsayılan olarak EN tab aktif + EN input gösterilir", async () => {
@@ -152,7 +152,7 @@ describe("FeaturesPage — Phase 10D Batch 2 — panel açma/kapama + tab mekani
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
 
-    expect(await screen.findByLabelText("English")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Türkçe")).toBeInTheDocument();
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
@@ -161,7 +161,7 @@ describe("FeaturesPage — Phase 10D Batch 2 — panel açma/kapama + tab mekani
     render(<FeaturesPage />);
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
-    await screen.findByLabelText("English");
+    await screen.findByLabelText("Türkçe");
 
     expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
@@ -176,8 +176,8 @@ describe("FeaturesPage — Phase 10D Batch 2 — mevcut çeviri yükleme", () =>
         {
           id: "row-en",
           feature_id: "feature-1",
-          locale: "en",
-          name: "Pool",
+          locale: "tr",
+          name: "Havuzlu",
           created_at: "2026-01-01T00:00:00.000Z",
           updated_at: "2026-01-01T00:00:00.000Z",
         },
@@ -188,8 +188,8 @@ describe("FeaturesPage — Phase 10D Batch 2 — mevcut çeviri yükleme", () =>
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
 
-    const input = (await screen.findByLabelText("English")) as HTMLInputElement;
-    await waitFor(() => expect(input.value).toBe("Pool"));
+    const input = (await screen.findByLabelText("Türkçe")) as HTMLInputElement;
+    await waitFor(() => expect(input.value).toBe("Havuzlu"));
   });
 });
 
@@ -199,16 +199,16 @@ describe("FeaturesPage — Phase 10D Batch 2 — kaydet akışı", () => {
     render(<FeaturesPage />);
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "Pool" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Havuzlu" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /İngilizce sürümünü kaydet|English sürümünü kaydet/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Türkçe sürümünü kaydet/i }));
 
     await waitFor(() =>
       expect(saveFeatureTranslationMock).toHaveBeenCalledWith({
         featureId: "feature-1",
-        locale: "en",
-        name: "Pool",
+        locale: "tr",
+        name: "Havuzlu",
       })
     );
   });
@@ -218,7 +218,7 @@ describe("FeaturesPage — Phase 10D Batch 2 — kaydet akışı", () => {
     render(<FeaturesPage />);
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
-    const input = await screen.findByLabelText("English");
+    const input = await screen.findByLabelText("Türkçe");
     fireEvent.change(input, { target: { value: "   " } });
 
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
@@ -233,8 +233,8 @@ describe("FeaturesPage — Phase 10D Batch 2 — kaydet akışı", () => {
     render(<FeaturesPage />);
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "Pool" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Havuzlu" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() =>
@@ -252,7 +252,7 @@ describe("FeaturesPage — Phase 10D Batch 2 — regresyon + TR referans kuralı
     getPublicSettingsMock.mockResolvedValue(settingsWith(true));
     render(<FeaturesPage />);
 
-    expect(await screen.findByDisplayValue("Havuzlu")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Pool")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^Kaydet$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^Sil$/i })).toBeInTheDocument();
     expect(
@@ -266,12 +266,12 @@ describe("FeaturesPage — Phase 10D Batch 2 — regresyon + TR referans kuralı
 
     fireEvent.click(await screen.findByRole("button", { name: /çevirileri/i }));
 
-    const trLabel = await screen.findByText("Türkçe (referans, salt okunur)");
+    const trLabel = await screen.findByText("English (ana içerik, salt okunur)");
     const panel = trLabel.closest("div")?.parentElement as HTMLElement;
     expect(panel).toBeTruthy();
 
     // TR metni salt <p> olarak render edilir — input/textarea DEĞİL.
-    const trText = within(panel).getByText("Havuzlu");
+    const trText = within(panel).getByText("Pool");
     expect(trText.tagName).not.toBe("INPUT");
     expect(trText.tagName).not.toBe("TEXTAREA");
 

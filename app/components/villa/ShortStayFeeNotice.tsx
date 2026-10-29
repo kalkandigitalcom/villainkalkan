@@ -12,7 +12,7 @@ import { useCurrency } from "@/app/context/CurrencyContext";
 /* 🛡️ PHASE 10G — locale-aware uyarı metni. `locale` OPSİYONEL, default
    "tr" → TR çıktısı BİREBİR AYNI. Ücret/kural hesabı DEĞİŞMEDİ. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 
 /* ===============================================================
@@ -215,7 +215,7 @@ export default function ShortStayFeeNotice({
           className="ssfn-panel-in mt-2.5 rounded-2xl border border-red-100 bg-white p-4 shadow-[0_18px_40px_-24px_rgba(220,38,38,0.28)]"
         >
           <p className="font-display text-xl font-bold text-red-600 tabular-nums">
-            {formatDisplayPrice(convertedFee, currency, locale ?? "tr", feeReady)}
+            {formatDisplayPrice(convertedFee, currency, locale ?? DEFAULT_LOCALE, feeReady)}
           </p>
         </div>
       )}

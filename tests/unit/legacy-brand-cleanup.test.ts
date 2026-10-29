@@ -54,7 +54,8 @@ describe("eski domain/marka kalıntısı yok", () => {
 
   it("footer marka fallback'i nötr (site_name varsa o kullanılır)", () => {
     const c = code("app/components/layout/FooterWrapper.tsx");
-    expect(c).toContain('settings?.site_name || "Villa Kiralama"');
+    expect(c).toContain("settings?.site_name || SITE_NAME_FALLBACK");
+    expect(read("lib/site-name-fallback.ts")).toContain('"Villa In Kalkan"');
     expect(c).not.toMatch(/villa ?ya ?gel/i);
   });
 });

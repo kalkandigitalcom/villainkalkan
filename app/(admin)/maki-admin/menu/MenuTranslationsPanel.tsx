@@ -10,7 +10,7 @@
 
    TEK FARK — İKİ ALAN AYNI ANDA: villa tipi panelinde EN/DE pill-tab
    ile TEK input gösterilir; menüde talep edilen yerleşim iki alanı da
-   aynı anda gösterir (Menü Adı / English). Her ikisi de tek
+   aynı anda gösterir (Menü Adı — English ana içerik / Türkçe çeviri). Her ikisi de tek
    "Kaydet" ile yazılır.
 
    ⚠️ Boş bırakılabilir: boş/whitespace değer çeviriyi TEMİZLER ve
@@ -31,10 +31,10 @@ import {
    Yeni bir cache/invalidation mekanizması İCAT EDİLMEDİ. */
 import { revalidateMenu } from "@/app/services/revalidate.actions";
 
-type WritableLocale = "en";
+type WritableLocale = "tr";
 
 export const MENU_LOCALE_LABELS: Record<WritableLocale, string> = {
-  en: "English",
+  tr: "Türkçe",
 };
 
 /** Panel + "Menü ekle" formu AYNI sınırı kullanır (DB kolonu `text`;
@@ -51,7 +51,7 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
   const toast = useNotify();
 
   const [forms, setForms] = useState<Record<WritableLocale, string>>({
-    en: "",
+    tr: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -76,7 +76,7 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en") continue;
+          if (row.locale !== "tr") continue;
           next[row.locale] = row.name ?? "";
         }
         return next;
@@ -95,7 +95,7 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
     try {
       /* İki locale AYRI upsert (UNIQUE(menu_id, locale)); sıralı —
          tek bir hata bile kullanıcıya bildirilir. */
-      for (const locale of ["en"] as WritableLocale[]) {
+      for (const locale of ["tr"] as WritableLocale[]) {
         const result = await saveMenuTranslationAction({
           menuId,
           locale,
@@ -130,7 +130,7 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
 
       <div>
         <p className="text-[11px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-400)]">
-          Menü Adı (Türkçe — referans)
+          Menü Adı (English — ana içerik)
         </p>
         <p className="text-sm text-[var(--color-stone-600)] mt-1">{menuName}</p>
       </div>
@@ -165,7 +165,7 @@ export default function MenuTranslationsPanel({ menuId, menuName }: Props) {
           )}
 
           <p className="text-xs text-[var(--color-stone-400)]">
-            Boş bırakılan dilde Türkçe menü adı gösterilir. Bağlantı
+            Boş bırakılırsa Türkçe sayfada İngilizce menü adı gösterilir. Bağlantı
             adresi çevrilmez.
           </p>
 

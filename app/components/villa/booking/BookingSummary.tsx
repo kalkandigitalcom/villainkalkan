@@ -80,7 +80,7 @@ import type { BookingResult, ActiveStayDiscount } from "./useBookingEngine";
    kaynağı değişti. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 
 type Props = {
   result: BookingResult;
@@ -152,7 +152,7 @@ export default function BookingSummary({
   );
 
   const fmt = (v: number) =>
-    formatDisplayPrice(v, currency, locale ?? "tr", summaryReady);
+    formatDisplayPrice(v, currency, locale ?? DEFAULT_LOCALE, summaryReady);
   return (
     <div className="space-y-3 text-[13.5px]">
       {/* 🎨 PREMIUM DÖKÜM — fildişi zemin, ince ayırıcılı satırlar,
@@ -214,7 +214,7 @@ export default function BookingSummary({
                 )}
               </label>
               <p className="pl-[26px] mt-0.5 text-[11px] text-[var(--color-stone-400)]">
-                {formatCurrency(poolHeatingFee, poolHeatingCurrency || "TRY", locale ?? "tr")}{" "}
+                {formatCurrency(poolHeatingFee, poolHeatingCurrency || "TRY", locale ?? DEFAULT_LOCALE)}{" "}
                 {dict.booking.poolHeatingPerNightSuffix}
                 {poolHeatingSelected &&
                   ` ${formatDictionaryString(dict.booking.poolHeatingNightsMultiplier, {
@@ -269,7 +269,7 @@ export default function BookingSummary({
             <div className="flex items-center justify-between gap-3">
               <span className="font-medium text-ink">{dict.booking.depositLabel}</span>
               <span className="font-semibold text-ink tabular-nums">
-                {formatDisplayPrice(convertedDeposit, currency, locale ?? "tr", depositDisplayReady)}
+                {formatDisplayPrice(convertedDeposit, currency, locale ?? DEFAULT_LOCALE, depositDisplayReady)}
               </span>
             </div>
             <p className="mt-1 text-[11.5px] text-[var(--color-stone-500)] leading-relaxed">

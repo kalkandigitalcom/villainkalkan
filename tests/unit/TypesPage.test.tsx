@@ -79,14 +79,14 @@ import TypesPage from "@/app/(admin)/maki-admin/types/page";
 const TYPES = [
   {
     id: "type-1",
-    name: "Lüks Villa",
+    name: "Luxury Villa",
     slug: "luks-villa",
     cover_image: null,
     show_on_homepage: true,
   },
   {
     id: "type-2",
-    name: "Aile Villası",
+    name: "Family Villa",
     slug: "aile-villasi",
     cover_image: null,
     show_on_homepage: true,
@@ -121,8 +121,8 @@ beforeEach(() => {
     row: {
       id: "row-1",
       type_id: "type-1",
-      locale: "en",
-      name: "Luxury Villa",
+      locale: "tr",
+      name: "Lüks Villa",
       created_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
     },
@@ -130,24 +130,24 @@ beforeEach(() => {
 });
 
 describe("TypesPage — Phase 10D Batch 3 — çeviri UI görünürlüğü", () => {
-  it("1) multilingual_enabled=false → 'Çeviriler' butonu RENDER EDİLMEZ", async () => {
+  it("1) multilingual_enabled=false → 'Çeviriler' butonu YİNE render edilir (site yapısal olarak iki dilli)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(false));
     render(<TypesPage />);
 
-    expect(await screen.findByDisplayValue("Lüks Villa")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Luxury Villa")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 
-  it("2) multilingual_enabled=null → fail-safe KAPALI, buton görünmez", async () => {
+  it("2) multilingual_enabled=null → buton YİNE görünür (Türkçe çeviri her zaman düzenlenebilir)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(null));
     render(<TypesPage />);
 
-    expect(await screen.findByDisplayValue("Lüks Villa")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Luxury Villa")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 
   it("3) multilingual_enabled=true → 'Çeviriler' butonları render edilir", async () => {
@@ -167,7 +167,7 @@ describe("TypesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
 
-    expect(await screen.findByText("Türkçe (referans, salt okunur)")).toBeInTheDocument();
+    expect(await screen.findByText("English (ana içerik, salt okunur)")).toBeInTheDocument();
   });
 
   it("5) Yalnız ilgili satırın paneli açılır", async () => {
@@ -176,9 +176,9 @@ describe("TypesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
 
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
-    await screen.findByText("Türkçe (referans, salt okunur)");
+    await screen.findByText("English (ana içerik, salt okunur)");
 
-    expect(screen.getAllByText("Türkçe (referans, salt okunur)").length).toBe(1);
+    expect(screen.getAllByText("English (ana içerik, salt okunur)").length).toBe(1);
   });
 
   it("6) İkinci satıra basınca önceki panel kapanır (tek panel açık)", async () => {
@@ -187,13 +187,13 @@ describe("TypesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
 
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
-    await screen.findByText("Türkçe (referans, salt okunur)");
+    await screen.findByText("English (ana içerik, salt okunur)");
     fireEvent.click(btns[1]);
 
     await waitFor(() => {
-      expect(screen.getAllByText("Türkçe (referans, salt okunur)").length).toBe(1);
+      expect(screen.getAllByText("English (ana içerik, salt okunur)").length).toBe(1);
     });
-    expect(screen.getByText("Aile Villası", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByText("Family Villa", { selector: "p" })).toBeInTheDocument();
   });
 
   it("7) EN tab çalışıyor (varsayılan aktif)", async () => {
@@ -202,7 +202,7 @@ describe("TypesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    expect(await screen.findByLabelText("English")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Türkçe")).toBeInTheDocument();
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
@@ -211,7 +211,7 @@ describe("TypesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
     render(<TypesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    await screen.findByLabelText("English");
+    await screen.findByLabelText("Türkçe");
     expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
     expect(screen.queryByText("Deutsch")).not.toBeInTheDocument();
   });
@@ -225,8 +225,8 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
         {
           id: "row-en",
           type_id: "type-1",
-          locale: "en",
-          name: "Luxury Villa",
+          locale: "tr",
+          name: "Lüks Villa",
           created_at: "2026-01-01T00:00:00.000Z",
           updated_at: "2026-01-01T00:00:00.000Z",
         },
@@ -237,8 +237,8 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    const enInput = (await screen.findByLabelText("English")) as HTMLInputElement;
-    await waitFor(() => expect(enInput.value).toBe("Luxury Villa"));
+    const enInput = (await screen.findByLabelText("Türkçe")) as HTMLInputElement;
+    await waitFor(() => expect(enInput.value).toBe("Lüks Villa"));
   });
 
   it("10) Kaydet → saveTypeTranslationAction doğru typeId/locale/name ile çağrılır", async () => {
@@ -246,15 +246,15 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<TypesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "Luxury Villa" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Lüks Villa" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() =>
       expect(saveTypeTranslationMock).toHaveBeenCalledWith({
         typeId: "type-1",
-        locale: "en",
-        name: "Luxury Villa",
+        locale: "tr",
+        name: "Lüks Villa",
       })
     );
   });
@@ -264,7 +264,7 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<TypesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
+    const input = await screen.findByLabelText("Türkçe");
     fireEvent.change(input, { target: { value: "   " } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
@@ -278,8 +278,8 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<TypesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "Luxury Villa" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Lüks Villa" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() =>
@@ -304,8 +304,8 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<TypesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "Luxury Villa" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Lüks Villa" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() => expect(revalidateTaxonomyMock).toHaveBeenCalled());
@@ -318,8 +318,8 @@ describe("TypesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<TypesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "Luxury Villa" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Lüks Villa" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() => expect(notifyErrorMock).toHaveBeenCalled());
@@ -333,7 +333,7 @@ describe("TypesPage — Phase 10D Batch 3 — regresyon + TR referans kuralı", 
     getPublicSettingsMock.mockResolvedValue(settingsWith(true));
     render(<TypesPage />);
 
-    expect(await screen.findByDisplayValue("Lüks Villa")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("Luxury Villa")).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /^Kaydet$/i }).length).toBe(2);
     expect(screen.getAllByRole("button", { name: /^Sil$/i }).length).toBe(2);
     expect(
@@ -350,11 +350,11 @@ describe("TypesPage — Phase 10D Batch 3 — regresyon + TR referans kuralı", 
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    const trLabel = await screen.findByText("Türkçe (referans, salt okunur)");
+    const trLabel = await screen.findByText("English (ana içerik, salt okunur)");
     const panel = trLabel.closest("div")?.parentElement as HTMLElement;
     expect(panel).toBeTruthy();
 
-    const trText = within(panel).getByText("Lüks Villa");
+    const trText = within(panel).getByText("Luxury Villa");
     expect(trText.tagName).not.toBe("INPUT");
     expect(trText.tagName).not.toBe("TEXTAREA");
 

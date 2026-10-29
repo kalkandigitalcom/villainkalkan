@@ -450,7 +450,7 @@ describe("Phase 13 — FilterSidebar locale", () => {
     expect(pushMock.mock.calls[0][0]).toBe("/tr/arama?guests=4");
   });
 
-  it("23) prop verilmezse default tr metinleri + varsayılan basePath '/arama' (çağıranlar basePath'i her zaman locale'e göre geçer)", async () => {
+  it("23) prop verilmezse varsayılan dil (EN) metinleri + varsayılan basePath '/arama' (çağıranlar basePath'i her zaman locale'e göre geçer)", async () => {
     render(
       <FilterSidebar
         regionOptions={REGIONS}
@@ -459,9 +459,9 @@ describe("Phase 13 — FilterSidebar locale", () => {
         mode="redirect"
       />
     );
-    /* mode="redirect" CTA'sı TR "Villa Bul" olarak kalır. */
-    expect(screen.getAllByText("Villa Bul").length).toBeGreaterThan(0);
-    clickPanelButton("Villa Bul");
+    /* Varsayılan dil İngilizce → mode="redirect" CTA'sı "Find Villas". */
+    expect(screen.getAllByText("Find Villas").length).toBeGreaterThan(0);
+    clickPanelButton("Find Villas");
     await waitFor(() => expect(pushMock).toHaveBeenCalled());
     expect(pushMock.mock.calls[0][0]).toBe("/arama?guests=4");
   });
@@ -514,20 +514,20 @@ describe("Villa tipi adı locale-aware", () => {
     guests: 1,
   };
 
-  it("32) resolveTaxonomyName: TR canonical · EN çeviri · eksikte TR fallback", () => {
-    const canonical = "Müstakil Villa";
-    const byLocale = { en: "Detached Villa" };
+  it("32) resolveTaxonomyName: EN canonical · TR çeviri · eksikte EN fallback", () => {
+    const canonical = "Detached Villa";
+    const byLocale = { tr: "Müstakil Villa" };
 
-    expect(resolveTaxonomyName(canonical, byLocale, "tr")).toBe(canonical);
-    expect(resolveTaxonomyName(canonical, byLocale, "en")).toBe(
-      "Detached Villa"
+    expect(resolveTaxonomyName(canonical, byLocale, "en")).toBe(canonical);
+    expect(resolveTaxonomyName(canonical, byLocale, "tr")).toBe(
+      "Müstakil Villa"
     );
-    /* EN çevirisi yoksa → canonical TR */
-    expect(resolveTaxonomyName(canonical, {}, "en")).toBe(canonical);
-    /* Boş/whitespace çeviri → canonical TR */
-    expect(resolveTaxonomyName(canonical, { en: "   " }, "en")).toBe(canonical);
-    /* TR'de harita dolu olsa bile ASLA çevrilmez */
-    expect(resolveTaxonomyName(canonical, byLocale, "tr")).toBe(canonical);
+    /* TR çevirisi yoksa → canonical EN */
+    expect(resolveTaxonomyName(canonical, {}, "tr")).toBe(canonical);
+    /* Boş/whitespace çeviri → canonical EN */
+    expect(resolveTaxonomyName(canonical, { tr: "   " }, "tr")).toBe(canonical);
+    /* EN'de (ana dil) harita dolu olsa bile ASLA çevrilmez */
+    expect(resolveTaxonomyName(canonical, byLocale, "en")).toBe(canonical);
   });
 
   it.each([

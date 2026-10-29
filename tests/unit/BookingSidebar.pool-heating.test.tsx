@@ -80,7 +80,7 @@ const BASE_PROPS = {
 describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
   it("1) pool_heating_fee NULL → seçenek render edilmez", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         {...BASE_PROPS}
         pool_heating_fee={null}
         pool_heating_currency="TRY"
@@ -95,7 +95,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("2) pool_heating_fee = 0 → seçenek render edilmez", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         {...BASE_PROPS}
         pool_heating_fee={0}
         pool_heating_currency="TRY"
@@ -109,7 +109,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("2b) fee>0 ama tarih seçilmemiş → seçenek render edilmez", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         villaSlug="test-villa"
         villaId="v1"
         prices={PRICES}
@@ -126,7 +126,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("3) fee=1000 + geçerli tarih → seçenek görünür, oran villa para biriminde", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         {...BASE_PROPS}
         pool_heating_fee={1000}
         pool_heating_currency="TRY"
@@ -151,7 +151,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("4) checkbox işaretlenince seçim true olur ve çalışma toplamı görünür", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         {...BASE_PROPS}
         pool_heating_fee={1000}
         pool_heating_currency="TRY"
@@ -176,7 +176,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("5) checkbox işareti kaldırılınca seçim false olur ve çalışma toplamı kaybolur", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         {...BASE_PROPS}
         pool_heating_fee={1000}
         pool_heating_currency="TRY"
@@ -201,7 +201,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("6) poolHeatingTotal doğru gösterilir (engine değeri — yeniden hesaplanmadı)", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         {...BASE_PROPS}
         pool_heating_fee={1000}
         pool_heating_currency="TRY"
@@ -224,7 +224,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("7) farklı gece sayısı (6 gece) → UI yeni toplamı engine'den gösterir (kendi gece sayımı YOK)", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         villaSlug="test-villa"
         villaId="v1"
         prices={PRICES}
@@ -252,7 +252,7 @@ describe("BookingSidebar — havuz ısıtma UI (5. adım)", () => {
 
   it("8) havuz ısıtma yokken mevcut rezervasyon UI davranışı bozulmadı (regresyon)", async () => {
     render(
-      <BookingSidebar
+      <BookingSidebar locale="tr"
         {...BASE_PROPS}
         pool_heating_fee={null}
         pool_heating_currency="TRY"

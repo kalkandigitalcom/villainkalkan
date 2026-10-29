@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 
 import DiscountCollection from "@/app/components/home/DiscountCollection";
 import { DISCOUNT_CARD_DESIGN } from "@/app/components/home/discount-cards/discount-card-design";
-import { toLocale } from "@/lib/i18n/config";
 
 /* ===============================================================
    🧪 GELİŞTİRME ÖNİZLEMESİ — İndirimli villa kartı tasarımları
@@ -35,7 +34,8 @@ export default async function DiscountCardsPreviewPage({
   if (process.env.NODE_ENV === "production") notFound();
 
   const { lang } = await searchParams;
-  const locale = toLocale(lang);
+  /* /tr altında yaşayan önizleme: varsayılan Türkçe, `?lang=en` → İngilizce. */
+  const locale = lang === "en" ? "en" : "tr";
 
   return (
     <div className="pt-[140px] pb-16 bg-[var(--color-stone-50,#f7f8f7)]">

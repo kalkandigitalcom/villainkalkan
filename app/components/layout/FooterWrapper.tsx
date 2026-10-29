@@ -33,6 +33,7 @@ import { getVillaTypeNamesByLocale } from "@/lib/i18n/get-villa-type-translation
    okunur, seçim `Footer.tsx` (client) içinde yapılır. */
 import { getPageTitlesByLocale } from "@/lib/i18n/get-page-titles-by-locale.server";
 import type { TaxonomyNameByLocale } from "@/lib/i18n/taxonomy-name.helper";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ---------------- DYNAMIC TAXONOMY ITEMS ---------------- */
 
@@ -184,7 +185,7 @@ export default async function FooterWrapper() {
   );
 
   const year = new Date().getFullYear();
-  const siteName = settings?.site_name || "Villa Kiralama";
+  const siteName = settings?.site_name || SITE_NAME_FALLBACK;
   const phoneDigits = settings?.phone?.replace(/[^\d]/g, "") || "";
 
   /* 🛡️ Geliştirici kredisi logosu = Admin → Webmaster → "Admin Logo"

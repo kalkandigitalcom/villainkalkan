@@ -1,5 +1,6 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import type { PriceIncludeItemTranslationRow } from "@/lib/i18n/translations.types";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /**
  * 🛡️ PHASE 10D — Batch 1 — Fiyata Dahil (price_include_items) Çeviri Servisi
@@ -18,10 +19,11 @@ import type { PriceIncludeItemTranslationRow } from "@/lib/i18n/translations.typ
  * doğrulama notuyla tutarlı).
  */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 export type PriceIncludeTranslationInput = {
@@ -66,7 +68,7 @@ export async function upsertPriceIncludeTranslation(
   if (!includeId) return { ok: false, error: "Geçersiz fiyata dahil öğe" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir" };
   }
   const locale = input.locale;
 

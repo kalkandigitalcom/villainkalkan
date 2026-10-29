@@ -32,6 +32,7 @@ import {
   type CategoryLanding,
   type RegionGroupLanding,
 } from "@/lib/taxonomy-landing.server";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ===============================================================
    🛡️ SEO LANDING — /villa-turleri/[slug] + /bolgeler/[slug] (ORTAK)
@@ -115,7 +116,7 @@ function texts(kind: LandingKind, locale: Locale, name: string, brand: string) {
 
 function brandOf(settings: { site_name?: string | null } | null): string {
   /* `buildVillasArchiveMetadata` ile AYNI marka fallback'i. */
-  return settings?.site_name?.trim() || "Villa Kiralama";
+  return settings?.site_name?.trim() || SITE_NAME_FALLBACK;
 }
 
 /* ---------------------------------------------------------------

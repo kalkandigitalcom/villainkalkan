@@ -106,9 +106,9 @@ const PAGE_ID = "page-uuid-1";
 const EDITORIAL_PAGE = {
   id: PAGE_ID,
   slug: "kasta-unutulmaz-bir-tatil",
-  title: "Kaş'ta Unutulmaz Bir Tatil",
-  excerpt: "Türkçe özet",
-  body: "Türkçe gövde",
+  title: "An Unforgettable Holiday in Kas",
+  excerpt: "EN excerpt",
+  body: "EN body",
   seo_title: null,
   seo_description: null,
   noindex: false,
@@ -431,36 +431,38 @@ describe("Phase 12E — boş içerik durumu", () => {
 });
 
 describe("Phase 12E — mevcut davranış korunuyor", () => {
-  it("19) CMS İÇERİĞİ hâlâ page_translations'tan geliyor", async () => {
+  it("19) TR CMS İÇERİĞİ page_translations'tan geliyor", async () => {
     getTranslationMock.mockResolvedValue({
-      id: "t-en",
+      id: "t-tr",
       page_id: PAGE_ID,
-      locale: "en",
-      title: "An Unforgettable Holiday in Kas",
-      excerpt: "EN excerpt",
-      body: "EN body",
+      locale: "tr",
+      title: "Kaş'ta Unutulmaz Bir Tatil",
+      excerpt: "Türkçe özet",
+      body: "Türkçe gövde",
       seo_title: null,
       seo_description: null,
       created_at: "",
       updated_at: "",
     });
-    await renderRoute(ROUTES.en);
+    await renderRoute(ROUTES.tr);
 
-    expect(getTranslationMock).toHaveBeenCalledWith("page", PAGE_ID, "en");
+    expect(getTranslationMock).toHaveBeenCalledWith("page", PAGE_ID, "tr");
     /* İçerik çevirisi + statik UI çevirisi AYNI sayfada, AYRI kaynaklardan. */
     expect(
       screen.getByRole("heading", {
-        name: "An Unforgettable Holiday in Kas",
+        name: "Kaş'ta Unutulmaz Bir Tatil",
       })
     ).toBeTruthy();
-    expect(screen.getByText("EN body")).toBeTruthy();
-    expect(screen.getByText(en.cms.breadcrumbHome)).toBeTruthy();
+    expect(screen.getByText("Türkçe gövde")).toBeTruthy();
+    expect(screen.getByText(tr.cms.breadcrumbHome)).toBeTruthy();
   });
 
-  it("20) TR'de çeviri sorgusu YOK ve statik metinler TR", async () => {
-    await renderRoute(ROUTES.tr);
+  it("20) EN (ana dil) çeviri sorgusu YOK ve statik metinler EN", async () => {
+    await renderRoute(ROUTES.en);
     expect(getTranslationMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Ana sayfa")).toBeTruthy();
-    expect(screen.getByText("İçerik")).toBeTruthy();
+    expect(screen.getByText(en.cms.breadcrumbHome)).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: "An Unforgettable Holiday in Kas" })
+    ).toBeTruthy();
   });
 });

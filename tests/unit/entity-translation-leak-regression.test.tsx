@@ -45,7 +45,7 @@ const VILLA = {
   id: "villa-1",
   slug: "villa-lorien",
   title: "Villa Lorien",
-  description: "<p>Kalkan merkeze yakin canonical TR aciklama.</p>",
+  description: "<p>Close to Kalkan centre, canonical EN description.</p>",
   location: "Kalkan, Antalya",
   is_active: true,
   bedrooms: 3,
@@ -80,9 +80,9 @@ const VILLA = {
 };
 
 const DISTANCES = [{ id: "d-1", title: "Plaj", distance: "500 m" }];
-const FEATURES = [{ id: "f-1", name: "Ozel Havuz" }];
-const RULES = [{ id: "r-1", title: "Evcil hayvan kabul edilmez" }];
-const INCLUDES = [{ id: "p-1", title: "Havlu ve nevresim" }];
+const FEATURES = [{ id: "f-1", name: "Private Pool" }];
+const RULES = [{ id: "r-1", title: "No pets allowed" }];
+const INCLUDES = [{ id: "p-1", title: "Towels and linen" }];
 
 vi.mock("@/app/services/villa.service", () => ({
   getVillaByPrivateToken: () => Promise.resolve(VILLA),
@@ -131,8 +131,8 @@ vi.mock("@/app/components/villa/SimilarVillasSection", () => ({
    B#2 — ShortGapsPageBody veri servisleri
 --------------------------------------------------------------- */
 const VILLA_TYPES = [
-  { id: "type-1", name: "Balayi Villasi", slug: "balayi-villasi" },
-  { id: "type-2", name: "Deniz Manzarali", slug: "deniz-manzarali" },
+  { id: "type-1", name: "Honeymoon Villa", slug: "balayi-villasi" },
+  { id: "type-2", name: "Sea View", slug: "deniz-manzarali" },
 ];
 const LOCATIONS = [
   {
@@ -212,19 +212,19 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 type Row = Record<string, unknown>;
 const TRANSLATIONS: Record<string, Record<string, Row[]>> = {
   villa: {
-    en: [{ villa_id: "villa-1", locale: "en", description: "<p>EN description.</p>" }],
+    tr: [{ villa_id: "villa-1", locale: "tr", description: "<p>TR aciklama ceviri.</p>" }],
   },
   villa_feature: {
-    en: [{ feature_id: "f-1", locale: "en", name: "Private Pool" }],
+    tr: [{ feature_id: "f-1", locale: "tr", name: "Ozel Havuz" }],
   },
   rule_item: {
-    en: [{ rule_id: "r-1", locale: "en", title: "No pets allowed" }],
+    tr: [{ rule_id: "r-1", locale: "tr", title: "Evcil hayvan kabul edilmez" }],
   },
   price_include_item: {
-    en: [{ include_id: "p-1", locale: "en", title: "Towels and linen" }],
+    tr: [{ include_id: "p-1", locale: "tr", title: "Havlu ve nevresim" }],
   },
   villa_type: {
-    en: [{ type_id: "type-1", locale: "en", name: "Honeymoon Villa" }],
+    tr: [{ type_id: "type-1", locale: "tr", name: "Balayi Villasi" }],
   },
 };
 
@@ -246,7 +246,7 @@ function withTranslations() {
   );
 }
 
-/** Hiç çeviri satırı YOK → canonical TR fallback beklenir. */
+/** Hiç çeviri satırı YOK → canonical EN fallback beklenir. */
 function withoutTranslations() {
   findManyForLocaleMock.mockResolvedValue({ data: [], error: null });
   findOneMock.mockResolvedValue({ data: null, error: null });
@@ -288,64 +288,66 @@ async function renderShortGaps(locale?: "tr" | "en") {
    1) B#1 — /v/[token] entity alanları locale-aware
    =============================================================== */
 describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
-  it("TR: canonical TR değerleri AYNEN gösterilir", async () => {
-    withTranslations();
-    await renderPrivateVilla("tr");
-    expect(screen.getByText("Evcil hayvan kabul edilmez")).toBeInTheDocument();
-    expect(screen.getByText("Havlu ve nevresim")).toBeInTheDocument();
-    expect(screen.getByText("Ozel Havuz")).toBeInTheDocument();
-    expect(screen.getByText("Plaj")).toBeInTheDocument();
-    expect(
-      descriptionSection().getByText(/canonical TR aciklama/)
-    ).toBeInTheDocument();
-  });
-
-  it("TR: ÇEVİRİ SORGUSU HİÇ ATILMAZ (DEFAULT_LOCALE kısa devresi)", async () => {
-    withTranslations();
-    await renderPrivateVilla("tr");
-    expect(findManyForLocaleMock).not.toHaveBeenCalled();
-    expect(findOneMock).not.toHaveBeenCalled();
-  });
-
-  it("locale verilmezse TR davranışı (eski çağrılar bozulmaz)", async () => {
-    withTranslations();
-    await renderPrivateVilla(undefined);
-    expect(findManyForLocaleMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Ozel Havuz")).toBeInTheDocument();
-  });
-
-  it("EN: feature / rule / price-include / mesafe / açıklama EN gösterilir", async () => {
+  it("EN (ana dil): canonical EN değerleri AYNEN gösterilir", async () => {
     withTranslations();
     await renderPrivateVilla("en");
     expect(screen.getByText("No pets allowed")).toBeInTheDocument();
     expect(screen.getByText("Towels and linen")).toBeInTheDocument();
-    expect(descriptionSection().getByText(/EN description/)).toBeInTheDocument();
     expect(screen.getByText("Private Pool")).toBeInTheDocument();
-    expect(screen.queryByText("Ozel Havuz")).not.toBeInTheDocument();
-    /* Mesafe başlığı statik dictionary'den (DB'den DEĞİL). */
     expect(
       screen.getByText(getDictionary("en").distanceLabels["Plaj"])
     ).toBeInTheDocument();
-
-    /* Canonical TR karşılıkları DOM'da OLMAMALI. */
     expect(
-      screen.queryByText("Evcil hayvan kabul edilmez")
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText("Havlu ve nevresim")).not.toBeInTheDocument();
-    expect(screen.queryByText(/canonical TR aciklama/)).not.toBeInTheDocument();
+      descriptionSection().getByText(/canonical EN description/)
+    ).toBeInTheDocument();
   });
 
-  it.each(["en"] as const)(
-    "%s: çeviri satırı YOKSA canonical TR fallback gösterilir",
+  it("EN: ÇEVİRİ SORGUSU HİÇ ATILMAZ (DEFAULT_LOCALE kısa devresi)", async () => {
+    withTranslations();
+    await renderPrivateVilla("en");
+    expect(findManyForLocaleMock).not.toHaveBeenCalled();
+    expect(findOneMock).not.toHaveBeenCalled();
+  });
+
+  it("locale verilmezse varsayılan dil (EN) davranışı", async () => {
+    withTranslations();
+    await renderPrivateVilla(undefined);
+    expect(findManyForLocaleMock).not.toHaveBeenCalled();
+    expect(screen.getByText("Private Pool")).toBeInTheDocument();
+  });
+
+  it("TR: feature / rule / price-include / mesafe / açıklama TR gösterilir", async () => {
+    withTranslations();
+    await renderPrivateVilla("tr");
+    expect(screen.getByText("Evcil hayvan kabul edilmez")).toBeInTheDocument();
+    expect(screen.getByText("Havlu ve nevresim")).toBeInTheDocument();
+    expect(descriptionSection().getByText(/TR aciklama ceviri/)).toBeInTheDocument();
+    expect(screen.getByText("Ozel Havuz")).toBeInTheDocument();
+    expect(screen.queryByText("Private Pool")).not.toBeInTheDocument();
+    /* Mesafe başlığı statik dictionary'den (DB'den DEĞİL). */
+    expect(
+      screen.getByText(getDictionary("tr").distanceLabels["Plaj"])
+    ).toBeInTheDocument();
+
+    /* Canonical EN karşılıkları DOM'da OLMAMALI. */
+    expect(
+      screen.queryByText("No pets allowed")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Towels and linen")).not.toBeInTheDocument();
+    expect(screen.queryByText(/canonical EN description/)).not.toBeInTheDocument();
+  });
+
+  it.each(["tr"] as const)(
+    "%s: çeviri satırı YOKSA canonical EN fallback gösterilir",
     async (locale) => {
       withoutTranslations();
       await renderPrivateVilla(locale);
       expect(
-        screen.getByText("Evcil hayvan kabul edilmez")
+        screen.getByText("No pets allowed")
       ).toBeInTheDocument();
-      expect(screen.getByText("Ozel Havuz")).toBeInTheDocument();
-      expect(screen.getByText("Havlu ve nevresim")).toBeInTheDocument();
-      expect(descriptionSection().getByText(/canonical TR aciklama/)).toBeInTheDocument();
+      expect(screen.getByText("Private Pool")).toBeInTheDocument();
+      expect(screen.getByText("Towels and linen")).toBeInTheDocument();
+      expect(descriptionSection().getByText(/canonical EN description/)).toBeInTheDocument();
     }
   );
 
@@ -358,9 +360,9 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
     }
   });
 
-  it("EN: koleksiyon başına TEK batch sorgu — N+1 YOK", async () => {
+  it("TR: koleksiyon başına TEK batch sorgu — N+1 YOK", async () => {
     withTranslations();
-    await renderPrivateVilla("en");
+    await renderPrivateVilla("tr");
     const entities = findManyForLocaleMock.mock.calls.map((c) => c[0]);
     /* villa_feature + rule_item + price_include_item → 3 batch.
        Mesafeler DB'ye HİÇ gitmez (statik dictionary). */
@@ -378,47 +380,47 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
    2) B#2 — ShortGaps sidebar villa tipleri locale-aware
    =============================================================== */
 describe("ShortGapsPageBody — sidebar villa tipi adları locale-aware", () => {
-  it("TR: canonical villa tipi adları gösterilir", async () => {
+  it("EN: canonical villa tipi adları gösterilir", async () => {
     withTranslations();
-    await renderShortGaps("tr");
+    await renderShortGaps("en");
     /* Sidebar iki kez mount olur (desktop aside + mobil drawer) →
        `getAllByText` ile sayıdan bağımsız doğrulanır. */
-    expect(screen.getAllByText("Balayi Villasi").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Deniz Manzarali").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Honeymoon Villa").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Sea View").length).toBeGreaterThan(0);
   });
 
-  it("TR: villa tipi çeviri sorgusu HİÇ atılmaz", async () => {
+  it("EN: villa tipi çeviri sorgusu HİÇ atılmaz", async () => {
     withTranslations();
-    await renderShortGaps("tr");
+    await renderShortGaps("en");
     expect(
       findManyForLocaleMock.mock.calls.filter((c) => c[0] === "villa_type")
     ).toHaveLength(0);
   });
 
-  it("EN: çevirisi olan tip EN gösterilir", async () => {
+  it("TR: çevirisi olan tip TR gösterilir", async () => {
     withTranslations();
-    await renderShortGaps("en");
-    expect(screen.getAllByText("Honeymoon Villa").length).toBeGreaterThan(0);
-    expect(screen.queryAllByText("Balayi Villasi")).toHaveLength(0);
+    await renderShortGaps("tr");
+    expect(screen.getAllByText("Balayi Villasi").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Honeymoon Villa")).toHaveLength(0);
   });
 
-  it.each(["en"] as const)(
-    "%s: çevirisi OLMAYAN tip canonical TR kalır (alan bazlı fallback)",
+  it.each(["tr"] as const)(
+    "%s: çevirisi OLMAYAN tip canonical EN kalır (alan bazlı fallback)",
     async (locale) => {
       withTranslations();
       await renderShortGaps(locale);
       /* type-2 fixture'da YOK → canonical ad korunur. */
-      expect(screen.getAllByText("Deniz Manzarali").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Sea View").length).toBeGreaterThan(0);
     }
   );
 
-  it.each(["en"] as const)(
-    "%s: hiç çeviri satırı yoksa tüm tipler canonical TR kalır",
+  it.each(["tr"] as const)(
+    "%s: hiç çeviri satırı yoksa tüm tipler canonical EN kalır",
     async (locale) => {
       withoutTranslations();
       await renderShortGaps(locale);
-      expect(screen.getAllByText("Balayi Villasi").length).toBeGreaterThan(0);
-      expect(screen.getAllByText("Deniz Manzarali").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Honeymoon Villa").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Sea View").length).toBeGreaterThan(0);
     }
   );
 
@@ -436,13 +438,13 @@ describe("ShortGapsPageBody — sidebar villa tipi adları locale-aware", () => 
     }
   );
 
-  it("EN: villa tipi çevirisi locale başına TEK batch — N+1 YOK", async () => {
+  it("TR: villa tipi çevirisi locale başına TEK batch — N+1 YOK", async () => {
     withTranslations();
-    await renderShortGaps("en");
+    await renderShortGaps("tr");
     const typeCalls = findManyForLocaleMock.mock.calls.filter(
       (c) => c[0] === "villa_type"
     );
-    /* `getVillaTypeNamesByLocale` yalnız en için TEK batch atar
+    /* `getVillaTypeNamesByLocale` yalnız tr için TEK batch atar
        (locale-bağımsız harita); tip BAŞINA sorgu YOKTUR. */
     expect(typeCalls).toHaveLength(1);
     for (const call of typeCalls) {

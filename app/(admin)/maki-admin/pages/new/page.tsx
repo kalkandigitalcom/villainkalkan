@@ -32,10 +32,10 @@ import { slugifyTr } from "@/lib/slug";
 /* 🛡️ PHASE 12 — ADMIN I18N (Seçenek A: admin'de locale KAYNAĞI YOK).
    `getDictionary` / `formatDictionaryString` saf fonksiyonlardır →
    client component içinde güvenle çağrılır. Bu fazda bilinçli olarak
-   DEFAULT_LOCALE sabit; render çıktısı BYTE-IDENTICAL kalır. */
+   ADMIN_UI_LOCALE sabit; render çıktısı BYTE-IDENTICAL kalır. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Dictionary } from "@/lib/i18n/dictionaries/types";
-import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { ADMIN_UI_LOCALE } from "@/lib/i18n/config";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import type {
   PageSection,
@@ -63,7 +63,7 @@ export default function NewPagePage() {
 
   /* `common.save` ("Kaydet") admin metniyle BİREBİR aynı → public
      namespace'ten yeniden kullanılır; duplicate key açılmadı. */
-  const dictionary = getDictionary(DEFAULT_LOCALE);
+  const dictionary = getDictionary(ADMIN_UI_LOCALE);
   const adminDict = dictionary.admin;
   const pagesDict = adminDict.pages;
 

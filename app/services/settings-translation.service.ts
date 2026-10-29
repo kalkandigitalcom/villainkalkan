@@ -10,6 +10,7 @@ import {
   type SettingsTranslationValues,
   type SettingsTranslationsByLocale,
 } from "@/lib/i18n/settings-translations.types";
+import {  } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ SETTINGS TRANSLATION SERVICE — PHASE 10L §3/§4
@@ -154,7 +155,7 @@ export async function upsertSettingsTranslation(
   if (!isSettingsTranslationLocale(input?.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     };
   }
   const locale = input.locale;
@@ -209,7 +210,7 @@ export async function deleteSettingsTranslation(
   if (!isSettingsTranslationLocale(locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     };
   }
 

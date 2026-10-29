@@ -75,22 +75,50 @@ vi.mock("next/font/google", () => ({
   Geist_Mono: () => ({ variable: "--font-geist-mono" }),
 }));
 
+/* 🔄 İNGİLİZCE ANA DİL — varsayılan dil `en` olduğundan RootLayout'un
+   statik `<html lang>` değeri artık DEFAULT_LOCALE ("en"). Türkçe
+   (`/tr`) ve admin (`/maki-admin`) yollarında `lang` istemci tarafında
+   `HtmlLangSync` ile düzeltilir (aşağıdaki B grubu). Yukarıdaki mimari
+   not (layout request-locale'e BAĞLANMAZ) aynen geçerlidir. */
 describe("A) app/layout.tsx — RootLayout <html lang> regresyon kilidi", () => {
-  it("RootLayout HER ZAMAN <html lang=\"tr\"> döner (Phase 7E BU FAZDA DEĞİŞTİRMEDİ — bkz. dosya başı audit notu)", async () => {
+  it("RootLayout HER ZAMAN <html lang=\"en\"> (DEFAULT_LOCALE) döner", async () => {
     const mod = await import("@/app/layout");
     const element = (await mod.default({ children: null })) as {
       props: { lang: string };
     };
-    expect(element.props.lang).toBe("tr");
+    expect(element.props.lang).toBe("en");
   });
 
-  it("settings null/reject olsa BİLE lang hâlâ 'tr' (fail-safe, ÖNCEKİ davranışla AYNI)", async () => {
+  it("settings null/reject olsa BİLE lang hâlâ 'en' (fail-safe)", async () => {
     const mod = await import("@/app/layout");
     const element = (await mod.default({ children: null })) as {
       type: string;
       props: { lang: string };
     };
-    expect(element.props.lang).toBe("tr");
+    expect(element.props.lang).toBe("en");
     expect(element.type).toBe("html");
+  });
+});
+
+describe("B) HtmlLangSync — yol bazlı <html lang>", () => {
+  it("EN (prefix'siz) yollar → en", async () => {
+    const { htmlLangForPath } = await import("@/app/components/layout/HtmlLangSync");
+    expect(htmlLangForPath("/")).toBe("en");
+    expect(htmlLangForPath("/kiralik-villa/x")).toBe("en");
+    expect(htmlLangForPath(null)).toBe("en");
+    expect(htmlLangForPath("/travel")).toBe("en");
+  });
+
+  it("/tr yolları → tr", async () => {
+    const { htmlLangForPath } = await import("@/app/components/layout/HtmlLangSync");
+    expect(htmlLangForPath("/tr")).toBe("tr");
+    expect(htmlLangForPath("/tr/kiralik-villa/x")).toBe("tr");
+  });
+
+  it("admin paneli (Türkçe arayüz) → tr", async () => {
+    const { htmlLangForPath } = await import("@/app/components/layout/HtmlLangSync");
+    expect(htmlLangForPath("/maki-admin")).toBe("tr");
+    expect(htmlLangForPath("/maki-admin/villas")).toBe("tr");
+    expect(htmlLangForPath("/maki-administrator")).toBe("en");
   });
 });

@@ -11,8 +11,8 @@ import { buildHomeMetadata } from "@/app/components/home/home-metadata";
    kanonik adresidir (yönlendirme YOK).
 
    `setRequestLocale` ÇAĞRILMAZ: request-locale store'unun başlangıç
-   değeri zaten `DEFAULT_LOCALE` ("tr") — diğer TR route'larıyla aynı
-   desen (bkz. lib/i18n/request-locale.server.ts).
+   store'u hiçbir üretim kodu okumuyor; locale `HomePageBody`'ye prop
+   olarak geçirilir (bkz. lib/i18n/request-locale.server.ts).
    =============================================================== */
 
 export async function generateMetadata(): Promise<Metadata> {

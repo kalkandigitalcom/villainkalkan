@@ -8,8 +8,8 @@
    KANITLANAN İDDİALAR (§3/§4/§13):
      • Keyfi kolon UPDATE'i mümkün DEĞİL — upsert payload'ı tam olarak
        6 anahtar taşır (settings_id, locale + 4 alan).
-     • Keyfi locale mümkün DEĞİL — "tr"/"fr"/"" reddedilir.
-     • Boş/whitespace → null (public tarafta TR canonical'e düşsün).
+     • Keyfi locale mümkün DEĞİL — "en"/"fr"/"" reddedilir.
+     • Boş/whitespace → null (public tarafta EN canonical'e düşsün).
      • Uzunluk limitleri.
      • `settings_id` DIŞARIDAN GELMEZ — server tarafında çözülür.
 =============================================================== */
@@ -103,7 +103,7 @@ import {
 const OK_ROW = {
   id: "row-1",
   settings_id: "settings-1",
-  locale: "en",
+  locale: "tr",
   footer_copyright: "© {year} {site_name} · All rights reserved",
   default_meta_title: null,
   default_meta_description: null,
@@ -122,7 +122,7 @@ beforeEach(() => {
 
 describe("settings-translations.types — whitelist", () => {
   /* 🛡️ MIGRATION 087 — 8 → 9 alan. `business_hours` EKLENDİ:
-     `/iletisim` EN/DE sürümü devreye alındı, "Çalışma Saatleri"
+     `/iletisim` TR/DE sürümü devreye alındı, "Çalışma Saatleri"
      serbest metni artık dile göre çözülüyor. */
   it("1) TAM OLARAK 9 çevrilebilir alan (10M: bakım mesajı YOK · 11: hero VAR · 087: business_hours VAR)", () => {
     expect([...SETTINGS_TRANSLATABLE_FIELDS]).toEqual([
@@ -179,9 +179,9 @@ describe("settings-translations.types — whitelist", () => {
   });
 
   it("3) locale guard — yalnız en (DE desteği kaldırıldı)", () => {
-    expect(isSettingsTranslationLocale("en")).toBe(true);
+    expect(isSettingsTranslationLocale("tr")).toBe(true);
     expect(isSettingsTranslationLocale("de")).toBe(false);
-    expect(isSettingsTranslationLocale("tr")).toBe(false);
+    expect(isSettingsTranslationLocale("en")).toBe(false);
     expect(isSettingsTranslationLocale("fr")).toBe(false);
     expect(isSettingsTranslationLocale("")).toBe(false);
     expect(isSettingsTranslationLocale(null)).toBe(false);
@@ -203,7 +203,7 @@ describe("settingsTranslationRepository — query wiring", () => {
   });
 
   it("6) upsertOne payload'ı TAM OLARAK 11 anahtar taşır (keyfi kolon İMKÂNSIZ)", async () => {
-    await settingsTranslationRepository.upsertOne("settings-1", "en", {
+    await settingsTranslationRepository.upsertOne("settings-1", "tr", {
       footer_copyright: "A",
       default_meta_title: "C",
       default_meta_description: "D",
@@ -238,7 +238,7 @@ describe("settingsTranslationRepository — query wiring", () => {
   });
 
   it("7) upsertOne fazladan alanı SQL'e TAŞIMAZ (spread YOK)", async () => {
-    await settingsTranslationRepository.upsertOne("settings-1", "en", {
+    await settingsTranslationRepository.upsertOne("settings-1", "tr", {
       footer_copyright: "A",
       default_meta_title: null,
       default_meta_description: null,
@@ -253,36 +253,36 @@ describe("settingsTranslationRepository — query wiring", () => {
   });
 
   it("8) deleteOne settings_id + locale ile sınırlı", async () => {
-    await settingsTranslationRepository.deleteOne("settings-1", "en");
+    await settingsTranslationRepository.deleteOne("settings-1", "tr");
     expect(deleteMock).toHaveBeenCalled();
     expect(eqMock).toHaveBeenCalledWith("settings_id", "settings-1");
-    expect(eqMock).toHaveBeenCalledWith("locale", "en");
+    expect(eqMock).toHaveBeenCalledWith("locale", "tr");
   });
 });
 
 /* ================= 3) SERVICE — locale whitelist ================= */
 
 describe("upsertSettingsTranslation — locale whitelist", () => {
-  it("9) 'tr' REDDEDİLİR, DB'ye HİÇ gidilmez", async () => {
+  it("9) 'en' REDDEDİLİR, DB'ye HİÇ gidilmez", async () => {
     const result = await upsertSettingsTranslation({
-      locale: "tr",
-      footer_copyright: "TR yazma denemesi",
+      locale: "en",
+      footer_copyright: "EN yazma denemesi",
     });
     expect(result.ok).toBe(false);
     expect(upsertMock).not.toHaveBeenCalled();
   });
 
   it("10) bilinmeyen locale ('fr', '', null) reddedilir", async () => {
-    for (const locale of ["fr", "", "EN", "en-US"]) {
+    for (const locale of ["fr", "", "TR", "en-US"]) {
       const result = await upsertSettingsTranslation({ locale });
       expect(result.ok).toBe(false);
     }
     expect(upsertMock).not.toHaveBeenCalled();
   });
 
-  it("11) 'en' kabul edilir", async () => {
+  it("11) 'tr' kabul edilir", async () => {
     const result = await upsertSettingsTranslation({
-      locale: "en",
+      locale: "tr",
       footer_copyright: "X",
     });
     expect(result.ok).toBe(true);
@@ -303,7 +303,7 @@ describe("upsertSettingsTranslation — locale whitelist", () => {
 describe("upsertSettingsTranslation — alan whitelist ve normalizasyon", () => {
   it("12) whitelist dışı alanlar payload'a HİÇ girmez", async () => {
     await upsertSettingsTranslation({
-      locale: "en",
+      locale: "tr",
       footer_copyright: "OK",
       /* @ts-expect-error — kasıtlı: runtime'da da yok sayılmalı */
       resend_api_key: "SECRET",
@@ -321,9 +321,9 @@ describe("upsertSettingsTranslation — alan whitelist ve normalizasyon", () => 
     expect(payload).not.toHaveProperty("id");
   });
 
-  it("13) boş / whitespace değer → null (TR canonical fallback tetiklensin)", async () => {
+  it("13) boş / whitespace değer → null (EN canonical fallback tetiklensin)", async () => {
     await upsertSettingsTranslation({
-      locale: "en",
+      locale: "tr",
       footer_copyright: "   ",
       default_meta_title: undefined,
       default_meta_description: null,
@@ -337,7 +337,7 @@ describe("upsertSettingsTranslation — alan whitelist ve normalizasyon", () => 
 
   it("14) değerler trim edilir", async () => {
     await upsertSettingsTranslation({
-      locale: "en",
+      locale: "tr",
       footer_copyright: "  © {year} {site_name}  ",
     });
     const [payload] = upsertMock.mock.calls[0] as [Record<string, unknown>];
@@ -349,7 +349,7 @@ describe("upsertSettingsTranslation — alan whitelist ve normalizasyon", () => 
       SETTINGS_TRANSLATION_MAX_LEN.default_meta_title + 1
     );
     const result = await upsertSettingsTranslation({
-      locale: "en",
+      locale: "tr",
       default_meta_title: tooLong,
     });
     expect(result.ok).toBe(false);
@@ -359,7 +359,7 @@ describe("upsertSettingsTranslation — alan whitelist ve normalizasyon", () => 
   it("16) limit SINIRINDA kabul edilir", async () => {
     const exact = "x".repeat(SETTINGS_TRANSLATION_MAX_LEN.default_meta_title);
     const result = await upsertSettingsTranslation({
-      locale: "en",
+      locale: "tr",
       default_meta_title: exact,
     });
     expect(result.ok).toBe(true);
@@ -368,7 +368,7 @@ describe("upsertSettingsTranslation — alan whitelist ve normalizasyon", () => 
   it("17) settings satırı yoksa yazma yapılmaz", async () => {
     maybeSingleResult = { data: null, error: null };
     const result = await upsertSettingsTranslation({
-      locale: "en",
+      locale: "tr",
       footer_copyright: "X",
     });
     expect(result.ok).toBe(false);
@@ -382,7 +382,7 @@ describe("getSettingsTranslations / getPublicSettingsTranslations", () => {
   it("18) satırlar locale'e göre haritalanır; YALNIZ 4 alan döner", async () => {
     selectResult = {
       data: [
-        { ...OK_ROW, locale: "en" },
+        { ...OK_ROW, locale: "tr" },
         { ...OK_ROW, id: "row-2", locale: "de", footer_copyright: "DE" },
       ],
       error: null,
@@ -393,32 +393,32 @@ describe("getSettingsTranslations / getPublicSettingsTranslations", () => {
     if (!result.ok) return;
 
     /* DE desteği kaldırıldı — eski bir "de" satırı haritaya GİRMEZ. */
-    expect(Object.keys(result.translations).sort()).toEqual(["en"]);
-    expect(Object.keys(result.translations.en!).sort()).toEqual(
+    expect(Object.keys(result.translations).sort()).toEqual(["tr"]);
+    expect(Object.keys(result.translations.tr!).sort()).toEqual(
       [...SETTINGS_TRANSLATABLE_FIELDS].sort()
     );
     /* id / settings_id / timestamp DIŞARI ÇIKMAZ */
-    expect(result.translations.en).not.toHaveProperty("id");
-    expect(result.translations.en).not.toHaveProperty("settings_id");
-    expect(result.translations.en).not.toHaveProperty("updated_at");
+    expect(result.translations.tr).not.toHaveProperty("id");
+    expect(result.translations.tr).not.toHaveProperty("settings_id");
+    expect(result.translations.tr).not.toHaveProperty("updated_at");
   });
 
   it("19) geçersiz locale taşıyan satır (savunmacı) YOK SAYILIR", async () => {
     selectResult = {
       data: [
-        { ...OK_ROW, locale: "tr" },
-        { ...OK_ROW, id: "row-3", locale: "en" },
+        { ...OK_ROW, locale: "en" },
+        { ...OK_ROW, id: "row-3", locale: "tr" },
       ],
       error: null,
     };
     const result = await getSettingsTranslations();
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.translations).not.toHaveProperty("tr");
-    expect(result.translations).toHaveProperty("en");
+    expect(result.translations).not.toHaveProperty("en");
+    expect(result.translations).toHaveProperty("tr");
   });
 
-  it("20) public okuma — satır yoksa null (TR canonical'e düşülür)", async () => {
+  it("20) public okuma — satır yoksa null (EN canonical'e düşülür)", async () => {
     selectResult = { data: [], error: null };
     expect(await getPublicSettingsTranslations("settings-1")).toBeNull();
   });
@@ -432,15 +432,15 @@ describe("getSettingsTranslations / getPublicSettingsTranslations", () => {
 /* ================= 6) SERVICE — silme ================= */
 
 describe("deleteSettingsTranslation", () => {
-  it("22) 'tr' silme denemesi reddedilir", async () => {
-    const result = await deleteSettingsTranslation("tr");
+  it("22) 'en' silme denemesi reddedilir", async () => {
+    const result = await deleteSettingsTranslation("en");
     expect(result.ok).toBe(false);
     expect(deleteMock).not.toHaveBeenCalled();
   });
 
-  it("23) 'en' silinir", async () => {
+  it("23) 'tr' silinir", async () => {
     selectResult = { data: null, error: null };
-    const result = await deleteSettingsTranslation("en");
+    const result = await deleteSettingsTranslation("tr");
     expect(result.ok).toBe(true);
     expect(deleteMock).toHaveBeenCalled();
   });

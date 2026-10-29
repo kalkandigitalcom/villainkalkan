@@ -18,10 +18,10 @@ import {
   saveRuleTranslationAction,
 } from "./rule-translations.action";
 
-type WritableLocale = "en";
+type WritableLocale = "tr";
 
 const LOCALE_LABELS: Record<WritableLocale, string> = {
-  en: "English",
+  tr: "Türkçe",
 };
 
 type Props = {
@@ -34,9 +34,9 @@ export default function RuleTranslationsPanel({ ruleId, ruleTitle }: Props) {
   const toast = useNotify();
 
   const [forms, setForms] = useState<Record<WritableLocale, string>>({
-    en: "",
+    tr: "",
   });
-  const [activeLocale, setActiveLocale] = useState<WritableLocale>("en");
+  const [activeLocale, setActiveLocale] = useState<WritableLocale>("tr");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -60,7 +60,7 @@ export default function RuleTranslationsPanel({ ruleId, ruleTitle }: Props) {
       setForms((prev) => {
         const next = { ...prev };
         for (const row of result.rows) {
-          if (row.locale !== "en") continue;
+          if (row.locale !== "tr") continue;
           next[row.locale] = row.title ?? "";
         }
         return next;
@@ -116,7 +116,7 @@ export default function RuleTranslationsPanel({ ruleId, ruleTitle }: Props) {
     <div className="card-premium p-4 mt-2 space-y-4">
       <div>
         <p className="text-[11px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-400)]">
-          Türkçe (referans, salt okunur)
+          English (ana içerik, salt okunur)
         </p>
         <p className="text-sm text-[var(--color-stone-600)] mt-1">
           {ruleTitle}

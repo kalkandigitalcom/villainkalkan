@@ -65,8 +65,10 @@ type CmsDictionary = Dictionary["cms"];
 /* Hakkımızda + politika/şart CMS sayfaları (slug ASCII olduğundan
    Türkçe büyük-harf toLowerCase sorunu slug üzerinden bypass edilir). */
 const CMS_ABOUT_RE = /hakk|about|biz kim|kurumsal kimlik/;
+/* İçerik ana dili İngilizce olduğundan başlık anahtar kelimelerine
+   İngilizce karşılıklar da eklendi (slug'lar Türkçe ASCII kalır). */
 const CMS_POLICY_RE =
-  /gizlilik|kvkk|cerez|çerez|mesafeli|sozlesme|sözleşme|sart|şart|politika|policy|iade|teslimat|kosul|koşul|iptal|kullanim|kullanım/;
+  /gizlilik|kvkk|cerez|çerez|mesafeli|sozlesme|sözleşme|sart|şart|politika|policy|iade|teslimat|kosul|koşul|iptal|kullanim|kullanım|privacy|cookie|terms|refund|cancellation/;
 
 function getCmsBadge(
   slug: string,
@@ -116,7 +118,7 @@ function isCorporatePage(
   title: string | null | undefined
 ): boolean {
   const key = `${slug} ${title ?? ""}`.toLowerCase();
-  return /hakk|about|biz kim|kurumsal|sss|faq|sik sorul|sık sorul|yardim|yardım|gizlilik|kvkk|cerez|çerez|mesafeli|sozlesme|sözleşme|sart|şart|politika|policy|iade|teslimat|kosul|koşul/.test(
+  return /hakk|about|biz kim|kurumsal|sss|faq|sik sorul|sık sorul|yardim|yardım|gizlilik|kvkk|cerez|çerez|mesafeli|sozlesme|sözleşme|sart|şart|politika|policy|iade|teslimat|kosul|koşul|privacy|cookie|terms|refund|cancellation/.test(
     key
   );
 }

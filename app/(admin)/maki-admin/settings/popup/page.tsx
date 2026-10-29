@@ -56,7 +56,8 @@ const SCOPES: ScopeOption[] = [
    aktif/pasif, buton göster/gizle, kapsam, tarih ve süre ORTAKTIR.
    Tüm dillerin taslağı aynı state'te tutulur → sekme değiştirmek
    içerik kaybettirmez; tek "Kaydet" hepsini yazar. */
-type EditLocale = "tr" | PopupTranslationLocale;
+/* İngilizce ana içerik (site_popup kolonları) + Türkçe çeviri. */
+type EditLocale = "en" | PopupTranslationLocale;
 type PopupTextState = {
   title: string;
   description: string;
@@ -66,8 +67,8 @@ type PopupTextState = {
   buttonUrl: string;
 };
 const EDIT_LOCALES: ReadonlyArray<{ code: EditLocale; label: string }> = [
-  { code: "tr", label: "Türkçe" },
-  { code: "en", label: "English" },
+  { code: "en", label: "English (ana içerik)" },
+  { code: "tr", label: "Türkçe (çeviri)" },
 ];
 const emptyText = (): PopupTextState => ({
   title: "",
@@ -77,7 +78,7 @@ const emptyText = (): PopupTextState => ({
   buttonText: "",
   buttonUrl: "",
 });
-const NON_TR_PLACEHOLDER = "Boş bırakılırsa Türkçe metin gösterilir";
+const NON_MAIN_PLACEHOLDER = "Boş bırakılırsa İngilizce ana metin gösterilir";
 const isUrlInvalid = (url: string) => url.trim().length > 0 && !isSafePopupUrl(url.trim());
 /** Form metni → temiz alanlar (önizleme/kayıt). */
 const toFields = (t: PopupTextState): PopupTextFields => ({
@@ -101,10 +102,10 @@ export default function SettingsPopupPage() {
   const [imagePath, setImagePath] = useState<string | null>(null);
   const [imageBust, setImageBust] = useState<string | null>(null);
   const [texts, setTexts] = useState<Record<EditLocale, PopupTextState>>(() => ({
-    tr: emptyText(),
     en: emptyText(),
+    tr: emptyText(),
   }));
-  const [activeLocale, setActiveLocale] = useState<EditLocale>("tr");
+  const [activeLocale, setActiveLocale] = useState<EditLocale>("en");
   const [showButton, setShowButton] = useState(true);
   const [scope, setScope] = useState<PopupDisplayScope>("home");
   const [dismiss, setDismiss] = useState<PopupDismissDuration>("session");
@@ -127,11 +128,11 @@ export default function SettingsPopupPage() {
       ...prev,
       [activeLocale]: { ...prev[activeLocale], stats: update(prev[activeLocale].stats) },
     }));
-  const isTr = activeLocale === "tr";
-  const activeLabel = EDIT_LOCALES.find((l) => l.code === activeLocale)?.label ?? "Türkçe";
-  /* EN/DE'de boş alan için ipucu: Türkçe değer gösterilecek. */
-  const trHint = (trValue: string) =>
-    isTr ? undefined : trValue.trim() ? `Boşsa Türkçe gösterilir: “${trValue.trim()}”` : undefined;
+  const isMain = activeLocale === "en";
+  const activeLabel = EDIT_LOCALES.find((l) => l.code === activeLocale)?.label ?? "English";
+  /* Türkçe çeviride boş alan için ipucu: İngilizce ana değer gösterilecek. */
+  const mainHint = (mainValue: string) =>
+    isMain ? undefined : mainValue.trim() ? `Boşsa İngilizce gösterilir: “${mainValue.trim()}”` : undefined;
 
   useEffect(() => {
     let cancelled = false;
@@ -147,7 +148,7 @@ export default function SettingsPopupPage() {
         setIsEnabled(v.isEnabled);
         setImagePath(v.imagePath);
         setTexts({
-          tr: {
+          en: {
             title: v.title,
             description: v.description,
             highlight: v.highlight,
@@ -155,7 +156,7 @@ export default function SettingsPopupPage() {
             buttonText: v.buttonText,
             buttonUrl: v.buttonUrl,
           },
-          en: v.translations?.en ?? emptyText(),
+          tr: v.translations?.tr ?? emptyText(),
         });
         setShowButton(v.showButton);
         setScope(v.scope);
@@ -183,10 +184,10 @@ export default function SettingsPopupPage() {
     () => resolveAssetUrlVersioned(imagePath, imageBust || updatedAt),
     [imagePath, imageBust, updatedAt]
   );
-  /* Önizleme = public ile aynı kural: EN/DE boş alan → Türkçe. */
-  const previewText = isTr
-    ? toFields(texts.tr)
-    : mergePopupText(toFields(texts.tr), toFields(texts[activeLocale]));
+  /* Önizleme = public ile aynı kural: Türkçe boş alan → İngilizce ana içerik. */
+  const previewText = isMain
+    ? toFields(texts.en)
+    : mergePopupText(toFields(texts.en), toFields(texts[activeLocale]));
   const previewButton =
     showButton && previewText.buttonText
       ? { text: previewText.buttonText, url: previewText.buttonUrl || "/", external: false }
@@ -213,7 +214,7 @@ export default function SettingsPopupPage() {
       );
       return;
     }
-    const tr = toFields(texts.tr);
+    const main = toFields(texts.en);
     const translations = Object.fromEntries(
       POPUP_TRANSLATION_LOCALES.map((l) => {
         const t = texts[l];
@@ -237,12 +238,12 @@ export default function SettingsPopupPage() {
       res = await saveSitePopupAction({
         isEnabled,
         imagePath,
-        title: texts.tr.title,
-        description: texts.tr.description,
-        highlight: texts.tr.highlight,
-        stats: tr.stats,
-        buttonText: texts.tr.buttonText,
-        buttonUrl: texts.tr.buttonUrl,
+        title: texts.en.title,
+        description: texts.en.description,
+        highlight: texts.en.highlight,
+        stats: main.stats,
+        buttonText: texts.en.buttonText,
+        buttonUrl: texts.en.buttonUrl,
         showButton,
         scope,
         dismiss,
@@ -262,8 +263,8 @@ export default function SettingsPopupPage() {
     setImagePath(res.values.imagePath);
     const savedValues = res.values;
     setTexts((prev) => ({
-      tr: { ...prev.tr, stats: savedValues.stats },
-      en: { ...prev.en, stats: savedValues.translations.en.stats },
+      en: { ...prev.en, stats: savedValues.stats },
+      tr: { ...prev.tr, stats: savedValues.translations.tr.stats },
     }));
     setSaved(true);
     toast.success("Kaydedildi", { id: "settings-popup" });
@@ -332,7 +333,7 @@ export default function SettingsPopupPage() {
                   }
                 >
                   {loc.label}
-                  {loc.code !== "tr" && filled && (
+                  {loc.code !== "en" && filled && (
                     <span
                       aria-hidden="true"
                       className={"w-1.5 h-1.5 rounded-full " + (active ? "bg-white/80" : "bg-emerald-500")}
@@ -344,7 +345,7 @@ export default function SettingsPopupPage() {
           </div>
           <p className="text-[12px] text-[var(--color-stone-500)] leading-relaxed">
             Vurgu metni, başlık, açıklama, alt bilgiler ve buton metni/URL&apos;i her dil için ayrı
-            girilir. English&apos;ta boş bırakılan alan Türkçe gösterilir. Görsel, durum,
+            girilir. English ana içeriktir; Türkçe çeviride boş bırakılan alan İngilizce gösterilir. Görsel, durum,
             buton göster/gizle, gösterim alanı, tarih ve süre tüm dillerde ortaktır.
           </p>
         </div>
@@ -371,9 +372,9 @@ export default function SettingsPopupPage() {
             label="Büyük vurgu metni"
             value={highlight}
             onChange={(v) => setHighlight(v.slice(0, POPUP_LIMITS.highlight))}
-            placeholder={isTr ? "20" : texts.tr.highlight.trim() || "20"}
+            placeholder={isMain ? "20" : texts.en.highlight.trim() || "20"}
             hint={
-              trHint(texts.tr.highlight) ??
+              mainHint(texts.en.highlight) ??
               "Görselin üzerinde büyük puntoyla gösterilir (örn. yıl sayısı). Boş bırakılabilir."
             }
             disabled={loading || !!loadError}
@@ -382,25 +383,25 @@ export default function SettingsPopupPage() {
             label="Başlık"
             value={title}
             onChange={(v) => setTitle(v.slice(0, POPUP_LIMITS.title))}
-            placeholder={isTr ? "2006'dan bu yana tatilinizin yanındayız." : NON_TR_PLACEHOLDER}
-            hint={trHint(texts.tr.title)}
+            placeholder={isMain ? "With you since 2006." : NON_MAIN_PLACEHOLDER}
+            hint={mainHint(texts.en.title)}
             disabled={loading || !!loadError}
           />
           <TextAreaField
             label="Açıklama (opsiyonel)"
             value={description}
             onChange={(v) => setDescription(v.slice(0, POPUP_LIMITS.description))}
-            placeholder={isTr ? undefined : NON_TR_PLACEHOLDER}
-            hint={trHint(texts.tr.description)}
+            placeholder={isMain ? undefined : NON_MAIN_PLACEHOLDER}
+            hint={mainHint(texts.en.description)}
             rows={3}
             disabled={loading || !!loadError}
           />
           <FieldShell
             label="Alt bilgi satırları (en fazla 4)"
             hint={
-              isTr
+              isMain
                 ? "Örn. '300.000+ misafir', '4.9 misafir puanı', 'TÜRSAB 9117'."
-                : "Bu dilde hiç satır yoksa Türkçe satırlar gösterilir."
+                : "Bu dilde hiç satır yoksa İngilizce satırlar gösterilir."
             }
           >
             <div className="space-y-2">
@@ -453,23 +454,23 @@ export default function SettingsPopupPage() {
             label="Buton metni"
             value={buttonText}
             onChange={(v) => setButtonText(v.slice(0, POPUP_LIMITS.buttonText))}
-            placeholder={isTr ? "Villaları inceleyin" : NON_TR_PLACEHOLDER}
-            hint={trHint(texts.tr.buttonText)}
+            placeholder={isMain ? "Explore the villas" : NON_MAIN_PLACEHOLDER}
+            hint={mainHint(texts.en.buttonText)}
             disabled={loading || !!loadError || !showButton}
           />
           <FieldShell
             label="Buton URL'i"
             hint={
-              isTr
+              isMain
                 ? "Site içi için '/' ile başlayın (örn. /kiralik-villalar). Harici bağlantılar https:// ile başlamalı ve yeni sekmede açılır."
-                : `Boşsa Türkçe URL kullanılır. Bu dilin sayfası için örn. /${activeLocale}/kiralik-villalar.`
+                : "Boşsa İngilizce URL kullanılır; site içi bağlantılar ziyaretçinin diline otomatik çevrilir (ör. /kiralik-villalar → /tr/kiralik-villalar)."
             }
           >
             <input
               className="input"
               value={buttonUrl}
               onChange={(e) => setButtonUrl(e.target.value.slice(0, POPUP_LIMITS.buttonUrl))}
-              placeholder={isTr ? "/kiralik-villalar" : texts.tr.buttonUrl.trim() || "/en/kiralik-villalar"}
+              placeholder={isMain ? "/kiralik-villalar" : texts.en.buttonUrl.trim() || "/kiralik-villalar"}
               disabled={loading || !!loadError || !showButton}
               aria-invalid={urlInvalid}
             />

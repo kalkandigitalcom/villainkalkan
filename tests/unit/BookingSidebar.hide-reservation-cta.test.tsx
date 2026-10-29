@@ -48,7 +48,7 @@ const PROPS = {
 /* Özet (fiyat) metni — CTA metni hariç. */
 async function renderAndReadSummary(hide?: boolean) {
   const { container } = render(
-    <BookingSidebar {...PROPS} {...(hide ? { hideReservationCta: true } : {})} />
+    <BookingSidebar locale="tr" {...PROPS} {...(hide ? { hideReservationCta: true } : {})} />
   );
   await waitFor(() => expect(screen.getByText(/Toplam Tutar/)).toBeTruthy());
   const text = (container.textContent || "").replace("Rezervasyon Yap", "");

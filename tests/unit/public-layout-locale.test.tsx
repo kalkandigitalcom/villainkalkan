@@ -220,7 +220,7 @@ describe("1) BottomNav — locale", () => {
    =============================================================== */
 describe("2) SearchBottomSheet — locale", () => {
   it("2a) TR — ESKİ metinler BİREBİR", () => {
-    render(<SearchBottomSheet open onClose={() => {}} />);
+    render(<SearchBottomSheet open onClose={() => {}} locale="tr" />);
     expect(screen.getByText("Villa Ara")).toBeInTheDocument();
     expect(screen.getByLabelText("Aramayı kapat")).toBeInTheDocument();
     expect(screen.getByLabelText("Kapat")).toBeInTheDocument();
@@ -252,8 +252,8 @@ describe("2) SearchBottomSheet — locale", () => {
    3) VILLA SEARCH BOX
    =============================================================== */
 describe("3) VillaSearchBox — locale", () => {
-  it("3a) TR — varsayılan placeholder ESKİ değerle BİREBİR", () => {
-    render(<VillaSearchBox />);
+  it("3a) TR — placeholder ESKİ değerle BİREBİR", () => {
+    render(<VillaSearchBox locale="tr" />);
     expect(screen.getByPlaceholderText("Villa ara...")).toBeInTheDocument();
   });
 
@@ -273,7 +273,7 @@ describe("3) VillaSearchBox — locale", () => {
   });
 
   it("3d) sheet variant boş durum — TR metinleri BİREBİR", () => {
-    render(<VillaSearchBox variant="sheet" />);
+    render(<VillaSearchBox variant="sheet" locale="tr" />);
     expect(screen.getByText("Villa adı ile arama yapın")).toBeInTheDocument();
     expect(
       screen.getByText("Aradığınız villanın adını yazın, anında listeleyelim.")

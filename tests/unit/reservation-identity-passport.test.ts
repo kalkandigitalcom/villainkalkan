@@ -38,12 +38,17 @@ const valid = () => ({
   payment_method_id: "pm-1",
 });
 
+/* Türkçe mesaj metinleri doğrulandığı için locale açıkça "tr"
+   (helper'ın varsayılanı artık EN — DEFAULT_LOCALE). */
 const check = (identity: string) =>
-  validatePublicReservationForm({
-    form: { ...valid(), identity },
-    start: "2026-06-01",
-    end: "2026-06-08",
-  });
+  validatePublicReservationForm(
+    {
+      form: { ...valid(), identity },
+      start: "2026-06-01",
+      end: "2026-06-08",
+    },
+    "tr"
+  );
 
 /* ===============================================================
    1-2) TC KİMLİK — mevcut davranış BİREBİR korundu

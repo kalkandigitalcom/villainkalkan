@@ -33,7 +33,7 @@ vi.mock("@/lib/db/villa.repository.server", () => ({
 const VALID_ROW = {
   id: "row-1",
   villa_id: "villa-uuid-1",
-  locale: "en",
+  locale: "tr",
   description: null,
   seo_title: null,
   seo_description: null,
@@ -52,14 +52,14 @@ beforeEach(() => {
 });
 
 describe("upsertVillaTranslation", () => {
-  it("EN upsert — geçerli girdi başarıyla repository.upsertOne'a ulaşır", async () => {
+  it("TR upsert — geçerli girdi başarıyla repository.upsertOne'a ulaşır", async () => {
     const { upsertVillaTranslation } = await import(
       "@/app/services/villa-translation.service"
     );
 
     const result = await upsertVillaTranslation({
       villaId: "villa-uuid-1",
-      locale: "en",
+      locale: "tr",
       description: "Test açıklama",
     });
 
@@ -67,7 +67,7 @@ describe("upsertVillaTranslation", () => {
     expect(upsertOneMock).toHaveBeenCalledWith(
       "villa",
       "villa-uuid-1",
-      "en",
+      "tr",
       expect.objectContaining({ description: "Test açıklama" })
     );
   });
@@ -85,24 +85,24 @@ describe("upsertVillaTranslation", () => {
 
     expect(result).toEqual({
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     });
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("mevcut EN çeviriyi günceller (aynı upsertOne çağrı deseni — repository UNIQUE(villa_id,locale) ile ayırt eder)", async () => {
+  it("mevcut TR çeviriyi günceller (aynı upsertOne çağrı deseni — repository UNIQUE(villa_id,locale) ile ayırt eder)", async () => {
     const { upsertVillaTranslation } = await import(
       "@/app/services/villa-translation.service"
     );
 
-    await upsertVillaTranslation({ villaId: "villa-uuid-1", locale: "en", description: "V1" });
-    await upsertVillaTranslation({ villaId: "villa-uuid-1", locale: "en", description: "V2 güncel" });
+    await upsertVillaTranslation({ villaId: "villa-uuid-1", locale: "tr", description: "V1" });
+    await upsertVillaTranslation({ villaId: "villa-uuid-1", locale: "tr", description: "V2 güncel" });
 
     expect(upsertOneMock).toHaveBeenCalledTimes(2);
     expect(upsertOneMock).toHaveBeenLastCalledWith(
       "villa",
       "villa-uuid-1",
-      "en",
+      "tr",
       expect.objectContaining({ description: "V2 güncel" })
     );
   });
@@ -122,14 +122,14 @@ describe("upsertVillaTranslation", () => {
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("locale 'tr' reddedilir — bu UI üzerinden TR yazılamaz", async () => {
+  it("locale 'en' reddedilir — bu UI üzerinden EN yazılamaz", async () => {
     const { upsertVillaTranslation } = await import(
       "@/app/services/villa-translation.service"
     );
 
     const result = await upsertVillaTranslation({
       villaId: "villa-uuid-1",
-      locale: "tr",
+      locale: "en",
       description: "Türkçe açıklama",
     });
 
@@ -144,7 +144,7 @@ describe("upsertVillaTranslation", () => {
 
     const result = await upsertVillaTranslation({
       villaId: "   ",
-      locale: "en",
+      locale: "tr",
       description: "Test",
     });
 
@@ -162,7 +162,7 @@ describe("upsertVillaTranslation", () => {
 
     const result = await upsertVillaTranslation({
       villaId: "villa-yok",
-      locale: "en",
+      locale: "tr",
       description: "Test",
     });
 
@@ -181,7 +181,7 @@ describe("upsertVillaTranslation", () => {
 
     await upsertVillaTranslation({
       villaId: "villa-uuid-1",
-      locale: "en",
+      locale: "tr",
       description: "   ",
       seoTitle: undefined,
       seoDescription: null,
@@ -190,7 +190,7 @@ describe("upsertVillaTranslation", () => {
     expect(upsertOneMock).toHaveBeenCalledWith(
       "villa",
       "villa-uuid-1",
-      "en",
+      "tr",
       {
         description: null,
         seo_title: null,
@@ -206,7 +206,7 @@ describe("upsertVillaTranslation", () => {
 
     const result = await upsertVillaTranslation({
       villaId: "villa-uuid-1",
-      locale: "en",
+      locale: "tr",
       description: "Açıklama",
       seoTitle: "SEO Başlık",
       seoDescription: "SEO Açıklama",
@@ -220,8 +220,8 @@ describe("getVillaTranslations", () => {
   it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
-        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "en" },
+        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "de" },
       ],
       error: null,
@@ -235,7 +235,7 @@ describe("getVillaTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["tr"]);
     }
   });
 });

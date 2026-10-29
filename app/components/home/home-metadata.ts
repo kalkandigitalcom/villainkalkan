@@ -38,9 +38,17 @@ import { resolveSettingsText } from "@/lib/i18n/settings-translation.helper";
    =============================================================== */
 
 /** TR fallback'leri — `app/layout.tsx`'teki değerlerle BİREBİR AYNI. */
-const TR_FALLBACK_TITLE = "Villa Kiralama — Lüks Villa Deneyimi";
-const TR_FALLBACK_DESCRIPTION =
-  "Akdeniz'in seçkin villalarında özel havuz, deniz manzarası ve butik konfor. Hayalindeki tatili keşfet.";
+/* Ayarlarda hiçbir değer yoksa kullanılan dil başına sabit fallback.
+   İngilizce varsayılan (root layout ile AYNI metin); Türkçe karşılığı
+   önceki canonical marka fallback'idir. */
+const FALLBACK_TITLE: Record<Locale, string> = {
+  en: "Luxury Villa Rentals in Kalkan",
+  tr: "Villa Kiralama — Lüks Villa Deneyimi",
+};
+const FALLBACK_DESCRIPTION: Record<Locale, string> = {
+  en: "Handpicked Mediterranean villas with private pools, sea views and boutique comfort. Discover your dream holiday.",
+  tr: "Akdeniz'in seçkin villalarında özel havuz, deniz manzarası ve butik konfor. Hayalindeki tatili keşfet.",
+};
 
 export async function buildHomeMetadata(
   locale: Locale = DEFAULT_LOCALE
@@ -54,7 +62,7 @@ export async function buildHomeMetadata(
       translations,
       locale,
       "default_meta_title"
-    )?.trim() || TR_FALLBACK_TITLE;
+    )?.trim() || FALLBACK_TITLE[locale];
 
   const description =
     resolveSettingsText(
@@ -62,7 +70,7 @@ export async function buildHomeMetadata(
       translations,
       locale,
       "default_meta_description"
-    )?.trim() || TR_FALLBACK_DESCRIPTION;
+    )?.trim() || FALLBACK_DESCRIPTION[locale];
 
   const { canonical, languages } = buildLocaleAlternates("/", locale);
 

@@ -18,7 +18,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  return buildBlogDetailMetadata(params);
+  return buildBlogDetailMetadata(params, "tr");
 }
 
 export default async function BlogDetailPage({
@@ -26,5 +26,5 @@ export default async function BlogDetailPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  return <BlogDetailPageBody params={params} />;
+  return <BlogDetailPageBody params={params} locale="tr" />;
 }

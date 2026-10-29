@@ -128,9 +128,9 @@ const F3 = "cccccccc-cccc-4ccc-8ccc-ccccccccccc3";
 const TYPE_ID = "11111111-1111-4111-8111-111111111111";
 
 const FEATURE_ROWS = [
-  { id: F1, name: "Jakuzi" },
+  { id: F1, name: "Jacuzzi" },
   { id: F2, name: "Sauna" },
-  { id: F3, name: "Isıtmalı Havuz" },
+  { id: F3, name: "Heated Pool" },
 ];
 
 function villaRow(id: string) {
@@ -483,7 +483,7 @@ describe("F) URL kontratı", () => {
       "@/app/(public)/arama/FilterSidebar"
     );
     render(
-      <FilterSidebar
+      <FilterSidebar locale="tr"
         regionOptions={[]}
         categoryOptions={[]}
         initial={{
@@ -516,7 +516,7 @@ describe("F) URL kontratı", () => {
       "@/app/(public)/arama/FilterSidebar"
     );
     render(
-      <FilterSidebar
+      <FilterSidebar locale="tr"
         regionOptions={[]}
         categoryOptions={[]}
         initial={{
@@ -599,34 +599,34 @@ describe("G) i18n", () => {
     expect(en.home.search.featuresLabel).not.toBe(tr.home.search.featuresLabel);
   });
 
-  it("25) loadHeroFeatures — TR'de çeviri sorgusu HİÇ atılmaz", async () => {
+  it("25) loadHeroFeatures — EN (ana dil) çeviri sorgusu HİÇ atılmaz", async () => {
     const { loadHeroFeatures } = await import(
       "@/app/components/ui/hero/_components/hero-features.action"
     );
-    const rows = await loadHeroFeatures("tr");
+    const rows = await loadHeroFeatures("en");
     expect(getTranslationsForParentsMock).not.toHaveBeenCalled();
     expect(rows.map((r) => r.name)).toEqual([
-      "Isıtmalı Havuz",
-      "Jakuzi",
+      "Heated Pool",
+      "Jacuzzi",
       "Sauna",
     ]);
     /* URL token'ı UUID olsun diye slug BİLİNÇLİ null. */
     expect(rows.every((r) => r.slug === null)).toBe(true);
   });
 
-  it("26) loadHeroFeatures — EN'de çeviri kullanılır, id DEĞİŞMEZ", async () => {
+  it("26) loadHeroFeatures — TR'de çeviri kullanılır, id DEĞİŞMEZ", async () => {
     getTranslationsForParentsMock.mockResolvedValue(
-      new Map([[F1, { name: "Jacuzzi" }]])
+      new Map([[F1, { name: "Jakuzi" }]])
     );
     const { loadHeroFeatures } = await import(
       "@/app/components/ui/hero/_components/hero-features.action"
     );
-    const rows = await loadHeroFeatures("en");
+    const rows = await loadHeroFeatures("tr");
     const jacuzzi = rows.find((r) => r.id === F1);
-    expect(jacuzzi?.name).toBe("Jacuzzi");
+    expect(jacuzzi?.name).toBe("Jakuzi");
     /* Çevirisi olmayan canonical kalır. */
     expect(rows.find((r) => r.id === F2)?.name).toBe("Sauna");
-    /* N+1 YOK: entity başına locale başına TEK batch (yalnız en). */
+    /* N+1 YOK: entity başına locale başına TEK batch (yalnız tr). */
     expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(1);
     for (const call of getTranslationsForParentsMock.mock.calls) {
       expect(call[0]).toBe("villa_feature");
@@ -638,8 +638,8 @@ describe("G) i18n", () => {
     const { loadHeroFeatures } = await import(
       "@/app/components/ui/hero/_components/hero-features.action"
     );
-    const rows = await loadHeroFeatures("en");
-    expect(rows.find((r) => r.id === F1)?.name).toBe("Jakuzi");
+    const rows = await loadHeroFeatures("tr");
+    expect(rows.find((r) => r.id === F1)?.name).toBe("Jacuzzi");
   });
 });
 
@@ -727,7 +727,7 @@ async function renderSidebar(props: SidebarProps = {}) {
         features: [],
         ...(props.initial || {}),
       }}
-      locale={props.locale}
+      locale={props.locale ?? "tr"}
     />
   );
 }
@@ -806,7 +806,7 @@ describe("I) sidebar — accordion davranışı", () => {
       "@/app/(public)/arama/FilterSidebar"
     );
     render(
-      <FilterSidebar
+      <FilterSidebar locale="tr"
         regionOptions={[]}
         categoryOptions={[]}
         initial={{
@@ -923,7 +923,7 @@ describe("I) sidebar — /arama entegrasyonu ve i18n", () => {
        edilir (mevcut mimari) → her checkbox iki kopyada görünür. */
     expect(checked.length).toBeGreaterThan(0);
     for (const box of checked) {
-      expect(box.closest("label")?.textContent).toContain("Jakuzi");
+      expect(box.closest("label")?.textContent).toContain("Jacuzzi");
     }
   });
 

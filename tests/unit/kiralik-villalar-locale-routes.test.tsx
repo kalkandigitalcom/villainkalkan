@@ -132,8 +132,8 @@ const REGION_OPTIONS = [
   { id: "r2", name: "Kalkan", group: "Antalya" },
 ];
 const TYPE_OPTIONS = [
-  { id: "t1", name: "Muhafazakar Villalar", slug: "muhafazakar-villalar" },
-  { id: "t2", name: "Balayı Villaları", slug: "balayi-villalari" },
+  { id: "t1", name: "Conservative Villas", slug: "muhafazakar-villalar" },
+  { id: "t2", name: "Honeymoon Villas", slug: "balayi-villalari" },
 ];
 
 function villa(i: number) {
@@ -265,8 +265,8 @@ beforeEach(() => {
   typesMock.mockResolvedValue(TYPE_OPTIONS);
   settingsMock.mockResolvedValue({ site_name: "Tatilin Yeri" });
   typeNamesMock.mockResolvedValue({
-    t1: { en: "Conservative Villas" },
-    t2: { en: "Honeymoon Villas" },
+    t1: { tr: "Muhafazakar Villalar" },
+    t2: { tr: "Balayı Villaları" },
   });
 });
 
@@ -562,8 +562,8 @@ describe("FilterSidebar sözleşmesi", () => {
    F) VİLLA TİPİ ÇEVİRİSİ
    =============================================================== */
 describe("Villa tipi çevirisi", () => {
-  it("22) TR'de çeviri sorgusu HİÇ atılmaz (sorgu sayısı değişmedi)", async () => {
-    await renderBody("tr");
+  it("22) EN (ana dil) çeviri sorgusu HİÇ atılmaz (sorgu sayısı değişmedi)", async () => {
+    await renderBody("en");
     expect(typeNamesMock).not.toHaveBeenCalled();
     expect(sidebarProps[0].categoryOptions).toBe(
       await typesMock.mock.results[0].value
@@ -571,7 +571,7 @@ describe("Villa tipi çevirisi", () => {
   });
 
   it.each([
-    ["en", "Conservative Villas", "Honeymoon Villas"],
+    ["tr", "Muhafazakar Villalar", "Balayı Villaları"],
   ] as const)(
     "23) %s: sidebar villa tipi adları çevrilir",
     async (locale, n1, n2) => {
@@ -586,13 +586,13 @@ describe("Villa tipi çevirisi", () => {
   );
 
   it("24) TEK batch `.in()` sorgusu — N+1 YOK", async () => {
-    await renderBody("en");
+    await renderBody("tr");
     expect(typeNamesMock).toHaveBeenCalledTimes(1);
     expect(typeNamesMock).toHaveBeenCalledWith(["t1", "t2"]);
   });
 
   it("25) CANONICAL id/slug DEĞİŞMEZ — yalnız görünen `name` çevrilir", async () => {
-    await renderBody("en");
+    await renderBody("tr");
     const opts = sidebarProps[0].categoryOptions as Array<{
       id: string;
       slug: string;
@@ -604,13 +604,13 @@ describe("Villa tipi çevirisi", () => {
     ]);
   });
 
-  it("26) çeviri okuması hata verirse TR canonical adına DÜŞER (sayfa çökmez)", async () => {
+  it("26) çeviri okuması hata verirse EN canonical adına DÜŞER (sayfa çökmez)", async () => {
     typeNamesMock.mockRejectedValue(new Error("db down"));
-    await renderBody("en");
+    await renderBody("tr");
     const opts = sidebarProps[0].categoryOptions as Array<{ name: string }>;
     expect(opts.map((o) => o.name)).toEqual([
-      "Muhafazakar Villalar",
-      "Balayı Villaları",
+      "Conservative Villas",
+      "Honeymoon Villas",
     ]);
   });
 

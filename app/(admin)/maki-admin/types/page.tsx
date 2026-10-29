@@ -46,6 +46,7 @@ import { convertImageToWebP } from "@/lib/image.helpers";
    EDİLMEDİ. */
 import { getPublicSettingsAction } from "@/app/services/settings.action";
 import TypeTranslationsPanel from "./TypeTranslationsPanel";
+import { isMultilingualEnabled } from "@/lib/i18n/config";
 
 export default function TypesPage() {
   const toast = useNotify();
@@ -92,7 +93,7 @@ export default function TypesPage() {
     (async () => {
       const settings = await getPublicSettingsAction();
       if (cancelled) return;
-      setMultilingualEnabled(!!settings?.multilingual_enabled);
+      setMultilingualEnabled(isMultilingualEnabled(settings));
     })();
 
     return () => {

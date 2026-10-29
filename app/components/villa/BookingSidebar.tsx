@@ -63,7 +63,7 @@ import BookingMinStayWarning from "@/app/components/villa/booking/BookingMinStay
    `locale` engine'e ve child component'lere iletiliyor. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import { LOCALE_BCP47, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, LOCALE_BCP47, type Locale } from "@/lib/i18n/config";
 /* 🛡️ Villa detay "Müsaitlik Takvimi" popup'ı — yalnız açma olayı. */
 import { VILLA_AVAILABILITY_OPEN_EVENT } from "@/app/components/villa/villa-detail-events";
 
@@ -177,7 +177,7 @@ export default function BookingSidebar({
   hideReservationCta = false,
 }: Props) {
   const dict = getDictionary(locale);
-  const bcp47 = LOCALE_BCP47[locale ?? "tr"];
+  const bcp47 = LOCALE_BCP47[locale ?? DEFAULT_LOCALE];
 
   /* === DOMAIN — TEK SOURCE-OF-TRUTH === */
   const engine = useBookingEngine({

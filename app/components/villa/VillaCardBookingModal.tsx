@@ -675,6 +675,7 @@ function ModalContent({
             <BookingMinStayWarning
               minStayThreshold={minStayThreshold}
               selectedNights={selectedNights}
+              locale={locale}
             />
           )}
 

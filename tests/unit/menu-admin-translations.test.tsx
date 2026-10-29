@@ -93,7 +93,7 @@ beforeEach(() => {
   loadMenuTranslationsMock.mockResolvedValue({ ok: true, rows: [] });
   saveMenuTranslationMock.mockResolvedValue({
     ok: true,
-    row: { id: "t1", menu_id: "m1", locale: "en", name: "X" },
+    row: { id: "t1", menu_id: "m1", locale: "tr", name: "X" },
   });
   adminFetchMock.mockResolvedValue({
     ok: true,
@@ -106,22 +106,22 @@ beforeEach(() => {
    A) MenuTranslationsPanel — DÜZENLEME
    =============================================================== */
 describe("MenuTranslationsPanel", () => {
-  async function mountPanel(name = "Kiralık Villalar") {
+  async function mountPanel(name = "Rental Villas") {
     render(<MenuTranslationsPanel menuId="m1" menuName={name} />);
-    await screen.findByLabelText("English");
+    await screen.findByLabelText("Türkçe");
   }
 
-  it("1) TR adı SALT OKUNUR referans olarak gösterilir (input DEĞİL)", async () => {
+  it("1) EN (ana içerik) adı SALT OKUNUR referans olarak gösterilir (input DEĞİL)", async () => {
     await mountPanel();
-    expect(screen.getByText("Kiralık Villalar")).toBeInTheDocument();
+    expect(screen.getByText("Rental Villas")).toBeInTheDocument();
     expect(
-      (screen.getByText("Kiralık Villalar") as HTMLElement).tagName
+      (screen.getByText("Rental Villas") as HTMLElement).tagName
     ).not.toBe("INPUT");
   });
 
-  it("2) EN alanı görünür, DE alanı YOK (DE desteği kaldırıldı)", async () => {
+  it("2) TR çeviri alanı görünür, DE alanı YOK (DE desteği kaldırıldı)", async () => {
     await mountPanel();
-    expect(screen.getByLabelText("English")).toBeInTheDocument();
+    expect(screen.getByLabelText("Türkçe")).toBeInTheDocument();
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
@@ -129,18 +129,18 @@ describe("MenuTranslationsPanel", () => {
     loadMenuTranslationsMock.mockResolvedValue({
       ok: true,
       rows: [
-        { locale: "en", name: "Rental Villas" },
+        { locale: "tr", name: "Kiralık Villalar" },
       ],
     });
     await mountPanel();
     expect(loadMenuTranslationsMock).toHaveBeenCalledWith("m1");
-    expect(screen.getByLabelText("English")).toHaveValue("Rental Villas");
+    expect(screen.getByLabelText("Türkçe")).toHaveValue("Kiralık Villalar");
   });
 
-  it("4) EN güncellenir ve kaydedilir (yalnız en)", async () => {
+  it("4) TR güncellenir ve kaydedilir (yalnız tr)", async () => {
     await mountPanel();
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     fireEvent.click(screen.getByText("Çevirileri kaydet"));
 
@@ -149,8 +149,8 @@ describe("MenuTranslationsPanel", () => {
     );
     expect(saveMenuTranslationMock).toHaveBeenCalledWith({
       menuId: "m1",
-      locale: "en",
-      name: "Rental Villas",
+      locale: "tr",
+      name: "Kiralık Villalar",
     });
   });
 
@@ -193,12 +193,12 @@ describe("MenuTranslationsPanel", () => {
 /* ===============================================================
    B+C) /maki-admin/menu/new — OLUŞTURMA
    =============================================================== */
-describe("/maki-admin/menu/new — TR + EN", () => {
+describe("/maki-admin/menu/new — EN (ana) + TR (çeviri)", () => {
   async function fillManual() {
     render(<NewMenu />);
     await waitFor(() => expect(adminFetchMock).toHaveBeenCalled());
-    fireEvent.change(screen.getByPlaceholderText("Örn: İletişim"), {
-      target: { value: "Kiralık Villalar" },
+    fireEvent.change(screen.getByPlaceholderText("Örn: Contact"), {
+      target: { value: "Rental Villas" },
     });
     fireEvent.change(
       screen.getByPlaceholderText("/iletisim veya https://…"),
@@ -229,17 +229,17 @@ describe("/maki-admin/menu/new — TR + EN", () => {
     });
   }
 
-  it("9) EN alanı formda mevcut, DE alanı YOK", async () => {
+  it("9) TR çeviri alanı formda mevcut, DE alanı YOK", async () => {
     await fillManual();
-    expect(screen.getByLabelText("English")).toBeInTheDocument();
+    expect(screen.getByLabelText("Türkçe")).toBeInTheDocument();
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
-  it("10) TR + EN birlikte kaydedilir", async () => {
+  it("10) EN + TR birlikte kaydedilir", async () => {
     mockCreateOk();
     await fillManual();
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     fireEvent.click(screen.getByText("Kaydet"));
 
@@ -248,16 +248,16 @@ describe("/maki-admin/menu/new — TR + EN", () => {
     );
     expect(saveMenuTranslationMock).toHaveBeenCalledWith({
       menuId: "new-menu-id",
-      locale: "en",
-      name: "Rental Villas",
+      locale: "tr",
+      name: "Kiralık Villalar",
     });
   });
 
   it("11) MEVCUT POST payload'ı DEĞİŞMEDİ (name/href/source_type/source_id/is_active)", async () => {
     mockCreateOk();
     await fillManual();
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     fireEvent.click(screen.getByText("Kaydet"));
 
@@ -271,7 +271,7 @@ describe("/maki-admin/menu/new — TR + EN", () => {
     )!;
     expect(post[0]).toBe("/api/admin/menu");
     expect(JSON.parse(post[1].body as string)).toEqual({
-      name: "Kiralık Villalar",
+      name: "Rental Villas",
       href: "/kiralik-villalar",
       source_type: "manual",
       source_id: null,
@@ -279,7 +279,7 @@ describe("/maki-admin/menu/new — TR + EN", () => {
     });
   });
 
-  it("12) EN BOŞ bırakılırsa çeviri isteği HİÇ atılmaz", async () => {
+  it("12) TR BOŞ bırakılırsa çeviri isteği HİÇ atılmaz", async () => {
     mockCreateOk();
     await fillManual();
     fireEvent.click(screen.getByText("Kaydet"));
@@ -287,24 +287,24 @@ describe("/maki-admin/menu/new — TR + EN", () => {
     expect(saveMenuTranslationMock).not.toHaveBeenCalled();
   });
 
-  it("13) yalnız EN doldurulursa TEK çeviri isteği atılır", async () => {
+  it("13) yalnız TR doldurulursa TEK çeviri isteği atılır", async () => {
     mockCreateOk();
     await fillManual();
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     fireEvent.click(screen.getByText("Kaydet"));
     await waitFor(() =>
       expect(saveMenuTranslationMock).toHaveBeenCalledTimes(1)
     );
-    expect(saveMenuTranslationMock.mock.calls[0][0].locale).toBe("en");
+    expect(saveMenuTranslationMock.mock.calls[0][0].locale).toBe("tr");
   });
 
   it("14) id dönmezse (eski/None yanıt) menü OLUŞUR, çeviri atlanır — çökme yok", async () => {
     mockCreateOk(null);
     await fillManual();
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     fireEvent.click(screen.getByText("Kaydet"));
     await waitFor(() => expect(notifySuccessMock).toHaveBeenCalled());
@@ -319,8 +319,8 @@ describe("/maki-admin/menu/new — TR + EN", () => {
       error: "Yetkisiz",
     });
     await fillManual();
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     fireEvent.click(screen.getByText("Kaydet"));
     await waitFor(() => expect(notifySuccessMock).toHaveBeenCalled());
@@ -344,8 +344,8 @@ describe("/maki-admin/menu/new — TR + EN", () => {
       });
     });
     await fillManual();
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     fireEvent.click(screen.getByText("Kaydet"));
     await waitFor(() => expect(notifyErrorMock).toHaveBeenCalled());
@@ -364,23 +364,23 @@ describe("/maki-admin/menu/new — TR + EN", () => {
     render(<NewMenu />);
     await waitFor(() => expect(adminFetchMock).toHaveBeenCalled());
     /* Varsayılan "Manuel Link" → alanlar görünür. */
-    expect(screen.getByLabelText("English")).toBeInTheDocument();
+    expect(screen.getByLabelText("Türkçe")).toBeInTheDocument();
 
     fireEvent.click(screen.getByText(label));
-    expect(screen.queryByLabelText("English")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Türkçe")).not.toBeInTheDocument();
   });
 
   it("20) manual'de doldurulup tür DEĞİŞTİRİLİRSE çeviri yazılmaz", async () => {
     mockCreateOk();
     render(<NewMenu />);
     await waitFor(() => expect(adminFetchMock).toHaveBeenCalled());
-    fireEvent.change(screen.getByLabelText("English"), {
-      target: { value: "Rental Villas" },
+    fireEvent.change(screen.getByLabelText("Türkçe"), {
+      target: { value: "Kiralık Villalar" },
     });
     /* Tür değişir → alanlar gizlenir, taslak temizlenir. */
     fireEvent.click(screen.getByText("Mülk Tipi"));
     fireEvent.click(screen.getByText("Manuel Link"));
-    expect(screen.getByLabelText("English")).toHaveValue("");
+    expect(screen.getByLabelText("Türkçe")).toHaveValue("");
   });
 });
 
@@ -391,7 +391,7 @@ describe("/maki-admin/menu — çeviri aksiyonu görünürlüğü", () => {
   const MENU_ROWS = [
     {
       id: "m-manual",
-      name: "Kiralık Villalar",
+      name: "Rental Villas",
       href: "/kiralik-villalar",
       order: 1,
       parent_id: null,
@@ -447,13 +447,13 @@ describe("/maki-admin/menu — çeviri aksiyonu görünürlüğü", () => {
 
   it("21) TEK 'Çeviriler' butonu var — yalnız manual satırda", async () => {
     render(<MenuPage />);
-    await screen.findByText("Kiralık Villalar");
+    await screen.findByText("Rental Villas");
     expect(screen.getAllByText("Çeviriler")).toHaveLength(1);
   });
 
   it("22) page / category / region / page-auto satırlarında buton YOK", async () => {
     render(<MenuPage />);
-    await screen.findByText("Kiralık Villalar");
+    await screen.findByText("Rental Villas");
     /* Tüm satırlar listede (sıralama/parent-child değişmedi). */
     for (const name of ["Hakkımızda", "Lüks Villa", "Kalkan", "İletişim"]) {
       expect(screen.getAllByText(name).length).toBeGreaterThan(0);
@@ -465,17 +465,17 @@ describe("/maki-admin/menu — çeviri aksiyonu görünürlüğü", () => {
 
   it("23) butona basınca panel AÇILIR ve doğru menuId ile yüklenir", async () => {
     render(<MenuPage />);
-    await screen.findByText("Kiralık Villalar");
+    await screen.findByText("Rental Villas");
     fireEvent.click(screen.getByText("Çeviriler"));
     await waitFor(() =>
       expect(loadMenuTranslationsMock).toHaveBeenCalledWith("m-manual")
     );
-    expect(await screen.findByLabelText("English")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Türkçe")).toBeInTheDocument();
   });
 
   it("24) href / sıralama / kaynak rozetleri DEĞİŞMEDİ", async () => {
     render(<MenuPage />);
-    await screen.findByText("Kiralık Villalar");
+    await screen.findByText("Rental Villas");
     expect(screen.getByText("/kiralik-villalar")).toBeInTheDocument();
     expect(
       /* 🛡️ SEO landing — kategori menü öğesi `/villa-turleri/<slug>`. */

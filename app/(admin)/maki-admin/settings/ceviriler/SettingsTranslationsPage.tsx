@@ -61,7 +61,7 @@ import { SaveButton } from "../_components/SettingsField";
    HİÇ GİRMEZ.
    =============================================================== */
 
-/** `page.tsx`'in server-side okuduğu TR canonical değerler. */
+/** `page.tsx`'in server-side okuduğu İngilizce canonical (ana) değerler. */
 export type SettingsTranslationCanonical = {
   footer_copyright: string;
   default_meta_title: string;
@@ -101,7 +101,7 @@ function draftsFrom(translations: SettingsTranslationsByLocale): Drafts {
     }
     return next;
   };
-  return { en: build("en") };
+  return { tr: build("tr") };
 }
 
 export default function SettingsTranslationsPage({
@@ -109,11 +109,11 @@ export default function SettingsTranslationsPage({
   initialTranslations,
 }: {
   canonical: SettingsTranslationCanonical;
-  /** Server-side okunan mevcut EN/DE çevirileri (migration 083). */
+  /** Server-side okunan mevcut Türkçe çeviriler (migration 083/102). */
   initialTranslations: SettingsTranslationsByLocale;
 }) {
   const toast = useNotify();
-  const [locale, setLocale] = useState<TranslationLocale>("tr");
+  const [locale, setLocale] = useState<TranslationLocale>("en");
   const [drafts, setDrafts] = useState<Drafts>(() =>
     draftsFrom(initialTranslations)
   );
@@ -125,14 +125,15 @@ export default function SettingsTranslationsPage({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const isTr = locale === "tr";
-  const writableLocale: SettingsTranslationLocale | null = isTr
+  /* Ana içerik (İngilizce) salt okunur; yazılabilir dil Türkçe çeviri. */
+  const isMain = locale === "en";
+  const writableLocale: SettingsTranslationLocale | null = isMain
     ? null
     : (locale as SettingsTranslationLocale);
 
   const setField = useCallback(
     (field: SettingsTranslatableField, next: string) => {
-      if (isTr) return;
+      if (isMain) return;
       const target = locale as SettingsTranslationLocale;
       setDrafts((prev) => ({
         ...prev,
@@ -140,7 +141,7 @@ export default function SettingsTranslationsPage({
       }));
       setSaved(false);
     },
-    [isTr, locale]
+    [isMain, locale]
   );
 
   /** Aktif dildeki taslak değer; TR'de alan zaten canonical gösterir. */
@@ -166,12 +167,12 @@ export default function SettingsTranslationsPage({
       (fields: readonly SettingsTranslatableField[]): TranslationSectionStatus => {
         const filledIn = (loc: SettingsTranslationLocale) =>
           fields.some((f) => (stored[loc]?.[f] ?? "").trim() !== "");
-        if (isTr) return filledIn("en") ? "active" : "review";
+        if (isMain) return filledIn("tr") ? "active" : "review";
         return filledIn(locale as SettingsTranslationLocale)
           ? "active"
           : "review";
       },
-    [stored, isTr, locale]
+    [stored, isMain, locale]
   );
 
   async function handleSubmit(e: React.FormEvent) {
@@ -245,15 +246,15 @@ export default function SettingsTranslationsPage({
       {/* ── DURUM BİLGİSİ ── */}
       <TranslationInfo
         title="Çeviriler nasıl çalışır"
-        body="Türkçe değerler mevcut ayarlarınızdan salt okunur olarak gösterilir ve ilgili ayar sayfasından düzenlenir. English içerikleri ayrı kaydedilir; bir alanı boş bırakırsanız o dilde Türkçe metin gösterilir."
+        body="İngilizce ana içerik mevcut ayarlarınızdan salt okunur olarak gösterilir ve ilgili ayar sayfasından düzenlenir. Türkçe çeviriler ayrı kaydedilir; bir alanı boş bırakırsanız Türkçe sayfada İngilizce metin gösterilir."
       />
 
       {/* ── DİL SEKMELERİ ── */}
       <div className="space-y-2">
         <TranslationLanguageTabs active={locale} onChange={setLocale} />
         <p className="text-[12px] text-[var(--color-stone-500)] leading-relaxed">
-          Türkçe canonical (kaynak) içeriktir ve bu ekrandan düzenlenmez;
-          ilgili ayar sayfasından güncellenir. Çeviriler yalnız English için
+          English ana (kaynak) içeriktir ve bu ekrandan düzenlenmez;
+          ilgili ayar sayfasından güncellenir. Çeviriler yalnız Türkçe için
           tutulur.
         </p>
       </div>
@@ -311,7 +312,7 @@ export default function SettingsTranslationsPage({
             "hero_primary_cta_text",
             "hero_secondary_cta_text",
           ])}
-          note="Boş bırakılan alanlarda o dilde Türkçe canonical metin gösterilir. Buton bağlantıları (href) ve hero görseli DİL BAĞIMSIZDIR; çevrilmez."
+          note="Boş bırakılan alanlarda Türkçe sayfada İngilizce ana metin gösterilir. Buton bağlantıları (href) ve hero görseli DİL BAĞIMSIZDIR; çevrilmez."
         >
           <TranslationField
             label="Hero rozet metni"
@@ -359,7 +360,7 @@ export default function SettingsTranslationsPage({
           title="İletişim · Çalışma Saatleri"
           description="İletişim sayfasında gösterilen çalışma saatleri metni."
           status={statusOf(["business_hours"])}
-          note="Boş bırakılırsa o dilde Türkçe canonical metin gösterilir. Telefon, e-posta, adres ve sosyal medya bağlantıları VERİdir; her dilde aynı kalır ve çevrilmez."
+          note="Boş bırakılırsa Türkçe sayfada İngilizce ana metin gösterilir. Telefon, e-posta, adres ve sosyal medya bağlantıları VERİdir; her dilde aynı kalır ve çevrilmez."
         >
           <TranslationField
             label="Çalışma saatleri"
@@ -371,7 +372,7 @@ export default function SettingsTranslationsPage({
           />
         </TranslationSection>
 
-        {/* ── KAYDET — yalnız EN/DE sekmesinde ── */}
+        {/* ── KAYDET — yalnız Türkçe çeviri sekmesinde ── */}
         {writableLocale && (
           <div className="flex items-center justify-end gap-4">
             <p className="text-[12px] text-[var(--color-stone-500)]">

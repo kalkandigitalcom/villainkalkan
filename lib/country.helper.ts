@@ -1,6 +1,6 @@
 import { Country } from "country-state-city";
 
-import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { ADMIN_UI_LOCALE, type Locale } from "@/lib/i18n/config";
 /* 🛡️ Aşama 7A — display mantığı (override + Intl + fallback sırası)
    `lib/country-label.ts`'e BİREBİR taşındı; bu helper aynı sonucu
    üretmek için ona delege eder. Server/admin/mail/voucher çağıranları
@@ -52,7 +52,7 @@ import {
 --------------------------------------------------------------- */
 export function getCountryLabel(
   iso: string | null | undefined,
-  locale: Locale = DEFAULT_LOCALE
+  locale: Locale = ADMIN_UI_LOCALE
 ): string {
   return formatCountryLabel(
     iso,

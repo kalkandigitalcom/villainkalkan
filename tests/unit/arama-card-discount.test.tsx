@@ -86,7 +86,7 @@ const DISCOUNTS: DiscountRange[] = [
 
 function renderCard(stayDiscounts?: DiscountRange[]) {
   render(
-    <VillaCard
+    <VillaCard locale="tr"
       id="v-1"
       slug="test-villa"
       title="Test Villa"

@@ -83,9 +83,9 @@ describe("resolvePublicHome (saf kural — URL yapısı)", () => {
     expect(resolvePublicHome(undefined).redirectsFromRoot).toBe(false);
   });
 
-  it("DEFAULT_LOCALE (içerik/çeviri canonical dili) hâlâ 'tr'", async () => {
+  it("DEFAULT_LOCALE (içerik canonical dili) 'en' — URL varsayılan diliyle AYNI", async () => {
     const { DEFAULT_LOCALE, ROUTE_DEFAULT_LOCALE } = await import("@/lib/i18n/config");
-    expect(DEFAULT_LOCALE).toBe("tr");
+    expect(DEFAULT_LOCALE).toBe("en");
     expect(ROUTE_DEFAULT_LOCALE).toBe("en");
   });
 });

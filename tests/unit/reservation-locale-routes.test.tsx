@@ -449,7 +449,7 @@ describe("ReservationPageBody — locale-aware gövde", () => {
     expect(getVillaPricesMock).not.toHaveBeenCalled();
   });
 
-  it("19) locale verilmezse 'tr' (backward compatibility)", async () => {
+  it("19) locale verilmezse varsayılan dil 'en' (DEFAULT_LOCALE)", async () => {
     getVillaBySlugMock.mockResolvedValue(VILLA);
     getVillaPricesMock.mockResolvedValue([]);
     getVillaDiscountsMock.mockResolvedValue([]);
@@ -460,8 +460,8 @@ describe("ReservationPageBody — locale-aware gövde", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     const hero = childrenOf(el).find((c) => c?.type === PageHero);
-    expect(hero.props.title).toBe("Kişisel Bilgilerinizi Girin");
-    expect(hero.props.breadcrumb[0].href).toBe("/tr");
+    expect(hero.props.title).toBe("Enter Your Personal Details");
+    expect(hero.props.breadcrumb[0].href).toBe("/");
   });
 });
 
@@ -552,11 +552,12 @@ describe("ReservationSuccessBody — locale-aware başarı sayfası", () => {
     ).toBeNull();
   });
 
-  it("28) locale verilmezse TR metinleri (backward compatibility)", async () => {
+  it("28) locale verilmezse varsayılan dil (EN) metinleri", async () => {
+    const enSuccess = getDictionary("en").reservation.success;
     await renderSuccess(undefined, { ref: "X1" });
-    expect(screen.getByText("Rezervasyon Talebiniz Alındı")).toBeInTheDocument();
-    expect(screen.getByText("Talep Alındı")).toBeInTheDocument();
-    expect(screen.getByText("Referans Numarası")).toBeInTheDocument();
+    expect(screen.getByText(enSuccess.title)).toBeInTheDocument();
+    expect(screen.getByText(enSuccess.eyebrow)).toBeInTheDocument();
+    expect(screen.queryByText("Rezervasyon Talebiniz Alındı")).not.toBeInTheDocument();
   });
 });
 
@@ -639,10 +640,11 @@ describe("ReservationForm — TR parity (regresyon)", () => {
     expect(screen.getByText("Toplam tutarın tamamı")).toBeInTheDocument();
   });
 
-  it("36) locale prop'u HİÇ verilmezse de TR (backward compatibility)", () => {
+  it("36) locale prop'u HİÇ verilmezse varsayılan dil (EN)", () => {
+    const enForm = getDictionary("en").reservation.form;
     renderForm();
-    expect(screen.getByText("Rezervasyon Gönder")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("İsim Soyisim")).toBeInTheDocument();
+    expect(screen.getByText(enForm.submit)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(enForm.namePlaceholder)).toBeInTheDocument();
   });
 
   it("37) misafir adı placeholder'ı BİREBİR ('Misafir 2 Ad Soyad')", async () => {

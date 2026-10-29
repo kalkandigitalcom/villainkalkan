@@ -40,7 +40,7 @@ import {
    byte-identical render eder. Availability fetch / `getDayStyle`
    çağrısına ve renk kontratına DOKUNULMADI. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { LOCALE_BCP47, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, LOCALE_BCP47, type Locale } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ AvailabilityInlineCalendar — PUBLIC VILLA DETAY TAKVİMİ
@@ -174,7 +174,7 @@ export default function AvailabilityInlineCalendar({
 }: Props) {
   const { currency, rates } = useCurrency();
   const dict = getDictionary(locale);
-  const bcp47 = LOCALE_BCP47[locale ?? "tr"];
+  const bcp47 = LOCALE_BCP47[locale ?? DEFAULT_LOCALE];
 
   /* Availability arrays — shared helper'dan gelir. Boş başlangıç
      hızlı render; useEffect sonrası real data. */
@@ -261,7 +261,7 @@ export default function AvailabilityInlineCalendar({
     return formatDisplayPrice(
       converted,
       currency,
-      locale ?? "tr",
+      locale ?? DEFAULT_LOCALE,
       canConvertForDisplay(rates, currency, [found.currency])
     );
   };
@@ -306,7 +306,7 @@ export default function AvailabilityInlineCalendar({
     return formatDisplayPrice(
       discounted.converted,
       currency,
-      locale ?? "tr",
+      locale ?? DEFAULT_LOCALE,
       canConvertForDisplay(rates, currency, collectSourceCurrencies(found.currency, [activeDiscount]))
     );
   };

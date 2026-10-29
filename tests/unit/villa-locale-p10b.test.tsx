@@ -116,16 +116,21 @@ describe("PriceList — Phase 10B locale (component visibility + TR default)", (
     },
   ];
 
-  it("locale verilmezse (TR default): boş prices → 'Fiyat bilgisi yok' (mevcut TR literal AYNEN)", () => {
-    render(<PriceList prices={[]} />);
+  it("locale='tr': boş prices → 'Fiyat bilgisi yok' (mevcut TR literal AYNEN)", () => {
+    render(<PriceList locale="tr" prices={[]} />);
     expect(screen.getByText("Fiyat bilgisi yok")).toBeInTheDocument();
   });
 
-  it("locale verilmezse (TR default): tarih 'Eki' (Ekim) ay kısaltmasıyla, 'Gecelik' caption'ıyla render edilir", () => {
-    render(<PriceList prices={OCTOBER_PRICE} />);
+  it("locale='tr': tarih 'Eki' (Ekim) ay kısaltmasıyla, 'Gecelik' caption'ıyla render edilir", () => {
+    render(<PriceList locale="tr" prices={OCTOBER_PRICE} />);
     expect(screen.getByText(/1 Eki 2026/)).toBeInTheDocument();
     expect(screen.getByText(/31 Eki 2026/)).toBeInTheDocument();
     expect(screen.getAllByText("Gecelik").length).toBeGreaterThan(0);
+  });
+
+  it("locale verilmezse varsayılan dil (EN): 'No price information'", () => {
+    render(<PriceList prices={[]} />);
+    expect(screen.getByText("No price information")).toBeInTheDocument();
   });
 
   it("locale='en': boş prices → 'No price information'; tarih 'Oct' ay kısaltmasıyla, caption 'Nightly'", () => {
@@ -139,7 +144,7 @@ describe("PriceList — Phase 10B locale (component visibility + TR default)", (
 
   it("Bilgi butonu aria-label'ı locale'e göre değişir (minStay+deposit verilince görünür)", () => {
     const { unmount } = render(
-      <PriceList prices={OCTOBER_PRICE} minimumStayNights={3} deposit={1000} />
+      <PriceList locale="tr" prices={OCTOBER_PRICE} minimumStayNights={3} deposit={1000} />
     );
     expect(screen.getByLabelText("Bilgi")).toBeInTheDocument();
     unmount();
@@ -160,8 +165,8 @@ describe("PriceList — Phase 10B locale (component visibility + TR default)", (
    3) AvailabilityInlineCalendar — TR default + EN/DE aria-label'lar
    =============================================================== */
 describe("AvailabilityInlineCalendar — Phase 10B locale (component visibility + TR default)", () => {
-  it("locale verilmezse (TR default): 'Önceki ay'/'Sonraki ay' aria-label'ları AYNEN render edilir", async () => {
-    render(<AvailabilityInlineCalendar villaId="v1" prices={[]} />);
+  it("locale='tr': 'Önceki ay'/'Sonraki ay' aria-label'ları AYNEN render edilir", async () => {
+    render(<AvailabilityInlineCalendar locale="tr" villaId="v1" prices={[]} />);
     expect(screen.getByLabelText("Önceki ay")).toBeInTheDocument();
     expect(screen.getByLabelText("Sonraki ay")).toBeInTheDocument();
     await waitFor(() =>
@@ -193,7 +198,7 @@ describe("BookingCalendar — Phase 10B locale (component visibility + TR defaul
 
   async function setupEngine() {
     const { result } = renderHook(() =>
-      useBookingEngine({ villaSlug: "test-villa", villaId: "v1", prices: PRICES })
+      useBookingEngine({ villaSlug: "test-villa", villaId: "v1", prices: PRICES, locale: "tr" })
     );
     await waitFor(() => expect(result.current.selectedNights).toBe(0));
     return result;
@@ -205,10 +210,10 @@ describe("BookingCalendar — Phase 10B locale (component visibility + TR defaul
     );
   }
 
-  it("locale verilmezse (TR default): legend 'Onaylı'/'Beklemede'/'Müsait' + TR nav etiketleri AYNEN render edilir", async () => {
+  it("locale='tr': legend 'Onaylı'/'Beklemede'/'Müsait' + TR nav etiketleri AYNEN render edilir", async () => {
     const engine = await setupEngine();
     render(
-      <BookingCalendar
+      <BookingCalendar locale="tr"
         engine={engine.current}
         currentMonth={new Date(2026, 9, 1)}
         onCurrentMonthChange={() => {}}
@@ -252,7 +257,7 @@ describe("BookingCalendar — Phase 10B locale (component visibility + TR defaul
   it("date-fns locale seçimi GERÇEKTEN değişiyor: TR/EN hafta günü header'ları birbirinden FARKLI diziler üretir", async () => {
     const engineTr = await setupEngine();
     const { container: containerTr } = render(
-      <BookingCalendar
+      <BookingCalendar locale="tr"
         engine={engineTr.current}
         currentMonth={new Date(2026, 9, 1)}
         onCurrentMonthChange={() => {}}
@@ -287,9 +292,9 @@ describe("BookingCalendar — Phase 10B locale (component visibility + TR defaul
    5) BookingMinStayWarning — TR default + EN/DE
    =============================================================== */
 describe("BookingMinStayWarning — Phase 10B locale (TR default + EN/DE)", () => {
-  it("locale verilmezse (TR default): 'Minimum Konaklama' + gövde metni + 'Seçilen: N gece' AYNEN", () => {
+  it("locale='tr': 'Minimum Konaklama' + gövde metni + 'Seçilen: N gece' AYNEN", () => {
     const { container } = render(
-      <BookingMinStayWarning minStayThreshold={3} selectedNights={2} />
+      <BookingMinStayWarning locale="tr" minStayThreshold={3} selectedNights={2} />
     );
     expect(screen.getByText("Minimum Konaklama")).toBeInTheDocument();
     expect(container.textContent).toContain(
@@ -337,10 +342,10 @@ describe("BookingSummary — Phase 10B locale (TR default + EN/DE, yeni shortSta
     });
   }
 
-  it("locale verilmezse (TR default): 'Kısa Süreli Konaklama Ücreti' / 'Toplam Tutar' / 'Girişte ödenecek' / 'Hasar Depozitosu' AYNEN", () => {
+  it("locale='tr': 'Kısa Süreli Konaklama Ücreti' / 'Toplam Tutar' / 'Girişte ödenecek' / 'Hasar Depozitosu' AYNEN", () => {
     const result = buildResult();
     render(
-      <BookingSummary
+      <BookingSummary locale="tr"
         result={result}
         prepayment={300}
         prepaymentRate={30}
@@ -400,9 +405,9 @@ describe("useBookingEngine — Phase 10B locale (reservationError metinleri)", (
     { start_date: "2026-01-01", end_date: "2026-12-31", price: 1000, currency: "TRY" },
   ];
 
-  it("locale verilmezse (TR default): tarih seçilmeden handleReservation → 'Lütfen tarih seçiniz.'", async () => {
+  it("locale='tr': tarih seçilmeden handleReservation → 'Lütfen tarih seçiniz.'", async () => {
     const { result } = renderHook(() =>
-      useBookingEngine({ villaSlug: "test-villa", villaId: "v1", prices: PRICES })
+      useBookingEngine({ villaSlug: "test-villa", villaId: "v1", prices: PRICES, locale: "tr" })
     );
     await waitFor(() => expect(result.current.selectedNights).toBe(0));
 
@@ -477,7 +482,7 @@ describe("useBookingEngine — Phase 10B handleReservation navigation URL '&loca
     window.location = originalLocation;
   });
 
-  it("TR'de (locale verilmemiş): URL'e HİÇ '&locale=' EKLENMEZ — mevcut format BYTE-IDENTICAL", async () => {
+  it("TR'de (locale='tr'): URL'e HİÇ '&locale=' EKLENMEZ — mevcut format BYTE-IDENTICAL", async () => {
     const { result } = renderHook(() =>
       useBookingEngine({
         villaSlug: "test-villa",
@@ -487,6 +492,7 @@ describe("useBookingEngine — Phase 10B handleReservation navigation URL '&loca
         ],
         initialStart: "2026-10-05",
         initialEnd: "2026-10-08",
+        locale: "tr",
       })
     );
     await waitFor(() => expect(result.current.selectedNights).toBe(3));

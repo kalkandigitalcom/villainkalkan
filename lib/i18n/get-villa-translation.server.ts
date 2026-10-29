@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 
 import { getTranslation, resolveTranslatedField } from "@/lib/i18n/get-translation.server";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { stripHtml } from "@/lib/html-sanitize";
 
 /* ===============================================================
@@ -113,32 +113,18 @@ function makeExcerpt(text: string | undefined, max = 160): string {
 }
 
 /**
- * 🛡️ PHASE 8C — Bir villanın, verilen locale için EN/DE
+ * 🛡️ PHASE 8C — Bir villanın, verilen locale için villa detay
  * `generateMetadata`'da kullanılacak SEO description'ını döner.
  *
- *   - `locale === "tr"` → sorgu ATILMAZ (bu dalın gerçek çağıranı
- *     bugün YOK — EN/DE generateMetadata'sı bu fonksiyonu her zaman
- *     "en"/"de" ile çağırıyor; bu dal yalnız defensive/simetrik
- *     tamlık için var, title/description helper'larının TR
- *     davranışıyla aynı ilkeyle). TR'nin KENDİ
- *     `app/(public)/kiralik-villa/[slug]/page.tsx` `generateMetadata`'sındaki
- *     BİREBİR AYNI mantık: `originalSeoDescription` doluysa (trim
- *     edilmiş) onu, değilse `originalDescription`'dan 160 karakterlik
- *     excerpt'i döner. TR sayfası bu fonksiyonu HİÇ ÇAĞIRMIYOR/
- *     İTHAL ETMİYOR — kendi inline mantığını kullanmaya devam ediyor
- *     (bu dosya TR'ye YENİ bir bağımlılık EKLEMEZ).
- *   - EN/DE: `getVillaTranslatedDescription`
- *     ile BİREBİR AYNI `getVillaTranslationCached(villaId, locale)`
- *     çağrısını reuse eder — AYRI bir DB sorgusu EKLENMEZ.
- *     `translation.seo_description` dolu/whitespace-olmayan bir
- *     string'se AYNEN döner. Aksi halde (çeviri satırı hiç yok VEYA
- *     `seo_description` kolonu boş/whitespace VEYA DB hatası —
- *     `getTranslation` zaten hatayı `null`'a indirger, burada asla
- *     throw edilmez) çevrilmiş description'dan (`resolveTranslatedField`
- *     ile — yoksa orijinal `originalDescription`'a düşer) 160
- *     karakterlik excerpt üretilir (`stripHtml` + yukarıdaki private
- *     `makeExcerpt` — TR'nin `makeExcerpt(stripHtml(villa.description), 160)`
- *     çağrısıyla BİREBİR AYNI iki adımlı pipeline).
+ *   - EN (ana dil, `DEFAULT_LOCALE`) → sorgu ATILMAZ:
+ *     `originalSeoDescription` doluysa (trim edilmiş) onu, değilse
+ *     `originalDescription`'dan 160 karakterlik excerpt'i döner
+ *     (sorgu YOK).
+ *   - TR (çeviri): `getVillaTranslatedDescription` ile AYNI
+ *     `getVillaTranslationCached(villaId, locale)` çağrısını reuse eder.
+ *     Alan bazında fallback: TR `seo_description` → TR açıklamanın
+ *     özeti → EN `seo_description` → EN açıklamanın özeti. DB hatası
+ *     `null`'a indirgenir, asla throw edilmez.
  *
  * `openGraph`/`twitter` alanlarına BURADA hiçbir şey eklenmez —
  * bu yalnız `generateMetadata`'nın `description` alanı için saf bir
@@ -151,7 +137,7 @@ export async function getVillaTranslatedSeoDescription(
   originalDescription: string,
   locale: Locale
 ): Promise<string> {
-  if (locale === "tr") {
+  if (locale === DEFAULT_LOCALE) {
     const trimmedOwn = originalSeoDescription?.trim();
     if (trimmedOwn) return trimmedOwn;
     return makeExcerpt(stripHtml(originalDescription), 160);
@@ -167,11 +153,19 @@ export async function getVillaTranslatedSeoDescription(
     return translatedSeoDescription;
   }
 
-  const translatedDescription = resolveTranslatedField(
-    translation?.description,
-    originalDescription
-  );
-  return makeExcerpt(stripHtml(translatedDescription), 160);
+  /* Türkçe açıklama varsa onun özeti (sayfa dili ile tutarlı); yoksa
+     İngilizce ana içeriğin SEO açıklaması, o da yoksa ana açıklamanın
+     özeti (alan bazında fallback). */
+  const translatedDescription = translation?.description;
+  if (
+    typeof translatedDescription === "string" &&
+    translatedDescription.trim() !== ""
+  ) {
+    return makeExcerpt(stripHtml(translatedDescription), 160);
+  }
+  const trimmedOwn = originalSeoDescription?.trim();
+  if (trimmedOwn) return trimmedOwn;
+  return makeExcerpt(stripHtml(originalDescription), 160);
 }
 
 /**

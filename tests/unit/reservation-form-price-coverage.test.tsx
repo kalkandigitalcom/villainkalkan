@@ -61,7 +61,7 @@ function renderForm(start: string, end: string) {
     poolHeatingSelected: false,
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return render(<ReservationForm {...(props as any)} />);
+  return render(<ReservationForm locale="tr" {...(props as any)} />);
 }
 
 describe("ReservationForm — fiyat kapsamı", () => {

@@ -29,34 +29,35 @@ vi.mock("@/lib/db/native", () => ({
 
 const PAGE_ID = "page-uuid-1";
 
-const TR_PAGE = {
+/* İngilizce ANA içerik = `pages`; Türkçe = `page_translations` ('tr'). */
+const EN_PAGE = {
   id: PAGE_ID,
-  title: "Kaş'ta Unutulmaz Bir Tatil",
-  excerpt: "Türkçe özet",
-  body: "Türkçe gövde",
-  seo_title: "TR SEO",
-  seo_description: "TR SEO açıklama",
-};
-
-const EN_DB_ROW = {
-  id: "t-en",
-  page_id: PAGE_ID,
-  locale: "en",
   title: "An Unforgettable Holiday in Kas",
   excerpt: "EN excerpt",
   body: "EN body",
   seo_title: "EN SEO title",
   seo_description: "EN SEO description",
+};
+
+const TR_DB_ROW = {
+  id: "t-tr",
+  page_id: PAGE_ID,
+  locale: "tr",
+  title: "Kaş'ta Unutulmaz Bir Tatil",
+  excerpt: "Türkçe özet",
+  body: "Türkçe gövde",
+  seo_title: "TR SEO",
+  seo_description: "TR SEO açıklama",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
-let dbRow: unknown = EN_DB_ROW;
+let dbRow: unknown = TR_DB_ROW;
 let dbError: unknown = null;
 
 beforeEach(() => {
   vi.clearAllMocks();
-  dbRow = EN_DB_ROW;
+  dbRow = TR_DB_ROW;
   dbError = null;
 
   const chain: Record<string, unknown> = {};
@@ -80,43 +81,43 @@ async function helper() {
 }
 
 describe("Phase 12D — public okuma zinciri", () => {
-  it("EN: page_translations SELECT … WHERE page_id=$1 AND locale='en'", async () => {
+  it("TR: page_translations SELECT … WHERE page_id=$1 AND locale='tr'", async () => {
     const { resolvePageContent } = await helper();
-    const r = await resolvePageContent(TR_PAGE, "en");
+    const r = await resolvePageContent(EN_PAGE, "tr");
 
     expect(fromMock).toHaveBeenCalledWith("page_translations");
     expect(selectMock).toHaveBeenCalledWith("*");
     expect(eqMock).toHaveBeenCalledWith("page_id", PAGE_ID);
-    expect(eqMock).toHaveBeenCalledWith("locale", "en");
+    expect(eqMock).toHaveBeenCalledWith("locale", "tr");
     expect(maybeSingleMock).toHaveBeenCalled();
 
-    expect(r.title).toBe(EN_DB_ROW.title);
-    expect(r.body).toBe(EN_DB_ROW.body);
-    expect(r.seoTitle).toBe(EN_DB_ROW.seo_title);
+    expect(r.title).toBe(TR_DB_ROW.title);
+    expect(r.body).toBe(TR_DB_ROW.body);
+    expect(r.seoTitle).toBe(TR_DB_ROW.seo_title);
   });
 
-  it("TR: DB'ye HİÇ GİDİLMEZ", async () => {
+  it("EN (ana dil): DB'ye HİÇ GİDİLMEZ", async () => {
     const { resolvePageContent } = await helper();
-    const r = await resolvePageContent(TR_PAGE, "tr");
+    const r = await resolvePageContent(EN_PAGE, "en");
     expect(fromMock).not.toHaveBeenCalled();
-    expect(r.title).toBe(TR_PAGE.title);
+    expect(r.title).toBe(EN_PAGE.title);
   });
 
-  it("çeviri satırı yoksa (null) TR'ye fallback — throw YOK", async () => {
+  it("çeviri satırı yoksa (null) EN'ye fallback — throw YOK", async () => {
     dbRow = null;
     const { resolvePageContent } = await helper();
-    const r = await resolvePageContent(TR_PAGE, "en");
+    const r = await resolvePageContent(EN_PAGE, "tr");
     expect(fromMock).toHaveBeenCalledWith("page_translations");
-    expect(r.title).toBe(TR_PAGE.title);
-    expect(r.body).toBe(TR_PAGE.body);
+    expect(r.title).toBe(EN_PAGE.title);
+    expect(r.body).toBe(EN_PAGE.body);
   });
 
-  it("DB hatası → public render çökmez, TR'ye fallback", async () => {
+  it("DB hatası → public render çökmez, EN'ye fallback", async () => {
     dbRow = null;
     dbError = new Error("connection lost");
     const { resolvePageContent } = await helper();
-    const r = await resolvePageContent(TR_PAGE, "en");
-    expect(r.title).toBe(TR_PAGE.title);
-    expect(r.seoDescription).toBe(TR_PAGE.seo_description);
+    const r = await resolvePageContent(EN_PAGE, "tr");
+    expect(r.title).toBe(EN_PAGE.title);
+    expect(r.seoDescription).toBe(EN_PAGE.seo_description);
   });
 });

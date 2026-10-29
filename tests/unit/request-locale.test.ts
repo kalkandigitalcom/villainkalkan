@@ -50,31 +50,31 @@ beforeEach(() => {
 });
 
 describe("request-locale store", () => {
-  it("setRequestLocale hiç çağrılmadıysa → getRequestLocale DEFAULT_LOCALE ('tr') döner (TR route davranışı)", async () => {
+  it("setRequestLocale hiç çağrılmadıysa → getRequestLocale DEFAULT_LOCALE ('en') döner (EN route davranışı)", async () => {
     const { getRequestLocale } = await import(
       "@/lib/i18n/request-locale.server"
     );
-    expect(getRequestLocale()).toBe("tr");
+    expect(getRequestLocale()).toBe("en");
   });
 
-  it("setRequestLocale('en') sonrası aynı request içinde getRequestLocale() 'en' döner", async () => {
+  it("setRequestLocale('tr') sonrası aynı request içinde getRequestLocale() 'tr' döner", async () => {
     const { setRequestLocale, getRequestLocale } = await import(
       "@/lib/i18n/request-locale.server"
     );
-    setRequestLocale("en");
-    expect(getRequestLocale()).toBe("en");
+    setRequestLocale("tr");
+    expect(getRequestLocale()).toBe("tr");
   });
 
   it("farklı 'request'ler (resetModules ile izole edilmiş modül instance'ları) birbirine SIZINTI yapmaz", async () => {
     const requestA = await import("@/lib/i18n/request-locale.server");
-    requestA.setRequestLocale("en");
-    expect(requestA.getRequestLocale()).toBe("en");
+    requestA.setRequestLocale("tr");
+    expect(requestA.getRequestLocale()).toBe("tr");
 
     vi.resetModules();
 
     const requestB = await import("@/lib/i18n/request-locale.server");
     /* requestB TAMAMEN farklı bir modül instance'ı (yeni request
-       simülasyonu) — requestA'nın "en" ayarından ETKİLENMEMELİ. */
-    expect(requestB.getRequestLocale()).toBe("tr");
+       simülasyonu) — requestA'nın "tr" ayarından ETKİLENMEMELİ. */
+    expect(requestB.getRequestLocale()).toBe("en");
   });
 });

@@ -45,7 +45,7 @@ import type { UseBookingEngineReturn } from "./useBookingEngine";
    DOKUNULMADI — yalnız UI string kaynağı ve date-fns `locale` objesi
    değişti. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 
 type Props = {
   engine: UseBookingEngineReturn;
@@ -72,9 +72,12 @@ export default function BookingCalendar({
   numberOfMonths = 1,
 }: Props) {
   const { currency } = useCurrency();
-  const dict = getDictionary(locale);
+  /* Verilmezse varsayılan dil (EN); metin, tarih ve fiyat biçimi aynı
+     locale'den üretilir. */
+  const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
+  const dict = getDictionary(effectiveLocale);
   const dateFnsLocale =
-    locale === "en" ? enUS : tr;
+    effectiveLocale === "en" ? enUS : tr;
 
   /* 🛡️ Modern inline error — alert() yerine takvim üstünde geçici
      uyarı banner'ı; 3 saniye sonra otomatik temizlenir. */
@@ -332,7 +335,7 @@ export default function BookingCalendar({
                         letterSpacing: "0.02em",
                       }}
                     >
-                      {formatDisplayPrice(price, currency, locale ?? "tr", calendarPriceReady)}
+                      {formatDisplayPrice(price, currency, effectiveLocale, calendarPriceReady)}
                     </span>
                     <span
                       style={{
@@ -345,7 +348,7 @@ export default function BookingCalendar({
                       {formatDisplayPrice(
                         discountedPrice,
                         currency,
-                        locale ?? "tr",
+                        effectiveLocale,
                         calendarPriceReady
                       )}
                     </span>
@@ -361,7 +364,7 @@ export default function BookingCalendar({
                       letterSpacing: "0.02em",
                     }}
                   >
-                    {formatDisplayPrice(price, currency, locale ?? "tr", calendarPriceReady)}
+                    {formatDisplayPrice(price, currency, effectiveLocale, calendarPriceReady)}
                   </div>
                 ) : null}
               </div>

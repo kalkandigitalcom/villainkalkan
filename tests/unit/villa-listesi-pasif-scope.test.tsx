@@ -313,7 +313,10 @@ describe("/tr/liste/[token] — pasif villalar özel linkle", () => {
       card("pasif-tokenli", false, "ozel123"),
       card("pasif-linksiz", false, null),
     ];
-    const el = await SharedListPageBody({ params: Promise.resolve({ token: "liste1" }) });
+    const el = await SharedListPageBody({
+      params: Promise.resolve({ token: "liste1" }),
+      locale: "tr",
+    });
     render(el);
     expect([...cardProps.keys()]).toEqual(["aktif-1", "pasif-tokenli"]);
     expect(cardProps.get("aktif-1")!.privateHref).toBeUndefined();
@@ -322,7 +325,7 @@ describe("/tr/liste/[token] — pasif villalar özel linkle", () => {
     expect(cardProps.get("pasif-tokenli")!.stayStart).toBe("2026-11-10");
   });
 
-  it("EN locale → /en/v/[token]", async () => {
+  it("EN locale (varsayılan) → prefix'siz /v/[token]", async () => {
     cardRows = [card("pasif-tokenli", false, "ozel123")];
     const el = await SharedListPageBody({
       params: Promise.resolve({ token: "liste1" }),

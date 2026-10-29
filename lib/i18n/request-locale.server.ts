@@ -36,7 +36,7 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
    kiralik-villalar, arama, rezervasyon, vb.) bu modülü HİÇ IMPORT
    ETMİYOR/ÇAĞIRMIYOR. Dolayısıyla `setRequestLocale` hiç
    çağrılmadığı için store'un başlangıç değeri olan `DEFAULT_LOCALE`
-   ("tr") kalır — TR route'ları için "otomatik tr" davranışı, bu
+   (artık "en" — İngilizce ana dil) kalır — TR route'ları için "otomatik tr" davranışı, bu
    dosyaya veya TR route'larına HİÇBİR DOKUNUŞ GEREKTİRMEDEN elde
    edilir.
 
@@ -57,8 +57,9 @@ export function setRequestLocale(locale: Locale): void {
 }
 
 /** Bu request için o ana kadar işaretlenmiş locale'i döner.
- *  `setRequestLocale` hiç çağrılmadıysa (TR route'ları) →
- *  `DEFAULT_LOCALE` ("tr"). */
+ *  `setRequestLocale` hiç çağrılmadıysa → `DEFAULT_LOCALE` ("en").
+ *  Not: bugün hiçbir üretim kodu bu değeri okumuyor; sayfalar locale'i
+ *  prop olarak geçirir. */
 export function getRequestLocale(): Locale {
   return getLocaleStore().locale;
 }

@@ -1,5 +1,6 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import type { RuleItemTranslationRow } from "@/lib/i18n/translations.types";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /**
  * 🛡️ PHASE 10D — Batch 1 — Kural (rule_items) Çeviri Servisi
@@ -17,10 +18,11 @@ import type { RuleItemTranslationRow } from "@/lib/i18n/translations.types";
  * "villa_rules" → gerçek tablo `rule_items` doğrulama notuyla tutarlı).
  */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 export type RuleTranslationInput = {
@@ -65,7 +67,7 @@ export async function upsertRuleTranslation(
   if (!ruleId) return { ok: false, error: "Geçersiz kural" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir" };
   }
   const locale = input.locale;
 

@@ -53,17 +53,17 @@ beforeEach(() => {
 });
 
 describe("B) İLLÜSTRATİF — 'parent önce render olur' hazard'ı (Phase 4B store'u üzerinde)", () => {
-  it("1/4) 'RootLayout' konumunda (page render'ından ÖNCE) okunan locale → DEFAULT 'tr' (henüz kimse setRequestLocale çağırmadı)", async () => {
+  it("1/4) 'RootLayout' konumunda (page render'ından ÖNCE) okunan locale → DEFAULT 'en' (henüz kimse setRequestLocale çağırmadı)", async () => {
     const { getRequestLocale } = await import(
       "@/lib/i18n/request-locale.server"
     );
     // Bu, RootLayout'un JSX'i üretirken yapacağı okumayı simüle eder —
     // bu noktada page'in setRequestLocale çağrısı HENÜZ ÇALIŞMADI.
     const rootLayoutObservedLocale = getRequestLocale();
-    expect(rootLayoutObservedLocale).toBe("tr");
+    expect(rootLayoutObservedLocale).toBe("en");
   });
 
-  it("2/4-3/4) page (child) DAHA SONRA setRequestLocale('en'/'de') çağırsa bile, RootLayout'un DAHA ÖNCE okuduğu/JSX'e GÖMDÜĞÜ değer DEĞİŞMEZ (primitive capture)", async () => {
+  it("2/4-3/4) page (child) DAHA SONRA setRequestLocale('tr'/'de') çağırsa bile, RootLayout'un DAHA ÖNCE okuduğu/JSX'e GÖMDÜĞÜ değer DEĞİŞMEZ (primitive capture)", async () => {
     const { getRequestLocale, setRequestLocale } = await import(
       "@/lib/i18n/request-locale.server"
     );
@@ -73,21 +73,21 @@ describe("B) İLLÜSTRATİF — 'parent önce render olur' hazard'ı (Phase 4B s
 
     // 2) Page (EnVillaDetailPage) render sırası: RootLayout'tan SONRA
     //    çalışır, kendi locale'ini yazar.
-    setRequestLocale("en");
+    setRequestLocale("tr");
 
-    // 3) RootLayout'un ZATEN döndürdüğü <html lang> değeri hâlâ "tr" —
+    // 3) RootLayout'un ZATEN döndürdüğü <html lang> değeri hâlâ "en" —
     //    page'in yazması GERİYE DÖNÜK etkilemedi (string primitive,
     //    referans değil). Bu YÜZDEN root layout'ta getRequestLocale()
-    //    okumak EN/DE için asla doğru sonucu ÜRETEMEZ.
-    expect(htmlLangEmittedByRootLayout).toBe("tr");
-    expect(getRequestLocale()).toBe("en"); // store'un GÜNCEL hâli "en" —
+    //    okumak TR/DE için asla doğru sonucu ÜRETEMEZ.
+    expect(htmlLangEmittedByRootLayout).toBe("en");
+    expect(getRequestLocale()).toBe("tr"); // store'un GÜNCEL hâli "tr" —
     // ama RootLayout bunu ASLA GÖRMEDİ, çünkü ondan ÖNCE okudu.
   });
 
-  it("4/4) geçersiz/hiç set edilmemiş locale → güvenli fallback 'tr' (DEFAULT_LOCALE, Phase 1B ile AYNI)", async () => {
+  it("4/4) geçersiz/hiç set edilmemiş locale → güvenli fallback 'en' (DEFAULT_LOCALE, Phase 1B ile AYNI)", async () => {
     const { getRequestLocale } = await import(
       "@/lib/i18n/request-locale.server"
     );
-    expect(getRequestLocale()).toBe("tr");
+    expect(getRequestLocale()).toBe("en");
   });
 });

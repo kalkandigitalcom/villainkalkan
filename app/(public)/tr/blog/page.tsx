@@ -12,9 +12,9 @@ import { buildBlogIndexMetadata } from "@/app/components/blog/blog-metadata";
    =============================================================== */
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildBlogIndexMetadata();
+  return buildBlogIndexMetadata("tr");
 }
 
 export default async function BlogIndexPage() {
-  return <BlogIndexPageBody />;
+  return <BlogIndexPageBody locale="tr" />;
 }

@@ -68,8 +68,8 @@ vi.mock("@/lib/i18n/get-translation.server", () => ({
 }));
 
 const TYPE_ROWS = [
-  { id: "t1", name: "Deniz Manzaralı Villa", slug: "deniz-manzarali" },
-  { id: "t2", name: "Havuzlu Villa", slug: "havuzlu" },
+  { id: "t1", name: "Sea View Villa", slug: "deniz-manzarali" },
+  { id: "t2", name: "Villa with Pool", slug: "havuzlu" },
 ];
 const LOCATION_ROWS = [
   { id: "l1", name: "Kalkan", slug: "kalkan", filter_group_name: "Kalkan" },
@@ -83,50 +83,51 @@ beforeEach(() => {
 });
 
 describe("2) loadHeroFilters — villa tipi adı locale-aware", () => {
-  it("2a) TR — çeviri sorgusu HİÇ atılmaz, adlar canonical", async () => {
+  /* İngilizce ana içerik: TYPE_ROWS canonical adları; Türkçe = çeviri. */
+  it("2a) EN (ana dil) — çeviri sorgusu HİÇ atılmaz, adlar canonical", async () => {
     const { loadHeroFilters } = await import(
       "@/app/components/ui/hero/_components/hero-filters.action"
     );
-    const { types } = await loadHeroFilters("tr");
+    const { types } = await loadHeroFilters("en");
     expect(getTranslationsForParentsMock).not.toHaveBeenCalled();
     expect(types?.map((t) => t.name)).toEqual([
-      "Deniz Manzaralı Villa",
-      "Havuzlu Villa",
+      "Sea View Villa",
+      "Villa with Pool",
     ]);
   });
 
-  it("2b) TR — locale verilmezse de davranış AYNI (geriye dönük uyum)", async () => {
+  it("2b) locale verilmezse varsayılan dil (EN) — sorgu yok, canonical", async () => {
     const { loadHeroFilters } = await import(
       "@/app/components/ui/hero/_components/hero-filters.action"
     );
     const { types } = await loadHeroFilters();
     expect(getTranslationsForParentsMock).not.toHaveBeenCalled();
-    expect(types?.[0].name).toBe("Deniz Manzaralı Villa");
+    expect(types?.[0].name).toBe("Sea View Villa");
   });
 
-  it("2c) EN — çeviri VARSA option label'ı çevrilir; id/slug DEĞİŞMEZ", async () => {
+  it("2c) TR — çeviri VARSA option label'ı çevrilir; id/slug DEĞİŞMEZ", async () => {
     getTranslationsForParentsMock.mockResolvedValue(
-      new Map([["t1", { name: "Sea View Villa" }]])
+      new Map([["t1", { name: "Deniz Manzaralı Villa" }]])
     );
     const { loadHeroFilters } = await import(
       "@/app/components/ui/hero/_components/hero-filters.action"
     );
-    const { types } = await loadHeroFilters("en");
+    const { types } = await loadHeroFilters("tr");
 
-    expect(types?.[0].name).toBe("Sea View Villa");
+    expect(types?.[0].name).toBe("Deniz Manzaralı Villa");
     expect(types?.[0].id).toBe("t1");
     expect(types?.[0].slug).toBe("deniz-manzarali");
-    /* Çevirisi olmayan tip canonical kalır. */
-    expect(types?.[1].name).toBe("Havuzlu Villa");
+    /* Çevirisi olmayan tip canonical (EN) kalır. */
+    expect(types?.[1].name).toBe("Villa with Pool");
   });
 
   it("2e) N+1 YOK — locale başına TEK batch sorgu, tüm id'ler birlikte", async () => {
     const { loadHeroFilters } = await import(
       "@/app/components/ui/hero/_components/hero-filters.action"
     );
-    await loadHeroFilters("en");
-    /* getVillaTypeNamesByLocale yalnız en için TEK batch çağırır
-       (DE kaldırıldı) — tip SAYISINDAN bağımsız sabit. */
+    await loadHeroFilters("tr");
+    /* getVillaTypeNamesByLocale yalnız tr için TEK batch çağırır —
+       tip SAYISINDAN bağımsız sabit. */
     expect(getTranslationsForParentsMock).toHaveBeenCalledTimes(1);
     for (const call of getTranslationsForParentsMock.mock.calls) {
       expect(call[0]).toBe("villa_type");
@@ -150,8 +151,8 @@ describe("2) loadHeroFilters — villa tipi adı locale-aware", () => {
     const { loadHeroFilters } = await import(
       "@/app/components/ui/hero/_components/hero-filters.action"
     );
-    const { types } = await loadHeroFilters("en");
-    expect(types?.[0].name).toBe("Deniz Manzaralı Villa");
+    const { types } = await loadHeroFilters("tr");
+    expect(types?.[0].name).toBe("Sea View Villa");
   });
 });
 
@@ -237,7 +238,7 @@ describe("4) HorizontalCarousel prevLabel/nextLabel", () => {
     expect(d.next).toBe("İleri kaydır");
   });
 
-  it("4b) prop VERİLMEZSE TR default'ları korunur (mevcut çağıranlar bozulmaz)", async () => {
+  it("4b) prop VERİLMEZSE varsayılan dil (EN) etiketleri kullanılır (tüm çağıranlar label geçer)", async () => {
     const { default: HorizontalCarousel } = await import(
       "@/app/components/villa/HorizontalCarousel"
     );
@@ -247,7 +248,7 @@ describe("4) HorizontalCarousel prevLabel/nextLabel", () => {
           <div>içerik</div>
         </HorizontalCarousel>
       );
-      expect(screen.getByLabelText("İleri kaydır")).toBeInTheDocument();
+      expect(screen.getByLabelText("Scroll forward")).toBeInTheDocument();
     });
   });
 

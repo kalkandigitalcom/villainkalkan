@@ -29,16 +29,21 @@ const useFavoritesMock = vi.fn(() => ({ count: 0, isHydrated: true }));
 import HeaderFavoritesLink from "@/app/components/favorites/HeaderFavoritesLink";
 
 describe("HeaderFavoritesLink — Phase 9C href regresyon kilidi", () => {
-  it("href her zaman '/tr/favoriler' — count/isHydrated durumundan bağımsız (badge yok)", () => {
-    render(<HeaderFavoritesLink />);
+  it("TR: href her zaman '/tr/favoriler' — count/isHydrated durumundan bağımsız (badge yok)", () => {
+    render(<HeaderFavoritesLink locale="tr" />);
     const link = screen.getByRole("link", { name: "Favorilerim" });
     expect(link).toHaveAttribute("href", "/tr/favoriler");
   });
 
-  it("href her zaman '/tr/favoriler' — badge görünür durumda da (count > 0)", () => {
+  it("TR: href her zaman '/tr/favoriler' — badge görünür durumda da (count > 0)", () => {
     useFavoritesMock.mockReturnValueOnce({ count: 3, isHydrated: true });
-    render(<HeaderFavoritesLink />);
+    render(<HeaderFavoritesLink locale="tr" />);
     const link = screen.getByRole("link", { name: "Favorilerim (3)" });
     expect(link).toHaveAttribute("href", "/tr/favoriler");
+  });
+  it("locale verilmezse varsayılan dil (EN): prefix'siz '/favoriler'", () => {
+    render(<HeaderFavoritesLink />);
+    const link = screen.getByRole("link", { name: "My Favourites" });
+    expect(link).toHaveAttribute("href", "/favoriler");
   });
 });

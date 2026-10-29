@@ -174,20 +174,24 @@ describe.each(ROUTES)(
        `multilingual_enabled=false` iken route zaten 404 döner.
        ⚠️ Villa BULUNAMADIĞINDA dönen noindex DEĞİŞMEDİ (aşağıdaki
        test). --- */
-    it("robots override YOK — flag kapalıyken de root politikası miras alınır", async () => {
+    /* 🔄 İNGİLİZCE ANA DİL — EN ve TR villa detayı AYNI metadata
+       üreticisini (`buildVillaDetailMetadata`) kullanır; villa bazlı
+       `noindex` bayrağı artık her iki dilde de uygulanır (eskiden yalnız
+       TR sayfada uygulanıyordu). */
+    it("robots villa.noindex'i izler — noindex=false → index/follow", async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
-      getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
+      getVillaBySlugMock.mockResolvedValue({ ...BASE_VILLA, noindex: false });
 
       const result = await callGenerateMetadata(modulePath);
-      expect(result.robots).toBeUndefined();
+      expect(result.robots).toEqual({ index: true, follow: true });
     });
 
-    it("robots override YOK — flag açıkken de (hreflang ile tutarlı)", async () => {
+    it("robots villa.noindex'i izler — noindex=true → noindex/nofollow", async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: true });
-      getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
+      getVillaBySlugMock.mockResolvedValue({ ...BASE_VILLA, noindex: true });
 
       const result = await callGenerateMetadata(modulePath);
-      expect(result.robots).toBeUndefined();
+      expect(result.robots).toEqual({ index: false, follow: false });
     });
 
     it("villa bulunamazsa (null) → notFound title + noindex, alternates YOK", async () => {
@@ -231,7 +235,7 @@ describe.each(ROUTES)(
       );
     });
 
-    it("openGraph.description ve twitter.description EKLENMEZ (bu faz yalnız metadata.description'ı hedefler)", async () => {
+    it("openGraph.description ve twitter.description metadata.description ile AYNI", async () => {
       getCachedSettingsMock.mockResolvedValue({ multilingual_enabled: false });
       getVillaBySlugMock.mockResolvedValue(BASE_VILLA);
       getVillaTranslatedSeoDescriptionMock.mockResolvedValue(
@@ -241,10 +245,11 @@ describe.each(ROUTES)(
       const result = await callGenerateMetadata(modulePath);
       expect(
         (result.openGraph as Record<string, unknown> | undefined)?.description
-      ).toBeUndefined();
+      ).toBe(`Translated ${locale} SEO description.`);
       expect(
-        (result as Record<string, unknown>).twitter
-      ).toBeUndefined();
+        ((result as Record<string, unknown>).twitter as Record<string, unknown>)
+          ?.description
+      ).toBe(`Translated ${locale} SEO description.`);
     });
 
     it("villa bulunamazsa (null) → getVillaTranslatedSeoDescription HİÇ ÇAĞRILMAZ", async () => {

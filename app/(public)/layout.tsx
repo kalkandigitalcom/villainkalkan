@@ -25,6 +25,7 @@ import SiteTrackingScripts from "@/app/components/layout/SiteTrackingScripts";
    edilmez; aktifse hafif client loader karar verip modalı lazy yükler. */
 import SitePopupLoader from "@/app/components/layout/site-popup/SitePopupLoader";
 import { getCachedSitePopup } from "@/lib/site-popup.cache";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ===============================================================
    🛡️ PUBLIC LAYOUT — MAINTENANCE MODE GATE
@@ -53,7 +54,7 @@ export default async function PublicLayout({
 }) {
   const settings = await getCachedSettings().catch(() => null);
   if (settings?.maintenance_mode === true) {
-    const brand = settings?.site_name?.trim() || "Villa Kiralama";
+    const brand = settings?.site_name?.trim() || SITE_NAME_FALLBACK;
     /* 🛡️ `settings.maintenance_message` CANONICAL kalır (migration 084
        kararı DEĞİŞMEDİ). Boşsa dictionary varsayılanı gösterilir; "Bakım"
        etiketi ve varsayılan metin locale-aware (bkz. MaintenanceScreen). */

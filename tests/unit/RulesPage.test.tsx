@@ -54,8 +54,8 @@ vi.mock("@/app/components/admin/notifications/NotificationProvider", () => ({
 import RulesPage from "@/app/(admin)/maki-admin/rules/page";
 
 const RULES = [
-  { id: "rule-1", title: "Sigara içilmez" },
-  { id: "rule-2", title: "Evcil hayvan yasak" },
+  { id: "rule-1", title: "No smoking" },
+  { id: "rule-2", title: "No pets allowed" },
 ];
 
 function settingsWith(multilingual_enabled: boolean | null) {
@@ -81,8 +81,8 @@ beforeEach(() => {
     row: {
       id: "row-1",
       rule_id: "rule-1",
-      locale: "en",
-      title: "No smoking",
+      locale: "tr",
+      title: "Sigara içilmez",
       created_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
     },
@@ -90,24 +90,24 @@ beforeEach(() => {
 });
 
 describe("RulesPage — Phase 10D Batch 3 — çeviri UI görünürlüğü", () => {
-  it("1) multilingual_enabled=false → 'Çeviriler' butonu RENDER EDİLMEZ", async () => {
+  it("1) multilingual_enabled=false → 'Çeviriler' butonu YİNE render edilir (site yapısal olarak iki dilli)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(false));
     render(<RulesPage />);
 
-    expect(await screen.findByDisplayValue("Sigara içilmez")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("No smoking")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 
-  it("2) multilingual_enabled=null → fail-safe KAPALI, buton görünmez", async () => {
+  it("2) multilingual_enabled=null → buton YİNE görünür (Türkçe çeviri her zaman düzenlenebilir)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(null));
     render(<RulesPage />);
 
-    expect(await screen.findByDisplayValue("Sigara içilmez")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("No smoking")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 
   it("3) multilingual_enabled=true → 'Çeviriler' butonları render edilir", async () => {
@@ -127,7 +127,7 @@ describe("RulesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
 
-    expect(await screen.findByText("Türkçe (referans, salt okunur)")).toBeInTheDocument();
+    expect(await screen.findByText("English (ana içerik, salt okunur)")).toBeInTheDocument();
   });
 
   it("5) Yalnız ilgili satırın paneli açılır", async () => {
@@ -136,10 +136,10 @@ describe("RulesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
 
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
-    await screen.findByText("Türkçe (referans, salt okunur)");
+    await screen.findByText("English (ana içerik, salt okunur)");
 
     // Yalnız TEK panel açık: TR referans metni yalnız 1 kez görünür.
-    expect(screen.getAllByText("Türkçe (referans, salt okunur)").length).toBe(1);
+    expect(screen.getAllByText("English (ana içerik, salt okunur)").length).toBe(1);
   });
 
   it("6) İkinci satıra basınca önceki panel kapanır (tek panel açık)", async () => {
@@ -148,13 +148,13 @@ describe("RulesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
 
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
-    await screen.findByText("Sigara içilmez", { selector: "p" }).catch(() => {});
+    await screen.findByText("No smoking", { selector: "p" }).catch(() => {});
     fireEvent.click(btns[1]);
 
     await waitFor(() => {
-      expect(screen.getAllByText("Türkçe (referans, salt okunur)").length).toBe(1);
+      expect(screen.getAllByText("English (ana içerik, salt okunur)").length).toBe(1);
     });
-    expect(screen.getByText("Evcil hayvan yasak", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByText("No pets allowed", { selector: "p" })).toBeInTheDocument();
   });
 
   it("7) EN tab çalışıyor (varsayılan aktif)", async () => {
@@ -163,7 +163,7 @@ describe("RulesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    expect(await screen.findByLabelText("English")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Türkçe")).toBeInTheDocument();
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
@@ -172,7 +172,7 @@ describe("RulesPage — Phase 10D Batch 3 — panel açma/kapama + tab mekaniği
     render(<RulesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    await screen.findByLabelText("English");
+    await screen.findByLabelText("Türkçe");
     expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
   });
 });
@@ -185,8 +185,8 @@ describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
         {
           id: "row-en",
           rule_id: "rule-1",
-          locale: "en",
-          title: "No smoking",
+          locale: "tr",
+          title: "Sigara içilmez",
           created_at: "2026-01-01T00:00:00.000Z",
           updated_at: "2026-01-01T00:00:00.000Z",
         },
@@ -197,8 +197,8 @@ describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    const enInput = (await screen.findByLabelText("English")) as HTMLInputElement;
-    await waitFor(() => expect(enInput.value).toBe("No smoking"));
+    const enInput = (await screen.findByLabelText("Türkçe")) as HTMLInputElement;
+    await waitFor(() => expect(enInput.value).toBe("Sigara içilmez"));
   });
 
   it("10) Kaydet → saveRuleTranslationAction doğru ruleId/locale/title ile çağrılır", async () => {
@@ -206,15 +206,15 @@ describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<RulesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "No smoking" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Sigara içilmez" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() =>
       expect(saveRuleTranslationMock).toHaveBeenCalledWith({
         ruleId: "rule-1",
-        locale: "en",
-        title: "No smoking",
+        locale: "tr",
+        title: "Sigara içilmez",
       })
     );
   });
@@ -224,7 +224,7 @@ describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<RulesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
+    const input = await screen.findByLabelText("Türkçe");
     fireEvent.change(input, { target: { value: "   " } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
@@ -238,8 +238,8 @@ describe("RulesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + kaydet",
     render(<RulesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
-    fireEvent.change(input, { target: { value: "No smoking" } });
+    const input = await screen.findByLabelText("Türkçe");
+    fireEvent.change(input, { target: { value: "Sigara içilmez" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() =>
@@ -257,7 +257,7 @@ describe("RulesPage — Phase 10D Batch 3 — regresyon + TR referans kuralı", 
     getPublicSettingsMock.mockResolvedValue(settingsWith(true));
     render(<RulesPage />);
 
-    expect(await screen.findByDisplayValue("Sigara içilmez")).toBeInTheDocument();
+    expect(await screen.findByDisplayValue("No smoking")).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /^Kaydet$/i }).length).toBe(2);
     expect(screen.getAllByRole("button", { name: /^Sil$/i }).length).toBe(2);
     expect(
@@ -271,11 +271,11 @@ describe("RulesPage — Phase 10D Batch 3 — regresyon + TR referans kuralı", 
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    const trLabel = await screen.findByText("Türkçe (referans, salt okunur)");
+    const trLabel = await screen.findByText("English (ana içerik, salt okunur)");
     const panel = trLabel.closest("div")?.parentElement as HTMLElement;
     expect(panel).toBeTruthy();
 
-    const trText = within(panel).getByText("Sigara içilmez");
+    const trText = within(panel).getByText("No smoking");
     expect(trText.tagName).not.toBe("INPUT");
     expect(trText.tagName).not.toBe("TEXTAREA");
 

@@ -89,7 +89,7 @@ import FooterWrapper from "@/app/components/layout/FooterWrapper";
  *  `id` = menu.id, `source_id` = pages.id. */
 const PAGE_ITEM = {
   id: "menu-row-1",
-  name: "Hakkımızda",
+  name: "About Us",
   href: "/tr/p/hakkimizda",
   source_type: "page",
   source_id: "page-1",
@@ -99,7 +99,7 @@ const PAGE_ITEM = {
  *  `id = pages.id` ve `source_type: "page"` ile üretir. */
 const PAGE_AUTO_ITEM = {
   id: "page-2",
-  name: "İletişim",
+  name: "Contact",
   href: "/tr/p/iletisim",
   source_type: "page",
   source_id: "page-2",
@@ -107,7 +107,7 @@ const PAGE_AUTO_ITEM = {
 
 const MANUAL_ITEM = {
   id: "m1",
-  name: "Kiralık Villalar",
+  name: "Rental Villas",
   href: "/tr/kiralik-villalar",
   source_type: "manual",
   source_id: null,
@@ -115,7 +115,7 @@ const MANUAL_ITEM = {
 
 const CATEGORY_ITEM = {
   id: "m9",
-  name: "Lüks Villa",
+  name: "Luxury Villa",
   href: "/tr/arama?villa-turleri=luks-villa",
   source_type: "category",
   source_id: "type-1",
@@ -131,12 +131,12 @@ const REGION_ITEM = {
 
 /** Entity'ye göre farklı satır döndüren `findManyForLocale` mock'u. */
 function mockTranslations(opts: {
-  page?: Record<string, { en?: string }>;
-  menu?: Record<string, { en?: string }>;
-  villaType?: Record<string, { en?: string }>;
+  page?: Record<string, { tr?: string }>;
+  menu?: Record<string, { tr?: string }>;
+  villaType?: Record<string, { tr?: string }>;
 }) {
   findManyForLocaleMock.mockImplementation(
-    (entity: string, ids: string[], locale: "en") => {
+    (entity: string, ids: string[], locale: "tr") => {
       const src =
         entity === "page"
           ? opts.page
@@ -164,7 +164,7 @@ const pageCalls = () =>
 
 beforeEach(() => {
   vi.clearAllMocks();
-  usePathnameMock.mockReturnValue("/");
+  usePathnameMock.mockReturnValue("/tr");
   getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: true });
   getMenuMock.mockResolvedValue([PAGE_ITEM]);
   findManyForLocaleMock.mockResolvedValue({ data: [], error: null });
@@ -185,7 +185,7 @@ describe("getPageTitlesByLocale — batch okuma", () => {
       expect(call[1]).toEqual(["p1", "p2", "p3", "p4", "p5"]);
     }
     expect(findManyForLocaleMock.mock.calls.map((c) => c[2]).sort()).toEqual([
-      "en",
+      "tr",
     ]);
   });
 
@@ -199,26 +199,26 @@ describe("getPageTitlesByLocale — batch okuma", () => {
     expect(findManyForLocaleMock.mock.calls[0][1]).toEqual(["p1", "p2"]);
   });
 
-  it("4) satırlar page_id → {en} haritasına dönüşür (title kolonu)", async () => {
+  it("4) satırlar page_id → {tr} haritasına dönüşür (title kolonu)", async () => {
     mockTranslations({
-      page: { "page-1": { en: "About Us" } },
+      page: { "page-1": { tr: "Hakkımızda" } },
     });
     expect(await getPageTitlesByLocale(["page-1"])).toEqual({
-      "page-1": { en: "About Us" },
+      "page-1": { tr: "Hakkımızda" },
     });
   });
 
-  it("5) BOŞ çeviri haritaya GİRMEZ → TR fallback", async () => {
+  it("5) BOŞ çeviri haritaya GİRMEZ → EN fallback", async () => {
     mockTranslations({
-      page: { "page-1": { en: "" }, "page-2": { en: "Contact" } },
+      page: { "page-1": { tr: "" }, "page-2": { tr: "İletişim" } },
     });
     expect(await getPageTitlesByLocale(["page-1", "page-2"])).toEqual({
-      "page-2": { en: "Contact" },
+      "page-2": { tr: "İletişim" },
     });
   });
 
-  it("6) WHITESPACE çeviri haritaya GİRMEZ → TR fallback", async () => {
-    mockTranslations({ page: { "page-1": { en: "\t\n " } } });
+  it("6) WHITESPACE çeviri haritaya GİRMEZ → EN fallback", async () => {
+    mockTranslations({ page: { "page-1": { tr: "\t\n " } } });
     expect(await getPageTitlesByLocale(["page-1"])).toEqual({});
   });
 
@@ -235,72 +235,72 @@ describe("getPageTitlesByLocale — batch okuma", () => {
    B) HEADER
    =============================================================== */
 describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
-  it("8) TR → canonical `pages.title` gösterilir (multilingual ayarı kapalı olsa bile); EN çevirisi SIZMAZ", async () => {
-    usePathnameMock.mockReturnValue("/tr");
+  it("8) EN → canonical `pages.title` gösterilir (multilingual ayarı kapalı olsa bile); TR çevirisi SIZMAZ", async () => {
+    usePathnameMock.mockReturnValue("/");
     getPublicSettingsMock.mockResolvedValue({ multilingual_enabled: false });
-    mockTranslations({ page: { "page-1": { en: "About Us" } } });
+    mockTranslations({ page: { "page-1": { tr: "Hakkımızda" } } });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
-    expect(screen.queryByText("About Us")).not.toBeInTheDocument();
+    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Hakkımızda")).not.toBeInTheDocument();
   });
 
-  it("9) TR path (multilingual AÇIK) → yine canonical başlık gösterilir", async () => {
-    usePathnameMock.mockReturnValue("/tr");
+  it("9) EN path (multilingual AÇIK) → yine canonical başlık gösterilir", async () => {
+    usePathnameMock.mockReturnValue("/");
     mockTranslations({
-      page: { "page-1": { en: "About Us" } },
-    });
-    render(await HeaderWrapper());
-    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
-    expect(screen.queryByText("About Us")).not.toBeInTheDocument();
-  });
-
-  it("10) EN → `page_translations.title` gösterilir", async () => {
-    mockTranslations({
-      page: { "page-1": { en: "About Us" } },
+      page: { "page-1": { tr: "Hakkımızda" } },
     });
     render(await HeaderWrapper());
     expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
     expect(screen.queryByText("Hakkımızda")).not.toBeInTheDocument();
   });
 
-  it("11) '/de' artık desteklenmiyor → varsayılan EN başlık", async () => {
+  it("10) TR → `page_translations.title` gösterilir", async () => {
+    mockTranslations({
+      page: { "page-1": { tr: "Hakkımızda" } },
+    });
+    render(await HeaderWrapper());
+    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.queryByText("About Us")).not.toBeInTheDocument();
+  });
+
+  it("11) '/de' artık desteklenmiyor → varsayılan EN (canonical) başlık", async () => {
     usePathnameMock.mockReturnValue("/de");
     mockTranslations({
-      page: { "page-1": { en: "About Us" } },
+      page: { "page-1": { tr: "Hakkımızda" } },
     });
     render(await HeaderWrapper());
     expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
     expect(screen.queryByText("Hakkımızda")).not.toBeInTheDocument();
   });
 
-  it("12) EN çevirisi YOK → TR fallback", async () => {
+  it("12) TR çevirisi YOK → EN fallback", async () => {
     mockTranslations({ page: {} });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
   });
 
-  it("14) BOŞ / WHITESPACE çeviri → TR fallback", async () => {
-    mockTranslations({ page: { "page-1": { en: "   " } } });
+  it("14) BOŞ / WHITESPACE çeviri → EN fallback", async () => {
+    mockTranslations({ page: { "page-1": { tr: "   " } } });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
   });
 
   it("15) AUTO-INCLUDE sayfa (show_in_menu) da çevrilir — aynı `source_type: 'page'` yolu", async () => {
     getMenuMock.mockResolvedValue([PAGE_AUTO_ITEM]);
-    mockTranslations({ page: { "page-2": { en: "Contact" } } });
+    mockTranslations({ page: { "page-2": { tr: "İletişim" } } });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Contact").length).toBeGreaterThan(0);
-    expect(screen.queryByText("İletişim")).not.toBeInTheDocument();
+    expect(screen.getAllByText("İletişim").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Contact")).not.toBeInTheDocument();
   });
 
   it("16) explicit + auto-include BİRLİKTE, TEK batch sorguda", async () => {
     getMenuMock.mockResolvedValue([PAGE_ITEM, PAGE_AUTO_ITEM]);
     mockTranslations({
-      page: { "page-1": { en: "About Us" }, "page-2": { en: "Contact" } },
+      page: { "page-1": { tr: "Hakkımızda" }, "page-2": { tr: "İletişim" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Contact").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("İletişim").length).toBeGreaterThan(0);
     /* locale başına 1 sorgu → 2; sayfa başına sorgu YOK (N+1 YOK). */
     expect(pageCalls()).toHaveLength(1);
     expect([...pageCalls()[0][1]].sort()).toEqual(["page-1", "page-2"]);
@@ -311,35 +311,35 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
       { ...PAGE_ITEM, children: [PAGE_AUTO_ITEM] },
     ]);
     mockTranslations({
-      page: { "page-1": { en: "About Us" }, "page-2": { en: "Contact" } },
+      page: { "page-1": { tr: "Hakkımızda" }, "page-2": { tr: "İletişim" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Contact").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("İletişim").length).toBeGreaterThan(0);
     expect(pageCalls()).toHaveLength(1);
     expect([...pageCalls()[0][1]].sort()).toEqual(["page-1", "page-2"]);
   });
 
   it("18) menüde sayfa öğesi YOKSA `page` sorgusu HİÇ atılmaz", async () => {
     getMenuMock.mockResolvedValue([MANUAL_ITEM, REGION_ITEM]);
-    mockTranslations({ menu: { m1: { en: "Rental Villas" } } });
+    mockTranslations({ menu: { m1: { tr: "Kiralık Villalar" } } });
     render(await HeaderWrapper());
     expect(pageCalls()).toHaveLength(0);
   });
 
-  it("19) çeviri okuması patlarsa header ÇÖKMEZ → TR başlık", async () => {
+  it("19) çeviri okuması patlarsa header ÇÖKMEZ → EN başlık", async () => {
     findManyForLocaleMock.mockRejectedValue(new Error("db down"));
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
   });
 
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — `/tr/p/{slug}` SLUG'ı canonical
      kalır (çevrilmez); link yalnız aktif locale prefix'ini taşır. */
   it("20) slug ÇEVRİLMEZ — `/tr/p/{slug}` canonical, prefix locale'den", async () => {
-    mockTranslations({ page: { "page-1": { en: "About Us" } } });
+    mockTranslations({ page: { "page-1": { tr: "Hakkımızda" } } });
     render(await HeaderWrapper());
-    for (const link of screen.getAllByRole("link", { name: "About Us" })) {
-      expect(link).toHaveAttribute("href", "/p/hakkimizda");
+    for (const link of screen.getAllByRole("link", { name: "Hakkımızda" })) {
+      expect(link).toHaveAttribute("href", "/tr/p/hakkimizda");
     }
   });
 });
@@ -350,23 +350,23 @@ describe("HeaderWrapper — CMS sayfa menü öğeleri", () => {
 describe("İzolasyon — category / manual / region", () => {
   it("21) `page` öğesi `menu_translations` KULLANMAZ", async () => {
     mockTranslations({
-      page: { "page-1": { en: "About Us" } },
+      page: { "page-1": { tr: "Hakkımızda" } },
       /* Aynı id için bir menü çevirisi "varmış" gibi davranılır. */
-      menu: { "menu-row-1": { en: "WRONG" } },
+      menu: { "menu-row-1": { tr: "WRONG" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
     expect(screen.queryByText("WRONG")).not.toBeInTheDocument();
   });
 
   it("22) `category` öğesi `page_translations` KULLANMAZ — villa tipi çevirisi korunur", async () => {
     getMenuMock.mockResolvedValue([CATEGORY_ITEM]);
     mockTranslations({
-      villaType: { "type-1": { en: "Luxury Villa" } },
-      page: { "type-1": { en: "WRONG" } },
+      villaType: { "type-1": { tr: "Lüks Villa" } },
+      page: { "type-1": { tr: "WRONG" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Luxury Villa").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lüks Villa").length).toBeGreaterThan(0);
     expect(screen.queryByText("WRONG")).not.toBeInTheDocument();
     expect(pageCalls()).toHaveLength(0);
   });
@@ -374,18 +374,18 @@ describe("İzolasyon — category / manual / region", () => {
   it("23) `manual` menü çevirisi BİREBİR korunur", async () => {
     getMenuMock.mockResolvedValue([MANUAL_ITEM, PAGE_ITEM]);
     mockTranslations({
-      menu: { m1: { en: "Rental Villas" } },
-      page: { "page-1": { en: "About Us" } },
+      menu: { m1: { tr: "Kiralık Villalar" } },
+      page: { "page-1": { tr: "Hakkımızda" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
   });
 
   it("24) `region` canonical kalır ve `page` sorgusuna GİRMEZ", async () => {
     getMenuMock.mockResolvedValue([REGION_ITEM, PAGE_ITEM]);
     mockTranslations({
-      page: { "page-1": { en: "About Us" }, "loc-1": { en: "WRONG" } },
+      page: { "page-1": { tr: "Hakkımızda" }, "loc-1": { tr: "WRONG" } },
     });
     render(await HeaderWrapper());
     expect(screen.getAllByText("Kalkan").length).toBeGreaterThan(0);
@@ -397,14 +397,14 @@ describe("İzolasyon — category / manual / region", () => {
   it("25) üç kaynak birlikte — her biri KENDİ tablosundan, 3 ayrı batch", async () => {
     getMenuMock.mockResolvedValue([MANUAL_ITEM, CATEGORY_ITEM, PAGE_ITEM]);
     mockTranslations({
-      menu: { m1: { en: "Rental Villas" } },
-      villaType: { "type-1": { en: "Luxury Villa" } },
-      page: { "page-1": { en: "About Us" } },
+      menu: { m1: { tr: "Kiralık Villalar" } },
+      villaType: { "type-1": { tr: "Lüks Villa" } },
+      page: { "page-1": { tr: "Hakkımızda" } },
     });
     render(await HeaderWrapper());
-    expect(screen.getAllByText("Rental Villas").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Luxury Villa").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("About Us").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Kiralık Villalar").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lüks Villa").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Hakkımızda").length).toBeGreaterThan(0);
     /* 3 entity × 1 locale = 3 sorgu; öğe başına sorgu YOK. */
     expect(findManyForLocaleMock).toHaveBeenCalledTimes(3);
   });
@@ -417,14 +417,14 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
   const CORP_PAGES = [
     {
       id: "page-1",
-      title: "Hakkımızda",
+      title: "About Us",
       slug: "hakkimizda",
       menu_order: 1,
       created_at: "2026-01-01",
     },
     {
       id: "page-2",
-      title: "İletişim",
+      title: "Contact",
       slug: "iletisim",
       menu_order: 2,
       created_at: "2026-01-02",
@@ -435,12 +435,12 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
     findActivePagesMock.mockResolvedValue({ data: CORP_PAGES });
   });
 
-  it("26) TR → canonical başlıklar", async () => {
-    usePathnameMock.mockReturnValue("/tr");
-    mockTranslations({ page: { "page-1": { en: "About Us" } } });
+  it("26) EN → canonical başlıklar", async () => {
+    usePathnameMock.mockReturnValue("/");
+    mockTranslations({ page: { "page-1": { tr: "Hakkımızda" } } });
     render(await FooterWrapper());
-    expect(screen.getByText("Hakkımızda")).toBeInTheDocument();
-    expect(screen.queryByText("About Us")).not.toBeInTheDocument();
+    expect(screen.getByText("About Us")).toBeInTheDocument();
+    expect(screen.queryByText("Hakkımızda")).not.toBeInTheDocument();
   });
 
   it("27) multilingual KAPALI olsa bile çeviri okunur (URL yapısı gereği iki dilli site)", async () => {
@@ -449,29 +449,29 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
     expect(findManyForLocaleMock).toHaveBeenCalled();
   });
 
-  it("28) EN → çevrilmiş başlıklar", async () => {
+  it("28) TR → çevrilmiş başlıklar", async () => {
     mockTranslations({
       page: {
-        "page-1": { en: "About Us" },
-        "page-2": { en: "Contact" },
+        "page-1": { tr: "Hakkımızda" },
+        "page-2": { tr: "İletişim" },
       },
-    });
-    render(await FooterWrapper());
-    expect(screen.getByText("About Us")).toBeInTheDocument();
-    expect(screen.getByText("Contact")).toBeInTheDocument();
-  });
-
-  it("30) çeviri yok / boş / whitespace → TR fallback", async () => {
-    mockTranslations({
-      page: { "page-1": { en: "  " } /* page-2: hiç çeviri yok */ },
     });
     render(await FooterWrapper());
     expect(screen.getByText("Hakkımızda")).toBeInTheDocument();
     expect(screen.getByText("İletişim")).toBeInTheDocument();
   });
 
+  it("30) çeviri yok / boş / whitespace → EN fallback", async () => {
+    mockTranslations({
+      page: { "page-1": { tr: "  " } /* page-2: hiç çeviri yok */ },
+    });
+    render(await FooterWrapper());
+    expect(screen.getByText("About Us")).toBeInTheDocument();
+    expect(screen.getByText("Contact")).toBeInTheDocument();
+  });
+
   it("31) TEK batch sorgu — sayfa başına sorgu YOK (N+1 YOK)", async () => {
-    mockTranslations({ page: { "page-1": { en: "About Us" } } });
+    mockTranslations({ page: { "page-1": { tr: "Hakkımızda" } } });
     render(await FooterWrapper());
     expect(pageCalls()).toHaveLength(1);
     expect([...pageCalls()[0][1]].sort()).toEqual(["page-1", "page-2"]);
@@ -480,51 +480,51 @@ describe("FooterWrapper + Footer — Kurumsal CMS sayfaları", () => {
   /* 🛡️ NAVIGATION LOCALE PERSISTENCE — `/tr/p/{slug}` SLUG'ı canonical
      kalır (çevrilmez); link yalnız aktif locale prefix'ini taşır. */
   it("32) slug ÇEVRİLMEZ — `/tr/p/{slug}` canonical, prefix locale'den", async () => {
-    mockTranslations({ page: { "page-1": { en: "About Us" } } });
+    mockTranslations({ page: { "page-1": { tr: "Hakkımızda" } } });
     render(await FooterWrapper());
-    expect(screen.getByRole("link", { name: "About Us" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Hakkımızda" })).toHaveAttribute(
       "href",
-      "/p/hakkimizda"
+      "/tr/p/hakkimizda"
     );
   });
 
-  it("33) çeviri okuması patlarsa footer ÇÖKMEZ → TR başlık", async () => {
+  it("33) çeviri okuması patlarsa footer ÇÖKMEZ → EN başlık", async () => {
     findManyForLocaleMock.mockRejectedValue(new Error("db down"));
     render(await FooterWrapper());
-    expect(screen.getByText("Hakkımızda")).toBeInTheDocument();
+    expect(screen.getByText("About Us")).toBeInTheDocument();
   });
 
   it("34) SIRALAMA değişmez (menu_order ASC)", async () => {
     mockTranslations({
-      page: { "page-1": { en: "About Us" }, "page-2": { en: "Contact" } },
+      page: { "page-1": { tr: "Hakkımızda" }, "page-2": { tr: "İletişim" } },
     });
     render(await FooterWrapper());
     /* 🛡️ aria-label artık dictionary'den (`footer.corporateAriaLabel`);
-       TR değeri "Kurumsal" ile BİREBİR aynı. Bu test beforeEach'ten
-       gelen `/` pathname'i ile render ediliyor (EN başlıklar
-       bekleniyor) → EN etiketiyle sorgulanır. */
+       EN değeri "Kurumsal" ile BİREBİR aynı. Bu test beforeEach'ten
+       gelen `/` pathname'i ile render ediliyor (TR başlıklar
+       bekleniyor) → TR etiketiyle sorgulanır. */
     const nav = screen.getByRole("navigation", {
-      name: getDictionary("en").footer.corporateAriaLabel,
+      name: getDictionary("tr").footer.corporateAriaLabel,
     });
     const texts = Array.from(nav.querySelectorAll("a")).map(
       (a) => a.textContent
     );
-    expect(texts).toEqual(["About Us", "Contact"]);
+    expect(texts).toEqual(["Hakkımızda", "İletişim"]);
   });
 
   /* Footer artık villa tipi bağlantısı basmaz (Keşfet alanı kaldırıldı);
      kurumsal sayfa çevirisi ETKİLENMEZ. */
   it("35) kurumsal sayfa çevirisi korunur; villa tipi footer'da basılmaz", async () => {
     findAllVillaTypesMock.mockResolvedValue({
-      data: [{ id: "type-1", name: "Lüks Villa", slug: "luks-villa" }],
+      data: [{ id: "type-1", name: "Luxury Villa", slug: "luks-villa" }],
     });
     mockTranslations({
-      villaType: { "type-1": { en: "Luxury Villa" } },
-      page: { "page-1": { en: "About Us" } },
+      villaType: { "type-1": { tr: "Lüks Villa" } },
+      page: { "page-1": { tr: "Hakkımızda" } },
     });
     render(await FooterWrapper());
-    expect(screen.queryByText("Luxury Villa")).not.toBeInTheDocument();
-    expect(screen.getByText("About Us")).toBeInTheDocument();
+    expect(screen.queryByText("Lüks Villa")).not.toBeInTheDocument();
+    expect(screen.getByText("Hakkımızda")).toBeInTheDocument();
   });
 
   it("36) sayfa YOKSA `page` sorgusu atılmaz", async () => {

@@ -104,7 +104,7 @@ vi.mock("@/app/components/ui/PageHero", () => ({
 /* ---------------- fixture ---------------- */
 const UUID = "11111111-2222-4333-8444-555555555555";
 const TYPES = [
-  { id: "t-muh", name: "Muhafazakar Villalar", slug: "muhafazakar-villalar", cover_image: null },
+  { id: "t-muh", name: "Conservative Villas", slug: "muhafazakar-villalar", cover_image: null },
   { id: "t-bos", name: "Boş Kategori", slug: "bos-kategori", cover_image: null },
   { id: "t-noslug", name: "Slugsuz", slug: null, cover_image: null },
 ];
@@ -131,7 +131,7 @@ beforeEach(() => {
   locationsMock.mockResolvedValue(LOCATIONS);
   villasMock.mockResolvedValue(VILLAS);
   settingsMock.mockResolvedValue({ site_name: "Balayı Villanız", multilingual_enabled: false });
-  typeNamesMock.mockResolvedValue({ "t-muh": { en: "Conservative Villas" } });
+  typeNamesMock.mockResolvedValue({ "t-muh": { tr: "Muhafazakar Villalar" } });
   typeRelsMock.mockImplementation(async (ids: string[]) => ({
     data: ids[0] === "t-muh"
       ? ["v1", "v2", "v3", "v99-inactive"].map((villa_id) => ({ villa_id, type_id: "t-muh" }))
@@ -260,7 +260,7 @@ describe("C) server çözümü", () => {
 describe("D) metadata", () => {
   const sp = (o: Record<string, string> = {}) => Promise.resolve(o);
 
-  it("kategori TR: title/description/canonical (/tr/...)/OG; hreflang her zaman üretilir", async () => {
+  it("kategori TR: başlık Türkçe çeviriden; title/description/canonical (/tr/...)/OG; hreflang her zaman üretilir", async () => {
     const { buildTaxonomyLandingMetadata } = await import(
       "@/app/components/search/TaxonomyLandingPageBody"
     );
@@ -292,7 +292,7 @@ describe("D) metadata", () => {
     );
   });
 
-  it("EN kategori adı mevcut çeviri sisteminden; canonical prefix'siz ; hreflang açık", async () => {
+  it("EN kategori adı canonical (İngilizce ana içerik); canonical prefix'siz ; hreflang açık", async () => {
     settingsMock.mockResolvedValue({ site_name: "Balayı Villanız", multilingual_enabled: true });
     const { buildTaxonomyLandingMetadata } = await import(
       "@/app/components/search/TaxonomyLandingPageBody"

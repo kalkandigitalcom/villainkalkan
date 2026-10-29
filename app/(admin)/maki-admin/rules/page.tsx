@@ -19,6 +19,7 @@ import {
    EDİLMEDİ. */
 import { getPublicSettingsAction } from "@/app/services/settings.action";
 import RuleTranslationsPanel from "./RuleTranslationsPanel";
+import { isMultilingualEnabled } from "@/lib/i18n/config";
 
 export default function RulesPage() {
   const toast = useNotify();
@@ -47,7 +48,7 @@ export default function RulesPage() {
     (async () => {
       const settings = await getPublicSettingsAction();
       if (cancelled) return;
-      setMultilingualEnabled(!!settings?.multilingual_enabled);
+      setMultilingualEnabled(isMultilingualEnabled(settings));
     })();
 
     return () => {

@@ -12,6 +12,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
 import { ARCHIVE_TR_PATH } from "@/app/components/search/KiralikVillalarPageBody";
+import { SITE_NAME_FALLBACK } from "@/lib/site-name-fallback";
 
 /* ===============================================================
    🛡️ /kiralik-villalar METADATA (TR / EN / DE ORTAK)
@@ -45,7 +46,7 @@ export async function buildVillasArchiveMetadata(
   const dict = getDictionary(locale).villasArchive;
 
   const settings = await getCachedSettings().catch(() => null);
-  const brand = settings?.site_name?.trim() || "Villa Kiralama";
+  const brand = settings?.site_name?.trim() || SITE_NAME_FALLBACK;
   const title = formatDictionaryString(dict.metaTitle, { brand });
   const description = dict.metaDescription;
 

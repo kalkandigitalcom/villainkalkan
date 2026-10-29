@@ -22,7 +22,7 @@ vi.mock("@/lib/db/translation.repository.server", () => ({
 const VALID_ROW = {
   id: "row-1",
   include_id: "include-uuid-1",
-  locale: "en",
+  locale: "tr",
   title: "Test Include",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
@@ -37,14 +37,14 @@ beforeEach(() => {
 });
 
 describe("upsertPriceIncludeTranslation", () => {
-  it("EN upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
+  it("TR upsert — geçerli girdi repository.upsertOne'a doğru argümanlarla ulaşır", async () => {
     const { upsertPriceIncludeTranslation } = await import(
       "@/app/services/price-include-item-translation.service"
     );
 
     const result = await upsertPriceIncludeTranslation({
       includeId: "include-uuid-1",
-      locale: "en",
+      locale: "tr",
       title: "Test Include",
     });
 
@@ -52,7 +52,7 @@ describe("upsertPriceIncludeTranslation", () => {
     expect(upsertOneMock).toHaveBeenCalledWith(
       "price_include_item",
       "include-uuid-1",
-      "en",
+      "tr",
       { title: "Test Include" }
     );
   });
@@ -72,19 +72,19 @@ describe("upsertPriceIncludeTranslation", () => {
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("mevcut EN çeviriyi günceller", async () => {
+  it("mevcut TR çeviriyi günceller", async () => {
     const { upsertPriceIncludeTranslation } = await import(
       "@/app/services/price-include-item-translation.service"
     );
 
-    await upsertPriceIncludeTranslation({ includeId: "include-uuid-1", locale: "en", title: "V1" });
-    await upsertPriceIncludeTranslation({ includeId: "include-uuid-1", locale: "en", title: "V2 güncel" });
+    await upsertPriceIncludeTranslation({ includeId: "include-uuid-1", locale: "tr", title: "V1" });
+    await upsertPriceIncludeTranslation({ includeId: "include-uuid-1", locale: "tr", title: "V2 güncel" });
 
     expect(upsertOneMock).toHaveBeenCalledTimes(2);
     expect(upsertOneMock).toHaveBeenLastCalledWith(
       "price_include_item",
       "include-uuid-1",
-      "en",
+      "tr",
       { title: "V2 güncel" }
     );
   });
@@ -104,14 +104,14 @@ describe("upsertPriceIncludeTranslation", () => {
     expect(upsertOneMock).not.toHaveBeenCalled();
   });
 
-  it("locale 'tr' reddedilir", async () => {
+  it("locale 'en' reddedilir", async () => {
     const { upsertPriceIncludeTranslation } = await import(
       "@/app/services/price-include-item-translation.service"
     );
 
     const result = await upsertPriceIncludeTranslation({
       includeId: "include-uuid-1",
-      locale: "tr",
+      locale: "en",
       title: "Türkçe Başlık",
     });
 
@@ -126,7 +126,7 @@ describe("upsertPriceIncludeTranslation", () => {
 
     const result = await upsertPriceIncludeTranslation({
       includeId: "   ",
-      locale: "en",
+      locale: "tr",
       title: "Test",
     });
 
@@ -141,7 +141,7 @@ describe("upsertPriceIncludeTranslation", () => {
 
     const result = await upsertPriceIncludeTranslation({
       includeId: "include-uuid-1",
-      locale: "en",
+      locale: "tr",
       title: "   ",
     });
 
@@ -156,7 +156,7 @@ describe("upsertPriceIncludeTranslation", () => {
 
     const result = await upsertPriceIncludeTranslation({
       includeId: "include-uuid-1",
-      locale: "en",
+      locale: "tr",
       title: "Test Include",
     });
 
@@ -165,11 +165,11 @@ describe("upsertPriceIncludeTranslation", () => {
 });
 
 describe("getPriceIncludeTranslations", () => {
-  it("yalnız en satırlarını döner (tr/de varsa filtrelenir)", async () => {
+  it("yalnız tr satırlarını döner (en/de varsa filtrelenir)", async () => {
     findAllForParentMock.mockResolvedValueOnce({
       data: [
-        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "en" },
+        { ...VALID_ROW, locale: "tr" },
         { ...VALID_ROW, locale: "de" },
       ],
       error: null,
@@ -183,7 +183,7 @@ describe("getPriceIncludeTranslations", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rows.map((r) => r.locale).sort()).toEqual(["en"]);
+      expect(result.rows.map((r) => r.locale).sort()).toEqual(["tr"]);
     }
   });
 

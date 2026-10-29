@@ -50,9 +50,9 @@ beforeEach(() => {
 });
 
 const enVillaRow = {
-  id: "t-en-1",
+  id: "t-tr-1",
   villa_id: "villa-uuid-1",
-  locale: "en" as const,
+  locale: "tr" as const,
   title: "Villa In Love",
   description: null,
   seo_title: null,
@@ -62,22 +62,22 @@ const enVillaRow = {
 };
 
 describe("getTranslation", () => {
-  /* --- 1) TR locale --- */
-  it("1) locale='tr' → findOne HİÇ ÇAĞRILMAZ, null döner (TR için gereksiz DB bağımlılığı yok)", async () => {
-    const result = await getTranslation("villa", "villa-uuid-1", "tr");
+  /* --- 1) EN locale --- */
+  it("1) locale='en' → findOne HİÇ ÇAĞRILMAZ, null döner (EN için gereksiz DB bağımlılığı yok)", async () => {
+    const result = await getTranslation("villa", "villa-uuid-1", "en");
     expect(result).toBeNull();
     expect(findOneMock).not.toHaveBeenCalled();
   });
 
-  /* --- 2) EN + mevcut --- */
-  it("2) locale='en' + çeviri mevcut → satırın TAMAMINI döner", async () => {
+  /* --- 2) TR + mevcut --- */
+  it("2) locale='tr' + çeviri mevcut → satırın TAMAMINI döner", async () => {
     findOneMock.mockResolvedValue({ data: enVillaRow, error: null });
-    const result = await getTranslation("villa", "villa-uuid-1", "en");
+    const result = await getTranslation("villa", "villa-uuid-1", "tr");
     expect(result).toEqual(enVillaRow);
   });
 
   /* --- 3) DE artık desteklenmiyor --- */
-  it("3) locale='de' (DE desteği kaldırıldı) → 'tr'ye düşer, findOne ÇAĞRILMAZ, null döner", async () => {
+  it("3) locale='de' (DE desteği kaldırıldı) → 'en'ye düşer, findOne ÇAĞRILMAZ, null döner", async () => {
     const result = await getTranslation(
       "villa",
       "villa-uuid-1",
@@ -88,15 +88,15 @@ describe("getTranslation", () => {
     expect(findOneMock).not.toHaveBeenCalled();
   });
 
-  /* --- 4) EN yok --- */
-  it("4) locale='en' + çeviri YOK (0 satır) → null döner", async () => {
+  /* --- 4) TR yok --- */
+  it("4) locale='tr' + çeviri YOK (0 satır) → null döner", async () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
-    const result = await getTranslation("villa", "villa-uuid-2", "en");
+    const result = await getTranslation("villa", "villa-uuid-2", "tr");
     expect(result).toBeNull();
   });
 
   /* --- 6) Geçersiz locale --- */
-  it("6) geçersiz locale ('fr') → toLocale ile 'tr'ye düşer, findOne ÇAĞRILMAZ, null döner", async () => {
+  it("6) geçersiz locale ('fr') → toLocale ile 'en'ye düşer, findOne ÇAĞRILMAZ, null döner", async () => {
     const result = await getTranslation(
       "villa",
       "villa-uuid-1",
@@ -113,7 +113,7 @@ describe("getTranslation", () => {
       // @ts-expect-error kasıtlı geçersiz entity — runtime güvenliği test edilir
       "villa_rule",
       "rule-uuid-1",
-      "en"
+      "tr"
     );
     expect(result).toBeNull();
     expect(findOneMock).not.toHaveBeenCalled();
@@ -122,9 +122,9 @@ describe("getTranslation", () => {
   /* --- 8) Doğru parent/locale sorgusu --- */
   it("8) findOne DOĞRU (entity, parentId, resolvedLocale) argümanlarıyla çağrılır", async () => {
     findOneMock.mockResolvedValue({ data: null, error: null });
-    await getTranslation("rule_item", "rule-uuid-9", "en");
+    await getTranslation("rule_item", "rule-uuid-9", "tr");
     expect(findOneMock).toHaveBeenCalledTimes(1);
-    expect(findOneMock).toHaveBeenCalledWith("rule_item", "rule-uuid-9", "en");
+    expect(findOneMock).toHaveBeenCalledWith("rule_item", "rule-uuid-9", "tr");
   });
 
   /* --- 9) Boş tablo / tüm entity'ler güvenli ---
@@ -149,7 +149,7 @@ describe("getTranslation", () => {
     ] as const;
 
     for (const entity of entities) {
-      const result = await getTranslation(entity, "some-parent-id", "en");
+      const result = await getTranslation(entity, "some-parent-id", "tr");
       expect(result).toBeNull();
     }
     expect(findOneMock).toHaveBeenCalledTimes(entities.length);
@@ -162,13 +162,13 @@ describe("getTranslation", () => {
       error: { message: "connection lost" },
     });
     await expect(
-      getTranslation("villa", "villa-uuid-1", "en")
+      getTranslation("villa", "villa-uuid-1", "tr")
     ).resolves.toBeNull();
   });
 
   /* --- Ek: boş parentId --- */
   it("boş parentId → findOne ÇAĞRILMAZ, null döner", async () => {
-    const result = await getTranslation("villa", "", "en");
+    const result = await getTranslation("villa", "", "tr");
     expect(result).toBeNull();
     expect(findOneMock).not.toHaveBeenCalled();
   });
@@ -179,15 +179,15 @@ describe("getTranslation", () => {
    ===============================================================
    `translationRepository.findManyForLocale` mock'lanır (`findOne` ile
    AYNI mock seviyesi/desen) — GERÇEK DB'YE HİÇ DOKUNULMAZ. Bu
-   fonksiyonun BUGÜN HİÇBİR call-site'ı YOK (Phase 8D audit — EN
+   fonksiyonun BUGÜN HİÇBİR call-site'ı YOK (Phase 8D audit — TR
    villa detail'e location/features/rules/priceIncludes/distances BU
    FAZDA EKLENMEDİ); testler yalnız fonksiyonun kendi sözleşmesini
-   (TR kısayolu, boş parentIds, hata güvenliği, Map inşası) kanıtlıyor.
+   (EN kısayolu, boş parentIds, hata güvenliği, Map inşası) kanıtlıyor.
    =============================================================== */
 const featureRowA = {
   id: "tf-1",
   feature_id: "feature-uuid-1",
-  locale: "en" as const,
+  locale: "tr" as const,
   name: "Sea view",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
@@ -195,19 +195,19 @@ const featureRowA = {
 const featureRowB = {
   id: "tf-2",
   feature_id: "feature-uuid-2",
-  locale: "en" as const,
+  locale: "tr" as const,
   name: "Private pool",
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
 describe("getTranslationsForParents", () => {
-  /* a) locale='tr' → repository çağrısı yok + empty Map */
-  it("a) locale='tr' → findManyForLocale HİÇ ÇAĞRILMAZ, boş Map döner", async () => {
+  /* a) locale='en' → repository çağrısı yok + empty Map */
+  it("a) locale='en' → findManyForLocale HİÇ ÇAĞRILMAZ, boş Map döner", async () => {
     const result = await getTranslationsForParents(
       "villa_feature",
       ["feature-uuid-1", "feature-uuid-2"],
-      "tr"
+      "en"
     );
     expect(result).toBeInstanceOf(Map);
     expect(result.size).toBe(0);
@@ -219,14 +219,14 @@ describe("getTranslationsForParents", () => {
     const result = await getTranslationsForParents(
       "villa_feature",
       [],
-      "en"
+      "tr"
     );
     expect(result.size).toBe(0);
     expect(findManyForLocaleMock).not.toHaveBeenCalled();
   });
 
-  /* c) EN başarılı sonuç → Map doğru parentId'lerle oluşuyor */
-  it("c) locale='en' + çeviri satırları mevcut → Map, feature_id'leri key olarak kullanır", async () => {
+  /* c) TR başarılı sonuç → Map doğru parentId'lerle oluşuyor */
+  it("c) locale='tr' + çeviri satırları mevcut → Map, feature_id'leri key olarak kullanır", async () => {
     findManyForLocaleMock.mockResolvedValue({
       data: [featureRowA, featureRowB],
       error: null,
@@ -234,15 +234,15 @@ describe("getTranslationsForParents", () => {
     const result = await getTranslationsForParents(
       "villa_feature",
       ["feature-uuid-1", "feature-uuid-2"],
-      "en"
+      "tr"
     );
     expect(result.size).toBe(2);
     expect(result.get("feature-uuid-1")).toEqual(featureRowA);
     expect(result.get("feature-uuid-2")).toEqual(featureRowB);
   });
 
-  /* d) DE artık desteklenmiyor → TR kısayolu */
-  it("d) locale='de' (DE desteği kaldırıldı) → 'tr'ye düşer, findManyForLocale ÇAĞRILMAZ, boş Map döner", async () => {
+  /* d) DE artık desteklenmiyor → EN kısayolu */
+  it("d) locale='de' (DE desteği kaldırıldı) → 'en'ye düşer, findManyForLocale ÇAĞRILMAZ, boş Map döner", async () => {
     const result = await getTranslationsForParents(
       "villa_feature",
       ["feature-uuid-1"],
@@ -262,7 +262,7 @@ describe("getTranslationsForParents", () => {
     const result = await getTranslationsForParents(
       "villa_feature",
       ["feature-uuid-1", "feature-uuid-99"],
-      "en"
+      "tr"
     );
     expect(result.size).toBe(1);
     expect(result.has("feature-uuid-1")).toBe(true);
@@ -277,7 +277,7 @@ describe("getTranslationsForParents", () => {
       error: { message: "connection lost" },
     });
     await expect(
-      getTranslationsForParents("rule_item", ["rule-uuid-1"], "en")
+      getTranslationsForParents("rule_item", ["rule-uuid-1"], "tr")
     ).resolves.toEqual(new Map());
   });
 
@@ -289,7 +289,7 @@ describe("getTranslationsForParents", () => {
     const ruleRow1 = {
       id: "tr-1",
       rule_id: "rule-uuid-1",
-      locale: "en" as const,
+      locale: "tr" as const,
       title: "No smoking",
       created_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
@@ -297,7 +297,7 @@ describe("getTranslationsForParents", () => {
     const ruleRow2 = {
       id: "tr-2",
       rule_id: "rule-uuid-2",
-      locale: "en" as const,
+      locale: "tr" as const,
       title: "No pets",
       created_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
@@ -305,7 +305,7 @@ describe("getTranslationsForParents", () => {
     const ruleRow3 = {
       id: "tr-3",
       rule_id: "rule-uuid-3",
-      locale: "en" as const,
+      locale: "tr" as const,
       title: "No parties",
       created_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
@@ -318,14 +318,14 @@ describe("getTranslationsForParents", () => {
     const result = await getTranslationsForParents(
       "rule_item",
       ["rule-uuid-1", "rule-uuid-2", "rule-uuid-3"],
-      "en"
+      "tr"
     );
 
     expect(findManyForLocaleMock).toHaveBeenCalledTimes(1);
     expect(findManyForLocaleMock).toHaveBeenCalledWith(
       "rule_item",
       ["rule-uuid-1", "rule-uuid-2", "rule-uuid-3"],
-      "en"
+      "tr"
     );
     expect(result.size).toBe(3);
     expect(result.get("rule-uuid-1")).toEqual(ruleRow1);
@@ -338,13 +338,13 @@ describe("getTranslationsForParents", () => {
       // @ts-expect-error kasıtlı geçersiz entity — runtime güvenliği test edilir
       "villa_rule",
       ["rule-uuid-1"],
-      "en"
+      "tr"
     );
     expect(result.size).toBe(0);
     expect(findManyForLocaleMock).not.toHaveBeenCalled();
   });
 
-  it("geçersiz locale ('fr') → toLocale ile 'tr'ye düşer, findManyForLocale ÇAĞRILMAZ, boş Map döner", async () => {
+  it("geçersiz locale ('fr') → toLocale ile 'en'ye düşer, findManyForLocale ÇAĞRILMAZ, boş Map döner", async () => {
     const result = await getTranslationsForParents(
       "villa_feature",
       ["feature-uuid-1"],

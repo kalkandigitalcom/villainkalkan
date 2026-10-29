@@ -58,6 +58,7 @@ const baseDTO: ReservationShareDTO = {
 async function renderShareView(overrides: Partial<ReservationShareDTO>) {
   const element = await ReservationShareView({
     data: { ...baseDTO, ...overrides },
+    locale: "tr",
   });
   return render(element);
 }

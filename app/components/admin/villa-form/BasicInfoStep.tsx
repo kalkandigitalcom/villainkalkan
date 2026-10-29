@@ -215,8 +215,8 @@ export default function BasicInfoStep({
       {/* AÇIKLAMA — Adım 2 */}
       <Section
         eyebrow="Adım 2"
-        title="Açıklama"
-        subtitle="Mülkü detaylı ve etkileyici şekilde anlat"
+        title="Açıklama (English — ana içerik)"
+        subtitle="Mülkü İngilizce, detaylı ve etkileyici şekilde anlat. Türkçe çeviri villa düzenleme ekranındaki “Türkçe Çeviri” kartından girilir."
       >
         <RichTextEditor
           value={form.description || ""}

@@ -57,7 +57,7 @@ import type {
 import { formatDateForLocale } from "@/lib/date-format";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 
 const MIN_NAME_LEN = 2;
 const MIN_COMMENT_LEN = 10;
@@ -76,7 +76,7 @@ export default function VillaReviewsSection({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale);
-  const effectiveLocale: Locale = locale ?? "tr";
+  const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
   /* Featured review header'ın altında yer alır; diğerleri liste içinde. */
   const { featured, rest } = useMemo(() => {
     const featuredIdx = reviews.findIndex((r) => r.is_featured);
@@ -311,7 +311,7 @@ function ReviewCard({
   review: VillaReviewPublic;
   locale?: Locale;
 }) {
-  const effectiveLocale: Locale = locale ?? "tr";
+  const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
   return (
     <article
       className="

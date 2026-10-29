@@ -1,5 +1,5 @@
 import {
-  DEFAULT_LOCALE,
+  ADMIN_UI_LOCALE,
   LOCALE_BCP47,
   type Locale,
 } from "@/lib/i18n/config";
@@ -44,9 +44,9 @@ export function formatCountryLabel(
   const code = iso.toUpperCase();
 
   /* 🛡️ PUBLIC ÇOKLU DİL — TR yolu BİREBİR korunur (override + library).
-     `locale` verilmediğinde de DEFAULT_LOCALE = "tr" → admin, mail ve
-     voucher çağıranlarının çıktısı DEĞİŞMEDİ. */
-  if (locale === DEFAULT_LOCALE) {
+     `getCountryLabel` locale verilmediğinde ADMIN_UI_LOCALE ("tr") kullanır
+     → admin, mail ve voucher çağıranlarının çıktısı DEĞİŞMEDİ. */
+  if (locale === ADMIN_UI_LOCALE) {
     const override = COUNTRY_DISPLAY_OVERRIDES[code];
     if (override) return override;
     return lookupLibraryName(code) || iso;

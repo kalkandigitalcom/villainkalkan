@@ -13,6 +13,8 @@
        olabilir; `javascript:`, `data:`, `//host` vb. REDDEDİLİR.
    =============================================================== */
 
+import { TRANSLATION_LOCALE } from "@/lib/i18n/config";
+
 export const POPUP_DISMISS_DURATIONS = ["session", "1h", "1d", "7d", "30d"] as const;
 export type PopupDismissDuration = (typeof POPUP_DISMISS_DURATIONS)[number];
 
@@ -76,18 +78,20 @@ export type PublicSitePopup = {
   dismiss: PopupDismissDuration;
   startsAt: string | null;
   endsAt: string | null;
-  /** EN/DE içerik (migration 096) — Türkçe fallback'i SERVER'da
+  /** Türkçe çeviri (migration 096/102) — İngilizce fallback'i SERVER'da
    *  uygulanmış hâli. Yalnız çevirisi olan diller bulunur; yoksa
-   *  o dilde yukarıdaki Türkçe alanlar gösterilir. */
+   *  o dilde yukarıdaki İngilizce (ana) alanlar gösterilir. */
   translations: Partial<Record<PopupTranslationLocale, PopupContent>>;
 };
 
 /* ---------------- ÇOKLU DİL (migration 096) ----------------
-   TR canonical = site_popup satırı. EN/DE `site_popup_translations`
-   tablosunda; boş alan → aynı alanın Türkçe değeri (alan bazında
-   fallback — projedeki settings/villa çevirileriyle aynı kural). */
+   EN canonical (ana içerik) = site_popup satırı. TR çevirisi
+   `site_popup_translations` tablosunda; boş alan → aynı alanın
+   İngilizce değeri (alan bazında fallback — projedeki settings/villa
+   çevirileriyle aynı kural). */
 
-export const POPUP_TRANSLATION_LOCALES = ["en"] as const;
+/** Popup çevirileri yalnız Türkçe; İngilizce ana içerik `site_popup` kolonlarında. */
+export const POPUP_TRANSLATION_LOCALES = [TRANSLATION_LOCALE] as const;
 export type PopupTranslationLocale = (typeof POPUP_TRANSLATION_LOCALES)[number];
 
 export function isPopupTranslationLocale(v: unknown): v is PopupTranslationLocale {
@@ -159,8 +163,8 @@ export function popupButton(
     : null;
 }
 
-/** Ziyaretçinin diline göre içerik: EN/DE için çeviri (fallback'i
- *  uygulanmış) varsa onu, yoksa Türkçe içeriği döner. Dil-bağımsız
+/** Ziyaretçinin diline göre içerik: Türkçe sayfada çeviri (fallback'i
+ *  uygulanmış) varsa onu, yoksa İngilizce ana içeriği döner. Dil-bağımsız
  *  alanlar (görsel, sürüm, kapsam, tarih, süre) AYNEN kalır. */
 export function localizeSitePopup(popup: PublicSitePopup, locale: string): PublicSitePopup {
   if (!isPopupTranslationLocale(locale)) return popup;

@@ -1,4 +1,5 @@
 import "server-only";
+import { TRANSLATION_LOCALES } from "@/lib/i18n/config";
 
 import { getTranslationsForParents } from "@/lib/i18n/get-translation.server";
 import type {
@@ -28,7 +29,7 @@ import type {
    okumak GEREKSİZ bir sorgu olur (bkz. HeaderWrapper/FooterWrapper).
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = TRANSLATION_LOCALES;
 
 /**
  * Verilen villa tipi id'leri için `{ typeId: { en?, de? } }` haritası.

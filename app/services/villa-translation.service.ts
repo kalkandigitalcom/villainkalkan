@@ -1,6 +1,7 @@
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import { villaAdminRepository } from "@/lib/db/villa.repository.server";
 import type { VillaTranslationRow } from "@/lib/i18n/translations.types";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /**
  * 🛡️ PHASE 10A — Admin Villa Translation UI
@@ -15,10 +16,11 @@ import type { VillaTranslationRow } from "@/lib/i18n/translations.types";
  * `upsertOne` yorum bloğu).
  */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 const MAX_DESCRIPTION_LEN = 5000;
@@ -68,7 +70,7 @@ export async function upsertVillaTranslation(
   if (!villaId) return { ok: false, error: "Geçersiz villa" };
 
   if (!isWritableLocale(input.locale)) {
-    return { ok: false, error: "Geçersiz dil — yalnız 'en' desteklenir" };
+    return { ok: false, error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir" };
   }
   const locale = input.locale;
 

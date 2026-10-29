@@ -3,6 +3,8 @@ import { Manrope, Montserrat, Geist_Mono } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
+import HtmlLangSync from "@/app/components/layout/HtmlLangSync";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { CurrencyProvider } from "@/app/context/CurrencyContext";
 import { getCachedDisplayRates, getCachedSettings } from "@/lib/cache.helpers";
 import { siteMetadataBase } from "@/lib/seo";
@@ -76,10 +78,10 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getCachedSettings().catch(() => null);
   const title =
-    settings?.default_meta_title?.trim() || "Villa Kiralama — Lüks Villa Deneyimi";
+    settings?.default_meta_title?.trim() || "Luxury Villa Rentals in Kalkan";
   const description =
     settings?.default_meta_description?.trim() ||
-    "Akdeniz'in seçkin villalarında özel havuz, deniz manzarası ve butik konfor. Hayalindeki tatili keşfet.";
+    "Handpicked Mediterranean villas with private pools, sea views and boutique comfort. Discover your dream holiday.";
   /* 🛡️ Aşama A — resolveAssetUrl normalize: FULL URL (legacy) ve
      relative path (yeni) için tutarlı render URL'i üretir. */
   const ogImage =
@@ -154,11 +156,12 @@ export default async function RootLayout({
   const initialRates = await getCachedDisplayRates().catch(() => null);
   return (
     <html
-      lang="tr"
+      lang={DEFAULT_LOCALE}
       className={`${manrope.variable} ${montserrat.variable} ${geistMono.variable}`}
     >
       <head />
       <body className="min-h-screen bg-[var(--color-ivory)] text-[var(--color-stone-900)] antialiased font-sans">
+        <HtmlLangSync />
         <CurrencyProvider initialRates={initialRates}>{children}</CurrencyProvider>
       </body>
     </html>

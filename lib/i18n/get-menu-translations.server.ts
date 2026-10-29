@@ -1,4 +1,5 @@
 import "server-only";
+import { TRANSLATION_LOCALES } from "@/lib/i18n/config";
 
 import { getTranslationsForParents } from "@/lib/i18n/get-translation.server";
 import type {
@@ -38,7 +39,7 @@ import type {
    ⚠️ Yalnız GÖRÜNEN AD. href/slug/source_id bu dosyaya HİÇ girmez.
    =============================================================== */
 
-const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = ["en"];
+const TRANSLATABLE_LOCALES: readonly TranslatableLocale[] = TRANSLATION_LOCALES;
 
 /**
  * Verilen menü satırı id'leri için `{ menuId: { en?, de? } }` haritası.

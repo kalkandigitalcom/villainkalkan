@@ -122,7 +122,7 @@ async function selectFutureDateRange() {
 async function openModalAndSelectDates(poolHeatingFee: number | null) {
   mockFetch(poolHeatingFee);
   render(
-    <VillaCardBookingModal
+    <VillaCardBookingModal locale="tr"
       isOpen={true}
       onClose={vi.fn()}
       villaId="v1"
@@ -194,7 +194,7 @@ describe("VillaCardBookingModal — havuz ısıtma veri zinciri (availability AP
   it("4) tarih henüz seçilmemişken (fee>0 olsa bile) checkbox render edilmez", async () => {
     mockFetch(1000);
     render(
-      <VillaCardBookingModal
+      <VillaCardBookingModal locale="tr"
         isOpen={true}
         onClose={vi.fn()}
         villaId="v1"

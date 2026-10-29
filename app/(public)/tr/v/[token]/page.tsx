@@ -20,7 +20,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ token: string }>;
 }): Promise<Metadata> {
-  return buildPrivateVillaMetadata(params);
+  return buildPrivateVillaMetadata(params, "tr");
 }
 
 export default async function PrivateVillaDetail({
@@ -33,5 +33,5 @@ export default async function PrivateVillaDetail({
     end?: string | string[];
   }>;
 }) {
-  return <PrivateVillaPageBody params={params} searchParams={searchParams} />;
+  return <PrivateVillaPageBody params={params} searchParams={searchParams} locale="tr" />;
 }

@@ -91,7 +91,7 @@ function renderCard(opts: {
       cleaningFee={opts.cleaningFee ?? 0}
       cleaningCurrency="TRY"
       cleaningLimit={0}
-      locale={opts.locale}
+      locale={opts.locale ?? "tr"}
     />
   );
 }

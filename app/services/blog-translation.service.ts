@@ -2,6 +2,7 @@ import { translationRepository } from "@/lib/db/translation.repository.server";
 import { blogServerRepository } from "@/lib/db/blog.repository.server";
 import type { BlogPostTranslationRow } from "@/lib/i18n/translations.types";
 import { sanitizeHtml, stripHtml } from "@/lib/html-sanitize";
+import { TRANSLATION_LOCALE, type TranslationLocale } from "@/lib/i18n/config";
 
 /**
  * 🛡️ MIGRATION 089 — Admin Blog (blog_posts) Çeviri Servisi
@@ -22,10 +23,11 @@ import { sanitizeHtml, stripHtml } from "@/lib/html-sanitize";
  * alanlar `null` yazılır → public tarafta TR'ye fallback.
  */
 
-export type WritableTranslationLocale = "en";
+/** Yazılabilir çeviri dili: Türkçe (İngilizce ana içerik canonical kolonlarda). */
+export type WritableTranslationLocale = TranslationLocale;
 
 function isWritableLocale(value: unknown): value is WritableTranslationLocale {
-  return value === "en";
+  return value === TRANSLATION_LOCALE;
 }
 
 /* Limitler `page-translation.service.ts` ile AYNI — blog gövdesi CMS
@@ -104,7 +106,7 @@ export async function upsertBlogTranslation(
   if (!isWritableLocale(input.locale)) {
     return {
       ok: false,
-      error: "Geçersiz dil — yalnız 'en' desteklenir",
+      error: "Geçersiz dil — yalnız 'tr' (Türkçe çeviri) desteklenir",
     };
   }
   const locale = input.locale;

@@ -22,5 +22,5 @@ export default async function SharedVillaListPage({
   /* Next.js 16 async params kontratı. */
   params: Promise<{ token: string }>;
 }) {
-  return <SharedListPageBody params={params} />;
+  return <SharedListPageBody params={params} locale="tr" />;
 }

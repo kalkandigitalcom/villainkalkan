@@ -63,7 +63,7 @@ import PriceIncludesPage from "@/app/(admin)/maki-admin/price-includes/page";
 
 const ITEMS = [
   { id: "inc-1", title: "WiFi" },
-  { id: "inc-2", title: "Otopark" },
+  { id: "inc-2", title: "Parking" },
 ];
 
 function settingsWith(multilingual_enabled: boolean | null) {
@@ -89,7 +89,7 @@ beforeEach(() => {
     row: {
       id: "row-1",
       include_id: "inc-1",
-      locale: "en",
+      locale: "tr",
       title: "WiFi",
       created_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
@@ -98,24 +98,24 @@ beforeEach(() => {
 });
 
 describe("PriceIncludesPage — Phase 10D Batch 3 — çeviri UI görünürlüğü", () => {
-  it("1) multilingual_enabled=false → 'Çeviriler' butonu RENDER EDİLMEZ", async () => {
+  it("1) multilingual_enabled=false → 'Çeviriler' butonu YİNE render edilir (site yapısal olarak iki dilli)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(false));
     render(<PriceIncludesPage />);
 
     expect(await screen.findByDisplayValue("WiFi")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 
-  it("2) multilingual_enabled=null → fail-safe KAPALI, buton görünmez", async () => {
+  it("2) multilingual_enabled=null → buton YİNE görünür (Türkçe çeviri her zaman düzenlenebilir)", async () => {
     getPublicSettingsMock.mockResolvedValue(settingsWith(null));
     render(<PriceIncludesPage />);
 
     expect(await screen.findByDisplayValue("WiFi")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /çevirileri/i })
-    ).not.toBeInTheDocument();
+      (await screen.findAllByRole("button", { name: /çevirileri/i })).length
+    ).toBeGreaterThan(0);
   });
 
   it("3) multilingual_enabled=true → 'Çeviriler' butonları render edilir", async () => {
@@ -135,7 +135,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — panel açma/kapama + tab m
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
 
-    expect(await screen.findByText("Türkçe (referans, salt okunur)")).toBeInTheDocument();
+    expect(await screen.findByText("English (ana içerik, salt okunur)")).toBeInTheDocument();
   });
 
   it("5) Yalnız ilgili satırın paneli açılır", async () => {
@@ -144,9 +144,9 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — panel açma/kapama + tab m
 
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
-    await screen.findByText("Türkçe (referans, salt okunur)");
+    await screen.findByText("English (ana içerik, salt okunur)");
 
-    expect(screen.getAllByText("Türkçe (referans, salt okunur)").length).toBe(1);
+    expect(screen.getAllByText("English (ana içerik, salt okunur)").length).toBe(1);
   });
 
   it("6) İkinci satıra basınca önceki panel kapanır (tek panel açık)", async () => {
@@ -155,13 +155,13 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — panel açma/kapama + tab m
 
     const btns = await screen.findAllByRole("button", { name: /çevirileri/i });
     fireEvent.click(btns[0]);
-    await screen.findByText("Türkçe (referans, salt okunur)");
+    await screen.findByText("English (ana içerik, salt okunur)");
     fireEvent.click(btns[1]);
 
     await waitFor(() => {
-      expect(screen.getAllByText("Türkçe (referans, salt okunur)").length).toBe(1);
+      expect(screen.getAllByText("English (ana içerik, salt okunur)").length).toBe(1);
     });
-    expect(screen.getByText("Otopark", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByText("Parking", { selector: "p" })).toBeInTheDocument();
   });
 
   it("7) EN tab çalışıyor (varsayılan aktif)", async () => {
@@ -170,7 +170,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — panel açma/kapama + tab m
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    expect(await screen.findByLabelText("English")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Türkçe")).toBeInTheDocument();
     expect(screen.queryByLabelText("Deutsch")).not.toBeInTheDocument();
   });
 
@@ -179,7 +179,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — panel açma/kapama + tab m
     render(<PriceIncludesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    await screen.findByLabelText("English");
+    await screen.findByLabelText("Türkçe");
     expect(screen.queryByRole("button", { name: "Deutsch" })).not.toBeInTheDocument();
     expect(screen.queryByText("Deutsch")).not.toBeInTheDocument();
   });
@@ -193,7 +193,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + 
         {
           id: "row-en",
           include_id: "inc-1",
-          locale: "en",
+          locale: "tr",
           title: "WiFi",
           created_at: "2026-01-01T00:00:00.000Z",
           updated_at: "2026-01-01T00:00:00.000Z",
@@ -205,7 +205,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + 
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    const enInput = (await screen.findByLabelText("English")) as HTMLInputElement;
+    const enInput = (await screen.findByLabelText("Türkçe")) as HTMLInputElement;
     await waitFor(() => expect(enInput.value).toBe("WiFi"));
   });
 
@@ -214,14 +214,14 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + 
     render(<PriceIncludesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
+    const input = await screen.findByLabelText("Türkçe");
     fireEvent.change(input, { target: { value: "WiFi" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
     await waitFor(() =>
       expect(savePriceIncludeTranslationMock).toHaveBeenCalledWith({
         includeId: "inc-1",
-        locale: "en",
+        locale: "tr",
         title: "WiFi",
       })
     );
@@ -232,7 +232,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + 
     render(<PriceIncludesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
+    const input = await screen.findByLabelText("Türkçe");
     fireEvent.change(input, { target: { value: "   " } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
@@ -249,7 +249,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — mevcut çeviri yükleme + 
     render(<PriceIncludesPage />);
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
-    const input = await screen.findByLabelText("English");
+    const input = await screen.findByLabelText("Türkçe");
     fireEvent.change(input, { target: { value: "WiFi" } });
     fireEvent.click(screen.getByRole("button", { name: /sürümünü kaydet/i }));
 
@@ -282,7 +282,7 @@ describe("PriceIncludesPage — Phase 10D Batch 3 — regresyon + TR referans ku
 
     fireEvent.click((await screen.findAllByRole("button", { name: /çevirileri/i }))[0]);
 
-    const trLabel = await screen.findByText("Türkçe (referans, salt okunur)");
+    const trLabel = await screen.findByText("English (ana içerik, salt okunur)");
     const panel = trLabel.closest("div")?.parentElement as HTMLElement;
     expect(panel).toBeTruthy();
 

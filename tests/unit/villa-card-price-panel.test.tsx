@@ -43,7 +43,7 @@ import VillaCard from "@/app/components/villa/VillaCard";
 
 function renderCard(withDates = false) {
   return render(
-    <VillaCard
+    <VillaCard locale="tr"
       id="v-1"
       slug="test-villa"
       title="Test Villa"

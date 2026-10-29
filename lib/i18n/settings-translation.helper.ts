@@ -1,4 +1,4 @@
-import type { Locale } from "./config";
+import { isTranslationLocale, type Locale } from "./config";
 import type {
   SettingsTranslatableField,
   SettingsTranslationsByLocale,
@@ -14,7 +14,7 @@ import type {
    layout'un statik/ISR uygunluğu DEĞİŞMEZ.
 
    FALLBACK ZİNCİRİ (§6):
-     locale === "tr"                       → canonical (AYNEN)
+     locale === DEFAULT_LOCALE (ana dil)  → canonical (AYNEN)
      çeviri var ve boş değil               → çeviri
      çeviri yok / null / "" / yalnız boşluk→ canonical (AYNEN)
 
@@ -33,7 +33,8 @@ export function resolveSettingsText(
 ): string | null | undefined {
   /* TR: canonical AYNEN (undefined/null dahil — çağıranın mevcut
      falsy kontrolü bozulmasın). */
-  if (locale === "tr") return canonical;
+  /* Ana dil (İngilizce) → canonical; yalnız çeviri dili (Türkçe) okunur. */
+  if (!isTranslationLocale(locale)) return canonical;
 
   const translated = translations?.[locale]?.[field];
   if (typeof translated === "string" && translated.trim() !== "") {

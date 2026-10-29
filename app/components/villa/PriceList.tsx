@@ -22,7 +22,7 @@ import { applyDiscountToDailyPrice, type DiscountRange } from "@/lib/price.engin
    fonksiyonlarına (`applyDiscountToDailyPrice` vb.) DOKUNULMADI. */
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
-import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 
 /* ===============================================================
    🛡️ PriceList — EDITORIAL LIST (klasik kart/tablo DEĞİL)
@@ -268,7 +268,7 @@ export default function PriceList({
   const { currency, rates } = useCurrency();
   const [openId, setOpenId] = useState<string | null>(null);
   const dict = getDictionary(locale);
-  const effectiveLocale = locale ?? "tr";
+  const effectiveLocale = locale ?? DEFAULT_LOCALE;
 
   /* Boş array yine de gelirse defansif fallback (caller outer'da
      zaten ternary ile koruyor; bu inner guard backward-compat). */
