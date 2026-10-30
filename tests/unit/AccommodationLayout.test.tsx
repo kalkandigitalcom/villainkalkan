@@ -41,7 +41,11 @@ describe("🛡️ TR REGRESYON", () => {
     render(
       <AccommodationLayout locale="tr" bedrooms={BEDROOMS} bathrooms={BATHROOMS} />
     );
-    expect(screen.getByText("Konaklama Düzeni")).toBeInTheDocument();
+    /* Görünür başlık kaldırıldı; bölüm adı aria-label olarak korunur. */
+    expect(
+      screen.getByRole("region", { name: "Konaklama Düzeni" })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Konaklama Düzeni")).not.toBeInTheDocument();
   });
 
   it("TR oda/banyo adları AYNEN gösterilir", () => {
@@ -106,18 +110,15 @@ describe("🛡️ TR REGRESYON", () => {
     const grid = container.querySelector(".grid.grid-cols-1.sm\\:grid-cols-2");
     expect(grid).toBeTruthy();
     expect(grid?.className).not.toContain("lg:grid-cols-3");
-    expect(grid?.querySelectorAll(":scope > .rounded-2xl.border")).toHaveLength(4);
+    expect(grid?.querySelectorAll(":scope > .rounded-xl.border")).toHaveLength(4);
   });
 
-  it("üst özet satırı oda/banyo/yatak toplamlarını gösterir", () => {
-    render(
+  it("başlık altı özet satırı gösterilmez", () => {
+    const { container } = render(
       <AccommodationLayout locale="tr" bedrooms={BEDROOMS} bathrooms={BATHROOMS} />
     );
-    expect(
-      screen.getByText(
-        `2 Yatak Odası · 2 Banyo · 1 ${BED_TYPE_LABELS.double}, 1 ${BED_TYPE_LABELS.bunk}`
-      )
-    ).toBeInTheDocument();
+    expect(container.querySelector("h2")).toBeNull();
+    expect(container.textContent).not.toContain("2 Yatak Odası · 2 Banyo");
   });
 });
 
@@ -149,7 +150,9 @@ describe("enum etiketleri locale-aware", () => {
         locale="en"
       />
     );
-    expect(screen.getByText("Accommodation Layout")).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Accommodation Layout" })
+    ).toBeInTheDocument();
     expect(screen.getByText("Bedroom 1")).toBeInTheDocument();
     expect(screen.getByText("Bathroom 1")).toBeInTheDocument();
     expect(screen.getByText("No details provided")).toBeInTheDocument();

@@ -787,10 +787,8 @@ describe.each(VILLA_DETAIL_ROUTES)(
       });
       render(element);
 
-      /* Özellik adı hem açıklama kartındaki etiket satırında hem
-         Özellikler bölümünde görünür (2026-10 referans düzeni). */
-      expect(screen.getAllByText(`Sea View (${locale})`)[0]).toBeInTheDocument();
-      expect(screen.getAllByText("Havuz")[0]).toBeInTheDocument();
+      expect(screen.getByText(`Sea View (${locale})`)).toBeInTheDocument();
+      expect(screen.getByText("Havuz")).toBeInTheDocument();
     });
 
     it("13b) EN (ana dil) sayfası çeviri UYGULAMAZ — canonical isimler gösterilir", async () => {
@@ -802,9 +800,7 @@ describe.each(VILLA_DETAIL_ROUTES)(
       const { default: Page } = await import(EN_VILLA_DETAIL_ROUTE);
       render(await Page({ params: Promise.resolve({ slug: "test-villa" }) }));
 
-      /* Özellik adı hem açıklama kartındaki etiket satırında hem
-         Özellikler bölümünde görünür (2026-10 referans düzeni). */
-      expect(screen.getAllByText("Deniz Manzarası")[0]).toBeInTheDocument();
+      expect(screen.getByText("Deniz Manzarası")).toBeInTheDocument();
       for (const call of getTranslationsForParentsMock.mock.calls) {
         expect(call[2]).toBe("en");
       }
@@ -1026,9 +1022,10 @@ describe.each(VILLA_DETAIL_ROUTES)(
       const { default: Page } = await import(modulePath);
       render(await Page({ params: Promise.resolve({ slug: "test-villa" }) }));
 
+      /* Görünür başlık kaldırıldı (2026-10); bölüm adı aria-label'da. */
       const dict = getDictionary(locale);
       expect(
-        screen.getByText(dict.accommodation.sectionTitle)
+        screen.getByRole("region", { name: dict.accommodation.sectionTitle })
       ).toBeInTheDocument();
     });
 

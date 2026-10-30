@@ -204,12 +204,6 @@ export default function VillaDetailBody({
     },
   ].filter((s) => typeof s.value === "number" && s.value > 0);
 
-  /* Açıklama kartındaki özellik etiketleri — mevcut `features` prop'unun
-     ilk 3 öğesi (görünüm; veri/sorgu değişmez). */
-  const highlightTags = features
-    .filter((f) => f.displayName && f.displayName.trim())
-    .slice(0, 3);
-
   return (
     <>
       {/* ═══ A — PAYLAŞ ŞERİDİ (beyaz) ═══ */}
@@ -325,26 +319,6 @@ export default function VillaDetailBody({
                     <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
                       {dict.villa.aboutTitle}
                     </h2>
-                    {/* Özellik etiketleri — mevcut (çevrilmiş) özellik
-                        listesinin ilk 3'ü; yalnız görünüm, yeni veri YOK. */}
-                    {highlightTags.length > 0 && (
-                      <ul className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                        {highlightTags.map((f, i) => (
-                          <li
-                            key={f.id}
-                            className="flex items-center gap-3 text-[14px] md:text-[15px] font-semibold text-ink"
-                          >
-                            {i > 0 && (
-                              <span
-                                aria-hidden="true"
-                                className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
-                              />
-                            )}
-                            {f.displayName}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
                     {displayDescription && displayDescription.trim() ? (
                     <CollapsibleDescription
                       html={sanitizeHtml(displayDescription)}

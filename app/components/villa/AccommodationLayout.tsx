@@ -55,53 +55,30 @@ export default function AccommodationLayout({
      TR'de sözlük identity-map olduğu için TR çıktısı DEĞİŞMEZ; adı boş
      olan satır (TR'de de böyleydi) numara fallback'ine düşer. */
 
-  /* Üst özet satırı — "4 Yatak Odası · 4 Banyo · 3 Çift Kişilik Yatak,
-     2 Tek Kişilik Yatak". Yalnız mevcut layout verisinden türetilir
-     (yeni veri/sözlük anahtarı YOK; etiketler hero istatistikleriyle
-     aynı `dict.card.*` kaynağından). */
-  const bedTotals = new Map<BedroomLayoutItem["beds"][number]["type"], number>();
-  for (const room of bedrooms) {
-    for (const b of room.beds) {
-      bedTotals.set(b.type, (bedTotals.get(b.type) ?? 0) + b.count);
-    }
-  }
-  const bedTotalsText = Array.from(bedTotals.entries())
-    .map(([type, count]) => `${count} ${getBedTypeLabel(type, locale)}`)
-    .join(", ");
-  const summaryParts = [
-    hasBedrooms ? `${bedrooms.length} ${dict.card.bedroom}` : null,
-    hasBathrooms ? `${bathrooms.length} ${dict.card.bathroom}` : null,
-    bedTotalsText || null,
-  ].filter(Boolean);
-
   /* Referans tasarım: ince gri-mavi çerçeveli, yuvarlatılmış beyaz oda
      kutusu; solda ikon karosu, sağda ad + detay. Gölge/hover-lift YOK. */
   const roomCardClass =
-    "flex min-w-0 items-start gap-4 rounded-2xl border border-[var(--color-stone-200)] bg-white px-4 py-4 md:px-5 md:py-5 transition-colors duration-200 hover:border-[var(--color-stone-300)] motion-reduce:transition-none";
+    "flex min-w-0 items-start gap-3 rounded-xl border border-[var(--color-stone-200)] bg-white px-3.5 py-3 md:px-4 md:py-3.5 transition-colors duration-200 hover:border-[var(--color-stone-300)] motion-reduce:transition-none";
   const iconTileClass =
-    "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--color-stone-50)] text-[var(--color-stone-700)]";
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-stone-50)] text-[var(--color-stone-700)]";
   const nameClass =
-    "font-display text-[15px] font-semibold leading-snug text-[var(--color-stone-900)] tracking-[-0.01em] break-words";
+    "font-display text-[14px] font-semibold leading-snug text-[var(--color-stone-900)] tracking-[-0.01em] break-words";
   const detailClass =
-    "mt-1 text-[14px] leading-relaxed text-[var(--color-stone-600)]";
+    "mt-0.5 text-[13px] leading-relaxed text-[var(--color-stone-600)]";
 
   return (
-    <section className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7">
-      <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
-        {dict.accommodation.sectionTitle}
-      </h2>
-      {summaryParts.length > 0 && (
-        <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--color-stone-500)]">
-          {summaryParts.join(" · ")}
-        </p>
-      )}
-
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+    /* Görünür başlık + özet satırı kaldırıldı (2026-10); bölüm adı
+       ekran okuyucular için aria-label ile korunur. */
+    <section
+      aria-label={dict.accommodation.sectionTitle}
+      className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7"
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* YATAK ODALARI */}
         {bedrooms.map((room, i) => (
           <div key={`bed-${i}`} className={roomCardClass}>
             <span className={iconTileClass}>
-              <BedDouble size={18} strokeWidth={1.75} aria-hidden />
+              <BedDouble size={16} strokeWidth={1.75} aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
               <p className={nameClass}>
@@ -127,7 +104,7 @@ export default function AccommodationLayout({
         {bathrooms.map((b, i) => (
           <div key={`bath-${i}`} className={roomCardClass}>
             <span className={iconTileClass}>
-              <Bath size={18} strokeWidth={1.75} aria-hidden />
+              <Bath size={16} strokeWidth={1.75} aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
               <p className={nameClass}>
