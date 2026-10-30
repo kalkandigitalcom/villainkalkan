@@ -178,6 +178,12 @@ export const en: Dictionary = {
     infoAriaLabel: "Info",
     minNights: "Min. {n} Nights",
     damageDeposit: "Damage Deposit: {amount}",
+    minNightsLong: "Minimum {n} Nights",
+    perNightSuffix: "/ night",
+    shortStayFeeLine: "{amount} cleaning fee under {n} nights",
+    seasonRangeSameMonth: "{sDay} - {eDay} {sMonth} {sYear}",
+    seasonRangeSameYear: "{sDay} {sMonth} - {eDay} {eMonth} {sYear}",
+    seasonRangeFull: "{sDay} {sMonth} {sYear} - {eDay} {eMonth} {eYear}",
   },
   villa: {
     notFoundTitle: "Villa not found",

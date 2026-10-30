@@ -296,6 +296,18 @@ export type Dictionary = {
     minNights: string;
     /** template: {amount} */
     damageDeposit: string;
+    /* 2026-10 — Sezon Fiyatları yatay kart düzeni. */
+    /** template: {n} — "Minimum 7 Gece" */
+    minNightsLong: string;
+    /** Fiyatın yanındaki küçük ek — "/ gecelik" */
+    perNightSuffix: string;
+    /** template: {n} {amount} — "7 gece altı ₺10.000 temizlik" */
+    shortStayFeeLine: string;
+    /** Sezon tarih aralığı şablonları — {sDay} {sMonth} {sYear}
+     *  {eDay} {eMonth} {eYear}; ay adları `home.months`'tan. */
+    seasonRangeSameMonth: string;
+    seasonRangeSameYear: string;
+    seasonRangeFull: string;
   };
   /* 🛡️ PHASE 10B — EN/DE villa detail sayfası, TR page.tsx'in özel
      "Villa bulunamadı" bloğunun ve boş açıklama fallback'inin

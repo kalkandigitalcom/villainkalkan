@@ -121,11 +121,33 @@ describe("PriceList — Phase 10B locale (component visibility + TR default)", (
     expect(screen.getByText("Fiyat bilgisi yok")).toBeInTheDocument();
   });
 
-  it("locale='tr': tarih 'Eki' (Ekim) ay kısaltmasıyla, 'Gecelik' caption'ıyla render edilir", () => {
+  /* 2026-10 yatay kart düzeni: "1 - 31 Ekim 2026" + "/ gecelik". */
+  it("locale='tr': tarih aralığı tam ay adıyla, '/ gecelik' ekiyle render edilir", () => {
     render(<PriceList locale="tr" prices={OCTOBER_PRICE} />);
-    expect(screen.getByText(/1 Eki 2026/)).toBeInTheDocument();
-    expect(screen.getByText(/31 Eki 2026/)).toBeInTheDocument();
-    expect(screen.getAllByText("Gecelik").length).toBeGreaterThan(0);
+    expect(screen.getByText("1 - 31 Ekim 2026")).toBeInTheDocument();
+    expect(screen.getAllByText("/ gecelik").length).toBeGreaterThan(0);
+  });
+
+  it("locale='tr': farklı aylar → '1 Ekim - 10 Kasım 2026'; minimum gece + temizlik satırı", () => {
+    render(
+      <PriceList
+        locale="tr"
+        prices={[{ ...OCTOBER_PRICE[0], end_date: "2026-11-10" }]}
+        minimumStayNights={7}
+        cleaningFee={10000}
+        cleaningCurrency="TRY"
+        cleaningLimit={7}
+      />
+    );
+    expect(screen.getByText("1 Ekim - 10 Kasım 2026")).toBeInTheDocument();
+    expect(screen.getByText("Minimum 7 Gece")).toBeInTheDocument();
+    expect(screen.getByText(/^7 gece altı .+ temizlik$/)).toBeInTheDocument();
+  });
+
+  it("temizlik ücreti / minimum gece verilmezse ilgili satırlar gösterilmez", () => {
+    render(<PriceList locale="tr" prices={OCTOBER_PRICE} />);
+    expect(screen.queryByText(/Minimum/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/temizlik/)).not.toBeInTheDocument();
   });
 
   it("locale verilmezse varsayılan dil (EN): 'No price information'", () => {
@@ -133,13 +155,13 @@ describe("PriceList — Phase 10B locale (component visibility + TR default)", (
     expect(screen.getByText("No price information")).toBeInTheDocument();
   });
 
-  it("locale='en': boş prices → 'No price information'; tarih 'Oct' ay kısaltmasıyla, caption 'Nightly'", () => {
+  it("locale='en': boş prices → 'No price information'; tarih tam ay adıyla, '/ night' eki", () => {
     render(<PriceList prices={[]} locale="en" />);
     expect(screen.getByText("No price information")).toBeInTheDocument();
 
     render(<PriceList prices={OCTOBER_PRICE} locale="en" />);
-    expect(screen.getByText(/1 Oct 2026/)).toBeInTheDocument();
-    expect(screen.getAllByText("Nightly").length).toBeGreaterThan(0);
+    expect(screen.getByText("1 - 31 October 2026")).toBeInTheDocument();
+    expect(screen.getAllByText("/ night").length).toBeGreaterThan(0);
   });
 
   it("Bilgi butonu aria-label'ı locale'e göre değişir (minStay+deposit verilince görünür)", () => {

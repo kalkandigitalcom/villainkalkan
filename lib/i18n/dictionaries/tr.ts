@@ -186,6 +186,12 @@ export const tr: Dictionary = {
     infoAriaLabel: "Bilgi",
     minNights: "Min. {n} Gece",
     damageDeposit: "Hasar Depozitosu: {amount}",
+    minNightsLong: "Minimum {n} Gece",
+    perNightSuffix: "/ gecelik",
+    shortStayFeeLine: "{n} gece altı {amount} temizlik",
+    seasonRangeSameMonth: "{sDay} - {eDay} {sMonth} {sYear}",
+    seasonRangeSameYear: "{sDay} {sMonth} - {eDay} {eMonth} {sYear}",
+    seasonRangeFull: "{sDay} {sMonth} {sYear} - {eDay} {eMonth} {eYear}",
   },
   villa: {
     notFoundTitle: "Villa bulunamadı",

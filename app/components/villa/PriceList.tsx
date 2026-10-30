@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Moon, ShieldCheck, Info } from "lucide-react";
+import { ShieldCheck, Info } from "lucide-react";
 
 import {
   canConvertForDisplay,
@@ -10,7 +10,13 @@ import {
   formatDisplayPrice,
 } from "@/lib/currency";
 import { useCurrency } from "@/app/context/CurrencyContext";
-import { formatDateForLocale, parseLocalDate, formatLocalDate } from "@/lib/date-format";
+import {
+  formatDateForLocale,
+  formatDiscountDateRange,
+  parseLocalDate,
+  formatLocalDate,
+  type DiscountDateRangeTemplates,
+} from "@/lib/date-format";
 import { applyDiscountToDailyPrice, type DiscountRange } from "@/lib/price.engine";
 /* 🛡️ PHASE 10B — locale-aware UI stringleri + tarih formatı.
    `locale` opsiyonel, default "tr". `formatDateForLocale(x,"tr")`
@@ -62,29 +68,15 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
    TARIH FORMATI:
      `formatDateTr` (lib/date-format) → "11 May 2026" formatı.
 
-   🛡️ GÖRSEL REVİZYON (yalnız bu tur — data/state/handler DEĞİŞMEDİ):
-     - Ana kart: sade beyazdan, çok hafif sıcak gradient zemin + ince
-       turuncu→mavi üst accent çizgisi + iki-tonlu (turuncu/mavi) soft
-       ambient box-shadow'a geçti. Container'a `overflow-hidden`
-       BİLEREK eklenmedi — Bilgi popover'ı (son satırda) absolute
-       olarak container sınırının altına taşabilir, kırpılmamalı.
-     - Her sezon satırı artık kendi ince border'ı + sol turuncu→mavi
-       accent çubuğu olan ayrı bir "satır kartı"; hover'da hafif
-       yükselir (translateY) ve iki-tonlu glow şiddetlenir.
-     - Fiyat rakamı: font-bold + `#C8973A`, bir kademe büyütüldü.
-     - Tarih: takvim ikonu artık mavi tonlu bir rozet içinde; tire
-       ayracı turuncu tonda ince bir vurgu.
-     - Bilgi butonu ve popover paneli aynı iki-tonlu palete taşındı;
-       popover'ın konumlanması/instant-toggle davranışı DEĞİŞMEDİ,
-       yalnız açılışta çok hafif fade+scale animasyonu eklendi.
-     - Satır girişinde hafif stagger fade/translate animasyonu
-       (`idx * 70ms` gecikme) — yalnızca dekoratif, veri/sıralamaya
-       dokunmuyor.
-     - Tüm özel animasyonlar `@media (prefers-reduced-motion:
-       no-preference)` guard'lı; Tailwind `motion-reduce:` varyantları
-       hover transform'ları da reduced-motion'da sıfırlıyor.
-     - Animasyon/keyframe'ler yalnız bu dosyada scoped `<style>` ile —
-       globals.css'e dokunulmadı.
+   🛡️ GÖRSEL DÜZEN (2026-10 — yalnız görünüm; data/state/handler ve
+   fiyat hesabı DEĞİŞMEDİ):
+     - Beyaz bölüm kabı; her sezon tek satırlık yatay kart.
+     - Sol: tarih aralığı ("1 Ekim - 10 Kasım 2026") + "Minimum N Gece".
+     - Sağ (ince dikey ayraçla): gecelik fiyat (koyu lacivert, büyük) +
+       "/ gecelik"; altında kısa süreli konaklama (temizlik) ücreti.
+     - Mobilde iki bölüm alt alta (yatay ayraç), taşma yok.
+     - Önceki gradient/gölge/accent çubuğu/giriş animasyonu kaldırıldı.
+     - Bilgi popover'ı (depozito) konum/toggle davranışıyla korunur.
    =============================================================== */
 
 type Price = {
@@ -247,6 +239,9 @@ export default function PriceList({
   minimumStayNights = null,
   deposit = null,
   discounts = null,
+  cleaningFee = null,
+  cleaningCurrency = null,
+  cleaningLimit = null,
   locale,
 }: {
   prices: Price[];
@@ -262,6 +257,12 @@ export default function PriceList({
      sayfası) davranış BİREBİR ESKİSİYLE aynı — hiçbir segment bölünmez,
      her sezon tek satır olarak görünür. */
   discounts?: DiscountRange[] | null;
+  /* 🛡️ 2026-10 — kısa süreli konaklama/temizlik ücreti satırı için
+     villa-level alanlar (ShortStayFeeNotice ile AYNI kaynak ve AYNI
+     dönüşüm). Verilmezse satır gösterilmez (eski caller'lar aynen). */
+  cleaningFee?: number | null;
+  cleaningCurrency?: string | null;
+  cleaningLimit?: number | null;
   /* 🛡️ PHASE 10B — opsiyonel, default "tr". */
   locale?: Locale;
 }) {
@@ -296,7 +297,33 @@ export default function PriceList({
   /* 🛡️ Depozito TRY → seçili para birimi (TRY seçiliyse kur gerekmez). */
   const depositReady = canConvertForDisplay(rates, currency, ["TRY"]);
 
-  const hasInfo = hasMinStay || hasDeposit;
+  /* Minimum gece artık her satırda görünür → Bilgi paneli yalnız
+     depozito için. */
+  const hasInfo = hasDeposit;
+
+  /* Kısa süreli konaklama (temizlik) ücreti — ShortStayFeeNotice ile
+     BİREBİR aynı koşul + dönüşüm (yeni kural/hesap YOK). */
+  const hasShortStayFee =
+    typeof cleaningFee === "number" &&
+    Number.isFinite(cleaningFee) &&
+    cleaningFee > 0 &&
+    typeof cleaningLimit === "number" &&
+    Number.isFinite(cleaningLimit) &&
+    cleaningLimit > 0;
+  const convertedFee = hasShortStayFee
+    ? convertPrice(cleaningFee as number, cleaningCurrency || "TRY", currency, rates)
+    : 0;
+  const feeReady = canConvertForDisplay(rates, currency, [cleaningCurrency || "TRY"]);
+
+  /* Tarih aralığı — "1 Ekim - 10 Kasım 2026" (ay adları `home.months`,
+     mevcut `formatDiscountDateRange` çekirdeği; yeni tarih sistemi YOK). */
+  const monthName = (m: number) =>
+    dict.home.months[m as keyof typeof dict.home.months] ?? "";
+  const rangeTemplates: DiscountDateRangeTemplates = {
+    sameMonth: dict.price.seasonRangeSameMonth,
+    sameYear: dict.price.seasonRangeSameYear,
+    full: dict.price.seasonRangeFull,
+  };
 
   /* 🛡️ İndirim aralıklarını sezon fiyatlarının içine kronolojik olarak
      yerleştir (bkz. buildSeasonSegments yukarıda). discounts
@@ -305,50 +332,14 @@ export default function PriceList({
   const segments = buildSeasonSegments(prices, discounts || []);
 
   return (
-    <div
-      className="
-        relative mt-5 rounded-[20px]
-        border border-[var(--color-stone-100)]
-        bg-gradient-to-br from-white via-white to-[#FFF7F0]
-        shadow-[0_20px_48px_-30px_rgba(200,151,58,0.22),0_24px_54px_-32px_rgba(27,46,94,0.18)]
-        p-6 md:p-7
-      "
-    >
-      {/* 🛡️ Scoped animasyon — yalnız bu component. globals.css'e
-          dokunulmadı; class isimleri (pl-*) proje genelinde eşsiz. */}
-      <style>{`
-        @media (prefers-reduced-motion: no-preference) {
-          .pl-row-in {
-            animation: pl-row-in-kf 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-          .pl-popover-in {
-            animation: pl-popover-in-kf 180ms ease-out both;
-          }
-        }
-        @keyframes pl-row-in-kf {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pl-popover-in-kf {
-          from { opacity: 0; transform: translateY(-4px) scale(0.98); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-      `}</style>
-
-      {/* İnce üst accent çizgisi — turuncu → mavi (marka imzası) */}
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-6 md:inset-x-7 top-0 h-[2.5px] rounded-full bg-gradient-to-r from-accent via-accent/50 to-brand"
-      />
-
-      {/* 🛡️ LAYOUT-ONLY: sezon satırları artık desktop'ta 2 kolonlu grid
-          içinde (mobile: 1 kolon). Sıra korunur (1→sol, 2→sağ, 3→sol...)
-          — bu salt CSS grid akışı, prices array sırası/verisi/hesabı
-          DEĞİŞMEDİ. Satır kartlarının kendi tasarımı (border/radius/
-          padding/font/ikon/fiyat/tarih/GECELİK/Bilgi/hover) AYNEN
-          korunur; yalnız aralarındaki dikey margin (mt-3 first:mt-0)
-          grid `gap` ile değiştirildi (çift boşluk oluşmasın diye). */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-5 gap-y-3">
+    /* 🛡️ 2026-10 SADE YATAY KART DÜZENİ — yalnız görünüm. Beyaz bölüm
+       kabı; her sezon tek satır, iki bölümlü yatay kart (sol: tarih +
+       minimum gece, sağ: gecelik fiyat + kısa süreli konaklama/temizlik
+       ücreti). Gradient, gölge, giriş animasyonu ve hover-lift YOK.
+       Container'a `overflow-hidden` BİLEREK eklenmedi — Bilgi popover'ı
+       kart sınırının dışına taşabilir. */
+    <div className="mt-5 rounded-[20px] bg-white p-4 md:p-6">
+      <div className="space-y-3">
         {segments.map((seg, idx) => {
         /* Currency conversion — eski mantık AYNEN (segment artık
            `Price` satırının kendisi ya da onun indirimle bölünmüş bir
@@ -360,12 +351,9 @@ export default function PriceList({
           currency,
           rates
         );
-        /* 🛡️ İNDİRİMLİ SEGMENT (bu tur) — seg.discount yalnız bu segment
-           bir villa_discounts kaydıyla örtüşüyorsa dolu olur (bkz.
-           buildSeasonSegments). İndirimli fiyat MEVCUT price.engine
-           fonksiyonu `applyDiscountToDailyPrice` ile hesaplanır — VillaCard
-           discount variant'ının KULLANDIĞI AYNI fonksiyon, yeni bir fiyat
-           hesaplama mantığı YOK. */
+        /* 🛡️ İNDİRİMLİ SEGMENT — indirimli fiyat MEVCUT price.engine
+           fonksiyonu `applyDiscountToDailyPrice` ile hesaplanır (VillaCard
+           discount variant'ı ile AYNI); yeni fiyat hesabı YOK. */
         const discountedResult = seg.discount
           ? applyDiscountToDailyPrice(
               {
@@ -387,10 +375,7 @@ export default function PriceList({
           !!seg.discount &&
           !!discountedResult &&
           discountedResult.converted < convertedPrice;
-        /* Badge yüzdesi — SABIT DEĞİL, VillaCard'daki discountBadgePercent
-           ile AYNI desen: percent tipte discount_value doğrudan, fixed
-           tipte gerçek farkın yüzdesi. Hesaplanamazsa badge yüzdesiz
-           gösterilir (rakam uydurulmaz). */
+        /* Badge yüzdesi — VillaCard discountBadgePercent ile AYNI desen. */
         const discountPercent = (() => {
           if (!isDiscounted || !seg.discount || !discountedResult) return null;
           if (seg.discount.discount_type === "percent") {
@@ -405,181 +390,144 @@ export default function PriceList({
           }
           return null;
         })();
+
         const isOpen = openId === seg.key;
-        /* Son sezon satırı — popover'ı yukarı doğru aç (aşağıda
-           içerik/viewport sonu olabilir). Salt render-time hesap;
-           yeni state veya JS ölçüm YOK. */
+        /* Son sezon satırı — popover'ı yukarı doğru aç. */
         const isLastRow = idx === segments.length - 1;
 
         return (
           <div
             key={seg.key}
             className={
-              "pl-row-in group/row relative rounded-2xl border px-4 py-4 md:px-5 md:py-5 transition-[transform,box-shadow,border-color,background-color] duration-300 motion-reduce:transition-none hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 " +
+              "relative flex flex-col sm:flex-row rounded-xl border " +
               (isDiscounted
-                ? "border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50/60 hover:border-green-300 hover:shadow-[0_18px_38px_-24px_rgba(22,163,74,0.4),0_16px_34px_-24px_rgba(27,46,94,0.18)] "
-                : "border-[var(--color-stone-100)] bg-white/60 hover:bg-white hover:border-[var(--color-stone-200)] hover:shadow-[0_18px_38px_-24px_rgba(200,151,58,0.4),0_16px_34px_-24px_rgba(27,46,94,0.32)] ") +
-              /* 🛡️ Açık olan satır (isOpen) her zaman diğer satırların
-                 üstünde kalsın diye EXPLICIT z-index — auto DEĞİL, bu
-                 yüzden satır kendi stacking context'ini garanti kurar
-                 (hover-transform'un tesadüfen oluşturduğu context'e
-                 bağımlı kalmadan). */
+                ? "border-green-200 "
+                : "border-[var(--color-stone-200)] ") +
+              /* Açık popover'lı satır diğerlerinin üstünde kalsın. */
               (isOpen ? "z-20" : "z-0")
             }
-            style={{ animationDelay: `${idx * 70}ms` }}
           >
-            {/* Sol accent çubuğu — turuncu → mavi (normal sezon) veya yeşil
-                (indirimli segment), hover'da belirginleşir. */}
-            <span
-              aria-hidden="true"
+            {/* LEFT — tarih aralığı + minimum gece */}
+            <div
               className={
-                "absolute left-1.5 md:left-2 top-3 bottom-3 w-[3px] rounded-full opacity-60 group-hover/row:opacity-100 transition-opacity duration-300 motion-reduce:transition-none " +
-                (isDiscounted
-                  ? "bg-gradient-to-b from-green-500 to-green-600"
-                  : "bg-gradient-to-b from-accent to-brand")
+                "min-w-0 flex-1 rounded-t-xl sm:rounded-tr-none sm:rounded-l-xl px-4 py-3.5 md:px-5 md:py-4 " +
+                (isDiscounted ? "bg-green-50/60" : "bg-[var(--color-stone-50)]")
               }
-            />
-
-            {/* 🏷️ İNDİRİMLİ ROZETİ (bu tur) — yalnız isDiscounted segment'te,
-                kartın kendi padding'i içinde ayrı bir satır olarak (absolute/
-                floating DEĞİL) — 2 kolonlu grid'de komşu kartlarla çakışma
-                riski olmadan, mobilde de taşmadan kendi genişliğinde durur. */}
-            {isDiscounted && (
-              <span className="relative mb-2 inline-flex items-center gap-1 rounded-full bg-green-600 px-2.5 py-1 text-[9.5px] font-semibold uppercase tracking-[0.05em] text-white shadow-[0_4px_10px_-3px_rgba(22,163,74,0.45)]">
-                {discountPercent !== null
-                  ? formatDictionaryString(
-                      dict.price.discountedBadgeWithPercent,
-                      { percent: discountPercent }
-                    )
-                  : dict.price.discountedBadge}
-              </span>
-            )}
-
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6 pl-3">
-              {/* LEFT — tarih aralığı, büyük/güçlü, ana bilgi. */}
-              <p className="min-w-0 font-display text-[12.5px] text-[var(--color-stone-900)] tracking-[-0.01em] leading-snug flex items-center gap-2.5">
-                <span
-                  aria-hidden="true"
-                  className="hidden md:inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand/[0.09] text-ink shrink-0"
-                >
-                  <Calendar size={14} strokeWidth={1.9} />
+            >
+              {isDiscounted && (
+                <span className="mb-1.5 inline-flex items-center rounded-full bg-green-600 px-2.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.05em] text-white">
+                  {discountPercent !== null
+                    ? formatDictionaryString(
+                        dict.price.discountedBadgeWithPercent,
+                        { percent: discountPercent }
+                      )
+                    : dict.price.discountedBadge}
                 </span>
-                <span className="tabular-nums">
-                  {formatDateForLocale(seg.start_date, effectiveLocale)}
-                  <span className="mx-2 text-brand/55 font-medium">
-                    —
-                  </span>
-                  {formatDateForLocale(seg.end_date, effectiveLocale)}
-                </span>
+              )}
+              <p className="font-display text-[14px] md:text-[15px] font-medium leading-snug tracking-[-0.01em] text-[var(--color-stone-900)] tabular-nums">
+                {formatDiscountDateRange(
+                  seg.start_date,
+                  seg.end_date,
+                  monthName,
+                  rangeTemplates
+                ) ||
+                  `${formatDateForLocale(seg.start_date, effectiveLocale)} - ${formatDateForLocale(seg.end_date, effectiveLocale)}`}
               </p>
+              {hasMinStay && (
+                <p className="mt-1 text-[12.5px] md:text-[13px] text-[var(--color-stone-500)]">
+                  {formatDictionaryString(dict.price.minNightsLong, {
+                    n: minimumStayNights as number,
+                  })}
+                </p>
+              )}
+            </div>
 
-              {/* RIGHT — fiyat (indirimliyse yeşil + üstü çizili normal fiyat;
-                  değilse mevcut marka turuncusu AYNEN) + kompakt Bilgi toggle. */}
-              <div className="flex items-center gap-4 md:gap-5 shrink-0">
-                {isDiscounted ? (
-                  <div className="text-left md:text-right">
-                    <p className="text-[11.5px] text-[var(--color-stone-400)] line-through tabular-nums leading-none">
-                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
-                    </p>
-                    <p
-                      className="mt-1 font-display font-bold text-[17px] md:text-[16px] text-green-600 tracking-[-0.02em] leading-none"
-                      style={{ fontVariantNumeric: "tabular-nums" }}
-                    >
-                      {formatDisplayPrice(discountedResult!.converted, currency, effectiveLocale, segDiscountReady)}
-                    </p>
-                    <p
-                      className="text-[8.5px] tracking-[0.18em] uppercase text-[var(--color-stone-400)] font-medium mt-1.5"
-                      aria-hidden
-                    >
-                      {dict.price.nightly}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="text-left md:text-right">
-                    <p
-                      className="font-display font-bold text-[17px] md:text-[16px] text-brand-strong tracking-[-0.02em] leading-none"
-                      style={{ fontVariantNumeric: "tabular-nums" }}
-                    >
-                      {formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
-                    </p>
-                    <p
-                      className="text-[8.5px] tracking-[0.18em] uppercase text-[var(--color-stone-400)] font-medium mt-1.5"
-                      aria-hidden
-                    >
-                      {dict.price.nightly}
-                    </p>
-                  </div>
+            {/* RIGHT — gecelik fiyat + ücret satırı; ince dikey ayraç
+                (mobilde yatay ayraç, alt alta). */}
+            <div className="flex shrink-0 items-start justify-between gap-3 rounded-b-xl sm:rounded-bl-none sm:rounded-r-xl border-t sm:border-t-0 sm:border-l border-[var(--color-stone-200)] bg-white px-4 py-3.5 md:px-5 md:py-4 sm:min-w-[220px]">
+              <div className="min-w-0 text-left sm:text-right sm:ml-auto">
+                {isDiscounted && (
+                  <p className="text-[11.5px] text-[var(--color-stone-400)] line-through tabular-nums leading-none mb-1">
+                    {formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
+                  </p>
                 )}
-
-                {/* BILGI — yalnız gösterilecek gerçek veri varsa render
-                    edilir. Desktop: hover ile açılır/kapanır. Mobile
-                    (hover yok): tap ile toggle. Panel absolute
-                    positioned → satır yüksekliği değişmez, layout
-                    zıplamaz. */}
-                {hasInfo && (
-                  <div
-                    className="relative"
-                    onMouseEnter={() => setOpenId(seg.key)}
-                    onMouseLeave={() =>
-                      setOpenId((cur) => (cur === seg.key ? null : cur))
+                <p className="leading-none whitespace-nowrap">
+                  <span
+                    className={
+                      "font-display font-bold text-[19px] md:text-[20px] tracking-[-0.02em] " +
+                      (isDiscounted ? "text-green-700" : "text-ink")
                     }
+                    style={{ fontVariantNumeric: "tabular-nums" }}
                   >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setOpenId((cur) => (cur === seg.key ? null : seg.key))
-                      }
-                      aria-expanded={isOpen}
-                      aria-label={dict.price.infoAriaLabel}
-                      className={
-                        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-semibold tracking-wide transition-all duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 " +
-                        (isOpen
-                          ? "border-brand/40 bg-brand/[0.08] text-brand-strong shadow-[0_4px_14px_-6px_rgba(27,46,94,0.35)]"
-                          : "border-[var(--color-stone-200)] text-[var(--color-stone-500)] hover:border-brand/40 hover:text-brand hover:bg-brand/[0.05]")
-                      }
-                    >
-                      <Info size={12} strokeWidth={2} aria-hidden />
-                    </button>
-
-                    {isOpen && (
-                      <div
-                        role="note"
-                        className={
-                          "pl-popover-in absolute right-0 z-20 w-60 overflow-hidden rounded-2xl border border-[var(--color-stone-100)] bg-white p-4 shadow-[0_18px_40px_-18px_rgba(27,46,94,0.28)] " +
-                          (isLastRow ? "bottom-full mb-2" : "top-full mt-2")
-                        }
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-accent to-brand"
-                        />
-                        <ul className="mt-1 space-y-2.5">
-                          {hasMinStay && (
-                            <li className="flex items-center gap-2.5 text-[12px] text-[var(--color-stone-700)]">
-                              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand/10 text-brand shrink-0">
-                                <Moon size={12} strokeWidth={1.9} aria-hidden />
-                              </span>
-                              {formatDictionaryString(dict.price.minNights, {
-                                n: minimumStayNights as number,
-                              })}
-                            </li>
-                          )}
-                          {hasDeposit && (
-                            <li className="flex items-center gap-2.5 text-[12px] text-[var(--color-stone-700)]">
-                              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand/10 text-ink shrink-0">
-                                <ShieldCheck size={12} strokeWidth={1.9} aria-hidden />
-                              </span>
-                              {formatDictionaryString(dict.price.damageDeposit, {
-                                amount: formatDisplayPrice(convertedDeposit, currency, effectiveLocale, depositReady),
-                              })}
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
+                    {isDiscounted
+                      ? formatDisplayPrice(discountedResult!.converted, currency, effectiveLocale, segDiscountReady)
+                      : formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
+                  </span>{" "}
+                  <span className="text-[12.5px] md:text-[13px] font-medium text-[var(--color-stone-500)]">
+                    {dict.price.perNightSuffix}
+                  </span>
+                </p>
+                {hasShortStayFee && (
+                  <p className="mt-1.5 text-[12px] md:text-[12.5px] text-[var(--color-stone-500)]">
+                    {formatDictionaryString(dict.price.shortStayFeeLine, {
+                      n: cleaningLimit as number,
+                      amount: formatDisplayPrice(convertedFee, currency, effectiveLocale, feeReady),
+                    })}
+                  </p>
                 )}
               </div>
+
+              {/* BILGI — yalnız depozito verisi varsa. Desktop hover,
+                  mobil tap ile açılır; davranış DEĞİŞMEDİ. */}
+              {hasInfo && (
+                <div
+                  className="relative shrink-0"
+                  onMouseEnter={() => setOpenId(seg.key)}
+                  onMouseLeave={() =>
+                    setOpenId((cur) => (cur === seg.key ? null : cur))
+                  }
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenId((cur) => (cur === seg.key ? null : seg.key))
+                    }
+                    aria-expanded={isOpen}
+                    aria-label={dict.price.infoAriaLabel}
+                    className={
+                      "inline-flex items-center justify-center rounded-full border p-1.5 transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 " +
+                      (isOpen
+                        ? "border-brand/40 bg-brand/[0.08] text-brand-strong"
+                        : "border-[var(--color-stone-200)] text-[var(--color-stone-500)] hover:border-brand/40 hover:text-brand")
+                    }
+                  >
+                    <Info size={12} strokeWidth={2} aria-hidden />
+                  </button>
+
+                  {isOpen && (
+                    <div
+                      role="note"
+                      className={
+                        "absolute right-0 z-20 w-60 rounded-xl border border-[var(--color-stone-200)] bg-white p-3.5 shadow-[0_12px_28px_-16px_rgba(27,46,94,0.25)] " +
+                        (isLastRow ? "bottom-full mb-2" : "top-full mt-2")
+                      }
+                    >
+                      <ul className="space-y-2.5">
+                        {hasDeposit && (
+                          <li className="flex items-center gap-2.5 text-[12px] text-[var(--color-stone-700)]">
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand/10 text-ink shrink-0">
+                              <ShieldCheck size={12} strokeWidth={1.9} aria-hidden />
+                            </span>
+                            {formatDictionaryString(dict.price.damageDeposit, {
+                              amount: formatDisplayPrice(convertedDeposit, currency, effectiveLocale, depositReady),
+                            })}
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         );
