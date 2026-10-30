@@ -52,7 +52,7 @@ export default async function CmsPage({ params }: Props) {
             <span className="inline-block w-8 h-px bg-[var(--color-stone-300)] align-middle mr-3" />
             404
           </p>
-          <h1 className="font-display text-[40px] md:text-[64px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.03em]">
+          <h1 className="font-display text-[32px] md:text-[48px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.03em]">
             Sayfa bulunamadı.
           </h1>
           <p className="text-[var(--color-stone-500)] mt-6 leading-relaxed">
@@ -60,7 +60,7 @@ export default async function CmsPage({ params }: Props) {
           </p>
           <Link
             href="/tr"
-            className="inline-flex items-center gap-2 mt-10 text-[13px] font-medium text-[var(--color-stone-700)] hover:text-[var(--color-champagne-700)] transition-colors"
+            className="inline-flex items-center gap-2 mt-10 text-[12.5px] font-medium text-[var(--color-stone-700)] hover:text-[var(--color-champagne-700)] transition-colors"
           >
             Ana sayfaya dön <span aria-hidden="true">→</span>
           </Link>

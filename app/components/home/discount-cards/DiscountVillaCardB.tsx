@@ -63,7 +63,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
           />
         ) : (
           <span className="absolute inset-0 flex flex-col items-center justify-center select-none">
-            <span className="font-display text-[64px] leading-none text-ink/25">{m.initial}</span>
+            <span className="font-display text-[48px] leading-none text-ink/25">{m.initial}</span>
             <span className="mt-2 text-[10px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-400)]">
               {m.dict.card.imageComing}
             </span>
@@ -88,7 +88,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
           </p>
           <h3
             id={titleId}
-            className="mt-2 font-display text-[22px] md:text-[27px] font-medium leading-[1.12] tracking-[-0.025em] text-ink"
+            className="mt-2 font-display text-[19px] md:text-[22px] font-medium leading-[1.12] tracking-[-0.025em] text-ink"
           >
             <Link
               href={m.detailHref}
@@ -97,7 +97,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
               <span className="line-clamp-2">{title}</span>
             </Link>
           </h3>
-          <p className="mt-2.5 text-[13px] text-[var(--color-stone-600)]">
+          <p className="mt-2.5 text-[12.5px] text-[var(--color-stone-600)]">
             {capacity.join(" · ")}
           </p>
 
@@ -106,30 +106,30 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
           <div className="mt-5 md:mt-6">
             {m.showDiscountPricing ? (
               <>
-                <p className="text-[13px] text-[var(--color-stone-400)] line-through decoration-[var(--color-stone-400)]/70 tabular-nums">
+                <p className="text-[12.5px] text-[var(--color-stone-400)] line-through decoration-[var(--color-stone-400)]/70 tabular-nums">
                   <span className="sr-only">{m.dict.card.originalPriceLabel}: </span>
                   {formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.basePriceReady)}
                 </p>
                 <p className="mt-1 flex items-baseline gap-2">
                   <span className="sr-only">{m.dict.card.discountedPriceLabel}: </span>
-                  <span className="font-display text-[30px] md:text-[34px] font-semibold leading-none tracking-[-0.03em] text-ink tabular-nums">
+                  <span className="font-display text-[24px] md:text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink tabular-nums">
                     {formatDisplayPrice(m.discountedPrice!.converted, m.currency, m.effectiveLocale, m.discountPriceReady)}
                   </span>
-                  <span className="text-[12px] text-[var(--color-stone-500)]">
+                  <span className="text-[11.5px] text-[var(--color-stone-500)]">
                     / {m.dict.card.nightly.toLocaleLowerCase(m.effectiveLocale)}
                   </span>
                 </p>
                 {m.nightlySavingsLabel && (
-                  <p className="mt-2 text-[12.5px] font-medium text-accent-strong">
+                  <p className="mt-2 text-[12px] font-medium text-accent-strong">
                     {m.nightlySavingsLabel}
                   </p>
                 )}
-                <p className="mt-1 text-[12px] text-[var(--color-stone-500)]">
+                <p className="mt-1 text-[11.5px] text-[var(--color-stone-500)]">
                   {m.discountDateRangeLabel}
                 </p>
               </>
             ) : (
-              <p className="font-display text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink tabular-nums">
+              <p className="font-display text-[24px] font-semibold leading-none tracking-[-0.03em] text-ink tabular-nums">
                 {price
                   ? formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.basePriceReady)
                   : m.dict.card.priceOnRequest}
@@ -141,7 +141,7 @@ export default function DiscountVillaCardB(props: DiscountVillaCardProps) {
         <div className="mt-6 md:mt-8 border-t !border-ink/10 pt-4">
           <Link
             href={m.reserveHref}
-            className="group/cta inline-flex items-center gap-2 text-[13.5px] font-semibold tracking-[0.01em] text-brand hover:text-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-4 focus-visible:ring-offset-[#FBF9F4]"
+            className="group/cta inline-flex items-center gap-2 text-[13px] font-semibold tracking-[0.01em] text-brand hover:text-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-4 focus-visible:ring-offset-[#FBF9F4]"
           >
             {m.dict.card.bookNow}
             <ArrowRight size={16} strokeWidth={1.75} className="text-brand transition-transform duration-200 group-hover/cta:translate-x-1 motion-reduce:transition-none" aria-hidden />

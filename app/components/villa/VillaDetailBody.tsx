@@ -204,6 +204,12 @@ export default function VillaDetailBody({
     },
   ].filter((s) => typeof s.value === "number" && s.value > 0);
 
+  /* Açıklama kartındaki özellik etiketleri — mevcut `features` prop'unun
+     ilk 3 öğesi (görünüm; veri/sorgu değişmez). */
+  const highlightTags = features
+    .filter((f) => f.displayName && f.displayName.trim())
+    .slice(0, 3);
+
   return (
     <>
       {/* ═══ A — PAYLAŞ ŞERİDİ (beyaz) ═══ */}
@@ -235,12 +241,12 @@ export default function VillaDetailBody({
       >
         <div className="max-w-site mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 items-center gap-7 md:gap-8 lg:gap-12">
           <div className="min-w-0 lg:col-span-5">
-            <h1 className="mt-4 font-display font-bold text-[30px] md:text-[36px] lg:text-[44px] leading-[1.08] tracking-[-0.02em] text-white break-words">
+            <h1 className="mt-4 font-display font-bold text-[24px] md:text-[30px] lg:text-[36px] leading-[1.08] tracking-[-0.02em] text-white break-words">
               {villaTitle}
             </h1>
 
             {displayLocation && (
-              <p className="mt-3 flex items-center gap-2 text-[14px] md:text-[15px] text-white/80">
+              <p className="mt-3 flex items-center gap-2 text-[13px] md:text-[14px] text-white/80">
                 <MapPin
                   size={16}
                   strokeWidth={1.8}
@@ -258,7 +264,7 @@ export default function VillaDetailBody({
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/15">
                       <Icon size={16} strokeWidth={1.8} aria-hidden />
                     </span>
-                    <span className="text-[14px] leading-tight">
+                    <span className="text-[13px] leading-tight">
                       <strong className="font-semibold text-white tabular-nums">
                         {value}
                       </strong>{" "}
@@ -292,7 +298,9 @@ export default function VillaDetailBody({
         </div>
       </section>
 
-      <div className="pb-24 md:pb-32">
+      {/* Referans tasarım: açık mavi içerik zemini (palet: sand-100) +
+          beyaz içerik kartları. */}
+      <div className="pb-24 md:pb-32 bg-[var(--color-sand-100)]">
         {/* SEO — JSON-LD structured data */}
         {vacationRentalLd && <JsonLd data={vacationRentalLd} />}
         {breadcrumbLd && <JsonLd data={breadcrumbLd} />}
@@ -306,15 +314,38 @@ export default function VillaDetailBody({
             <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 lg:gap-10">
               {/* LEFT — ~70%: içerik gövdesi */}
               <div className="min-w-0 lg:col-span-7 pt-8 md:pt-10 space-y-10 md:space-y-12">
-                {/* DESCRIPTION */}
-                <section
-                  id={VILLA_DESCRIPTION_ANCHOR_ID}
-                  className="scroll-mt-[180px]"
-                >
-                  <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
-                    {dict.villa.aboutTitle}
-                  </h2>
-                  {displayDescription && displayDescription.trim() ? (
+                {/* 🛡️ AÇIKLAMA + KONAKLAMA DÜZENİ — referans düzen: iki ayrı
+                    beyaz kart, alt alta (açıklamanın hemen altında odalar). */}
+                <div className="space-y-4 md:space-y-5">
+                  {/* DESCRIPTION — bağımsız beyaz kart */}
+                  <section
+                    id={VILLA_DESCRIPTION_ANCHOR_ID}
+                    className="scroll-mt-[180px] rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7"
+                  >
+                    <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
+                      {dict.villa.aboutTitle}
+                    </h2>
+                    {/* Özellik etiketleri — mevcut (çevrilmiş) özellik
+                        listesinin ilk 3'ü; yalnız görünüm, yeni veri YOK. */}
+                    {highlightTags.length > 0 && (
+                      <ul className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                        {highlightTags.map((f, i) => (
+                          <li
+                            key={f.id}
+                            className="flex items-center gap-3 text-[14px] md:text-[15px] font-semibold text-ink"
+                          >
+                            {i > 0 && (
+                              <span
+                                aria-hidden="true"
+                                className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                              />
+                            )}
+                            {f.displayName}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {displayDescription && displayDescription.trim() ? (
                     <CollapsibleDescription
                       html={sanitizeHtml(displayDescription)}
                       collapsible={
@@ -323,13 +354,22 @@ export default function VillaDetailBody({
                       locale={locale}
                     />
                   ) : (
-                    <div className="card-premium mt-5 p-6 md:p-7 text-[var(--color-stone-600)] leading-[1.75] text-[15px]">
-                      <span className="italic text-[var(--color-stone-400)]">
-                        {dict.villa.descriptionEmpty}
-                      </span>
-                    </div>
-                  )}
-                </section>
+                      <p className="mt-4 text-[var(--color-stone-600)] leading-[1.75] text-[14px]">
+                        <span className="italic text-[var(--color-stone-400)]">
+                          {dict.villa.descriptionEmpty}
+                        </span>
+                      </p>
+                    )}
+                  </section>
+
+                  {/* 🛡️ KONAKLAMA DÜZENİ (mig 047) — açıklama kartının
+                      hemen altında, ayrı beyaz kart (kap AccommodationLayout içinde). */}
+                  <AccommodationLayout
+                    bedrooms={villa.bedroom_layout ?? []}
+                    bathrooms={villa.bathroom_layout ?? []}
+                    locale={locale}
+                  />
+                </div>
 
                 {/* 🛡️ İÇERİK BÖLÜMLERİ — Fiyatlar, Müsaitlik, Konum, Özellikler
                     sayfada ardışık ve hep açık (navigasyon hedefleri). */}
@@ -372,13 +412,6 @@ export default function VillaDetailBody({
                   ozellikler={
                     <VillaFeaturesSection features={features} locale={locale} />
                   }
-                />
-
-                {/* 🛡️ KONAKLAMA DÜZENİ (mig 047) */}
-                <AccommodationLayout
-                  bedrooms={villa.bedroom_layout ?? []}
-                  bathrooms={villa.bathroom_layout ?? []}
-                  locale={locale}
                 />
 
                 {/* 🏊 HAVUZ BİLGİLERİ */}
@@ -467,7 +500,7 @@ export default function VillaDetailBody({
                         <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-stone-400)]">
                           {dict.villa.checkInLabel}
                         </p>
-                        <p className="font-display text-[21px] md:text-[22px] leading-tight text-[var(--color-stone-900)] tabular-nums">
+                        <p className="font-display text-[18px] md:text-[19px] leading-tight text-[var(--color-stone-900)] tabular-nums">
                           16:00
                         </p>
                       </div>
@@ -486,7 +519,7 @@ export default function VillaDetailBody({
                         <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-stone-400)]">
                           {dict.villa.checkOutLabel}
                         </p>
-                        <p className="font-display text-[21px] md:text-[22px] leading-tight text-[var(--color-stone-900)] tabular-nums">
+                        <p className="font-display text-[18px] md:text-[19px] leading-tight text-[var(--color-stone-900)] tabular-nums">
                           10:00
                         </p>
                       </div>

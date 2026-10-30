@@ -226,7 +226,7 @@ export default function Gallery({
                   pl-2 pr-5 py-2
                   rounded-full
                   bg-[var(--color-stone-900)] hover:bg-[var(--color-stone-800)]
-                  text-white text-[13px] font-semibold tracking-wide
+                  text-white text-[12.5px] font-semibold tracking-wide
                   shadow-[0_10px_24px_-8px_rgb(27_26_23/0.5)]
                   hover:shadow-[0_14px_28px_-8px_rgb(27_26_23/0.55)]
                   transition-all duration-200 motion-reduce:transition-none
@@ -408,7 +408,7 @@ export default function Gallery({
               inline-flex items-center gap-1.5
               rounded-full bg-white/95 backdrop-blur-sm
               px-3.5 py-2
-              text-[12.5px] font-semibold text-[var(--color-stone-800)]
+              text-[12px] font-semibold text-[var(--color-stone-800)]
               ring-1 ring-black/5
               shadow-[0_8px_20px_-8px_rgba(27,46,94,0.35)]
               hover:bg-white transition-colors duration-200 motion-reduce:transition-none

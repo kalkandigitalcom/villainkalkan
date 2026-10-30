@@ -71,21 +71,21 @@ export default async function SharedFavoritesPageBody({
             <span className="inline-block w-8 h-px bg-[var(--color-stone-300)] align-middle mr-3" />
             {dict.sharedBadge}
           </p>
-          <h1 className="font-display text-[44px] md:text-[72px] lg:text-[88px] text-[var(--color-stone-900)] mt-6 leading-[0.98] tracking-[-0.035em] max-w-4xl">
+          <h1 className="font-display text-[36px] md:text-[56px] lg:text-[64px] text-[var(--color-stone-900)] mt-6 leading-[0.98] tracking-[-0.035em] max-w-4xl">
             {dict.sharedTitle}
             <br />
             <span className="text-[var(--color-stone-400)]">
               {dict.sharedTitleAccent}
             </span>
           </h1>
-          <p className="text-[14.5px] md:text-[15.5px] leading-[1.65] text-[var(--color-stone-500)] mt-6 max-w-xl">
+          <p className="text-[13.5px] md:text-[14.5px] leading-[1.65] text-[var(--color-stone-500)] mt-6 max-w-xl">
             {dict.sharedBody}
           </p>
 
           {/* META STRIP */}
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-[var(--color-stone-500)]">
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-[12.5px] text-[var(--color-stone-500)]">
             <span className="inline-flex items-baseline gap-2">
-              <span className="font-display text-[20px] text-[var(--color-stone-900)] tracking-[-0.015em] tabular-nums">
+              <span className="font-display text-[18px] text-[var(--color-stone-900)] tracking-[-0.015em] tabular-nums">
                 {totalCount}
               </span>
               <span className="text-[11px] tracking-[0.12em] uppercase">
@@ -105,7 +105,7 @@ export default async function SharedFavoritesPageBody({
                 <span className="text-[var(--color-stone-300)]" aria-hidden>
                   ·
                 </span>
-                <span className="text-[12.5px] text-[var(--color-stone-400)]">
+                <span className="text-[12px] text-[var(--color-stone-400)]">
                   {formatDictionaryString(dict.sharedVisibleCount, {
                     visible: visibleCount,
                     total: totalCount,
@@ -130,7 +130,7 @@ export default async function SharedFavoritesPageBody({
             <h2 className="font-display text-xl md:text-2xl text-[var(--color-stone-900)] tracking-[-0.015em]">
               {dict.sharedEmptyTitle}
             </h2>
-            <p className="text-[14px] text-[var(--color-stone-500)] mt-3 max-w-md mx-auto">
+            <p className="text-[13px] text-[var(--color-stone-500)] mt-3 max-w-md mx-auto">
               {dict.sharedEmptyBody}
             </p>
           </div>
@@ -182,10 +182,10 @@ export default async function SharedFavoritesPageBody({
               >
                 <Heart size={16} strokeWidth={1.5} />
               </div>
-              <h3 className="font-display text-[24px] md:text-[28px] text-[var(--color-stone-900)] mt-5 tracking-[-0.02em]">
+              <h3 className="font-display text-[20px] md:text-[24px] text-[var(--color-stone-900)] mt-5 tracking-[-0.02em]">
                 {dict.sharedCtaTitle}
               </h3>
-              <p className="text-[14.5px] text-[var(--color-stone-500)] mt-3 leading-[1.65]">
+              <p className="text-[13.5px] text-[var(--color-stone-500)] mt-3 leading-[1.65]">
                 {dict.sharedCtaBody}
               </p>
             </div>
@@ -196,7 +196,7 @@ export default async function SharedFavoritesPageBody({
                   inline-flex items-center gap-2
                   px-5 py-2.5 rounded-full
                   bg-[var(--color-stone-900)] text-white
-                  text-[13px] font-medium tracking-[0.02em]
+                  text-[12.5px] font-medium tracking-[0.02em]
                   hover:bg-[var(--color-stone-700)]
                   transition-colors motion-reduce:transition-none
                   focus:outline-none focus-visible:ring-2
@@ -212,7 +212,7 @@ export default async function SharedFavoritesPageBody({
                   inline-flex items-center gap-2
                   px-5 py-2.5 rounded-full
                   border border-[var(--color-stone-200)]
-                  text-[13px] font-medium text-[var(--color-stone-700)]
+                  text-[12.5px] font-medium text-[var(--color-stone-700)]
                   hover:border-[var(--color-champagne-500)] hover:text-[var(--color-stone-900)]
                   hover:bg-white
                   transition-colors motion-reduce:transition-none

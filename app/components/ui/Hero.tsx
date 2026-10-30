@@ -256,7 +256,7 @@ export default function Hero({
                 inline-flex items-center gap-2.5
                 rounded-full border !border-white/25 bg-white/10 backdrop-blur-md
                 px-4 md:px-5 py-2
-                text-[12.5px] md:text-[14px] font-medium tracking-[0.01em]
+                text-[12px] md:text-[13px] font-medium tracking-[0.01em]
                 text-white/90
               "
             >
@@ -275,7 +275,7 @@ export default function Hero({
           {hero.title && (
             <h1
               className="
-                text-[40px] sm:text-[52px] md:text-[64px] lg:text-[76px]
+                text-[32px] sm:text-[40px] md:text-[48px] lg:text-[60px]
                 font-semibold
                 leading-[1.1] tracking-[-0.025em]
                 text-white
@@ -299,7 +299,7 @@ export default function Hero({
           {hero.subtitle && (
             <p
               className="
-                text-[16px] md:text-[19px] lg:text-[21px] leading-[1.65]
+                text-[15px] md:text-[17px] lg:text-[18px] leading-[1.65]
                 text-white/90
                 mt-5 md:mt-7
                 max-w-[620px] lg:max-w-[640px] w-full whitespace-pre-line
@@ -322,7 +322,7 @@ export default function Hero({
                     inline-flex items-center justify-center
                     h-12 md:h-[60px] px-7 md:px-9 rounded-full
                     bg-brand hover:bg-brand-hover
-                    text-ink text-[15px] md:text-[17px] font-semibold tracking-[0.01em]
+                    text-ink text-[14px] md:text-[16px] font-semibold tracking-[0.01em]
                     shadow-[0_16px_34px_-16px_rgba(200,151,58,0.8)]
                     hover:-translate-y-[1px]
                     transition-[transform,background-color] duration-300
@@ -340,7 +340,7 @@ export default function Hero({
                     inline-flex items-center justify-center
                     h-12 md:h-[60px] px-7 md:px-9 rounded-full
                     border !border-white/45 bg-white/[0.08] backdrop-blur-sm
-                    text-white text-[15px] md:text-[17px] font-semibold tracking-[0.01em]
+                    text-white text-[14px] md:text-[16px] font-semibold tracking-[0.01em]
                     hover:bg-white/[0.16] hover:!border-white/70
                     hover:-translate-y-[1px]
                     transition-[transform,border-color,background-color] duration-300

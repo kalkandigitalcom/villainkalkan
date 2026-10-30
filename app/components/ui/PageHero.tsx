@@ -109,7 +109,7 @@ export default async function PageHero({
         <nav
           aria-label="Breadcrumb"
           className={
-            "flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[12px] " +
+            "flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[11.5px] " +
             cCrumb
           }
         >
@@ -157,7 +157,7 @@ export default async function PageHero({
         {/* TITLE — odak noktası */}
         <h1
           className={
-            "font-display font-medium leading-[1.02] tracking-[-0.035em] text-[40px] md:text-[58px] lg:text-[66px] mx-auto max-w-3xl " +
+            "font-display font-medium leading-[1.02] tracking-[-0.035em] text-[32px] md:text-[44px] lg:text-[52px] mx-auto max-w-3xl " +
             cTitle +
             " " +
             (eyebrow ? "mt-6" : "mt-9 md:mt-12")
@@ -170,7 +170,7 @@ export default async function PageHero({
         {description && (
           <p
             className={
-              "mt-6 md:mt-7 text-[15px] md:text-[16px] leading-[1.75] max-w-xl mx-auto " +
+              "mt-6 md:mt-7 text-[14px] md:text-[15px] leading-[1.75] max-w-xl mx-auto " +
               cDesc
             }
           >
@@ -203,7 +203,7 @@ export default async function PageHero({
                 <span aria-hidden="true" className={"w-8 h-px mb-5 " + cTick} />
                 <span
                   className={
-                    "font-display font-medium text-[44px] md:text-[52px] leading-none tracking-[-0.035em] tabular-nums " +
+                    "font-display font-medium text-[36px] md:text-[40px] leading-none tracking-[-0.035em] tabular-nums " +
                     cStatValue
                   }
                 >
@@ -243,7 +243,7 @@ export default async function PageHero({
                       )}
                       <span
                         className={
-                          "font-display text-[15.5px] md:text-[16.5px] tracking-[-0.01em] " +
+                          "font-display text-[14.5px] md:text-[15.5px] tracking-[-0.01em] " +
                           cBadgeLine
                         }
                       >

@@ -42,10 +42,10 @@ export default function MaintenanceScreen({
             <span className="inline-block w-8 h-px bg-[var(--color-stone-300)] align-middle mr-3" />
             {dict.eyebrow}
           </p>
-          <h1 className="font-display text-[40px] md:text-[64px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.03em]">
+          <h1 className="font-display text-[32px] md:text-[48px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.03em]">
             {brand}
           </h1>
-          <p className="text-[var(--color-stone-500)] mt-6 leading-relaxed text-[15px] md:text-[16px]">
+          <p className="text-[var(--color-stone-500)] mt-6 leading-relaxed text-[14px] md:text-[15px]">
             {text}
           </p>
         </div>

@@ -39,10 +39,10 @@ export default function OfferPageBody({
               />
               {dict.heroEyebrow}
             </p>
-            <h1 className="font-display font-medium text-[28px] md:text-[36px] lg:text-[42px] text-[var(--color-stone-900)] mt-4 leading-tight tracking-[-0.02em]">
+            <h1 className="font-display font-medium text-[24px] md:text-[30px] lg:text-[34px] text-[var(--color-stone-900)] mt-4 leading-tight tracking-[-0.02em]">
               {dict.heroTitle}
             </h1>
-            <p className="mt-4 text-[14.5px] md:text-[15px] leading-relaxed text-[var(--color-stone-500)] max-w-xl">
+            <p className="mt-4 text-[13.5px] md:text-[14px] leading-relaxed text-[var(--color-stone-500)] max-w-xl">
               {dict.heroDescription}
             </p>
           </div>
@@ -104,10 +104,10 @@ function TrustRow({
         {icon}
       </span>
       <div className="min-w-0">
-        <p className="text-[13.5px] font-medium text-[var(--color-stone-900)] leading-tight">
+        <p className="text-[13px] font-medium text-[var(--color-stone-900)] leading-tight">
           {title}
         </p>
-        <p className="text-[12.5px] text-[var(--color-stone-500)] mt-1 leading-snug">
+        <p className="text-[12px] text-[var(--color-stone-500)] mt-1 leading-snug">
           {description}
         </p>
       </div>

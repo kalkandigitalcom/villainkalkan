@@ -346,10 +346,10 @@ export default function OfferRequestForm({
         >
           <Sparkles size={20} strokeWidth={1.6} />
         </div>
-        <h2 className="font-display font-medium text-[24px] md:text-[28px] text-[var(--color-stone-900)] tracking-[-0.015em] mt-5">
+        <h2 className="font-display font-medium text-[20px] md:text-[24px] text-[var(--color-stone-900)] tracking-[-0.015em] mt-5">
           {dict.successTitle}
         </h2>
-        <p className="text-[14.5px] text-[var(--color-stone-500)] mt-3 max-w-md mx-auto leading-relaxed">
+        <p className="text-[13.5px] text-[var(--color-stone-500)] mt-3 max-w-md mx-auto leading-relaxed">
           {dict.successBody}
         </p>
       </div>
@@ -422,7 +422,7 @@ export default function OfferRequestForm({
                     <div className="min-w-0">
                       <p
                         className={
-                          "text-[14.5px] font-medium leading-tight " +
+                          "text-[13.5px] font-medium leading-tight " +
                           (active
                             ? "text-[var(--brand-coral-ink)]"
                             : "text-[var(--color-stone-900)]")
@@ -430,7 +430,7 @@ export default function OfferRequestForm({
                       >
                         {dict[g.labelKey]}
                       </p>
-                      <p className="text-[12.5px] text-[var(--color-stone-500)] mt-1 leading-snug">
+                      <p className="text-[12px] text-[var(--color-stone-500)] mt-1 leading-snug">
                         {dict[g.descriptionKey]}
                       </p>
                     </div>
@@ -474,7 +474,7 @@ export default function OfferRequestForm({
                 dateFormat="dd.MM.yyyy"
                 minDate={new Date()}
                 placeholderText={dict.datePlaceholder}
-                className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none w-full text-[14px] font-medium !text-[var(--color-stone-900)] placeholder:!text-[var(--color-stone-400)] cursor-pointer"
+                className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none w-full text-[13px] font-medium !text-[var(--color-stone-900)] placeholder:!text-[var(--color-stone-400)] cursor-pointer"
                 portalId="teklif-datepicker-portal"
                 popperClassName="!z-[60]"
                 /* 🛡️ Mobil klavye baskılama — customInput içinde
@@ -565,7 +565,7 @@ export default function OfferRequestForm({
                 onChange={(e) => updateField("budgetCurrency", e.target.value)}
                 className="
                   w-full !rounded-2xl !border !border-[var(--color-stone-200)] !bg-white
-                  px-3 py-3 text-[14px] !text-[var(--color-stone-900)]
+                  px-3 py-3 text-[13px] !text-[var(--color-stone-900)]
                   focus:!border-[var(--brand-coral)]
                   focus:!shadow-[0_0_0_3px_rgba(27,46,94,0.18)]
                 "
@@ -629,7 +629,7 @@ export default function OfferRequestForm({
             placeholder={dict.notePlaceholder}
             className="
               w-full !rounded-2xl !border !border-[var(--color-stone-200)] !bg-white
-              px-4 py-3 text-[14.5px] !text-[var(--color-stone-700)]
+              px-4 py-3 text-[13.5px] !text-[var(--color-stone-700)]
               placeholder:!text-[var(--color-stone-400)] leading-relaxed
               focus:!border-[var(--brand-coral)]
               focus:!shadow-[0_0_0_3px_rgba(27,46,94,0.18)]
@@ -647,7 +647,7 @@ export default function OfferRequestForm({
           className="
             flex items-center gap-3
             rounded-2xl border border-red-200 bg-red-50
-            px-4 py-3 text-[13.5px] text-red-900
+            px-4 py-3 text-[13px] text-red-900
           "
         >
           <AlertCircle size={15} aria-hidden className="shrink-0" />
@@ -656,7 +656,7 @@ export default function OfferRequestForm({
       )}
 
       <div className="rounded-3xl bg-white border border-[var(--color-stone-100)] shadow-[0_12px_28px_-18px_rgba(27,26,23,0.10)] p-6 md:p-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <p className="text-[12.5px] text-[var(--color-stone-500)] max-w-md">
+        <p className="text-[12px] text-[var(--color-stone-500)] max-w-md">
           {dict.privacyNote}
         </p>
         <button
@@ -695,18 +695,18 @@ function Section({
           className="
             shrink-0 w-7 h-7 rounded-full
             bg-[var(--brand-coral-tint)] text-[var(--brand-coral)]
-            font-display text-[13px] font-medium tabular-nums
+            font-display text-[12.5px] font-medium tabular-nums
             inline-flex items-center justify-center
           "
         >
           {eyebrow}
         </span>
         <div className="min-w-0">
-          <h2 className="font-display font-medium text-[18px] md:text-[20px] text-[var(--color-stone-900)] leading-tight tracking-[-0.015em]">
+          <h2 className="font-display font-medium text-[16px] md:text-[18px] text-[var(--color-stone-900)] leading-tight tracking-[-0.015em]">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-[13px] text-[var(--color-stone-500)] mt-1.5 leading-relaxed">
+            <p className="text-[12.5px] text-[var(--color-stone-500)] mt-1.5 leading-relaxed">
               {subtitle}
             </p>
           )}
@@ -752,7 +752,7 @@ function NumberStepper({
         >
           <Minus size={14} strokeWidth={1.75} />
         </button>
-        <span className="font-display text-[18px] text-[var(--color-stone-900)] tabular-nums">
+        <span className="font-display text-[16px] text-[var(--color-stone-900)] tabular-nums">
           {value}
         </span>
         <button
@@ -792,7 +792,7 @@ function ChipMultiSelect({
         {label}
       </label>
       {options.length === 0 ? (
-        <p className="text-[13px] text-[var(--color-stone-400)] italic">
+        <p className="text-[12.5px] text-[var(--color-stone-400)] italic">
           {emptyLabel}
         </p>
       ) : (
@@ -814,7 +814,7 @@ function ChipMultiSelect({
                   aria-pressed={active}
                   className={
                     "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full " +
-                    "text-[12.5px] font-medium tracking-[0.01em] " +
+                    "text-[12px] font-medium tracking-[0.01em] " +
                     "border transition-[transform,color,background-color,border-color] duration-200 " +
                     "motion-reduce:transition-none " +
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-coral)]/40 " +
@@ -865,7 +865,7 @@ function BudgetField({
         placeholder="0"
         className="
           w-full !rounded-2xl !border !border-[var(--color-stone-200)] !bg-white
-          px-4 py-3 text-[14.5px] !text-[var(--color-stone-900)] tabular-nums
+          px-4 py-3 text-[13.5px] !text-[var(--color-stone-900)] tabular-nums
           placeholder:!text-[var(--color-stone-400)]
           focus:!border-[var(--brand-coral)]
           focus:!shadow-[0_0_0_3px_rgba(27,46,94,0.18)]
@@ -912,7 +912,7 @@ function TextField({
         maxLength={maxLength}
         className="
           w-full !rounded-2xl !border !border-[var(--color-stone-200)] !bg-white
-          px-4 py-3 text-[14.5px] !text-[var(--color-stone-900)]
+          px-4 py-3 text-[13.5px] !text-[var(--color-stone-900)]
           placeholder:!text-[var(--color-stone-400)]
           focus:!border-[var(--brand-coral)]
           focus:!shadow-[0_0_0_3px_rgba(27,46,94,0.18)]

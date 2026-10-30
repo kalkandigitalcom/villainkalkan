@@ -223,7 +223,7 @@ export default function FavoritesGrid({
         <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] mt-6 tracking-[-0.015em]">
           {dict.emptyTitle}
         </h2>
-        <p className="text-[14.5px] md:text-[15px] leading-[1.65] text-[var(--color-stone-500)] mt-4 max-w-md mx-auto">
+        <p className="text-[13.5px] md:text-[14px] leading-[1.65] text-[var(--color-stone-500)] mt-4 max-w-md mx-auto">
           {dict.emptyBody}
         </p>
         <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
@@ -233,7 +233,7 @@ export default function FavoritesGrid({
               inline-flex items-center gap-2
               px-5 py-2.5 rounded-full
               bg-[var(--color-stone-900)] text-white
-              text-[13px] font-medium tracking-[0.02em]
+              text-[12.5px] font-medium tracking-[0.02em]
               hover:bg-[var(--color-stone-700)]
               transition-colors motion-reduce:transition-none
               focus:outline-none focus-visible:ring-2
@@ -248,7 +248,7 @@ export default function FavoritesGrid({
               inline-flex items-center gap-2
               px-5 py-2.5 rounded-full
               border border-[var(--color-stone-200)]
-              text-[13px] font-medium text-[var(--color-stone-700)]
+              text-[12.5px] font-medium text-[var(--color-stone-700)]
               hover:border-[var(--color-champagne-500)] hover:text-[var(--color-stone-900)]
               hover:bg-white
               transition-colors motion-reduce:transition-none
@@ -277,7 +277,7 @@ export default function FavoritesGrid({
         <h2 className="font-display text-xl md:text-2xl text-[var(--color-stone-900)] tracking-[-0.015em]">
           {dict.unavailableTitle}
         </h2>
-        <p className="text-[14px] text-[var(--color-stone-500)] mt-3 max-w-md mx-auto">
+        <p className="text-[13px] text-[var(--color-stone-500)] mt-3 max-w-md mx-auto">
           {dict.unavailableBody}
         </p>
         <div className="mt-7 flex items-center justify-center gap-3 flex-wrap">
@@ -286,7 +286,7 @@ export default function FavoritesGrid({
             className="
               inline-flex items-center gap-2 px-5 py-2.5 rounded-full
               bg-[var(--color-stone-900)] text-white
-              text-[13px] font-medium tracking-[0.02em]
+              text-[12.5px] font-medium tracking-[0.02em]
               hover:bg-[var(--color-stone-700)]
               transition-colors motion-reduce:transition-none
             "
@@ -299,7 +299,7 @@ export default function FavoritesGrid({
             className="
               inline-flex items-center gap-2 px-5 py-2.5 rounded-full
               border border-[var(--color-stone-200)]
-              text-[13px] font-medium text-[var(--color-stone-700)]
+              text-[12.5px] font-medium text-[var(--color-stone-700)]
               hover:border-red-300 hover:text-red-700 hover:bg-red-50
               transition-colors motion-reduce:transition-none
             "
@@ -317,8 +317,8 @@ export default function FavoritesGrid({
     <div className="space-y-10">
       {/* Toolbar — count + actions (paylaş + temizle) */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <p className="text-[13px] text-[var(--color-stone-500)] tabular-nums">
-          <span className="font-display text-[16px] text-[var(--color-stone-900)] mr-1.5 tracking-[-0.01em]">
+        <p className="text-[12.5px] text-[var(--color-stone-500)] tabular-nums">
+          <span className="font-display text-[15px] text-[var(--color-stone-900)] mr-1.5 tracking-[-0.01em]">
             {villas.length}
           </span>
           {dict.countSuffix}
@@ -336,7 +336,7 @@ export default function FavoritesGrid({
             }
             className="
               inline-flex items-center gap-2
-              text-[13px] font-medium
+              text-[12.5px] font-medium
               px-4 py-2 rounded-full
               border border-[var(--color-stone-200)]
               text-[var(--color-stone-700)]
@@ -360,7 +360,7 @@ export default function FavoritesGrid({
             onClick={handleClear}
             className="
               inline-flex items-center gap-2
-              text-[13px] font-medium
+              text-[12.5px] font-medium
               text-[var(--color-stone-500)]
               hover:text-red-700
               transition-colors motion-reduce:transition-none
@@ -402,10 +402,10 @@ export default function FavoritesGrid({
               <Check size={14} />
             </span>
             <div className="min-w-0">
-              <p className="text-[13px] font-medium text-emerald-900">
+              <p className="text-[12.5px] font-medium text-emerald-900">
                 {shareState.copied ? dict.shareCopied : dict.shareReady}
               </p>
-              <p className="text-[12px] text-emerald-800/70 truncate mt-0.5">
+              <p className="text-[11.5px] text-emerald-800/70 truncate mt-0.5">
                 {shareState.url}
               </p>
             </div>
@@ -417,7 +417,7 @@ export default function FavoritesGrid({
             className="
               shrink-0
               inline-flex items-center gap-1.5
-              text-[12.5px] font-medium
+              text-[12px] font-medium
               text-emerald-800
               hover:text-emerald-900
               underline underline-offset-2 decoration-emerald-300
@@ -449,7 +449,7 @@ export default function FavoritesGrid({
           >
             <AlertCircle size={14} />
           </span>
-          <p className="text-[13px] text-red-900">{shareState.message}</p>
+          <p className="text-[12.5px] text-red-900">{shareState.message}</p>
         </div>
       )}
 

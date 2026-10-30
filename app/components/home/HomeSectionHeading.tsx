@@ -14,7 +14,7 @@ import type { ReactNode } from "react";
 
 /** Ortalanmış ana sayfa bölüm başlığının tipografisi. */
 export const HOME_SECTION_TITLE_CLASS =
-  "font-display font-semibold text-[24px] md:text-[30px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]";
+  "font-display font-semibold text-[20px] md:text-[24px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]";
 
 export function HomeSectionOrnament({
   align = "center",
@@ -57,7 +57,7 @@ export default function HomeSectionHeading({
       <h2 className={HOME_SECTION_TITLE_CLASS}>{title}</h2>
       <HomeSectionOrnament />
       {subtitle ? (
-        <p className="mt-3 text-[14px] leading-relaxed text-[var(--color-stone-500)] max-w-md mx-auto">
+        <p className="mt-3 text-[13px] leading-relaxed text-[var(--color-stone-500)] max-w-md mx-auto">
           {subtitle}
         </p>
       ) : null}

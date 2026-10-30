@@ -67,9 +67,9 @@ export default function HeroReviewCard({
         <p className="text-[10.5px] tracking-[0.18em] uppercase font-medium text-[var(--color-stone-500)]">
           Misafir Puanı
         </p>
-        <p className="font-display text-[16px] text-[var(--color-stone-900)] tracking-[-0.01em] tabular-nums leading-tight">
+        <p className="font-display text-[15px] text-[var(--color-stone-900)] tracking-[-0.01em] tabular-nums leading-tight">
           {reviewStats.average.toFixed(1)}
-          <span className="text-[12.5px] text-[var(--color-stone-500)] font-sans ml-1.5 tracking-normal tabular-nums">
+          <span className="text-[12px] text-[var(--color-stone-500)] font-sans ml-1.5 tracking-normal tabular-nums">
             / 5 · {reviewStats.count} gerçek yorum
           </span>
         </p>

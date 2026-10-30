@@ -68,7 +68,7 @@ export function HomeBlogFeatureView({
           {category ? (
             <span
               data-blog-feature-category
-              className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3.5 py-1.5 text-[12px] font-semibold tracking-[0.02em] text-brand-strong ring-1 ring-brand/20"
+              className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3.5 py-1.5 text-[11.5px] font-semibold tracking-[0.02em] text-brand-strong ring-1 ring-brand/20"
             >
               <MapPin size={13} strokeWidth={2} aria-hidden="true" />
               {category}
@@ -77,19 +77,19 @@ export function HomeBlogFeatureView({
 
           <h2
             id={headingId}
-            className="mt-4 font-display text-[28px] md:text-[38px] font-semibold leading-[1.12] tracking-[-0.02em] text-ink"
+            className="mt-4 font-display text-[24px] md:text-[30px] font-semibold leading-[1.12] tracking-[-0.02em] text-ink"
           >
             {title}
           </h2>
           <HomeSectionOrnament align="start" />
 
           {lead ? (
-            <p className="mt-4 text-[15px] md:text-[16px] leading-relaxed text-[var(--color-stone-600)]">
+            <p className="mt-4 text-[14px] md:text-[15px] leading-relaxed text-[var(--color-stone-600)]">
               {lead}
             </p>
           ) : null}
           {summary ? (
-            <p className="mt-3 text-[14.5px] leading-relaxed text-[var(--color-stone-500)]">
+            <p className="mt-3 text-[13.5px] leading-relaxed text-[var(--color-stone-500)]">
               {summary}
             </p>
           ) : null}
@@ -108,7 +108,7 @@ export function HomeBlogFeatureView({
                   >
                     <Check size={13} strokeWidth={2.25} />
                   </span>
-                  <span className="text-[14px] leading-snug text-ink/85">{item}</span>
+                  <span className="text-[13px] leading-snug text-ink/85">{item}</span>
                 </li>
               ))}
             </ul>
@@ -116,7 +116,7 @@ export function HomeBlogFeatureView({
 
           <Link
             href={href}
-            className="mt-7 inline-flex h-11 items-center gap-2 rounded-full bg-ink px-6 text-[13.5px] font-semibold tracking-[0.01em] text-white shadow-[0_14px_28px_-16px_rgba(27,46,94,0.7)] transition-colors duration-200 hover:bg-ink/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2 motion-reduce:transition-none"
+            className="mt-7 inline-flex h-11 items-center gap-2 rounded-full bg-ink px-6 text-[13px] font-semibold tracking-[0.01em] text-white shadow-[0_14px_28px_-16px_rgba(27,46,94,0.7)] transition-colors duration-200 hover:bg-ink/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             {ctaLabel}
             <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />

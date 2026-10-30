@@ -117,7 +117,7 @@ export default function BookingCalendar({
           role="alert"
           className="
             mb-3 rounded-xl border border-red-200 bg-red-50
-            px-3 py-2 text-[12.5px] text-red-700
+            px-3 py-2 text-[12px] text-red-700
             flex items-center gap-2
           "
         >

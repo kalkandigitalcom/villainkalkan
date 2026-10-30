@@ -79,20 +79,20 @@ export default async function ReservationLookupPageBody({
             <ReservationShareView data={share.data} locale={locale} />
           ) : share?.kind === "cancelled" ? (
             <div className="max-w-xl mx-auto rounded-2xl border border-[var(--color-stone-100)] bg-white px-6 py-14 text-center">
-              <h2 className="font-display text-[26px] md:text-[32px] text-[var(--color-stone-900)] tracking-[-0.02em]">
+              <h2 className="font-display text-[22px] md:text-[26px] text-[var(--color-stone-900)] tracking-[-0.02em]">
                 {dict.cancelledTitle}
               </h2>
-              <p className="text-[var(--color-stone-500)] mt-3 text-[14.5px]">
+              <p className="text-[var(--color-stone-500)] mt-3 text-[13.5px]">
                 {dict.cancelledBody}
               </p>
             </div>
           ) : share?.kind === "invalid" ? (
             <>
               <div className="max-w-xl mx-auto rounded-2xl border border-[var(--color-stone-100)] bg-white px-6 py-10 text-center mb-10">
-                <h2 className="font-display text-[24px] md:text-[30px] text-[var(--color-stone-900)] tracking-[-0.02em]">
+                <h2 className="font-display text-[20px] md:text-[24px] text-[var(--color-stone-900)] tracking-[-0.02em]">
                   {dict.invalidTitle}
                 </h2>
-                <p className="text-[var(--color-stone-500)] mt-3 text-[14.5px]">
+                <p className="text-[var(--color-stone-500)] mt-3 text-[13.5px]">
                   {dict.invalidBody}
                 </p>
               </div>

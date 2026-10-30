@@ -1279,7 +1279,7 @@ export default async function AramaPageBody({
                   className="shrink-0 text-[#dfbd7e]"
                   aria-hidden
                 />
-                <span className="text-[13px] md:text-[15px] font-semibold tracking-normal text-[#f5ead3] whitespace-normal">
+                <span className="text-[12.5px] md:text-[14px] font-semibold tracking-normal text-[#f5ead3] whitespace-normal">
                   <span className="tabular-nums text-white">
                     {flexibleCount}
                   </span>{" "}
@@ -1351,22 +1351,22 @@ export default async function AramaPageBody({
                   <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />
                   {dict.errorEyebrow}
                 </p>
-                <h2 className="font-display text-[32px] md:text-[44px] text-[var(--color-stone-900)] mt-4 tracking-[-0.025em] leading-[1.05]">
+                <h2 className="font-display text-[26px] md:text-[36px] text-[var(--color-stone-900)] mt-4 tracking-[-0.025em] leading-[1.05]">
                   {dict.errorTitle}
                 </h2>
-                <p className="text-[var(--color-stone-500)] mt-4 leading-relaxed text-[14.5px]">
+                <p className="text-[var(--color-stone-500)] mt-4 leading-relaxed text-[13.5px]">
                   {dict.errorBody}
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
                   <a
                     href={basePath}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--color-stone-900)] text-white text-[13px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--color-stone-900)] text-white text-[12.5px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none"
                   >
                     {dict.errorRetry}
                   </a>
                   <a
                     href={localeHref("/kiralik-villalar", locale)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-stone-200)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-stone-300)] hover:text-[var(--color-stone-900)] transition-colors motion-reduce:transition-none"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-stone-200)] text-[12.5px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-stone-300)] hover:text-[var(--color-stone-900)] transition-colors motion-reduce:transition-none"
                   >
                     {dict.showAllVillas}
                   </a>
@@ -1396,7 +1396,7 @@ export default async function AramaPageBody({
                       {dict.emptyEyebrow}
                     </p>
 
-                    <h2 className="font-display text-[34px] md:text-[48px] lg:text-[56px] text-[var(--color-stone-900)] mt-4 tracking-[-0.03em] leading-[1.02]">
+                    <h2 className="font-display text-[28px] md:text-[38px] lg:text-[44px] text-[var(--color-stone-900)] mt-4 tracking-[-0.03em] leading-[1.02]">
                       {dict.emptyTitleLead}
                       <br />
                       <span className="text-[var(--color-stone-400)]">
@@ -1404,20 +1404,20 @@ export default async function AramaPageBody({
                       </span>
                     </h2>
 
-                    <p className="text-[var(--color-stone-500)] mt-6 leading-relaxed text-[14.5px] md:text-[15.5px] max-w-md">
+                    <p className="text-[var(--color-stone-500)] mt-6 leading-relaxed text-[13.5px] md:text-[14.5px] max-w-md">
                       {dict.emptyBody}
                     </p>
 
                     <div className="flex flex-wrap items-center justify-center gap-3 mt-10">
                       <a
                         href={basePath}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--color-stone-900)] text-white text-[13px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--color-stone-900)] text-white text-[12.5px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
                       >
                         {dict.emptyClearFilters}
                       </a>
                       <a
                         href={localeHref("/kiralik-villalar", locale)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-stone-200)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-champagne-500)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-stone-200)] text-[12.5px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-champagne-500)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
                       >
                         {dict.showAllVillas}
                       </a>
@@ -1586,13 +1586,13 @@ export default async function AramaPageBody({
                         <span className="inline-block w-6 h-px bg-[var(--brand-coral)]/50 align-middle mr-2" />
                         {dict.flexibleEyebrow}
                       </p>
-                      <h2 className="font-display text-[26px] md:text-[36px] text-[var(--color-stone-900)] mt-3 tracking-[-0.02em] leading-[1.06]">
+                      <h2 className="font-display text-[22px] md:text-[30px] text-[var(--color-stone-900)] mt-3 tracking-[-0.02em] leading-[1.06]">
                         {dict.flexibleTitle}
                       </h2>
-                      <p className="text-[var(--color-stone-500)] mt-3 leading-relaxed text-[14px] md:text-[15px] max-w-xl mx-auto md:mx-0">
+                      <p className="text-[var(--color-stone-500)] mt-3 leading-relaxed text-[13px] md:text-[14px] max-w-xl mx-auto md:mx-0">
                         {dict.flexibleBody}
                       </p>
-                      <p className="mt-3 text-[13px] font-semibold text-[var(--brand-coral-deep)]">
+                      <p className="mt-3 text-[12.5px] font-semibold text-[var(--brand-coral-deep)]">
                         <span className="tabular-nums">{flexibleCount}</span>{" "}
                         {dict.flexibleCountSuffix}
                       </p>
@@ -1736,7 +1736,7 @@ function SortSelector({
           "list-none cursor-pointer select-none " +
           "inline-flex items-center gap-2 px-3 py-1 rounded-full " +
           "border border-[var(--color-stone-200)] bg-white " +
-          "text-[12.5px] font-medium text-[var(--color-stone-700)] " +
+          "text-[12px] font-medium text-[var(--color-stone-700)] " +
           "hover:border-[var(--color-stone-300)] " +
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40 " +
           "transition-colors motion-reduce:transition-none"
@@ -1781,7 +1781,7 @@ function SortSelector({
               aria-checked={active}
               className={
                 "block px-3 py-2 rounded-lg " +
-                "text-[12.5px] font-medium " +
+                "text-[12px] font-medium " +
                 "transition-colors motion-reduce:transition-none " +
                 (active
                   ? "bg-[var(--color-stone-900)] text-white"
@@ -1824,7 +1824,7 @@ function PageSizeSelector({
   basePath: string;
 }) {
   return (
-    <div className="flex items-center gap-2 text-[12.5px] text-[var(--color-stone-500)]">
+    <div className="flex items-center gap-2 text-[12px] text-[var(--color-stone-500)]">
       <span>{dict.pageSizeLabel}</span>
       <div
         role="group"
@@ -1849,7 +1849,7 @@ function PageSizeSelector({
               className={
                 "inline-flex items-center justify-center min-w-[36px] " +
                 "px-2.5 py-1 rounded-full " +
-                "text-[12.5px] font-medium tabular-nums " +
+                "text-[12px] font-medium tabular-nums " +
                 "transition-colors motion-reduce:transition-none " +
                 (active
                   ? "bg-[var(--color-stone-900)] text-white"
@@ -1893,12 +1893,12 @@ function PaginationNav({
   return (
     <nav
       aria-label={dict.paginationAriaLabel}
-      className="mt-16 md:mt-20 flex flex-wrap items-center justify-center gap-1.5 text-[13px] text-[var(--color-stone-600)]"
+      className="mt-16 md:mt-20 flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-[var(--color-stone-600)]"
     >
       {prevDisabled ? (
         <span
           aria-disabled="true"
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
         >
           <ChevronLeft size={14} />
           {dict.paginationPrev}
@@ -1910,7 +1910,7 @@ function PaginationNav({
             { page: currentPage - 1, pageSize },
             basePath
           )}
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
         >
           <ChevronLeft size={14} />
           {dict.paginationPrev}
@@ -1921,7 +1921,7 @@ function PaginationNav({
         p === "…" ? (
           <span
             key={`gap-${idx}`}
-            className="px-2 py-1.5 text-[12.5px] text-[var(--color-stone-400)]"
+            className="px-2 py-1.5 text-[12px] text-[var(--color-stone-400)]"
             aria-hidden="true"
           >
             …
@@ -1934,7 +1934,7 @@ function PaginationNav({
             className={
               "inline-flex items-center justify-center min-w-[32px] " +
               "px-2.5 py-1.5 rounded-full " +
-              "text-[12.5px] font-medium tabular-nums " +
+              "text-[12px] font-medium tabular-nums " +
               "transition-colors motion-reduce:transition-none " +
               (p === currentPage
                 ? "bg-[var(--color-stone-900)] text-white"
@@ -1949,7 +1949,7 @@ function PaginationNav({
       {nextDisabled ? (
         <span
           aria-disabled="true"
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
         >
           {dict.paginationNext}
           <ChevronRight size={14} />
@@ -1961,7 +1961,7 @@ function PaginationNav({
             { page: currentPage + 1, pageSize },
             basePath
           )}
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
         >
           {dict.paginationNext}
           <ChevronRight size={14} />

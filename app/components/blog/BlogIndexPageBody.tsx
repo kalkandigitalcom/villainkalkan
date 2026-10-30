@@ -118,15 +118,15 @@ export default async function BlogIndexPageBody({
                         {post.category}
                       </span>
                     )}
-                    <h2 className="font-display font-medium text-[18px] text-[var(--color-stone-900)] leading-snug tracking-[-0.01em]">
+                    <h2 className="font-display font-medium text-[16px] text-[var(--color-stone-900)] leading-snug tracking-[-0.01em]">
                       {title}
                     </h2>
                     {excerpt && (
-                      <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--color-stone-500)] line-clamp-3">
+                      <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-stone-500)] line-clamp-3">
                         {excerpt}
                       </p>
                     )}
-                    <div className="mt-4 pt-3 border-t border-[var(--color-stone-100)] flex items-center justify-between text-[12px] text-[var(--color-stone-400)]">
+                    <div className="mt-4 pt-3 border-t border-[var(--color-stone-100)] flex items-center justify-between text-[11.5px] text-[var(--color-stone-400)]">
                       <span className="inline-flex items-center gap-1.5">
                         <CalendarDays size={13} />
                         {formatPublishedAt(post.published_at, locale)}

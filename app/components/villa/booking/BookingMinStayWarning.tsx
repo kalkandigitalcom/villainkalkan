@@ -66,14 +66,14 @@ export default function BookingMinStayWarning({
         <p className="text-[10.5px] tracking-[0.18em] uppercase font-semibold text-[var(--color-champagne-700)]">
           {dict.booking.minStayWarningTitle}
         </p>
-        <p className="text-[13.5px] text-[var(--color-stone-800)] mt-1 leading-snug">
+        <p className="text-[13px] text-[var(--color-stone-800)] mt-1 leading-snug">
           {bodyBefore}
           <span className="font-semibold tabular-nums">
             {minStayThreshold}
           </span>
           {bodyAfter}
         </p>
-        <p className="text-[11.5px] text-[var(--color-stone-500)] mt-1 tabular-nums">
+        <p className="text-[11px] text-[var(--color-stone-500)] mt-1 tabular-nums">
           {formatDictionaryString(dict.booking.minStayWarningSelected, {
             n: selectedNights,
           })}

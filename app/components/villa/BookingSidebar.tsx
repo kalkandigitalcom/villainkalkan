@@ -393,19 +393,19 @@ export default function BookingSidebar({
         </span>
         {hasStartingPrice ? (
           <p data-booking-nightly className="mt-2.5 flex items-baseline gap-1.5">
-            <span className="font-display text-[30px] md:text-[32px] font-semibold leading-none tracking-[-0.02em] text-ink tabular-nums">
+            <span className="font-display text-[24px] md:text-[26px] font-semibold leading-none tracking-[-0.02em] text-ink tabular-nums">
               {startingPrice}
             </span>
-            <span className="text-[14px] font-medium text-[var(--color-stone-500)]">
+            <span className="text-[13px] font-medium text-[var(--color-stone-500)]">
               {dict.booking.perNightSuffix}
             </span>
           </p>
         ) : (
-          <h2 className="mt-2 font-display text-[22px] leading-tight tracking-[-0.02em] text-ink">
+          <h2 className="mt-2 font-display text-[19px] leading-tight tracking-[-0.02em] text-ink">
             {dict.booking.sidebarTitle}
           </h2>
         )}
-        <p className="mt-2 text-[12.5px] text-[var(--color-stone-500)] leading-relaxed">
+        <p className="mt-2 text-[12px] text-[var(--color-stone-500)] leading-relaxed">
           {dict.booking.sidebarSubtitle}
         </p>
       </div>
@@ -463,7 +463,7 @@ export default function BookingSidebar({
               <CalendarDays size={15} strokeWidth={1.75} aria-hidden className="shrink-0 text-brand" />
             </div>
             <div
-              className={`mt-1.5 text-[14.5px] font-semibold truncate ${
+              className={`mt-1.5 text-[13.5px] font-semibold truncate ${
                 startDate ? "text-ink" : "text-[var(--color-stone-400)] font-medium"
               }`}
             >
@@ -481,7 +481,7 @@ export default function BookingSidebar({
               <CalendarDays size={15} strokeWidth={1.75} aria-hidden className="shrink-0 text-brand" />
             </div>
             <div
-              className={`mt-1.5 text-[14.5px] font-semibold truncate ${
+              className={`mt-1.5 text-[13.5px] font-semibold truncate ${
                 endDate ? "text-ink" : "text-[var(--color-stone-400)] font-medium"
               }`}
             >
@@ -531,7 +531,7 @@ export default function BookingSidebar({
             <div className="text-[10px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-400)] group-hover:text-brand-strong transition-colors duration-200 motion-reduce:transition-none">
               {dict.booking.guestsLabel}
             </div>
-            <div className="mt-1.5 flex items-center gap-2 text-[14.5px] font-semibold text-ink">
+            <div className="mt-1.5 flex items-center gap-2 text-[13.5px] font-semibold text-ink">
               <Users size={15} strokeWidth={1.75} aria-hidden className="shrink-0 text-brand" />
               {formatDictionaryString(dict.booking.guestsSummary, {
                 adults,
@@ -563,7 +563,7 @@ export default function BookingSidebar({
             />
             <button
               onClick={() => setOpenGuests(false)}
-              className="w-full rounded-full bg-ink hover:bg-ink/90 text-white text-[13px] font-semibold py-2.5 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2 motion-reduce:transition-none"
+              className="w-full rounded-full bg-ink hover:bg-ink/90 text-white text-[12.5px] font-semibold py-2.5 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2 motion-reduce:transition-none"
             >
               {dict.booking.confirm}
             </button>
@@ -599,7 +599,7 @@ export default function BookingSidebar({
       {priceUnavailable && (
         <p
           role="status"
-          className="text-[12px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2"
+          className="text-[11.5px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2"
         >
           {dict.booking.priceUnavailableNotice}
         </p>
@@ -607,7 +607,7 @@ export default function BookingSidebar({
 
       {/* 🛡️ GAP OVERRIDE bilgi metni — koşul AYNEN. */}
       {isGapOverride && (
-        <p className="text-[12px] text-emerald-700 bg-emerald-50/70 border border-emerald-100 rounded-xl px-3 py-2">
+        <p className="text-[11.5px] text-emerald-700 bg-emerald-50/70 border border-emerald-100 rounded-xl px-3 py-2">
           {dict.booking.gapOverrideNotice}
         </p>
       )}
@@ -648,7 +648,7 @@ export default function BookingSidebar({
           role="alert"
           className="
             rounded-xl border border-red-200 bg-red-50
-            px-3 py-2 text-[12.5px] text-red-700
+            px-3 py-2 text-[12px] text-red-700
             flex items-center gap-2
           "
         >
@@ -672,7 +672,7 @@ export default function BookingSidebar({
             className="
               group relative flex w-full items-center justify-center gap-3
               h-14 rounded-full px-6
-              text-[15px] font-semibold tracking-[0.01em]
+              text-[14px] font-semibold tracking-[0.01em]
               bg-ink text-white
               shadow-[0_18px_36px_-16px_rgba(27,46,94,0.65)]
               transition-[background-color,box-shadow,transform] duration-200
@@ -758,7 +758,7 @@ export default function BookingSidebar({
             <div className="mt-2.5 flex items-center gap-4">
               <span
                 className="
-                  shrink-0 font-display text-[42px] md:text-[46px]
+                  shrink-0 font-display text-[34px] md:text-[38px]
                   leading-none tracking-[-0.02em] text-brand-strong
                   animate-pulse [animation-duration:5s] motion-reduce:animate-none
                 "
@@ -770,10 +770,10 @@ export default function BookingSidebar({
                 className="h-10 w-px shrink-0 bg-[var(--color-stone-100)]"
               />
               <div className="min-w-0">
-                <p className="text-[13.5px] font-semibold text-[var(--color-stone-900)] leading-snug">
+                <p className="text-[13px] font-semibold text-[var(--color-stone-900)] leading-snug">
                   {dict.booking.payNowPerk}
                 </p>
-                <p className="mt-0.5 text-[13.5px] text-[var(--color-stone-500)] leading-snug">
+                <p className="mt-0.5 text-[13px] text-[var(--color-stone-500)] leading-snug">
                   {dict.booking.payAtCheckinPerk}
                 </p>
               </div>
@@ -811,7 +811,7 @@ export default function BookingSidebar({
               <div className="flex items-start justify-between gap-4">
                 <h2
                   id={availabilityTitleId}
-                  className="font-display text-[21px] md:text-[23px] leading-tight tracking-[-0.02em] text-[var(--color-stone-900)]"
+                  className="font-display text-[18px] md:text-[19px] leading-tight tracking-[-0.02em] text-[var(--color-stone-900)]"
                 >
                   {dict.villaHero.availabilityCalendar}
                 </h2>
@@ -832,7 +832,7 @@ export default function BookingSidebar({
                   <div className="text-[10px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-400)]">
                     {dict.booking.checkInPillLabel}
                   </div>
-                  <div className="mt-1 text-[14px] font-medium text-[var(--color-stone-900)] truncate">
+                  <div className="mt-1 text-[13px] font-medium text-[var(--color-stone-900)] truncate">
                     {startDate
                       ? formatDatePillLabel(startDate, bcp47)
                       : dict.booking.selectDatePlaceholder}
@@ -846,7 +846,7 @@ export default function BookingSidebar({
                   <div className="text-[10px] tracking-[0.18em] uppercase font-semibold text-[var(--color-stone-400)]">
                     {dict.booking.checkOutPillLabel}
                   </div>
-                  <div className="mt-1 text-[14px] font-medium text-[var(--color-stone-900)] truncate">
+                  <div className="mt-1 text-[13px] font-medium text-[var(--color-stone-900)] truncate">
                     {endDate
                       ? formatDatePillLabel(endDate, bcp47)
                       : dict.booking.selectDatePlaceholder}

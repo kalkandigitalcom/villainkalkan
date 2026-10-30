@@ -128,12 +128,12 @@ export default function VillaSearchBox({
 
   const inputClass =
     variant === "hero"
-      ? "!bg-transparent !border-0 !shadow-none outline-none w-full px-1 text-[15px] tracking-[0.01em] !text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] placeholder:font-normal placeholder:tracking-[0.02em]"
+      ? "!bg-transparent !border-0 !shadow-none outline-none w-full px-1 text-[14px] tracking-[0.01em] !text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] placeholder:font-normal placeholder:tracking-[0.02em]"
       : variant === "sticky"
-        ? "!bg-transparent !border-0 !shadow-none outline-none w-full px-1 text-[14px] !text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)]"
+        ? "!bg-transparent !border-0 !shadow-none outline-none w-full px-1 text-[13px] !text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)]"
       : variant === "mobile"
-        ? "!bg-transparent !border-0 !shadow-none outline-none text-[13px] pl-2 w-full min-w-0"
-        : "!bg-transparent !border-0 !shadow-none outline-none text-[13.5px] px-2 w-32 focus:w-48 transition-all !text-[var(--color-stone-900)] placeholder-[var(--color-stone-400)]";
+        ? "!bg-transparent !border-0 !shadow-none outline-none text-[12.5px] pl-2 w-full min-w-0"
+        : "!bg-transparent !border-0 !shadow-none outline-none text-[13px] px-2 w-32 focus:w-48 transition-all !text-[var(--color-stone-900)] placeholder-[var(--color-stone-400)]";
 
   const dropdownClass =
     variant === "hero"
@@ -173,7 +173,7 @@ export default function VillaSearchBox({
         className="w-14 h-12 object-cover rounded-lg ring-1 ring-[var(--color-stone-100)]"
       />
       <div className="flex flex-col min-w-0">
-        <span className="text-[13.5px] font-medium text-[var(--color-stone-900)] truncate">
+        <span className="text-[13px] font-medium text-[var(--color-stone-900)] truncate">
           {villa.title}
         </span>
         <span className="text-[11px] text-[var(--color-stone-400)] tracking-[0.05em] uppercase truncate">
@@ -206,7 +206,7 @@ export default function VillaSearchBox({
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setOpenSearch(true)}
             placeholder={placeholderText}
-            className="!bg-transparent !border-0 !shadow-none outline-none w-full text-[15px] !text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)]"
+            className="!bg-transparent !border-0 !shadow-none outline-none w-full text-[14px] !text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)]"
           />
         </div>
 
@@ -216,10 +216,10 @@ export default function VillaSearchBox({
               <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-[var(--color-sand-50)] text-[var(--color-stone-400)]">
                 <Search size={20} strokeWidth={2} aria-hidden />
               </span>
-              <p className="mt-3 text-[14px] font-medium text-[var(--color-stone-700)]">
+              <p className="mt-3 text-[13px] font-medium text-[var(--color-stone-700)]">
                 {searchDict.emptyTitle}
               </p>
-              <p className="mt-1 text-[12.5px] text-[var(--color-stone-400)] leading-relaxed">
+              <p className="mt-1 text-[12px] text-[var(--color-stone-400)] leading-relaxed">
                 {searchDict.emptyBody}
               </p>
             </div>
@@ -237,10 +237,10 @@ export default function VillaSearchBox({
               <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-[var(--color-sand-50)] text-[var(--color-stone-400)]">
                 <Search size={20} strokeWidth={2} aria-hidden />
               </span>
-              <p className="mt-3 text-[14px] font-medium text-[var(--color-stone-700)]">
+              <p className="mt-3 text-[13px] font-medium text-[var(--color-stone-700)]">
                 {searchDict.noResultsTitle}
               </p>
-              <p className="mt-1 text-[12.5px] text-[var(--color-stone-400)] leading-relaxed">
+              <p className="mt-1 text-[12px] text-[var(--color-stone-400)] leading-relaxed">
                 {searchDict.noResultsBody}
               </p>
             </div>

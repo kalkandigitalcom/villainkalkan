@@ -84,7 +84,7 @@ export default function WhyUsSection({ brandName, phone }: Props) {
           <p className="text-[11px] tracking-[0.24em] uppercase font-semibold text-[var(--brand-coral)]">
             Güvence
           </p>
-          <h2 className="font-display text-[30px] md:text-[44px] text-[var(--color-stone-900)] mt-4 leading-[1.06] tracking-[-0.025em]">
+          <h2 className="font-display text-[24px] md:text-[36px] text-[var(--color-stone-900)] mt-4 leading-[1.06] tracking-[-0.025em]">
             Neden {brand}?
           </h2>
           {/* dekoratif ince çizgi */}
@@ -92,7 +92,7 @@ export default function WhyUsSection({ brandName, phone }: Props) {
             aria-hidden="true"
             className="block w-12 h-[3px] rounded-full bg-[var(--brand-coral)] mx-auto mt-6"
           />
-          <p className="mt-6 text-[15px] md:text-[16.5px] leading-relaxed text-[var(--color-stone-600)] max-w-2xl mx-auto">
+          <p className="mt-6 text-[14px] md:text-[15.5px] leading-relaxed text-[var(--color-stone-600)] max-w-2xl mx-auto">
             Doğrulanmış villalar, güvenli rezervasyon süreçleri ve yerel
             uzman desteğiyle tatilinizi güvenle planlayın.
           </p>
@@ -121,10 +121,10 @@ export default function WhyUsSection({ brandName, phone }: Props) {
                 <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--brand-coral-tint)] text-[var(--brand-coral)]">
                   <Icon size={26} strokeWidth={1.6} />
                 </span>
-                <h3 className="font-display text-[19px] md:text-[20px] text-[var(--color-stone-900)] mt-5 tracking-[-0.015em] leading-snug">
+                <h3 className="font-display text-[17px] md:text-[18px] text-[var(--color-stone-900)] mt-5 tracking-[-0.015em] leading-snug">
                   {f.title}
                 </h3>
-                <p className="mt-3 text-[14px] md:text-[14.5px] leading-relaxed text-[var(--color-stone-500)]">
+                <p className="mt-3 text-[13px] md:text-[13.5px] leading-relaxed text-[var(--color-stone-500)]">
                   {f.desc}
                 </p>
               </div>
@@ -144,10 +144,10 @@ export default function WhyUsSection({ brandName, phone }: Props) {
           "
         >
           <div className="max-w-xl">
-            <h3 className="font-display text-[23px] md:text-[28px] text-[var(--color-stone-900)] tracking-[-0.02em] leading-tight">
+            <h3 className="font-display text-[19px] md:text-[24px] text-[var(--color-stone-900)] tracking-[-0.02em] leading-tight">
               Villa seçmekte kararsız mısınız?
             </h3>
-            <p className="mt-3 text-[15px] md:text-[16px] leading-relaxed text-[var(--color-stone-600)]">
+            <p className="mt-3 text-[14px] md:text-[15px] leading-relaxed text-[var(--color-stone-600)]">
               Uzman ekibimiz ihtiyaçlarınıza uygun villaları sizin için
               belirlesin.
             </p>
@@ -162,7 +162,7 @@ export default function WhyUsSection({ brandName, phone }: Props) {
               inline-flex items-center justify-center gap-2.5 shrink-0
               rounded-full px-7 py-4
               bg-[#1FAA59] text-white
-              text-[15px] font-semibold tracking-[0.01em]
+              text-[14px] font-semibold tracking-[0.01em]
               shadow-[0_18px_38px_-14px_rgba(31,170,89,0.6)]
               hover:bg-[#178e4a] hover:scale-[1.02]
               transition-[transform,background-color] duration-300

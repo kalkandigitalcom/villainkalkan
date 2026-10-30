@@ -111,7 +111,7 @@ function LocaleSwitchOptions({
               role="option"
               aria-selected="true"
               aria-current="true"
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left bg-brand/10 text-[var(--color-stone-900)]"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-left bg-brand/10 text-[var(--color-stone-900)]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -129,7 +129,7 @@ function LocaleSwitchOptions({
               role="option"
               aria-selected="false"
               onClick={onSelect}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left text-[var(--color-stone-700)] hover:bg-[var(--color-stone-50)] transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-left text-[var(--color-stone-700)] hover:bg-[var(--color-stone-50)] transition-colors"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -163,7 +163,7 @@ function LocaleChipLinks({
   label: string;
 }) {
   const base =
-    "inline-flex items-center gap-1.5 h-[26px] px-2 rounded-md text-[12.5px] font-medium tracking-[0.04em] transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60";
+    "inline-flex items-center gap-1.5 h-[26px] px-2 rounded-md text-[12px] font-medium tracking-[0.04em] transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60";
   return (
     <div className="flex items-center gap-1.5">
       {SUPPORTED_LOCALES.map((l: Locale) => {
@@ -329,7 +329,7 @@ export default function TopBar() {
     <div className="max-w-site mx-auto flex items-center gap-2 md:gap-4 lg:gap-6">
       {/* SOL — İletişim (Telefon + E-posta). Mobilde sıkışmayı/taşmayı
           önlemek için md+ görünür. */}
-      <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0 text-[14px]">
+      <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0 text-[13px]">
         {phoneHref && (
           <a
             href={phoneHref}
@@ -403,7 +403,7 @@ export default function TopBar() {
               bg-white/10 hover:bg-white/[0.16]
               ring-1 ring-inset ring-white/10 hover:ring-white/25
               text-white/90 hover:text-white
-              text-[14px] font-medium cursor-pointer
+              text-[13px] font-medium cursor-pointer
               transition-colors
               focus:outline-none focus-visible:ring-2
               focus-visible:ring-white/60
@@ -436,7 +436,7 @@ export default function TopBar() {
                       setCurOpen(false);
                     }}
                     className={
-                      "w-full flex items-center gap-2 px-3 py-1.5 text-[14px] font-medium text-left transition-colors " +
+                      "w-full flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-left transition-colors " +
                       (c.code === currency
                         ? "bg-brand/10 text-[var(--color-stone-900)]"
                         : "text-[var(--color-stone-700)] hover:bg-[var(--color-stone-50)]")
@@ -485,7 +485,7 @@ export default function TopBar() {
                 bg-white/10 hover:bg-white/[0.16]
                 ring-1 ring-inset ring-white/10 hover:ring-white/25
                 text-white/90 hover:text-white
-                text-[14px] font-medium cursor-pointer
+                text-[13px] font-medium cursor-pointer
                 transition-colors
                 focus:outline-none focus-visible:ring-2
                 focus-visible:ring-white/60

@@ -41,7 +41,7 @@ export default async function DiscountCardsPreviewPage({
     <div className="pt-[140px] pb-16 bg-[var(--color-stone-50,#f7f8f7)]">
       {(["a", "b", "c"] as const).map((design) => (
         <div key={design} className="border-t border-dashed !border-ink/20 first:border-t-0">
-          <p className="max-w-site mx-auto px-5 md:px-10 lg:px-16 pt-8 text-[12px] font-semibold uppercase tracking-[0.2em] text-accent-strong">
+          <p className="max-w-site mx-auto px-5 md:px-10 lg:px-16 pt-8 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-accent-strong">
             {design.toUpperCase()}
             {design === DISCOUNT_CARD_DESIGN ? " · active" : ""}
           </p>

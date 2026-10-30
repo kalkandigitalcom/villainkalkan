@@ -584,7 +584,7 @@ export default function VillaCard({
           ) : (
             /* PREMIUM FALLBACK — large serif initial */
             <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
-              <div className="font-display text-[88px] md:text-[104px] leading-none text-[var(--color-stone-300)] tracking-[-0.03em]">
+              <div className="font-display text-[64px] md:text-[80px] leading-none text-[var(--color-stone-300)] tracking-[-0.03em]">
                 {initial}
               </div>
               <p className="mt-3 text-[10px] tracking-[0.28em] uppercase font-medium text-[var(--color-stone-400)]">
@@ -657,8 +657,8 @@ export default function VillaCard({
               className={
                 "font-display text-white " +
                 (isCuration
-                  ? "text-[17px] md:text-[18px] mt-2 "
-                  : "text-[22px] md:text-[26px] mt-2.5 ") +
+                  ? "text-[16px] md:text-[16px] mt-2 "
+                  : "text-[19px] md:text-[22px] mt-2.5 ") +
                 "leading-[1.08] tracking-[-0.022em] line-clamp-2 " +
                 "group-hover:text-white/95 " +
                 "transition-colors motion-reduce:transition-none " +
@@ -672,7 +672,7 @@ export default function VillaCard({
             {typeof reviewCount === "number" && reviewCount > 0 &&
               typeof reviewAverage === "number" && reviewAverage > 0 && (
                 <div
-                  className="flex items-center gap-1.5 mt-2 text-[12px] text-white/85"
+                  className="flex items-center gap-1.5 mt-2 text-[11.5px] text-white/85"
                   aria-label={formatDictionaryString(
                     dict.card.ratingAriaLabel,
                     {
@@ -688,7 +688,7 @@ export default function VillaCard({
                     strokeWidth={1.5}
                     aria-hidden
                   />
-                  <span className="font-display text-[13px] text-white tracking-[-0.01em] tabular-nums leading-none">
+                  <span className="font-display text-[12.5px] text-white tracking-[-0.01em] tabular-nums leading-none">
                     {reviewAverage.toFixed(1)}
                   </span>
                   <span aria-hidden="true" className="text-white/40">·</span>
@@ -725,7 +725,7 @@ export default function VillaCard({
                       <span
                         className={
                           "font-display text-white tracking-[-0.015em] tabular-nums " +
-                          (isCuration ? "text-[17px]" : "text-[22px]")
+                          (isCuration ? "text-[16px]" : "text-[19px]")
                         }
                       >
                         {formatDisplayPrice(stayTotal, currency, effectiveLocale, stayPriceReady)}
@@ -735,7 +735,7 @@ export default function VillaCard({
                     <p
                       className={
                         "text-white/70 leading-snug " +
-                        (isCuration ? "text-[11px] mt-0.5" : "text-[12px] mt-1")
+                        (isCuration ? "text-[11px] mt-0.5" : "text-[11.5px] mt-1")
                       }
                     >
                       <span className="tabular-nums">
@@ -763,7 +763,7 @@ export default function VillaCard({
                     <span
                       className={
                         "font-display text-white tracking-[-0.015em] tabular-nums " +
-                        (isCuration ? "text-[17px]" : "text-[22px]")
+                        (isCuration ? "text-[16px]" : "text-[19px]")
                       }
                     >
                       {price
@@ -774,7 +774,7 @@ export default function VillaCard({
                       <span
                         className={
                           "text-white/65 " +
-                          (isCuration ? "text-[11px]" : "text-[12px]")
+                          (isCuration ? "text-[11px]" : "text-[11.5px]")
                         }
                       >
                         {dict.card.startingFromUpper}
@@ -844,7 +844,7 @@ export default function VillaCard({
               "transition-colors duration-200 motion-reduce:transition-none " +
               (isCuration
                 ? "h-9 rounded-xl text-[11px] tracking-[0.06em]"
-                : "h-11 rounded-2xl text-[12px] tracking-[0.08em]")
+                : "h-11 rounded-2xl text-[11.5px] tracking-[0.08em]")
             }
           >
             <CalendarRange
@@ -957,7 +957,7 @@ export default function VillaCard({
           ) : (
             /* PREMIUM FALLBACK — baş harf */
             <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
-              <div className="font-display text-[68px] leading-none text-ink/25 tracking-[-0.03em]">
+              <div className="font-display text-[52px] leading-none text-ink/25 tracking-[-0.03em]">
                 {initial}
               </div>
               <p className="mt-2 text-[10px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-400)]">
@@ -1031,15 +1031,15 @@ export default function VillaCard({
         <div className="relative flex flex-1 flex-col @[26rem]:flex-row">
           {/* BİLGİ */}
           <div className="min-w-0 flex-1 px-5 pt-4 pb-4 @[26rem]:pb-5">
-            <h3 className="font-display text-[19px] @[26rem]:text-[21px] font-bold leading-[1.15] tracking-[-0.02em] text-ink line-clamp-1">
+            <h3 className="font-display text-[17px] @[26rem]:text-[18px] font-bold leading-[1.15] tracking-[-0.02em] text-ink line-clamp-1">
               {title}
             </h3>
             <div aria-hidden="true" className="mt-3 h-px bg-brand/10" />
-            <p className="mt-3 flex min-w-0 items-center gap-2 text-[13px] text-[var(--color-stone-700)]">
+            <p className="mt-3 flex min-w-0 items-center gap-2 text-[12.5px] text-[var(--color-stone-700)]">
               <MapPin size={15} className="shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
               <span className="truncate">{location || dict.card.noLocation}</span>
             </p>
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-[12.5px] text-[var(--color-stone-700)]">
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-[12px] text-[var(--color-stone-700)]">
               <span
                 className="inline-flex items-center gap-1.5"
                 aria-label={formatDictionaryString(dict.card.guestsAriaLabel, { n: guests })}
@@ -1070,7 +1070,7 @@ export default function VillaCard({
             </div>
             {/* Kısa-süreli tarihler — MEVCUT reserveInfo etiketi. */}
             {reserveInfo && (
-              <p className="mt-3 inline-flex rounded-full bg-brand/[0.07] px-3 py-1 text-[12px] font-medium text-ink">
+              <p className="mt-3 inline-flex rounded-full bg-brand/[0.07] px-3 py-1 text-[11.5px] font-medium text-ink">
                 {reserveInfo.label} ·{" "}
                 {formatDictionaryString(dict.card.reserveNights, {
                   n: reserveInfo.nights,
@@ -1100,7 +1100,7 @@ export default function VillaCard({
                     <Sparkles size={12} strokeWidth={2} className="text-ink" aria-hidden />
                     {dict.card.flexibleTitle}
                   </p>
-                  <p className="mt-1 text-[12px] text-ink/90">{dict.card.flexibleSubtitle}</p>
+                  <p className="mt-1 text-[11.5px] text-ink/90">{dict.card.flexibleSubtitle}</p>
                 </>
               ) : stayTotal !== null ? (
                 /* 🛡️ TARİH SEÇİLİ — konaklama TOPLAMI (MEVCUT hesap). */
@@ -1111,11 +1111,11 @@ export default function VillaCard({
                     </p>
                   )}
                   {stayTotalBeforeDiscount !== null && (
-                    <p className="mt-1 text-[12.5px] text-ink/85 line-through tabular-nums">
+                    <p className="mt-1 text-[12px] text-ink/85 line-through tabular-nums">
                       {formatDisplayPrice(stayTotalBeforeDiscount, currency, effectiveLocale, stayPriceReady)}
                     </p>
                   )}
-                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
+                  <p data-price-amount className="font-display text-[20px] @[26rem]:text-[24px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
                     {formatDisplayPrice(stayTotal, currency, effectiveLocale, stayPriceReady)}
                   </p>
                   {/* "N gece" gösterilmez (tarih üst satırda — MEVCUT karar);
@@ -1126,7 +1126,7 @@ export default function VillaCard({
                     </p>
                   )}
                   {stayDiscountSavings !== null && (
-                    <p data-price-savings className="mt-1 text-[12px] font-semibold text-ink tabular-nums">
+                    <p data-price-savings className="mt-1 text-[11.5px] font-semibold text-ink tabular-nums">
                       {formatDictionaryString(dict.card.totalSavings, {
                         amount: formatDisplayPrice(stayDiscountSavings, currency, effectiveLocale, stayPriceReady),
                       })}
@@ -1139,16 +1139,16 @@ export default function VillaCard({
                   <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink/90">
                     {dict.card.nightly}
                   </p>
-                  <p className="mt-1 text-[12.5px] text-ink/85 line-through tabular-nums">
+                  <p className="mt-1 text-[12px] text-ink/85 line-through tabular-nums">
                     <span className="sr-only">{dict.card.originalPriceLabel}: </span>
                     {formatDisplayPrice(convertedPrice, currency, effectiveLocale, basePriceReady)}
                   </p>
-                  <p data-price-amount className="font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
+                  <p data-price-amount className="font-display text-[20px] @[26rem]:text-[24px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
                     <span className="sr-only">{dict.card.discountedPriceLabel}: </span>
                     {formatDisplayPrice(discountedPrice!.converted, currency, effectiveLocale, discountPriceReady)}
                   </p>
                   {nightlySavingsLabel && (
-                    <p className="mt-1.5 text-[12px] font-semibold text-ink">
+                    <p className="mt-1.5 text-[11.5px] font-semibold text-ink">
                       {nightlySavingsLabel}
                     </p>
                   )}
@@ -1160,7 +1160,7 @@ export default function VillaCard({
                   <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink/90">
                     {dict.card.nightly}
                   </p>
-                  <p data-price-amount className="mt-0.5 font-display text-[24px] @[26rem]:text-[28px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
+                  <p data-price-amount className="mt-0.5 font-display text-[20px] @[26rem]:text-[24px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
                     {formatDisplayPrice(convertedPrice, currency, effectiveLocale, basePriceReady)}
                   </p>
                   <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink/85">
@@ -1168,7 +1168,7 @@ export default function VillaCard({
                   </p>
                 </>
               ) : (
-                <p className="font-display text-[17px] font-bold leading-tight">
+                <p className="font-display text-[16px] font-bold leading-tight">
                   {dict.card.priceOnRequest}
                 </p>
               )}
@@ -1201,7 +1201,7 @@ export default function VillaCard({
               className="
                 shrink-0 inline-flex w-full items-center justify-center whitespace-nowrap
                 h-10 rounded-full bg-white px-5 @[26rem]:mt-4 @[26rem]:w-auto
-                text-[12px] font-bold uppercase tracking-[0.1em] text-brand-strong
+                text-[11.5px] font-bold uppercase tracking-[0.1em] text-brand-strong
                 shadow-[0_10px_22px_-12px_rgba(0,0,0,0.55)]
                 hover:bg-brand-soft transition-colors duration-200 motion-reduce:transition-none
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-brand
@@ -1359,7 +1359,7 @@ function AmenityMini({
       <div className="leading-none">
         <p
           className={
-            "font-display text-[22px] tracking-[-0.015em] tabular-nums " +
+            "font-display text-[19px] tracking-[-0.015em] tabular-nums " +
             t.numText
           }
         >

@@ -78,10 +78,10 @@ export default async function VillaList({
               <span className="inline-block w-8 h-px bg-[var(--color-stone-300)] align-middle mr-3" />
               {dict.emptyEyebrow}
             </p>
-            <h2 className="font-display text-[40px] md:text-[64px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.03em]">
+            <h2 className="font-display text-[32px] md:text-[48px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.03em]">
               {dict.emptyTitle}
             </h2>
-            <p className="text-[var(--color-stone-500)] mt-5 leading-relaxed text-[15px] md:text-[16px]">
+            <p className="text-[var(--color-stone-500)] mt-5 leading-relaxed text-[14px] md:text-[15px]">
               {dict.emptyBody}
             </p>
           </div>
@@ -137,7 +137,7 @@ export default async function VillaList({
               group inline-flex items-center gap-2
               px-4 py-2 rounded-full
               border border-[var(--color-stone-200)]
-              text-[12.5px] font-medium tracking-[0.02em]
+              text-[12px] font-medium tracking-[0.02em]
               text-[var(--color-stone-700)]
               hover:border-[var(--brand-coral)] hover:text-[var(--color-stone-900)]
               hover:bg-[var(--brand-coral-tint)]

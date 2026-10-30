@@ -113,11 +113,11 @@ export default async function BlogDetailPageBody({
 
           {body && body.trim() ? (
             <div
-              className="villa-description text-[16px] md:text-[17px] leading-[1.8] text-[var(--color-stone-700)]"
+              className="villa-description text-[15px] md:text-[16px] leading-[1.8] text-[var(--color-stone-700)]"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(body) }}
             />
           ) : excerpt ? (
-            <p className="text-[16px] md:text-[17px] leading-[1.8] text-[var(--color-stone-700)]">
+            <p className="text-[15px] md:text-[16px] leading-[1.8] text-[var(--color-stone-700)]">
               {excerpt}
             </p>
           ) : (

@@ -99,7 +99,7 @@ export default function VillaMapModal({
           className="
             inline-flex items-center justify-center gap-2
             rounded-xl bg-brand hover:bg-brand-hover px-4 py-3.5
-            text-[13.5px] font-semibold text-ink
+            text-[13px] font-semibold text-ink
             shadow-[0_10px_24px_-12px_rgba(200,151,58,0.55)]
             transition-[transform,box-shadow,background-color] duration-200 motion-reduce:transition-none
             hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-12px_rgba(200,151,58,0.65)]
@@ -119,7 +119,7 @@ export default function VillaMapModal({
             className="
               inline-flex items-center justify-center gap-2
               rounded-xl border-2 border-brand bg-white px-4 py-3.5
-              text-[13.5px] font-semibold text-ink
+              text-[13px] font-semibold text-ink
               transition-[transform,box-shadow,background-color] duration-200 motion-reduce:transition-none
               hover:-translate-y-0.5 hover:bg-brand/5
               hover:shadow-[0_14px_28px_-16px_rgba(27,46,94,0.45)]
@@ -139,7 +139,7 @@ export default function VillaMapModal({
             className="
               inline-flex items-center justify-center gap-2
               rounded-xl border-2 border-[var(--color-stone-200)] bg-white px-4 py-3.5
-              text-[13.5px] font-semibold text-[var(--color-stone-300)]
+              text-[13px] font-semibold text-[var(--color-stone-300)]
               cursor-not-allowed
             "
           >
@@ -195,7 +195,7 @@ export default function VillaMapModal({
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/15 to-brand/15 text-brand">
                   <MapIcon size={15} strokeWidth={1.8} />
                 </span>
-                <h2 className="font-display text-[17px] text-[var(--color-stone-900)] tracking-[-0.01em]">
+                <h2 className="font-display text-[16px] text-[var(--color-stone-900)] tracking-[-0.01em]">
                   {dict.map.whereTitle}
                 </h2>
               </div>

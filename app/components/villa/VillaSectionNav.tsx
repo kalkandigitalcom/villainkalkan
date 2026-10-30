@@ -176,7 +176,7 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
                            Aktif öğe zemin DEĞİŞTİRMEZ: yalnız metin genişliği
                            boyunca alttan ince çizgi; hover'da aynı çizgi
                            yarı saydam önizleme olarak belirir. */
-                        "relative flex items-center whitespace-nowrap px-4 md:px-5 text-[13.5px] tracking-[0.01em] text-ink " +
+                        "relative flex items-center whitespace-nowrap px-4 md:px-5 text-[13px] tracking-[0.01em] text-ink " +
                         "after:pointer-events-none after:absolute after:inset-x-4 md:after:inset-x-5 after:bottom-0 after:h-[3px] after:rounded-t-full after:transition-colors after:duration-200 motion-reduce:after:transition-none " +
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink/60 " +
                         (isActive

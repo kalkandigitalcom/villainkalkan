@@ -105,7 +105,7 @@ export default function FloatingQuoteCta() {
           className="
             relative hidden md:block
             [writing-mode:vertical-rl] rotate-180
-            text-[13.5px] font-semibold tracking-[0.08em] uppercase whitespace-nowrap
+            text-[13px] font-semibold tracking-[0.08em] uppercase whitespace-nowrap
           "
         >
           {label}

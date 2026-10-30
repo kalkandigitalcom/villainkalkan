@@ -272,10 +272,10 @@ export default async function ContactPageBody({
                         <span className="inline-block w-6 h-px bg-[var(--color-champagne-500)]/60 align-middle mr-2" />
                         {dict.form.eyebrow}
                       </p>
-                      <h2 className="font-display text-[28px] md:text-[38px] text-[var(--color-stone-900)] mt-4 leading-[1.08] tracking-[-0.025em]">
+                      <h2 className="font-display text-[24px] md:text-[30px] text-[var(--color-stone-900)] mt-4 leading-[1.08] tracking-[-0.025em]">
                         {dict.form.title}
                       </h2>
-                      <p className="text-[14px] text-[var(--color-stone-500)] mt-3 leading-relaxed">
+                      <p className="text-[13px] text-[var(--color-stone-500)] mt-3 leading-relaxed">
                         {dict.form.description}
                       </p>
                     </div>
@@ -299,7 +299,7 @@ export default async function ContactPageBody({
                 <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />
                 {dict.map.eyebrow}
               </p>
-              <h2 className="font-display text-[28px] md:text-[42px] lg:text-[50px] text-[var(--color-stone-900)] mt-4 leading-[1.05] tracking-[-0.02em]">
+              <h2 className="font-display text-[24px] md:text-[34px] lg:text-[40px] text-[var(--color-stone-900)] mt-4 leading-[1.05] tracking-[-0.02em]">
                 {dict.map.title}
               </h2>
             </div>
@@ -333,7 +333,7 @@ export default async function ContactPageBody({
               <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />
               {dict.faq.eyebrow}
             </p>
-            <h2 className="font-display text-[32px] md:text-[48px] lg:text-[54px] text-[var(--color-stone-900)] mt-6 leading-[1.03] tracking-[-0.025em] max-w-xl">
+            <h2 className="font-display text-[26px] md:text-[38px] lg:text-[42px] text-[var(--color-stone-900)] mt-6 leading-[1.03] tracking-[-0.025em] max-w-xl">
               {dict.faq.title}
             </h2>
           </div>
@@ -374,7 +374,7 @@ export default async function ContactPageBody({
                 <span className="inline-block w-6 h-px bg-[var(--brand-coral)]/60" />
                 {dict.cta.eyebrow}
               </p>
-              <h2 className="font-display text-[32px] md:text-[54px] lg:text-[60px] text-white mt-6 leading-[1.03] tracking-[-0.03em]">
+              <h2 className="font-display text-[26px] md:text-[42px] lg:text-[48px] text-white mt-6 leading-[1.03] tracking-[-0.03em]">
                 {dict.cta.titleLead}
                 <br />
                 <span className="text-white/50">{dict.cta.titleAccent}</span>
@@ -385,7 +385,7 @@ export default async function ContactPageBody({
               <div className="mt-10">
                 <Link
                   href={localeHref("/arama", locale)}
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-[var(--color-stone-900)] text-[13.5px] font-medium tracking-[0.04em] hover:bg-white/90 transition-colors shadow-[0_18px_40px_-18px_rgba(0,0,0,0.5)]"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-[var(--color-stone-900)] text-[13px] font-medium tracking-[0.04em] hover:bg-white/90 transition-colors shadow-[0_18px_40px_-18px_rgba(0,0,0,0.5)]"
                 >
                   {dict.cta.button} <ArrowUpRight size={14} />
                 </Link>
@@ -441,7 +441,7 @@ function InfoRow({
         <p className="text-[10.5px] tracking-[0.22em] uppercase font-medium text-[var(--color-stone-500)]">
           {label}
         </p>
-        <p className="text-[15px] md:text-[15.5px] text-[var(--color-stone-900)] mt-1 leading-[1.4] break-words whitespace-pre-line">
+        <p className="text-[14px] md:text-[14.5px] text-[var(--color-stone-900)] mt-1 leading-[1.4] break-words whitespace-pre-line">
           {value}
         </p>
       </div>
@@ -469,13 +469,13 @@ function FaqBlock({
 }) {
   return (
     <div className="group rounded-3xl border border-[var(--color-stone-100)] bg-white/70 backdrop-blur-sm p-6 md:p-7 transition-all duration-300 motion-reduce:transition-none hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-26px_rgba(27,26,23,0.25)] hover:border-[var(--color-champagne-500)]/30">
-      <span className="font-display text-[15px] text-[var(--color-champagne-700)] tabular-nums">
+      <span className="font-display text-[14px] text-[var(--color-champagne-700)] tabular-nums">
         {index}
       </span>
-      <h3 className="font-display text-[19px] md:text-[21px] text-[var(--color-stone-900)] mt-3 leading-[1.25] tracking-[-0.01em]">
+      <h3 className="font-display text-[17px] md:text-[18px] text-[var(--color-stone-900)] mt-3 leading-[1.25] tracking-[-0.01em]">
         {q}
       </h3>
-      <p className="text-[14px] md:text-[14.5px] leading-[1.7] text-[var(--color-stone-500)] mt-4">
+      <p className="text-[13px] md:text-[13.5px] leading-[1.7] text-[var(--color-stone-500)] mt-4">
         {a}
       </p>
     </div>

@@ -85,7 +85,7 @@ export default function CookieConsent() {
           px-4 py-3
         "
       >
-        <p className="text-[13px] leading-relaxed text-[var(--color-stone-700,#44403c)] flex-1">
+        <p className="text-[12.5px] leading-relaxed text-[var(--color-stone-700,#44403c)] flex-1">
           {dict.message}
         </p>
         <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
@@ -94,7 +94,7 @@ export default function CookieConsent() {
             className="
               inline-flex items-center justify-center
               px-3.5 py-2 rounded-lg
-              text-[12.5px] font-medium
+              text-[12px] font-medium
               text-[var(--color-stone-600,#57534e)]
               hover:text-[var(--color-stone-900,#1c1917)]
               hover:bg-[var(--color-stone-100,#f5f5f4)]
@@ -109,7 +109,7 @@ export default function CookieConsent() {
             className="
               inline-flex items-center justify-center
               px-4 py-2 rounded-lg
-              text-[12.5px] font-semibold
+              text-[12px] font-semibold
               text-white bg-[var(--color-stone-900,#1c1917)]
               hover:opacity-90
               focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2

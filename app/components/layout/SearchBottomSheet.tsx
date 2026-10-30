@@ -166,7 +166,7 @@ export default function SearchBottomSheet({
         <div className="pt-2.5 px-5 shrink-0">
           <div className="mx-auto h-1 w-10 rounded-full bg-[var(--color-stone-200)]" />
           <div className="mt-3 mb-1 flex items-center justify-between">
-            <h2 className="text-[15px] font-semibold text-[var(--color-stone-900)] tracking-tight">
+            <h2 className="text-[14px] font-semibold text-[var(--color-stone-900)] tracking-tight">
               {searchDict.sheetTitle}
             </h2>
             <button

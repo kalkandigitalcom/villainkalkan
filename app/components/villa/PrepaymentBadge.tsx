@@ -64,7 +64,7 @@ export default function PrepaymentBadge({ rate }: { rate: number }) {
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent"
             />
-            <p className="relative text-[12px] md:text-[13px] font-bold leading-tight tracking-tight drop-shadow-[0_1px_1px_rgba(116,85,31,0.35)]">
+            <p className="relative text-[11.5px] md:text-[12.5px] font-bold leading-tight tracking-tight drop-shadow-[0_1px_1px_rgba(116,85,31,0.35)]">
               %{pct} şimdi
             </p>
             <p className="relative text-[9.5px] md:text-[10px] font-medium leading-tight text-white/90 whitespace-nowrap">

@@ -413,7 +413,7 @@ function ModalSkeleton({
             className="w-8 h-8 rounded-full border-2 border-[var(--color-stone-200)] border-t-[var(--color-champagne-500)] animate-spin motion-reduce:animate-none"
             aria-hidden
           />
-          <p className="text-[12px] tracking-[0.04em] text-[var(--color-stone-500)]">
+          <p className="text-[11.5px] tracking-[0.04em] text-[var(--color-stone-500)]">
             {dict.booking.modalLoading}
           </p>
         </div>
@@ -682,7 +682,7 @@ function ModalContent({
         {/* 🛡️ GAP OVERRIDE bilgi metni — gerçek boşluğun tamamı dolduruluyor →
             min_stay esnetildi. Yeni kart/modal yok; sade inline not. */}
         {isGapOverride && (
-          <p className="text-[12px] text-emerald-700 bg-emerald-50/70 border border-emerald-100 rounded-xl px-3 py-2">
+          <p className="text-[11.5px] text-emerald-700 bg-emerald-50/70 border border-emerald-100 rounded-xl px-3 py-2">
             {dict.booking.gapOverrideNotice}
           </p>
         )}
@@ -726,7 +726,7 @@ function ModalContent({
             role="alert"
             className="
               rounded-xl border border-red-200 bg-red-50
-              px-3 py-2 text-[12.5px] text-red-700
+              px-3 py-2 text-[12px] text-red-700
               flex items-center gap-2
             "
           >
@@ -740,7 +740,7 @@ function ModalContent({
         {priceUnavailable && (
           <p
             role="status"
-            className="text-[12px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2"
+            className="text-[11.5px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2"
           >
             {dict.booking.priceUnavailableNotice}
           </p>

@@ -95,7 +95,7 @@ export default function VillaDistancesSection({
         <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
           {dict.villa.distancesTitle}
         </h2>
-        <p className="mt-2.5 text-[14px] md:text-[14.5px] text-[var(--color-stone-500)] leading-relaxed">
+        <p className="mt-2.5 text-[13px] md:text-[13.5px] text-[var(--color-stone-500)] leading-relaxed">
           {dict.villa.distancesSubtitle}
         </p>
       </div>
@@ -143,11 +143,11 @@ export default function VillaDistancesSection({
                 <span className="relative shrink-0 w-10 h-10 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-accent/10 to-brand/10 text-ink flex items-center justify-center transition-colors duration-300 motion-reduce:transition-none group-hover:from-accent/20 group-hover:to-brand/20">
                   <IconCmp size={15} strokeWidth={1.75} />
                 </span>
-                <p className="relative min-w-0 flex-1 text-[14px] md:text-[15px] font-medium text-[var(--color-stone-700)] truncate tracking-[-0.005em]">
+                <p className="relative min-w-0 flex-1 text-[13px] md:text-[14px] font-medium text-[var(--color-stone-700)] truncate tracking-[-0.005em]">
                   {d.displayTitle}
                 </p>
                 <p
-                  className="relative shrink-0 font-display text-[16px] md:text-[18px] text-[var(--color-stone-900)] tracking-[-0.01em]"
+                  className="relative shrink-0 font-display text-[15px] md:text-[16px] text-[var(--color-stone-900)] tracking-[-0.01em]"
                   style={{ fontVariantNumeric: "tabular-nums" }}
                 >
                   {d.displayDistance}

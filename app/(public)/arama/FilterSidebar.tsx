@@ -579,7 +579,7 @@ export default function FilterSidebar({
       {/* HEADER — desktop'ta minimal eyebrow, mobile'da X button */}
       <div className="flex items-start justify-between gap-4 pb-6 border-b border-[var(--color-stone-100)]">
         <div>
-          <h2 className="font-display text-[26px] md:text-[28px] text-[var(--color-stone-900)] tracking-[-0.025em] leading-tight">
+          <h2 className="font-display text-[22px] md:text-[24px] text-[var(--color-stone-900)] tracking-[-0.025em] leading-tight">
             {dict.title}
           </h2>
         </div>
@@ -697,7 +697,7 @@ export default function FilterSidebar({
                     })
                   : ""
               }
-              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none w-full text-[14px] font-medium !text-[var(--color-stone-900)] placeholder-[var(--color-stone-400)] cursor-pointer outline-none"
+              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none w-full text-[13px] font-medium !text-[var(--color-stone-900)] placeholder-[var(--color-stone-400)] cursor-pointer outline-none"
               /* 🛡️ Mobil klavye baskılama — customInput içinde
                  inputMode="none". Display override için verilen
                  value prop, react-datepicker tarafından customInput'a
@@ -762,7 +762,7 @@ export default function FilterSidebar({
           }
         >
           {regionGroups.length === 0 ? (
-            <p className="text-[13px] text-[var(--color-stone-400)]">
+            <p className="text-[12.5px] text-[var(--color-stone-400)]">
               {dict.regionEmpty}
             </p>
           ) : (
@@ -788,7 +788,7 @@ export default function FilterSidebar({
                         }))
                       }
                       aria-expanded={isOpen}
-                      className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-[14px] text-[var(--color-stone-800)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+                      className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-[13px] text-[var(--color-stone-800)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
                     >
                       <span className="flex items-center gap-2 font-medium truncate">
                         <ChevronDown
@@ -814,7 +814,7 @@ export default function FilterSidebar({
                           return (
                             <li key={opt.id}>
                               <label
-                                className={`flex items-center gap-3 text-[14px] px-3 py-2.5 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
+                                className={`flex items-center gap-3 text-[13px] px-3 py-2.5 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
                                   checked
                                     ? "bg-[var(--color-sand-50)] text-[var(--color-stone-900)]"
                                     : "text-[var(--color-stone-700)] hover:bg-[var(--color-sand-50)]"
@@ -862,7 +862,7 @@ export default function FilterSidebar({
           onToggle={() => toggleSection("type", typeSectionOpen)}
         >
           {categoryOptions.length === 0 ? (
-            <p className="text-[13px] text-[var(--color-stone-400)]">
+            <p className="text-[12.5px] text-[var(--color-stone-400)]">
               {dict.typeEmpty}
             </p>
           ) : (
@@ -872,7 +872,7 @@ export default function FilterSidebar({
                 return (
                   <li key={opt.id}>
                     <label
-                      className={`flex items-center gap-3 text-[14px] px-3 py-2.5 rounded-xl cursor-pointer transition-colors motion-reduce:transition-none ${
+                      className={`flex items-center gap-3 text-[13px] px-3 py-2.5 rounded-xl cursor-pointer transition-colors motion-reduce:transition-none ${
                         checked
                           ? "bg-[var(--color-sand-50)] text-[var(--color-stone-900)]"
                           : "text-[var(--color-stone-700)] hover:bg-[var(--color-sand-50)]"
@@ -923,7 +923,7 @@ export default function FilterSidebar({
             onToggle={() => toggleSection("features", featureSectionOpen)}
           >
             {featureOptions.length === 0 ? (
-              <p className="text-[13px] text-[var(--color-stone-400)]">
+              <p className="text-[12.5px] text-[var(--color-stone-400)]">
                 {dict.featuresEmpty}
               </p>
             ) : (
@@ -933,7 +933,7 @@ export default function FilterSidebar({
                   return (
                     <li key={opt.id}>
                       <label
-                        className={`flex items-center gap-3 text-[14px] px-3 py-2.5 rounded-xl cursor-pointer transition-colors motion-reduce:transition-none ${
+                        className={`flex items-center gap-3 text-[13px] px-3 py-2.5 rounded-xl cursor-pointer transition-colors motion-reduce:transition-none ${
                           checked
                             ? "bg-[var(--color-sand-50)] text-[var(--color-stone-900)]"
                             : "text-[var(--color-stone-700)] hover:bg-[var(--color-sand-50)]"
@@ -962,10 +962,10 @@ export default function FilterSidebar({
             görünür. Draft: Uygula'da buildHref yazar. Ana tarih/normal
             filtre/sonuç mantığı DEĞİŞMEZ. */}
         <div className="pt-1">
-          <p className="mb-2 px-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--color-stone-500)]">
+          <p className="mb-2 px-1 text-[11.5px] font-semibold uppercase tracking-[0.08em] text-[var(--color-stone-500)]">
             {dict.advancedTitle}
           </p>
-          <label className="flex items-start gap-3 rounded-xl bg-[var(--color-sand-50)]/60 px-3 py-3 text-[14px] cursor-pointer transition-colors motion-reduce:transition-none hover:bg-[var(--color-sand-50)]">
+          <label className="flex items-start gap-3 rounded-xl bg-[var(--color-sand-50)]/60 px-3 py-3 text-[13px] cursor-pointer transition-colors motion-reduce:transition-none hover:bg-[var(--color-sand-50)]">
             <input
               type="checkbox"
               checked={flexible}
@@ -974,7 +974,7 @@ export default function FilterSidebar({
             />
             <span className="leading-snug text-[var(--color-stone-700)]">
               {dict.advancedCheckbox}
-              <span className="mt-1 block text-[12px] text-[var(--color-stone-400)]">
+              <span className="mt-1 block text-[11.5px] text-[var(--color-stone-400)]">
                 {dict.advancedHint}
               </span>
             </span>
@@ -988,7 +988,7 @@ export default function FilterSidebar({
           type="button"
           onClick={resetFilters}
           disabled={activeFilterCount === 0 || isPending}
-          className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-[var(--color-stone-200)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-stone-300)] hover:text-[var(--color-stone-900)] transition-colors motion-reduce:transition-none disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
+          className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-[var(--color-stone-200)] text-[12.5px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-stone-300)] hover:text-[var(--color-stone-900)] transition-colors motion-reduce:transition-none disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
         >
           <RotateCcw size={13} />
           {dict.reset}
@@ -997,7 +997,7 @@ export default function FilterSidebar({
           type="button"
           onClick={applyFilters}
           disabled={isPending}
-          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[13px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none disabled:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
+          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[12.5px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none disabled:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
         >
           <Search size={14} />
           <span>
@@ -1038,7 +1038,7 @@ export default function FilterSidebar({
               <span className="block text-[11px] tracking-[0.18em] uppercase font-medium text-[var(--color-stone-500)]">
                 {dict.mobileTriggerEyebrow}
               </span>
-              <span className="block text-[14px] font-medium text-[var(--color-stone-900)] mt-0.5">
+              <span className="block text-[13px] font-medium text-[var(--color-stone-900)] mt-0.5">
                 {dict.mobileTriggerLabel}
               </span>
             </span>
@@ -1205,7 +1205,7 @@ function CounterRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <p className="text-[14px] font-medium text-[var(--color-stone-900)]">
+        <p className="text-[13px] font-medium text-[var(--color-stone-900)]">
           {label}
         </p>
         <p className="text-[11px] text-[var(--color-stone-400)] tracking-[0.02em]">
@@ -1224,7 +1224,7 @@ function CounterRow({
         >
           <Minus size={13} />
         </button>
-        <span className="tabular-nums text-[14px] font-medium text-[var(--color-stone-900)] w-5 text-center">
+        <span className="tabular-nums text-[13px] font-medium text-[var(--color-stone-900)] w-5 text-center">
           {value}
         </span>
         <button

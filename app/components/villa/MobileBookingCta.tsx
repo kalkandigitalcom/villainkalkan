@@ -149,7 +149,7 @@ export default function MobileBookingCta({
           inline-flex items-center justify-center gap-2
           rounded-full px-5 py-3
           bg-brand hover:bg-brand-hover active:bg-brand-active
-          text-ink font-semibold text-[13.5px] tracking-[0.005em]
+          text-ink font-semibold text-[13px] tracking-[0.005em]
           border border-transparent
           transition-colors duration-200
           focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50

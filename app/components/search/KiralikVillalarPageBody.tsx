@@ -424,10 +424,10 @@ export default async function KiralikVillalarPageBody({
                         <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />
                         {dict.emptyEyebrow}
                       </p>
-                      <h2 className="font-display text-[34px] md:text-[48px] text-[var(--color-stone-900)] mt-4 tracking-[-0.03em] leading-[1.02]">
+                      <h2 className="font-display text-[28px] md:text-[38px] text-[var(--color-stone-900)] mt-4 tracking-[-0.03em] leading-[1.02]">
                         {dict.emptyTitle}
                       </h2>
-                      <p className="text-[var(--color-stone-500)] mt-6 leading-relaxed text-[14.5px] max-w-md mx-auto">
+                      <p className="text-[var(--color-stone-500)] mt-6 leading-relaxed text-[13.5px] max-w-md mx-auto">
                         {dict.emptyBody}
                       </p>
                     </div>
@@ -522,7 +522,7 @@ export default async function KiralikVillalarPageBody({
                       </p>
                       <h2
                         id="kv-about-heading"
-                        className="font-display text-[30px] md:text-[40px] xl:text-[44px] text-[var(--color-stone-900)] mt-5 leading-[1.05] tracking-[-0.025em]"
+                        className="font-display text-[24px] md:text-[32px] xl:text-[36px] text-[var(--color-stone-900)] mt-5 leading-[1.05] tracking-[-0.025em]"
                       >
                         {dict.aboutTitleLead}
                         <br />
@@ -532,7 +532,7 @@ export default async function KiralikVillalarPageBody({
                       </h2>
                     </div>
 
-                    <div className="xl:col-span-3 space-y-5 text-[15px] leading-[1.7] text-[var(--color-stone-600)]">
+                    <div className="xl:col-span-3 space-y-5 text-[14px] leading-[1.7] text-[var(--color-stone-600)]">
                       <p>{dict.aboutParagraph1}</p>
                       <p>{dict.aboutParagraph2}</p>
                       <p>
@@ -618,7 +618,7 @@ function PageSizeSelector({
   basePath: string;
 }) {
   return (
-    <div className="flex items-center gap-2 text-[12.5px] text-[var(--color-stone-500)]">
+    <div className="flex items-center gap-2 text-[12px] text-[var(--color-stone-500)]">
       <span>{dict.pageSizeLabel}</span>
       <div
         role="group"
@@ -641,7 +641,7 @@ function PageSizeSelector({
               className={
                 "inline-flex items-center justify-center min-w-[36px] " +
                 "px-2.5 py-1 rounded-full " +
-                "text-[12.5px] font-medium tabular-nums " +
+                "text-[12px] font-medium tabular-nums " +
                 "transition-colors motion-reduce:transition-none " +
                 (active
                   ? "bg-[var(--color-stone-900)] text-white"
@@ -684,12 +684,12 @@ function PaginationNav({
   return (
     <nav
       aria-label={dict.paginationAriaLabel}
-      className="mt-16 md:mt-20 flex flex-wrap items-center justify-center gap-1.5 text-[13px] text-[var(--color-stone-600)]"
+      className="mt-16 md:mt-20 flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-[var(--color-stone-600)]"
     >
       {prevDisabled ? (
         <span
           aria-disabled="true"
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
         >
           <ChevronLeft size={14} />
           {dict.paginationPrev}
@@ -700,7 +700,7 @@ function PaginationNav({
             { page: currentPage - 1, pageSize, sort },
             basePath
           )}
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
         >
           <ChevronLeft size={14} />
           {dict.paginationPrev}
@@ -711,7 +711,7 @@ function PaginationNav({
         p === "…" ? (
           <span
             key={`gap-${idx}`}
-            className="px-2 py-1.5 text-[12.5px] text-[var(--color-stone-400)]"
+            className="px-2 py-1.5 text-[12px] text-[var(--color-stone-400)]"
             aria-hidden="true"
           >
             …
@@ -724,7 +724,7 @@ function PaginationNav({
             className={
               "inline-flex items-center justify-center min-w-[32px] " +
               "px-2.5 py-1.5 rounded-full " +
-              "text-[12.5px] font-medium tabular-nums " +
+              "text-[12px] font-medium tabular-nums " +
               "transition-colors motion-reduce:transition-none " +
               (p === currentPage
                 ? "bg-[var(--color-stone-900)] text-white"
@@ -739,7 +739,7 @@ function PaginationNav({
       {nextDisabled ? (
         <span
           aria-disabled="true"
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-300)] cursor-not-allowed"
         >
           {dict.paginationNext}
           <ChevronRight size={14} />
@@ -750,7 +750,7 @@ function PaginationNav({
             { page: currentPage + 1, pageSize, sort },
             basePath
           )}
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-medium text-[var(--color-stone-600)] hover:text-[var(--color-stone-900)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
         >
           {dict.paginationNext}
           <ChevronRight size={14} />
@@ -790,7 +790,7 @@ function SortSelector({
           "list-none cursor-pointer select-none " +
           "inline-flex items-center gap-2 px-3 py-1 rounded-full " +
           "border border-[var(--color-stone-200)] bg-white " +
-          "text-[12.5px] font-medium text-[var(--color-stone-700)] " +
+          "text-[12px] font-medium text-[var(--color-stone-700)] " +
           "hover:border-[var(--color-stone-300)] " +
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40 " +
           "transition-colors motion-reduce:transition-none"
@@ -829,7 +829,7 @@ function SortSelector({
               aria-checked={active}
               className={
                 "block px-3 py-2 rounded-lg " +
-                "text-[12.5px] font-medium " +
+                "text-[12px] font-medium " +
                 "transition-colors motion-reduce:transition-none " +
                 (active
                   ? "bg-[var(--color-stone-900)] text-white"

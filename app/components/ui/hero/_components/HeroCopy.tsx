@@ -59,7 +59,7 @@ export default function HeroCopy({ hero }: { hero: HeroContent }) {
       <h1
         className="
           font-display
-          text-[44px] sm:text-[60px] md:text-[76px] lg:text-[88px]
+          text-[36px] sm:text-[48px] md:text-[60px] lg:text-[64px]
           leading-[0.98] tracking-[-0.03em]
           text-[var(--color-stone-900)]
           mt-6 md:mt-8
@@ -86,7 +86,7 @@ export default function HeroCopy({ hero }: { hero: HeroContent }) {
         <p
           className="
             font-display italic
-            text-[28px] md:text-[36px] lg:text-[42px]
+            text-[24px] md:text-[30px] lg:text-[34px]
             tracking-[-0.012em]
             text-[var(--brand-coral)]
             leading-none
@@ -97,7 +97,7 @@ export default function HeroCopy({ hero }: { hero: HeroContent }) {
       </div>
 
       {/* Body subtitle */}
-      <p className="text-[15px] md:text-[16.5px] leading-[1.75] text-[var(--color-stone-500)] mt-7 md:mt-9 max-w-xl whitespace-pre-line">
+      <p className="text-[14px] md:text-[15.5px] leading-[1.75] text-[var(--color-stone-500)] mt-7 md:mt-9 max-w-xl whitespace-pre-line">
         {hero.subtitle}
       </p>
 
@@ -119,7 +119,7 @@ export default function HeroCopy({ hero }: { hero: HeroContent }) {
             group inline-flex items-center gap-2
             px-6 py-3 rounded-full
             bg-[var(--brand-coral)] text-ink
-            text-[13.5px] font-medium tracking-[0.02em]
+            text-[13px] font-medium tracking-[0.02em]
             shadow-[0_18px_36px_-14px_rgba(27,46,94,0.55),0_4px_12px_-6px_rgba(27,46,94,0.35)]
             hover:bg-[var(--brand-coral-deep)]
             hover:shadow-[0_22px_44px_-14px_rgba(27,46,94,0.62),0_6px_16px_-6px_rgba(27,46,94,0.45)]
@@ -148,7 +148,7 @@ export default function HeroCopy({ hero }: { hero: HeroContent }) {
             px-5 py-3 rounded-full
             border border-[var(--color-stone-200)]
             text-[var(--color-stone-700)]
-            text-[13.5px] font-medium tracking-[0.02em]
+            text-[13px] font-medium tracking-[0.02em]
             hover:border-[var(--brand-coral)] hover:text-[var(--color-stone-900)]
             hover:bg-[var(--brand-coral-tint)]
             hover:-translate-y-[1px]

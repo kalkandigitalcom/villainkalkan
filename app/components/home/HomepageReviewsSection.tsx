@@ -75,11 +75,11 @@ export default async function HomepageReviewsSection({
             />
             {dict.eyebrow}
           </span>
-          <h2 className="mt-4 font-display font-medium text-[28px] md:text-[36px] text-[var(--color-stone-900)] leading-[1.08] tracking-[-0.02em]">
+          <h2 className="mt-4 font-display font-medium text-[24px] md:text-[30px] text-[var(--color-stone-900)] leading-[1.08] tracking-[-0.02em]">
             {dict.title}
           </h2>
           <HomeSectionOrnament align="start" />
-          <p className="mt-3 text-[14.5px] md:text-[15px] leading-relaxed text-[var(--color-stone-500)]">
+          <p className="mt-3 text-[13.5px] md:text-[14px] leading-relaxed text-[var(--color-stone-500)]">
             {dict.subtitle}
           </p>
         </div>

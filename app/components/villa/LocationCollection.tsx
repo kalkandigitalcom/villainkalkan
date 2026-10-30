@@ -237,7 +237,7 @@ export default async function LocationCollection({
               group inline-flex items-center gap-2
               px-4 py-2 rounded-full
               border border-[var(--color-stone-200)]
-              text-[12.5px] font-medium tracking-[0.02em]
+              text-[12px] font-medium tracking-[0.02em]
               text-[var(--color-stone-700)]
               hover:border-[var(--brand-coral)] hover:text-[var(--color-stone-900)]
               hover:bg-[var(--brand-coral-tint)]
@@ -315,7 +315,7 @@ function LocationCard({ item, locale }: { item: Item; locale: Locale }) {
         ) : (
           /* SOFT PLACEHOLDER — serif initial (davranış korunuyor) */
           <div className="absolute inset-0 flex items-center justify-center select-none">
-            <div className="font-display text-[36px] md:text-[42px] leading-none text-[var(--color-stone-300)] tracking-[-0.03em]">
+            <div className="font-display text-[30px] md:text-[34px] leading-none text-[var(--color-stone-300)] tracking-[-0.03em]">
               {initial}
             </div>
           </div>
@@ -324,7 +324,7 @@ function LocationCard({ item, locale }: { item: Item; locale: Locale }) {
 
       {/* METİN — görselin ALTINDA: kompakt güçlü başlık + ikincil villa
           sayısı + marka-renkli minik gradient nokta (rozet/badge YOK). */}
-      <h3 className="mt-3 font-display text-[14.5px] md:text-[15.5px] font-medium leading-[1.2] text-[var(--color-stone-900)] tracking-[-0.01em] line-clamp-2">
+      <h3 className="mt-3 font-display text-[13.5px] md:text-[14.5px] font-medium leading-[1.2] text-[var(--color-stone-900)] tracking-[-0.01em] line-clamp-2">
         {item.key}
       </h3>
       <div className="mt-1 flex items-center justify-center gap-1.5">

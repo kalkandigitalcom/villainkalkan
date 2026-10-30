@@ -187,7 +187,7 @@ export default function ShortStayFeeNotice({
           </span>
 
           <div className="min-w-0 flex-1">
-            <p className="text-[13.5px] md:text-[14.5px] leading-relaxed font-medium text-red-900">
+            <p className="text-[13px] md:text-[13.5px] leading-relaxed font-medium text-red-900">
               {formatDictionaryString(dict.shortStay.body, {
                 n: cleaningLimit,
               })}

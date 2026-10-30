@@ -224,7 +224,7 @@ export default function Header({
                 font-display tracking-tight
                 flex items-center shrink-0
                 transition-colors duration-300 motion-reduce:transition-none
-              text-[28px] md:text-[32px]
+              text-[24px] md:text-[26px]
               text-ink hover:text-brand/80
               `}
             >
@@ -248,7 +248,7 @@ export default function Header({
             <nav
               className={`
                 hidden md:flex flex-1 justify-center gap-6 lg:gap-9 xl:gap-11
-                text-[15px] font-medium tracking-[0.01em]
+                text-[14px] font-medium tracking-[0.01em]
                 transition-colors duration-300 motion-reduce:transition-none
               ` + "text-ink/80"}
             >
@@ -302,7 +302,7 @@ export default function Header({
                             <Link
                               key={child.id}
                               href={localeHref(child.href, locale)}
-                              className="block px-5 py-3 text-[16px] text-[var(--color-stone-700)] hover:bg-[var(--color-sand-50)] hover:text-[var(--color-stone-900)] transition"
+                              className="block px-5 py-3 text-[15px] text-[var(--color-stone-700)] hover:bg-[var(--color-sand-50)] hover:text-[var(--color-stone-900)] transition"
                             >
                               {resolveTaxonomyName(
                                 child.name,
@@ -487,7 +487,7 @@ export default function Header({
                             <Link
                               key={child.id}
                               href={localeHref(child.href, locale)}
-                              className="block text-[16.5px] text-[var(--color-stone-500)] hover:text-[var(--color-stone-900)] transition"
+                              className="block text-[15.5px] text-[var(--color-stone-500)] hover:text-[var(--color-stone-900)] transition"
                             >
                               {resolveTaxonomyName(
                                 child.name,

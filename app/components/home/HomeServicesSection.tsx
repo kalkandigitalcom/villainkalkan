@@ -96,17 +96,17 @@ export default function HomeServicesSection({
                   <Icon size={22} strokeWidth={1.75} />
                 </span>
 
-                <h3 className="mt-5 font-display text-[19px] md:text-[20px] font-semibold leading-snug tracking-[-0.01em] text-ink">
+                <h3 className="mt-5 font-display text-[17px] md:text-[18px] font-semibold leading-snug tracking-[-0.01em] text-ink">
                   {title}
                 </h3>
-                <p className="mt-2.5 text-[14px] leading-relaxed text-[var(--color-stone-500)]">
+                <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--color-stone-500)]">
                   {body}
                 </p>
 
                 <div className="mt-auto pt-6">
                   <Link
                     href={href}
-                    className="inline-flex items-center gap-1.5 rounded-full text-[13px] font-semibold tracking-[0.01em] text-brand-strong transition-colors duration-200 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2"
+                    className="inline-flex items-center gap-1.5 rounded-full text-[12.5px] font-semibold tracking-[0.01em] text-brand-strong transition-colors duration-200 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2"
                   >
                     {cta}
                     <ArrowRight

@@ -34,7 +34,7 @@ function RichTextSection({ content }: { content: string }) {
       {paragraphs.map((p, i) => (
         <p
           key={i}
-          className="text-[16px] md:text-[17px] leading-[1.8] text-[var(--color-stone-700)] whitespace-pre-line"
+          className="text-[15px] md:text-[16px] leading-[1.8] text-[var(--color-stone-700)] whitespace-pre-line"
         >
           {p}
         </p>
@@ -69,7 +69,7 @@ function ImageSectionView({
         />
       </div>
       {alt ? (
-        <figcaption className="text-[12px] tracking-[0.06em] uppercase font-medium text-[var(--color-stone-400)] mt-3 text-center">
+        <figcaption className="text-[11.5px] tracking-[0.06em] uppercase font-medium text-[var(--color-stone-400)] mt-3 text-center">
           {alt}
         </figcaption>
       ) : null}
@@ -87,7 +87,7 @@ function QuoteSectionView({
 }) {
   return (
     <blockquote className="relative my-10 md:my-14 pl-6 md:pl-8 border-l-2 border-[var(--color-champagne-500)]">
-      <p className="font-display text-[22px] md:text-[28px] leading-[1.35] text-[var(--color-stone-900)] tracking-[-0.01em] italic">
+      <p className="font-display text-[19px] md:text-[24px] leading-[1.35] text-[var(--color-stone-900)] tracking-[-0.01em] italic">
         “{text}”
       </p>
       {author ? (

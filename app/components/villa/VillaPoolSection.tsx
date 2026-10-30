@@ -63,7 +63,7 @@ export default function VillaPoolSection({ villa, locale }: Props) {
           ];
           return (
             <div key={c.key} className="p-4 md:p-5">
-              <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-stone-500)]">
+              <p className="flex items-center gap-2 text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[var(--color-stone-500)]">
                 <span
                   aria-hidden="true"
                   className="inline-block w-1.5 h-1.5 rounded-full bg-accent"
@@ -80,14 +80,14 @@ export default function VillaPoolSection({ villa, locale }: Props) {
                       <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-[var(--color-stone-400)]">
                         {row.k}
                       </p>
-                      <p className="mt-1 font-display text-[16px] md:text-[17px] text-[var(--color-stone-900)] tabular-nums">
+                      <p className="mt-1 font-display text-[15px] md:text-[16px] text-[var(--color-stone-900)] tabular-nums">
                         {row.v}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="mt-2 text-[13px] text-[var(--color-stone-400)] italic">
+                <p className="mt-2 text-[12.5px] text-[var(--color-stone-400)] italic">
                   {dict.pool.noDimensions}
                 </p>
               )}

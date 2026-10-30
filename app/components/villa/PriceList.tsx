@@ -457,7 +457,7 @@ export default function PriceList({
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6 pl-3">
               {/* LEFT — tarih aralığı, büyük/güçlü, ana bilgi. */}
-              <p className="min-w-0 font-display text-[13px] text-[var(--color-stone-900)] tracking-[-0.01em] leading-snug flex items-center gap-2.5">
+              <p className="min-w-0 font-display text-[12.5px] text-[var(--color-stone-900)] tracking-[-0.01em] leading-snug flex items-center gap-2.5">
                 <span
                   aria-hidden="true"
                   className="hidden md:inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand/[0.09] text-ink shrink-0"
@@ -478,11 +478,11 @@ export default function PriceList({
               <div className="flex items-center gap-4 md:gap-5 shrink-0">
                 {isDiscounted ? (
                   <div className="text-left md:text-right">
-                    <p className="text-[12px] text-[var(--color-stone-400)] line-through tabular-nums leading-none">
+                    <p className="text-[11.5px] text-[var(--color-stone-400)] line-through tabular-nums leading-none">
                       {formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
                     </p>
                     <p
-                      className="mt-1 font-display font-bold text-[19px] md:text-[17px] text-green-600 tracking-[-0.02em] leading-none"
+                      className="mt-1 font-display font-bold text-[17px] md:text-[16px] text-green-600 tracking-[-0.02em] leading-none"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
                       {formatDisplayPrice(discountedResult!.converted, currency, effectiveLocale, segDiscountReady)}
@@ -497,7 +497,7 @@ export default function PriceList({
                 ) : (
                   <div className="text-left md:text-right">
                     <p
-                      className="font-display font-bold text-[19px] md:text-[17px] text-brand-strong tracking-[-0.02em] leading-none"
+                      className="font-display font-bold text-[17px] md:text-[16px] text-brand-strong tracking-[-0.02em] leading-none"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
                       {formatDisplayPrice(convertedPrice, currency, effectiveLocale, segPriceReady)}
@@ -555,7 +555,7 @@ export default function PriceList({
                         />
                         <ul className="mt-1 space-y-2.5">
                           {hasMinStay && (
-                            <li className="flex items-center gap-2.5 text-[12.5px] text-[var(--color-stone-700)]">
+                            <li className="flex items-center gap-2.5 text-[12px] text-[var(--color-stone-700)]">
                               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand/10 text-brand shrink-0">
                                 <Moon size={12} strokeWidth={1.9} aria-hidden />
                               </span>
@@ -565,7 +565,7 @@ export default function PriceList({
                             </li>
                           )}
                           {hasDeposit && (
-                            <li className="flex items-center gap-2.5 text-[12.5px] text-[var(--color-stone-700)]">
+                            <li className="flex items-center gap-2.5 text-[12px] text-[var(--color-stone-700)]">
                               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand/10 text-ink shrink-0">
                                 <ShieldCheck size={12} strokeWidth={1.9} aria-hidden />
                               </span>

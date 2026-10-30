@@ -32,7 +32,7 @@ export type SitePopupCardProps = {
    (Tailwind red-600, hover red-700), beyaz metin. Görselin üzerinde. */
 const CTA_CLASS =
   "inline-flex items-center justify-center max-w-full px-[22px] py-3 rounded-full " +
-  "text-[14px] font-semibold tracking-[0.005em] text-center text-white " +
+  "text-[13px] font-semibold tracking-[0.005em] text-center text-white " +
   "bg-red-600 hover:bg-red-700 hover:-translate-y-px " +
   "shadow-[0_1px_2px_rgb(27_26_23/0.10),0_14px_28px_-10px_rgb(220_38_38/0.55)] " +
   "transition motion-reduce:transition-none motion-reduce:hover:translate-y-0 " +
@@ -104,20 +104,20 @@ export default function SitePopupCard({
           <>
             <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7 md:p-9 text-white">
               {highlight && (
-                <p className="font-display leading-[0.85] tracking-[-0.04em] text-[72px] sm:text-[96px] md:text-[120px] drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
+                <p className="font-display leading-[0.85] tracking-[-0.04em] text-[56px] sm:text-[72px] md:text-[96px] drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
                   {highlight}
                 </p>
               )}
               {title && (
                 <h2
                   id={titleId}
-                  className="font-display text-[22px] sm:text-[28px] md:text-[34px] leading-[1.15] tracking-[-0.02em] mt-2 max-w-[620px]"
+                  className="font-display text-[19px] sm:text-[24px] md:text-[28px] leading-[1.15] tracking-[-0.02em] mt-2 max-w-[620px]"
                 >
                   {title}
                 </h2>
               )}
               {description && (
-                <p className="mt-2.5 text-[14px] md:text-[15.5px] leading-relaxed text-white/85 max-w-[560px] whitespace-pre-line">
+                <p className="mt-2.5 text-[13px] md:text-[14.5px] leading-relaxed text-white/85 max-w-[560px] whitespace-pre-line">
                   {description}
                 </p>
               )}
@@ -135,7 +135,7 @@ export default function SitePopupCard({
                       {stats.map((s, i) => (
                         <li
                           key={`${i}-${s}`}
-                          className="px-3 py-1.5 rounded-full text-[12px] md:text-[13px] font-medium bg-white/12 border border-white/25 backdrop-blur-sm"
+                          className="px-3 py-1.5 rounded-full text-[11.5px] md:text-[12.5px] font-medium bg-white/12 border border-white/25 backdrop-blur-sm"
                         >
                           {s}
                         </li>

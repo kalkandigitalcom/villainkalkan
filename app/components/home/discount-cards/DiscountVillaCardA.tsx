@@ -73,7 +73,7 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
           />
         ) : (
           <span className="absolute inset-0 flex flex-col items-center justify-center select-none">
-            <span className="font-display text-[56px] leading-none text-ink/25">{m.initial}</span>
+            <span className="font-display text-[44px] leading-none text-ink/25">{m.initial}</span>
             <span className="mt-2 text-[10px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-400)]">
               {m.dict.card.imageComing}
             </span>
@@ -97,7 +97,7 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
       <div className="flex min-w-0 flex-1 flex-col px-3.5 pt-4 pb-3 md:px-5 md:pt-5 md:pb-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h3 id={titleId} className="font-display text-[18px] md:text-[19px] font-semibold leading-tight tracking-[-0.015em] text-ink">
+            <h3 id={titleId} className="font-display text-[16px] md:text-[17px] font-semibold leading-tight tracking-[-0.015em] text-ink">
               <Link
                 href={m.detailHref}
                 className="rounded-[2px] hover:text-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
@@ -105,7 +105,7 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
                 <span className="line-clamp-1">{title}</span>
               </Link>
             </h3>
-            <p className="mt-1 flex items-center gap-1 text-[13px] text-[var(--color-stone-500)]">
+            <p className="mt-1 flex items-center gap-1 text-[12.5px] text-[var(--color-stone-500)]">
               <MapPin size={13} strokeWidth={1.75} className="shrink-0 text-brand" aria-hidden />
               <span className="truncate">{location || m.dict.card.noLocation}</span>
             </p>
@@ -119,19 +119,19 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
                 count: reviewCount!,
               })}
             >
-              <div className="flex items-center justify-end gap-1 text-[14px] font-semibold text-ink tabular-nums" aria-hidden>
+              <div className="flex items-center justify-end gap-1 text-[13px] font-semibold text-ink tabular-nums" aria-hidden>
                 <Star size={13} className="fill-accent text-accent" />
                 {reviewAverage!.toFixed(1)}
                 <span className="font-normal text-[var(--color-stone-400)]">/ 5</span>
               </div>
-              <div className="mt-0.5 text-[11.5px] text-[var(--color-stone-500)]" aria-hidden>
+              <div className="mt-0.5 text-[11px] text-[var(--color-stone-500)]" aria-hidden>
                 {formatDictionaryString(m.dict.card.reviewCount, { n: reviewCount! })}
               </div>
             </div>
           )}
         </div>
 
-        <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-[var(--color-stone-600)]">
+        <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[var(--color-stone-600)]">
           <li className="inline-flex items-center gap-1.5" aria-label={formatDictionaryString(m.dict.card.guestsAriaLabel, { n: guests })}>
             <Users size={14} strokeWidth={1.75} className="text-brand/70" aria-hidden />
             <span aria-hidden className="tabular-nums">{formatDictionaryString(m.dict.card.guestsValue, { n: guests })}</span>
@@ -153,13 +153,13 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
           {m.showDiscountPricing ? (
             <>
               <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
-                <span className="text-[13.5px] text-[var(--color-stone-400)] line-through decoration-[var(--color-stone-400)]/70 tabular-nums">
+                <span className="text-[13px] text-[var(--color-stone-400)] line-through decoration-[var(--color-stone-400)]/70 tabular-nums">
                   <span className="sr-only">{m.dict.card.originalPriceLabel}: </span>
                   {formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.basePriceReady)}
                 </span>
                 <span className="inline-flex items-baseline gap-1.5">
                   <span className="sr-only">{m.dict.card.discountedPriceLabel}: </span>
-                  <span className="font-display text-[24px] md:text-[26px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">
+                  <span className="font-display text-[20px] md:text-[22px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">
                     {formatDisplayPrice(m.discountedPrice!.converted, m.currency, m.effectiveLocale, m.discountPriceReady)}
                   </span>
                   <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--color-stone-500)]">
@@ -168,17 +168,17 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
                 </span>
               </div>
               {m.nightlySavingsLabel && (
-                <p className="mt-1.5 text-[12.5px] font-semibold text-accent-strong">
+                <p className="mt-1.5 text-[12px] font-semibold text-accent-strong">
                   {m.nightlySavingsLabel}
                 </p>
               )}
-              <p className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-[var(--color-stone-600)]">
+              <p className="mt-2 inline-flex items-center gap-1.5 text-[11.5px] text-[var(--color-stone-600)]">
                 <CalendarRange size={13} strokeWidth={1.75} className="shrink-0 text-brand/60" aria-hidden />
                 {m.discountDateRangeLabel}
               </p>
             </>
           ) : (
-            <span className="font-display text-[22px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">
+            <span className="font-display text-[19px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">
               {price
                 ? formatDisplayPrice(m.convertedPrice, m.currency, m.effectiveLocale, m.basePriceReady)
                 : m.dict.card.priceOnRequest}
@@ -192,13 +192,13 @@ export default function DiscountVillaCardA(props: DiscountVillaCardProps) {
         <div className="mt-3 flex items-center justify-between gap-3">
           <Link
             href={m.detailHref}
-            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[2px] text-[12.5px] font-semibold text-ink underline decoration-accent/60 decoration-1 underline-offset-[5px] hover:decoration-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[2px] text-[12px] font-semibold text-ink underline decoration-accent/60 decoration-1 underline-offset-[5px] hover:decoration-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
           >
             {m.dict.card.viewVilla}
           </Link>
           <Link
             href={m.reserveHref}
-            className="group/cta inline-flex min-w-0 items-center justify-center gap-2 h-10 whitespace-nowrap rounded-full bg-brand px-4 text-[12.5px] font-semibold text-ink hover:bg-brand-hover transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+            className="group/cta inline-flex min-w-0 items-center justify-center gap-2 h-10 whitespace-nowrap rounded-full bg-brand px-4 text-[12px] font-semibold text-ink hover:bg-brand-hover transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             {m.dict.card.bookNow}
             <ArrowRight size={15} strokeWidth={2} className="text-ink transition-transform duration-200 group-hover/cta:translate-x-0.5 motion-reduce:transition-none" aria-hidden />

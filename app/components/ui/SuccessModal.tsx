@@ -130,7 +130,7 @@ export default function SuccessModal({
           id="success-modal-title"
           className="
             font-display
-            text-[22px] md:text-[26px]
+            text-[19px] md:text-[22px]
             text-[var(--color-stone-900)]
             text-center
             tracking-[-0.015em]
@@ -143,7 +143,7 @@ export default function SuccessModal({
         {/* Mesaj */}
         <p
           className="
-            text-[14.5px] md:text-[15px]
+            text-[13.5px] md:text-[14px]
             text-[var(--color-stone-600)]
             text-center
             leading-relaxed
@@ -158,7 +158,7 @@ export default function SuccessModal({
           <Link
             href={homeHref}
             onClick={onClose}
-            className="btn-primary w-full sm:w-auto !px-6 !py-3 text-[13.5px] text-center"
+            className="btn-primary w-full sm:w-auto !px-6 !py-3 text-[13px] text-center"
           >
             {homeLabel}
           </Link>
@@ -170,7 +170,7 @@ export default function SuccessModal({
               w-full sm:w-auto
               px-6 py-3 rounded-full
               border border-[var(--color-stone-200)]
-              text-[13.5px] font-medium
+              text-[13px] font-medium
               text-[var(--color-stone-700)]
               hover:border-[var(--brand-coral)]
               hover:text-[var(--color-stone-900)]

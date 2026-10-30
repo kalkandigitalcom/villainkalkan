@@ -143,11 +143,11 @@ export default function Footer({
             id="footer-cta-title"
             /* text-white: globals.css'teki `h2.text-[var(--color-stone-900)]`
                başlık kuralı (lacivert) koyu zeminde görünmez olurdu. */
-            className="font-display text-[30px] md:text-[44px] font-semibold leading-[1.1] tracking-[-0.02em] text-white"
+            className="font-display text-[24px] md:text-[36px] font-semibold leading-[1.1] tracking-[-0.02em] text-white"
           >
             {dictionary.footer.ctaTitle}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-[15px] md:text-[17px] leading-relaxed text-[var(--color-stone-600)]">
+          <p className="mx-auto mt-4 max-w-2xl text-[14px] md:text-[16px] leading-relaxed text-[var(--color-stone-600)]">
             {dictionary.footer.ctaSubtitle}
           </p>
 
@@ -165,7 +165,7 @@ export default function Footer({
                     <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
                       {dictionary.footer.phone}
                     </span>
-                    <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
+                    <span className="block text-[15px] md:text-[16px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none">
                       {settings.phone}
                     </span>
                   </span>
@@ -183,7 +183,7 @@ export default function Footer({
                     <span className="block text-[11px] uppercase tracking-[0.18em] text-[var(--color-stone-400)]">
                       {dictionary.footer.email}
                     </span>
-                    <span className="block text-[16px] md:text-[17px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none break-all">
+                    <span className="block text-[15px] md:text-[16px] font-semibold tracking-[0.01em] text-[var(--color-stone-900)] group-hover:text-accent transition-colors duration-300 motion-reduce:transition-none break-all">
                       {settings.email}
                     </span>
                   </span>
@@ -194,7 +194,7 @@ export default function Footer({
 
           <Link
             href={localeHref("/iletisim", locale)}
-            className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-brand px-9 text-[15px] font-semibold text-ink shadow-[0_16px_32px_-18px_rgba(200,151,58,0.8)] transition-colors duration-300 hover:bg-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent motion-reduce:transition-none"
+            className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-brand px-9 text-[14px] font-semibold text-ink shadow-[0_16px_32px_-18px_rgba(200,151,58,0.8)] transition-colors duration-300 hover:bg-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent motion-reduce:transition-none"
           >
             {dictionary.footer.ctaButton}
           </Link>
@@ -206,7 +206,7 @@ export default function Footer({
             satır. `corporatePages` veri kaynağı BİREBİR aynı, yalnızca
             konum/sıra ve renkler değişti. */}
         <div className="pt-8 border-t border-[var(--color-stone-200)]">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 text-[12px] text-[var(--color-stone-500)]">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 text-[11.5px] text-[var(--color-stone-500)]">
             {/* 🛡️ PHASE 10L §7 — locale-aware telif metni.
                 TR: `resolveSettingsText` canonical değeri AYNEN
                 (trim'siz, aynı referansla) döndürür → aşağıdaki
@@ -260,7 +260,7 @@ export default function Footer({
               aria-label={`${dictionary.footer.webDevelopment}: KalkanDigital`}
               className="
                 group inline-flex items-center justify-center gap-2
-                text-[11.5px] tracking-[0.04em]
+                text-[11px] tracking-[0.04em]
                 text-[var(--color-stone-500)] hover:text-accent
                 transition-colors duration-300 motion-reduce:transition-none
                 focus:outline-none focus-visible:ring-2

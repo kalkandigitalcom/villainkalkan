@@ -34,10 +34,10 @@ export default function LocaleRouteComingSoon({
 
   return (
     <div className="max-w-xl mx-auto px-5 md:px-0 py-24 text-center">
-      <h1 className="font-display text-[28px] md:text-[36px] text-[var(--color-stone-900)] mb-4 leading-tight">
+      <h1 className="font-display text-[24px] md:text-[30px] text-[var(--color-stone-900)] mb-4 leading-tight">
         {copy.title}
       </h1>
-      <p className="text-[var(--color-stone-500)] leading-relaxed text-[15px] md:text-[16px]">
+      <p className="text-[var(--color-stone-500)] leading-relaxed text-[14px] md:text-[15px]">
         {copy.body}
       </p>
     </div>

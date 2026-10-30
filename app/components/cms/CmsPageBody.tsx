@@ -255,13 +255,13 @@ export default function CmsPageBody({
             </p>
 
             {/* Title — premium serif */}
-            <h1 className="font-display text-[40px] md:text-[64px] lg:text-[80px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.035em]">
+            <h1 className="font-display text-[32px] md:text-[48px] lg:text-[60px] text-[var(--color-stone-900)] mt-6 leading-[1.02] tracking-[-0.035em]">
               {title}
             </h1>
 
             {/* Excerpt */}
             {excerpt && (
-              <p className="text-[17px] md:text-[20px] leading-[1.55] text-[var(--color-stone-500)] mt-8 max-w-2xl">
+              <p className="text-[16px] md:text-[18px] leading-[1.55] text-[var(--color-stone-500)] mt-8 max-w-2xl">
                 {excerpt}
               </p>
             )}
@@ -342,7 +342,7 @@ export default function CmsPageBody({
                 .map((p, i) => (
                   <p
                     key={i}
-                    className="text-[16px] md:text-[17px] leading-[1.8] text-[var(--color-stone-700)] whitespace-pre-line"
+                    className="text-[15px] md:text-[16px] leading-[1.8] text-[var(--color-stone-700)] whitespace-pre-line"
                   >
                     {p}
                   </p>

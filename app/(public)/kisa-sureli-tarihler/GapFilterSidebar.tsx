@@ -265,7 +265,7 @@ export default function GapFilterSidebar({
             <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />
             {dict.filterTitle}
           </p>
-          <h2 className="font-display text-[26px] md:text-[28px] text-[var(--color-stone-900)] mt-2 tracking-[-0.025em] leading-tight">
+          <h2 className="font-display text-[22px] md:text-[24px] text-[var(--color-stone-900)] mt-2 tracking-[-0.025em] leading-tight">
             {dict.filterSubtitle}
           </h2>
         </div>
@@ -295,7 +295,7 @@ export default function GapFilterSidebar({
           }
         >
           {categoryOptions.length === 0 ? (
-            <p className="text-[13px] text-[var(--color-stone-400)]">Tip yok.</p>
+            <p className="text-[12.5px] text-[var(--color-stone-400)]">Tip yok.</p>
           ) : (
             <ul className="space-y-1">
               {categoryOptions.map((opt, i) => {
@@ -303,7 +303,7 @@ export default function GapFilterSidebar({
                 return (
                   <li key={opt.id}>
                     <label
-                      className={`flex items-center gap-3 text-[14px] px-3 py-2.5 rounded-xl cursor-pointer transition-colors motion-reduce:transition-none ${
+                      className={`flex items-center gap-3 text-[13px] px-3 py-2.5 rounded-xl cursor-pointer transition-colors motion-reduce:transition-none ${
                         checked
                           ? "bg-[var(--color-sand-50)] text-[var(--color-stone-900)]"
                           : "text-[var(--color-stone-700)] hover:bg-[var(--color-sand-50)]"
@@ -342,7 +342,7 @@ export default function GapFilterSidebar({
           }
         >
           {regionGroups.length === 0 ? (
-            <p className="text-[13px] text-[var(--color-stone-400)]">
+            <p className="text-[12.5px] text-[var(--color-stone-400)]">
               {filtersDict.regionEmpty}
             </p>
           ) : (
@@ -363,7 +363,7 @@ export default function GapFilterSidebar({
                         setOpenGroups((s) => ({ ...s, [g.group]: !isOpen }))
                       }
                       aria-expanded={isOpen}
-                      className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-[14px] text-[var(--color-stone-800)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
+                      className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-[13px] text-[var(--color-stone-800)] hover:bg-[var(--color-sand-50)] transition-colors motion-reduce:transition-none"
                     >
                       <span className="flex items-center gap-2 font-medium truncate">
                         <ChevronDown
@@ -390,7 +390,7 @@ export default function GapFilterSidebar({
                           return (
                             <li key={opt.id}>
                               <label
-                                className={`flex items-center gap-3 text-[14px] px-3 py-2.5 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
+                                className={`flex items-center gap-3 text-[13px] px-3 py-2.5 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
                                   checked
                                     ? "bg-[var(--color-sand-50)] text-[var(--color-stone-900)]"
                                     : "text-[var(--color-stone-700)] hover:bg-[var(--color-sand-50)]"
@@ -453,7 +453,7 @@ export default function GapFilterSidebar({
           type="button"
           onClick={resetFilters}
           disabled={activeFilterCount === 0 || isPending}
-          className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-[var(--color-stone-200)] text-[13px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-stone-300)] hover:text-[var(--color-stone-900)] transition-colors motion-reduce:transition-none disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
+          className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-[var(--color-stone-200)] text-[12.5px] font-medium text-[var(--color-stone-700)] hover:border-[var(--color-stone-300)] hover:text-[var(--color-stone-900)] transition-colors motion-reduce:transition-none disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
         >
           <RotateCcw size={13} />
           {filtersDict.reset}
@@ -462,7 +462,7 @@ export default function GapFilterSidebar({
           type="button"
           onClick={applyFilters}
           disabled={isPending}
-          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[13px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none disabled:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
+          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[12.5px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none disabled:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
         >
           <Search size={14} />
           <span>
@@ -502,7 +502,7 @@ export default function GapFilterSidebar({
               <span className="block text-[11px] tracking-[0.18em] uppercase font-medium text-[var(--color-stone-500)]">
                 {dict.mobileTrigger}
               </span>
-              <span className="block text-[14px] font-medium text-[var(--color-stone-900)] mt-0.5">
+              <span className="block text-[13px] font-medium text-[var(--color-stone-900)] mt-0.5">
                 {dict.mobileSummaryPlaceholder}
               </span>
             </span>
@@ -617,7 +617,7 @@ function CounterRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <p className="text-[14px] font-medium text-[var(--color-stone-900)]">
+        <p className="text-[13px] font-medium text-[var(--color-stone-900)]">
           {label}
         </p>
         <p className="text-[11px] text-[var(--color-stone-400)] tracking-[0.02em]">
@@ -634,7 +634,7 @@ function CounterRow({
         >
           <Minus size={13} />
         </button>
-        <span className="tabular-nums text-[14px] font-medium text-[var(--color-stone-900)] w-5 text-center">
+        <span className="tabular-nums text-[13px] font-medium text-[var(--color-stone-900)] w-5 text-center">
           {value}
         </span>
         <button

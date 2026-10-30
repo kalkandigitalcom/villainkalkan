@@ -106,7 +106,7 @@ export default function VillaReviewsSection({
           <div className="flex items-center gap-4 mt-4 flex-wrap">
             <div className="inline-flex items-baseline gap-2">
               <span
-                className="font-display text-[32px] md:text-[40px] text-[var(--color-stone-900)] tracking-[-0.02em] tabular-nums"
+                className="font-display text-[26px] md:text-[32px] text-[var(--color-stone-900)] tracking-[-0.02em] tabular-nums"
               >
                 {stats.average.toFixed(1)}
               </span>
@@ -115,7 +115,7 @@ export default function VillaReviewsSection({
               </span>
             </div>
             <StarRow value={stats.average} size={16} locale={locale} />
-            <span className="text-[13.5px] text-[var(--color-stone-500)] tabular-nums">
+            <span className="text-[13px] text-[var(--color-stone-500)] tabular-nums">
               {formatDictionaryString(dict.reviews.countLabel, {
                 n: stats.count,
               })}
@@ -159,7 +159,7 @@ export default function VillaReviewsSection({
           />
           <p
             className="
-              mt-3 text-[16px] md:text-[17px] leading-[1.75]
+              mt-3 text-[15px] md:text-[16px] leading-[1.75]
               text-[var(--color-stone-700)] italic
               whitespace-pre-line
             "
@@ -170,11 +170,11 @@ export default function VillaReviewsSection({
             <div className="flex items-center gap-3">
               <Avatar name={featured.guest_name} />
               <div>
-                <p className="font-display text-[15px] text-[var(--color-stone-900)] tracking-[-0.01em]">
+                <p className="font-display text-[14px] text-[var(--color-stone-900)] tracking-[-0.01em]">
                   {featured.guest_name}
                 </p>
                 {featured.created_at && (
-                  <p className="text-[11.5px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
+                  <p className="text-[11px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
                     {formatDateForLocale(featured.created_at, effectiveLocale)}
                   </p>
                 )}
@@ -240,7 +240,7 @@ function ReviewFormAccordion({
           group inline-flex items-center gap-2.5
           rounded-full border border-[var(--color-stone-200)]
           bg-white px-5 py-2.5
-          text-[13.5px] font-medium text-[var(--color-stone-800)]
+          text-[13px] font-medium text-[var(--color-stone-800)]
           shadow-soft
           hover:border-[var(--color-champagne-300)]
           hover:text-[var(--color-stone-900)]
@@ -291,7 +291,7 @@ function Avatar({ name }: { name: string }) {
         bg-[var(--color-sand-100)]
         border border-[var(--color-stone-100)]
         flex items-center justify-center
-        font-display text-[14px] text-[var(--color-champagne-700)]
+        font-display text-[13px] text-[var(--color-champagne-700)]
         tracking-[-0.01em]
       "
       aria-hidden
@@ -327,11 +327,11 @@ function ReviewCard({
         <div className="flex items-center gap-3 min-w-0">
           <Avatar name={review.guest_name} />
           <div className="min-w-0">
-            <p className="font-display text-[15px] text-[var(--color-stone-900)] tracking-[-0.01em] truncate">
+            <p className="font-display text-[14px] text-[var(--color-stone-900)] tracking-[-0.01em] truncate">
               {review.guest_name}
             </p>
             {review.created_at && (
-              <p className="text-[11.5px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
+              <p className="text-[11px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
                 {formatDateForLocale(review.created_at, effectiveLocale)}
               </p>
             )}
@@ -342,7 +342,7 @@ function ReviewCard({
 
       <p
         className="
-          text-[14.5px] text-[var(--color-stone-700)]
+          text-[13.5px] text-[var(--color-stone-700)]
           leading-[1.7] whitespace-pre-line
         "
       >
@@ -529,10 +529,10 @@ function ReviewForm({
           <Quote size={16} />
         </span>
         <div>
-          <h3 className="font-display text-[18px] md:text-[20px] text-[var(--color-stone-900)] tracking-[-0.015em]">
+          <h3 className="font-display text-[16px] md:text-[18px] text-[var(--color-stone-900)] tracking-[-0.015em]">
             {dict.reviews.formTitle}
           </h3>
-          <p className="text-[12.5px] text-[var(--color-stone-500)] mt-1">
+          <p className="text-[12px] text-[var(--color-stone-500)] mt-1">
             {dict.reviews.formSubtitle}
           </p>
         </div>
@@ -543,7 +543,7 @@ function ReviewForm({
         <div>
           <label
             htmlFor="review-name"
-            className="block text-[12px] tracking-[0.04em] uppercase font-medium text-[var(--color-stone-500)] mb-1.5"
+            className="block text-[11.5px] tracking-[0.04em] uppercase font-medium text-[var(--color-stone-500)] mb-1.5"
           >
             {dict.reviews.nameLabel}
           </label>
@@ -559,7 +559,7 @@ function ReviewForm({
               w-full
               rounded-xl border border-[var(--color-stone-200)]
               bg-white
-              px-4 py-2.5 text-[14.5px] text-[var(--color-stone-900)]
+              px-4 py-2.5 text-[13.5px] text-[var(--color-stone-900)]
               placeholder:text-[var(--color-stone-400)]
               focus:outline-none focus:border-[var(--color-champagne-400)]
               focus:ring-2 focus:ring-[var(--color-champagne-200)]
@@ -571,7 +571,7 @@ function ReviewForm({
 
         {/* RATING */}
         <div>
-          <p className="block text-[12px] tracking-[0.04em] uppercase font-medium text-[var(--color-stone-500)] mb-1.5">
+          <p className="block text-[11.5px] tracking-[0.04em] uppercase font-medium text-[var(--color-stone-500)] mb-1.5">
             {dict.reviews.ratingLabel}
           </p>
           <StarPicker
@@ -586,7 +586,7 @@ function ReviewForm({
         <div>
           <label
             htmlFor="review-comment"
-            className="block text-[12px] tracking-[0.04em] uppercase font-medium text-[var(--color-stone-500)] mb-1.5"
+            className="block text-[11.5px] tracking-[0.04em] uppercase font-medium text-[var(--color-stone-500)] mb-1.5"
           >
             {dict.reviews.commentLabel}
           </label>
@@ -602,7 +602,7 @@ function ReviewForm({
               w-full
               rounded-xl border border-[var(--color-stone-200)]
               bg-white
-              px-4 py-3 text-[14.5px] text-[var(--color-stone-700)]
+              px-4 py-3 text-[13.5px] text-[var(--color-stone-700)]
               placeholder:text-[var(--color-stone-400)]
               leading-[1.7]
               focus:outline-none focus:border-[var(--color-champagne-400)]
@@ -631,7 +631,7 @@ function ReviewForm({
             className="
               flex items-center gap-2.5
               rounded-xl border border-emerald-200 bg-emerald-50
-              px-4 py-3 text-[13.5px] text-emerald-800
+              px-4 py-3 text-[13px] text-emerald-800
             "
           >
             <ShieldCheck size={15} aria-hidden />
@@ -645,7 +645,7 @@ function ReviewForm({
             role="alert"
             className="
               rounded-xl border border-red-200 bg-red-50
-              px-4 py-3 text-[13.5px] text-red-800
+              px-4 py-3 text-[13px] text-red-800
             "
           >
             {status.message}

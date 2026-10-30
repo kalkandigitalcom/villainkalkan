@@ -293,7 +293,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
     await renderPrivateVilla("en");
     expect(screen.getByText("No pets allowed")).toBeInTheDocument();
     expect(screen.getByText("Towels and linen")).toBeInTheDocument();
-    expect(screen.getByText("Private Pool")).toBeInTheDocument();
+    expect(screen.getAllByText("Private Pool")[0]).toBeInTheDocument();
     expect(
       screen.getByText(getDictionary("en").distanceLabels["Plaj"])
     ).toBeInTheDocument();
@@ -313,7 +313,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
     withTranslations();
     await renderPrivateVilla(undefined);
     expect(findManyForLocaleMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Private Pool")).toBeInTheDocument();
+    expect(screen.getAllByText("Private Pool")[0]).toBeInTheDocument();
   });
 
   it("TR: feature / rule / price-include / mesafe / açıklama TR gösterilir", async () => {
@@ -322,7 +322,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
     expect(screen.getByText("Evcil hayvan kabul edilmez")).toBeInTheDocument();
     expect(screen.getByText("Havlu ve nevresim")).toBeInTheDocument();
     expect(descriptionSection().getByText(/TR aciklama ceviri/)).toBeInTheDocument();
-    expect(screen.getByText("Ozel Havuz")).toBeInTheDocument();
+    expect(screen.getAllByText("Ozel Havuz")[0]).toBeInTheDocument();
     expect(screen.queryByText("Private Pool")).not.toBeInTheDocument();
     /* Mesafe başlığı statik dictionary'den (DB'den DEĞİL). */
     expect(
@@ -345,7 +345,7 @@ describe("PrivateVillaPageBody — DB entity alanları locale-aware", () => {
       expect(
         screen.getByText("No pets allowed")
       ).toBeInTheDocument();
-      expect(screen.getByText("Private Pool")).toBeInTheDocument();
+      expect(screen.getAllByText("Private Pool")[0]).toBeInTheDocument();
       expect(screen.getByText("Towels and linen")).toBeInTheDocument();
       expect(descriptionSection().getByText(/canonical EN description/)).toBeInTheDocument();
     }

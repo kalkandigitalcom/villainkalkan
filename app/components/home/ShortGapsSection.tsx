@@ -152,7 +152,7 @@ export default async function ShortGapsSection({
                         <Sparkles size={11} strokeWidth={2.2} aria-hidden />
                         {dict.badge}
                       </span>
-                      <h3 className="mt-1.5 font-display font-medium text-[24px] md:text-[26px] text-white leading-[1.05] tracking-[-0.02em] truncate">
+                      <h3 className="mt-1.5 font-display font-medium text-[20px] md:text-[22px] text-white leading-[1.05] tracking-[-0.02em] truncate">
                         {m.label}
                       </h3>
                     </div>
@@ -178,12 +178,12 @@ export default async function ShortGapsSection({
                             href={localeHref(`/kisa-sureli-tarihler/${m.slug}/${nights}`, locale)}
                             className="group/row flex items-center justify-between rounded-xl px-3 py-2.5 -mx-1 hover:bg-white/[0.06] transition-colors motion-reduce:transition-none"
                           >
-                            <span className="text-[13.5px] text-white/75 group-hover/row:text-white transition-colors motion-reduce:transition-none">
+                            <span className="text-[13px] text-white/75 group-hover/row:text-white transition-colors motion-reduce:transition-none">
                               {formatDictionaryString(dict.nightsLabel, {
                                 n: nights,
                               })}
                             </span>
-                            <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold tabular-nums">
+                            <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold tabular-nums">
                               <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-accent/20 to-brand/20 text-white ring-1 ring-white/10 leading-none">
                                 {count}
                               </span>

@@ -242,7 +242,7 @@ export default async function SharedListPageBody({
 
           <h1 className="
             font-display
-            text-[36px] md:text-[52px]
+            text-[30px] md:text-[40px]
             text-[var(--color-stone-900)]
             mt-5 leading-[1.05] tracking-[-0.025em]
           ">
@@ -251,7 +251,7 @@ export default async function SharedListPageBody({
 
           {list.note && (
             <p className="
-              text-[15px] md:text-[16px]
+              text-[14px] md:text-[15px]
               text-[var(--color-stone-600)]
               mt-5 leading-relaxed
               whitespace-pre-wrap
@@ -263,7 +263,7 @@ export default async function SharedListPageBody({
           {/* Meta bar — pricing context + villa count */}
           <div className="
             mt-7 flex flex-wrap items-center gap-x-5 gap-y-2
-            text-[13px] text-[var(--color-stone-500)]
+            text-[12.5px] text-[var(--color-stone-500)]
           ">
             <span className="inline-flex items-center gap-1.5">
               <span className="
@@ -396,7 +396,7 @@ export default async function SharedListPageBody({
         </section>
 
         {/* ════════ FOOTER LINK ════════ */}
-        <footer className="mt-16 md:mt-24 border-t border-[var(--color-stone-200)] pt-8 text-[13px] text-[var(--color-stone-500)]">
+        <footer className="mt-16 md:mt-24 border-t border-[var(--color-stone-200)] pt-8 text-[12.5px] text-[var(--color-stone-500)]">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p>{dict.footerNote}</p>
             <Link
@@ -417,7 +417,7 @@ export default async function SharedListPageBody({
         {sorted.length < list.snapshot_count && (
           <div className="
             mt-8 rounded-xl border border-amber-100 bg-amber-50/60 p-4
-            text-[12.5px] text-amber-900
+            text-[12px] text-amber-900
           ">
             <p className="inline-flex items-center gap-1.5">
               <MapPin size={13} aria-hidden />

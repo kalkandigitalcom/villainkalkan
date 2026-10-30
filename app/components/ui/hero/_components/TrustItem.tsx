@@ -55,10 +55,10 @@ export default function TrustItem({
           {icon}
         </span>
         <div className="min-w-0 pt-0.5">
-          <p className="text-[14.5px] font-medium text-[var(--color-stone-900)] tracking-[-0.005em] leading-tight">
+          <p className="text-[13.5px] font-medium text-[var(--color-stone-900)] tracking-[-0.005em] leading-tight">
             {title}
           </p>
-          <p className="text-[13px] text-[var(--color-stone-600)] mt-1.5 leading-[1.6]">
+          <p className="text-[12.5px] text-[var(--color-stone-600)] mt-1.5 leading-[1.6]">
             {description}
           </p>
         </div>

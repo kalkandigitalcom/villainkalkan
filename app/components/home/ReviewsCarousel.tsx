@@ -158,14 +158,14 @@ function ActiveTestimonial({
       <div className="grid grid-cols-[auto_1fr] gap-3 md:gap-5">
         <span
           aria-hidden="true"
-          className="font-display text-[56px] md:text-[84px] leading-[0.8] text-transparent bg-clip-text bg-gradient-to-br from-accent to-brand select-none"
+          className="font-display text-[44px] md:text-[64px] leading-[0.8] text-transparent bg-clip-text bg-gradient-to-br from-accent to-brand select-none"
         >
           &ldquo;
         </span>
 
         <div className="min-w-0 pt-2 md:pt-4">
           <blockquote
-            className="font-display !font-light text-[18px] md:text-[24px] lg:text-[21px] leading-[1.5] tracking-[-0.01em] text-[var(--color-stone-900)]"
+            className="font-display !font-light text-[16px] md:text-[20px] lg:text-[18px] leading-[1.5] tracking-[-0.01em] text-[var(--color-stone-900)]"
             style={
               expanded
                 ? undefined
@@ -185,7 +185,7 @@ function ActiveTestimonial({
               type="button"
               onClick={() => setExpanded((v) => !v)}
               className="
-                mt-3 text-[12.5px] font-medium
+                mt-3 text-[12px] font-medium
                 text-ink hover:text-brand
                 transition-colors motion-reduce:transition-none
                 focus:outline-none focus-visible:underline
@@ -201,11 +201,11 @@ function ActiveTestimonial({
             <div className="flex items-center gap-3">
               <Avatar name={review.guest_name} />
               <div className="min-w-0">
-                <p className="font-display text-[15px] text-[var(--color-stone-900)] tracking-[-0.01em] truncate">
+                <p className="font-display text-[14px] text-[var(--color-stone-900)] tracking-[-0.01em] truncate">
                   {review.guest_name}
                 </p>
                 {review.created_at && (
-                  <p className="text-[11.5px] text-[var(--color-stone-400)] tabular-nums mt-0.5">
+                  <p className="text-[11px] text-[var(--color-stone-400)] tabular-nums mt-0.5">
                     {formatDateForLocale(review.created_at, locale)}
                   </p>
                 )}
@@ -218,7 +218,7 @@ function ActiveTestimonial({
             />
 
             <span
-              className="inline-flex items-center gap-1.5 text-[13px]"
+              className="inline-flex items-center gap-1.5 text-[12.5px]"
               aria-label={`${rating} / 5 puan`}
             >
               <Star
@@ -234,7 +234,7 @@ function ActiveTestimonial({
             </span>
 
             {review.villaTitle && (
-              <span className="inline-flex items-center gap-2 text-[13px] text-[var(--color-stone-500)] min-w-0">
+              <span className="inline-flex items-center gap-2 text-[12.5px] text-[var(--color-stone-500)] min-w-0">
                 <span className="relative shrink-0 w-7 h-7 overflow-hidden rounded-full bg-gradient-to-br from-[var(--color-sand-100)] via-[var(--color-sand-50)] to-[var(--color-sand-100)]">
                   {review.villaCover ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -278,7 +278,7 @@ function Avatar({ name }: { name: string }) {
         bg-[var(--color-sand-100)]
         border border-[var(--color-stone-100)]
         flex items-center justify-center
-        font-display text-[14px] text-[var(--color-champagne-700)]
+        font-display text-[13px] text-[var(--color-champagne-700)]
         tracking-[-0.01em]
       "
       aria-hidden

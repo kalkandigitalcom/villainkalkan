@@ -371,13 +371,13 @@ export default async function ShortGapsPageBody({
           <p className="text-[10.5px] tracking-[0.28em] uppercase font-medium text-[var(--brand-coral)]">
             {dict.heroEyebrow}
           </p>
-          <h1 className="font-display font-medium text-[26px] md:text-[32px] text-[var(--color-stone-900)] mt-2 leading-tight tracking-[-0.02em]">
+          <h1 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] mt-2 leading-tight tracking-[-0.02em]">
             {formatDictionaryString(dict.heroTitle, {
               month: monthLabel,
               n: nights,
             })}
           </h1>
-          <p className="mt-2 text-[14px] text-[var(--color-stone-500)]">
+          <p className="mt-2 text-[13px] text-[var(--color-stone-500)]">
             {formatDictionaryString(dict.heroSubtitle, {
               n: nights,
               count: visibleGaps.length,

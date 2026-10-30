@@ -117,10 +117,10 @@ export default async function CategoryCollection() {
              - CTA luxury ghost pill (coral hover) */}
         <div className="text-center mb-8 md:mb-12">
           {/* 🛡️ FAZ 39M — Normalized section title scale. */}
-          <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
+          <h2 className="font-display font-medium text-[19px] md:text-[22px] text-[var(--color-stone-900)] leading-tight tracking-[-0.02em]">
             Villa tiplerine göz atın
           </h2>
-          <p className="mt-3 text-[14px] leading-relaxed text-[var(--color-stone-500)] max-w-md mx-auto">
+          <p className="mt-3 text-[13px] leading-relaxed text-[var(--color-stone-500)] max-w-md mx-auto">
             Yüzlerce seçenek arasından size en uygun villayı kolayca bulun.
           </p>
         </div>
@@ -146,7 +146,7 @@ export default async function CategoryCollection() {
               group inline-flex items-center gap-2
               px-4 py-2 rounded-full
               border border-[var(--color-stone-200)]
-              text-[12.5px] font-medium tracking-[0.02em]
+              text-[12px] font-medium tracking-[0.02em]
               text-[var(--color-stone-700)]
               hover:border-[var(--brand-coral)] hover:text-[var(--color-stone-900)]
               hover:bg-[var(--brand-coral-tint)]
@@ -202,14 +202,14 @@ function CategoryCard({
           />
         ) : (
           /* SOFT PLACEHOLDER — serif initial */
-          <span className="absolute inset-0 flex items-center justify-center select-none font-display text-[24px] leading-none text-[var(--color-stone-300)]">
+          <span className="absolute inset-0 flex items-center justify-center select-none font-display text-[20px] leading-none text-[var(--color-stone-300)]">
             {initial}
           </span>
         )}
       </div>
 
       {/* SAĞ — kategori adı (bold, dikey ortalı) — yalnızca isim */}
-      <h3 className="min-w-0 flex-1 font-display text-[15px] md:text-[16px] font-medium leading-[1.2] tracking-[-0.01em] text-[var(--color-stone-900)] line-clamp-2">
+      <h3 className="min-w-0 flex-1 font-display text-[14px] md:text-[15px] font-medium leading-[1.2] tracking-[-0.01em] text-[var(--color-stone-900)] line-clamp-2">
         {item.name}
       </h3>
     </Link>

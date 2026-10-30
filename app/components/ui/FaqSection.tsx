@@ -75,12 +75,12 @@ export default function FaqSection({
           </span>
           <h2
             id="faq-heading"
-            className="mt-4 font-display font-medium text-[28px] md:text-[36px] text-[var(--color-stone-900)] leading-[1.08] tracking-[-0.02em]"
+            className="mt-4 font-display font-medium text-[24px] md:text-[30px] text-[var(--color-stone-900)] leading-[1.08] tracking-[-0.02em]"
           >
             {dict.title}
           </h2>
           <HomeSectionOrnament align="start" />
-          <p className="mt-3 text-[14.5px] md:text-[15px] text-[var(--color-stone-500)] max-w-md">
+          <p className="mt-3 text-[13.5px] md:text-[14px] text-[var(--color-stone-500)] max-w-md">
             {dict.subtitle}
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function FaqSection({
                 >
                   <span
                     className={
-                      "shrink-0 font-display text-[13px] md:text-[14px] tabular-nums tracking-[0.02em] " +
+                      "shrink-0 font-display text-[12.5px] md:text-[13px] tabular-nums tracking-[0.02em] " +
                       "transition-colors duration-200 motion-reduce:transition-none " +
                       (isOpen ? "text-ink" : "text-[var(--color-stone-300)]")
                     }
@@ -121,7 +121,7 @@ export default function FaqSection({
                   </span>
                   <span
                     className={
-                      "flex-1 min-w-0 font-display text-[16px] md:text-[19px] leading-snug tracking-[-0.01em] " +
+                      "flex-1 min-w-0 font-display text-[15px] md:text-[17px] leading-snug tracking-[-0.01em] " +
                       "transition-colors duration-200 motion-reduce:transition-none " +
                       (isOpen
                         ? "text-[var(--color-stone-900)]"
@@ -168,7 +168,7 @@ export default function FaqSection({
                         aria-hidden="true"
                         className="shrink-0 w-[3px] rounded-full bg-gradient-to-b from-accent to-brand"
                       />
-                      <p className="flex-1 min-w-0 text-[14.5px] md:text-[15.5px] text-[var(--color-stone-600)] leading-[1.75] whitespace-pre-line">
+                      <p className="flex-1 min-w-0 text-[13.5px] md:text-[14.5px] text-[var(--color-stone-600)] leading-[1.75] whitespace-pre-line">
                         {faq.answer}
                       </p>
                     </div>

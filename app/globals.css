@@ -313,6 +313,47 @@ body {
   font-family: var(--font-display);
 }
 
+/* ================================================================
+   🔤 PUBLIC TİPOGRAFİ ÖLÇEĞİ (2026-10) — "2 kademe küçült"
+   ================================================================
+   Tailwind v4 boyut utility'leri (`text-sm`, `text-2xl` …) font-size'ı
+   `var(--text-*)` üzerinden okur → token'ları YALNIZ `.public-shell`
+   altında yeniden tanımlamak tüm public sayfalara tek noktadan uygulanır;
+   `.admin-shell` (ayrı DOM alt ağacı) etkilenmez.
+   Başlık kademeleri Tailwind ölçeğinde 2 adım aşağı (3xl→xl, 2xl→lg);
+   gövde/etiket kademeleri okunabilirlik için 1px civarı inceltildi
+   (xs 12px tabanı korunur). Bileşenlerdeki sabit `text-[Npx]` değerleri
+   aynı ölçeğe göre güncellendi. Font aileleri/ağırlıkları DEĞİŞMEDİ. */
+.public-shell {
+  --text-sm: 0.8125rem;   /* 14 → 13px */
+  --text-base: 0.9375rem; /* 16 → 15px */
+  --text-lg: 1rem;        /* 18 → 16px */
+  --text-xl: 1.0625rem;   /* 20 → 17px */
+  --text-2xl: 1.125rem;   /* 24 → 18px */
+  --text-3xl: 1.25rem;    /* 30 → 20px */
+  --text-4xl: 1.75rem;    /* 36 → 28px */
+  --text-5xl: 2.25rem;    /* 48 → 36px */
+}
+
+/* Ortak buton sınıfları admin'de de kullanılıyor → küçültme yalnız public. */
+.public-shell .btn-primary,
+.public-shell .btn-ghost,
+.public-shell .btn-dark {
+  font-size: 13px;
+}
+
+/* Villa açıklaması (public render) içindeki zengin metin başlıkları —
+   editör (`.villa-rte`) paritesi admin'de aynen kalır. */
+.public-shell .villa-description h2 {
+  font-size: 1.125rem;
+}
+.public-shell .villa-description h3 {
+  font-size: 1rem;
+}
+.public-shell .villa-description h4 {
+  font-size: 0.9375rem;
+}
+
 /* 🛡️ PUBLIC TİPOGRAFİ — 3. parti bileşen istisnası: leaflet.css harita
    kapsayıcısına (popup/attribution metni) kendi "Helvetica Neue" ailesini
    verir. Public'te gövde fontu (Montserrat) ile hizalanır; admin

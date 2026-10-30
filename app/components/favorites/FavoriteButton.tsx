@@ -91,7 +91,7 @@ export default function FavoriteButton({
         className={
           "inline-flex items-center gap-2 " +
           "px-4 py-2.5 rounded-full " +
-          "text-[13px] font-medium tracking-[0.01em] " +
+          "text-[12.5px] font-medium tracking-[0.01em] " +
           "border transition-colors motion-reduce:transition-none " +
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40 " +
           (active

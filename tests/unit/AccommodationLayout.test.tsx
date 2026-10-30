@@ -55,9 +55,9 @@ describe("🛡️ TR REGRESYON", () => {
   it("TR bed type etiketleri mevcut BED_TYPE_LABELS ile BİREBİR aynı", () => {
     render(<AccommodationLayout locale="tr" bedrooms={BEDROOMS} bathrooms={[]} />);
     expect(
-      screen.getByText(`${BED_TYPE_LABELS.double} × 1`)
+      screen.getByText(`1 ${BED_TYPE_LABELS.double}`)
     ).toBeInTheDocument();
-    expect(screen.getByText(`${BED_TYPE_LABELS.bunk} × 1`)).toBeInTheDocument();
+    expect(screen.getByText(`1 ${BED_TYPE_LABELS.bunk}`)).toBeInTheDocument();
   });
 
   it("TR bathroom type etiketleri mevcut BATHROOM_TYPE_LABELS ile BİREBİR aynı", () => {
@@ -96,16 +96,28 @@ describe("🛡️ TR REGRESYON", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("className/grid yapısı korunur", () => {
+  /* 2026-10 referans düzeni: beyaz kart içinde iki sütunlu oda grid'i
+     (mobilde tek sütun), her oda kendi çerçeveli kutusunda. */
+  it("className/grid yapısı: beyaz kart + iki sütunlu oda grid'i", () => {
     const { container } = render(
       <AccommodationLayout locale="tr" bedrooms={BEDROOMS} bathrooms={BATHROOMS} />
     );
+    expect(container.querySelector("section.bg-white")).toBeTruthy();
+    const grid = container.querySelector(".grid.grid-cols-1.sm\\:grid-cols-2");
+    expect(grid).toBeTruthy();
+    expect(grid?.className).not.toContain("lg:grid-cols-3");
+    expect(grid?.querySelectorAll(":scope > .rounded-2xl.border")).toHaveLength(4);
+  });
+
+  it("üst özet satırı oda/banyo/yatak toplamlarını gösterir", () => {
+    render(
+      <AccommodationLayout locale="tr" bedrooms={BEDROOMS} bathrooms={BATHROOMS} />
+    );
     expect(
-      container.querySelector(
-        ".grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3"
+      screen.getByText(
+        `2 Yatak Odası · 2 Banyo · 1 ${BED_TYPE_LABELS.double}, 1 ${BED_TYPE_LABELS.bunk}`
       )
-    ).toBeTruthy();
-    expect(container.querySelectorAll(".rounded-3xl")).toHaveLength(4);
+    ).toBeInTheDocument();
   });
 });
 
@@ -117,8 +129,8 @@ describe("enum etiketleri locale-aware", () => {
     render(
       <AccommodationLayout bedrooms={BEDROOMS} bathrooms={[]} locale="en" />
     );
-    expect(screen.getByText("Double Bed × 1")).toBeInTheDocument();
-    expect(screen.getByText("Bunk Bed × 1")).toBeInTheDocument();
+    expect(screen.getByText("1 Double Bed")).toBeInTheDocument();
+    expect(screen.getByText("1 Bunk Bed")).toBeInTheDocument();
   });
 
   it("EN bathroom type etiketleri", () => {
@@ -160,7 +172,7 @@ describe("enum etiketleri locale-aware", () => {
         />
       )
     ).not.toThrow();
-    expect(screen.getByText("hammock × 2")).toBeInTheDocument();
+    expect(screen.getByText("2 hammock")).toBeInTheDocument();
     expect(screen.getByText("jacuzzi")).toBeInTheDocument();
   });
 });

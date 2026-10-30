@@ -49,7 +49,7 @@ export default function CheckInOutTimes() {
               <span className="text-[11px] tracking-[0.18em] uppercase font-medium text-[var(--color-stone-400)]">
                 Giriş Saati
               </span>
-              <span className="font-display text-3xl md:text-[2rem] leading-tight text-[var(--color-stone-900)] tabular-nums">
+              <span className="font-display text-3xl md:text-[1.625rem] leading-tight text-[var(--color-stone-900)] tabular-nums">
                 16:00
               </span>
             </div>
@@ -64,7 +64,7 @@ export default function CheckInOutTimes() {
               <span className="text-[11px] tracking-[0.18em] uppercase font-medium text-[var(--color-stone-400)]">
                 Çıkış Saati
               </span>
-              <span className="font-display text-3xl md:text-[2rem] leading-tight text-[var(--color-stone-900)] tabular-nums">
+              <span className="font-display text-3xl md:text-[1.625rem] leading-tight text-[var(--color-stone-900)] tabular-nums">
                 10:00
               </span>
             </div>
@@ -72,7 +72,7 @@ export default function CheckInOutTimes() {
         </div>
 
         {/* Bilgi satırı — daha küçük font + info ikonu */}
-        <p className="relative mt-5 flex items-start gap-2 text-[12.5px] leading-relaxed text-[var(--color-stone-500)]">
+        <p className="relative mt-5 flex items-start gap-2 text-[12px] leading-relaxed text-[var(--color-stone-500)]">
           <Info
             size={15}
             className="mt-0.5 shrink-0 text-[var(--color-champagne-600)]"

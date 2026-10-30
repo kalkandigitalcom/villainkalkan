@@ -774,7 +774,7 @@ export default function ReservationForm({
               {priceUnavailable && (
                 <p
                   role="status"
-                  className="text-[12px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2"
+                  className="text-[11.5px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2"
                 >
                   {bookingDict.priceUnavailableNotice}
                 </p>
@@ -945,7 +945,7 @@ export default function ReservationForm({
             role="alert"
             className="
               rounded-2xl border border-red-200 bg-red-50
-              px-4 py-3 text-[13.5px] text-red-700
+              px-4 py-3 text-[13px] text-red-700
               flex items-start gap-3
             "
           >
@@ -1167,7 +1167,7 @@ export default function ReservationForm({
 
           {guestNames.length > 0 && (
             <div className="space-y-2.5">
-              <p className="text-[12px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-500)]">
+              <p className="text-[11.5px] tracking-[0.08em] uppercase font-semibold text-[var(--color-stone-500)]">
                 {dict.form.otherGuests}
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1334,7 +1334,7 @@ export default function ReservationForm({
           />
           <label
             htmlFor="reservation-terms-accept"
-            className="flex-1 text-[13px] leading-relaxed text-[var(--color-stone-600)] cursor-pointer"
+            className="flex-1 text-[12.5px] leading-relaxed text-[var(--color-stone-600)] cursor-pointer"
           >
             {(() => {
               /* Şablon placeholder'larından bölünür; metin sırası ve

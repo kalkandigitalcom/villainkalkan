@@ -169,11 +169,11 @@ export default function VillaInfoBar({
                   px-4 py-3.5 md:py-4
                 "
               >
-                <h1 className="w-full font-display font-bold text-[18px] md:text-[20px] leading-tight tracking-[-0.01em] text-[var(--color-stone-900)] truncate">
+                <h1 className="w-full font-display font-bold text-[16px] md:text-[18px] leading-tight tracking-[-0.01em] text-[var(--color-stone-900)] truncate">
                   {villaTitle}
                 </h1>
                 {location && (
-                  <p className="w-full inline-flex items-center justify-center gap-1.5 text-[12px] md:text-[12.5px] text-[var(--color-stone-500)] truncate">
+                  <p className="w-full inline-flex items-center justify-center gap-1.5 text-[11.5px] md:text-[12px] text-[var(--color-stone-500)] truncate">
                     <MapPin
                       size={13}
                       strokeWidth={1.8}
@@ -264,10 +264,10 @@ function InfoItem({
       >
         {icon}
       </span>
-      <p className="mt-2.5 font-display text-[26px] md:text-[28px] font-bold text-[var(--color-stone-900)] tracking-[-0.01em] tabular-nums leading-none">
+      <p className="mt-2.5 font-display text-[22px] md:text-[24px] font-bold text-[var(--color-stone-900)] tracking-[-0.01em] tabular-nums leading-none">
         {value}
       </p>
-      <p className="mt-1 text-[11px] md:text-[11.5px] font-medium text-[var(--color-stone-500)] leading-snug">
+      <p className="mt-1 text-[11px] md:text-[11px] font-medium text-[var(--color-stone-500)] leading-snug">
         {label}
       </p>
     </div>

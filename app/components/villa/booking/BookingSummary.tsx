@@ -154,7 +154,7 @@ export default function BookingSummary({
   const fmt = (v: number) =>
     formatDisplayPrice(v, currency, locale ?? DEFAULT_LOCALE, summaryReady);
   return (
-    <div className="space-y-3 text-[13.5px]">
+    <div className="space-y-3 text-[13px]">
       {/* 🎨 PREMIUM DÖKÜM — fildişi zemin, ince ayırıcılı satırlar,
           tipografik olarak belirgin toplam. Satırlar/koşullar/değerler
           AYNEN (yalnız görünüm). */}
@@ -171,7 +171,7 @@ export default function BookingSummary({
                 {accommodationLabel}
               </span>
               <div className="text-right">
-                <span className="block text-[11.5px] text-[var(--color-stone-400)] line-through tabular-nums">
+                <span className="block text-[11px] text-[var(--color-stone-400)] line-through tabular-nums">
                   {fmt(activeStayDiscount.originalStay)}
                 </span>
                 <span className="block font-semibold text-ink tabular-nums">
@@ -227,7 +227,7 @@ export default function BookingSummary({
           {/* TOPLAM TUTAR — tipografik vurgu (lacivert, büyük). */}
           <div data-booking-total className="flex items-baseline justify-between gap-3 py-3.5">
             <span className="font-semibold text-ink">{dict.booking.total}</span>
-            <span className="font-display text-[22px] font-bold leading-none tracking-[-0.01em] text-ink tabular-nums">
+            <span className="font-display text-[19px] font-bold leading-none tracking-[-0.01em] text-ink tabular-nums">
               {fmt(result.total)}
             </span>
           </div>
@@ -272,7 +272,7 @@ export default function BookingSummary({
                 {formatDisplayPrice(convertedDeposit, currency, locale ?? DEFAULT_LOCALE, depositDisplayReady)}
               </span>
             </div>
-            <p className="mt-1 text-[11.5px] text-[var(--color-stone-500)] leading-relaxed">
+            <p className="mt-1 text-[11px] text-[var(--color-stone-500)] leading-relaxed">
               {dict.booking.depositNote}
             </p>
           </div>

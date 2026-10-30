@@ -106,7 +106,7 @@ export default async function ReservationSuccessBody({
         <h1
           className="
             font-display
-            text-[32px] md:text-[44px]
+            text-[26px] md:text-[36px]
             text-[var(--color-stone-900)]
             mt-4
             tracking-[-0.02em]
@@ -119,7 +119,7 @@ export default async function ReservationSuccessBody({
         {/* Açıklama */}
         <p
           className="
-            text-[15px] md:text-[16.5px]
+            text-[14px] md:text-[15.5px]
             text-[var(--color-stone-600)]
             mt-5 md:mt-6
             max-w-xl mx-auto
@@ -146,7 +146,7 @@ export default async function ReservationSuccessBody({
             </p>
             <p
               className="
-                font-display text-[18px] md:text-[20px]
+                font-display text-[16px] md:text-[18px]
                 text-[var(--color-stone-900)]
                 mt-2 tracking-[-0.01em]
                 select-all break-all
@@ -155,7 +155,7 @@ export default async function ReservationSuccessBody({
             >
               {refNumber}
             </p>
-            <p className="text-[11.5px] text-[var(--color-stone-500)] mt-2 max-w-xs">
+            <p className="text-[11px] text-[var(--color-stone-500)] mt-2 max-w-xs">
               {dict.referenceHint}
             </p>
           </div>
@@ -178,7 +178,7 @@ export default async function ReservationSuccessBody({
                 inline-flex items-center justify-center gap-2
                 px-6 py-3 rounded-full
                 bg-emerald-600 text-white
-                text-[13.5px] font-medium tracking-[0.02em]
+                text-[13px] font-medium tracking-[0.02em]
                 shadow-[0_18px_36px_-14px_rgba(16,185,129,0.55),0_4px_12px_-6px_rgba(16,185,129,0.35)]
                 hover:bg-emerald-700
                 hover:-translate-y-[1px]
@@ -195,7 +195,7 @@ export default async function ReservationSuccessBody({
 
           <Link
             href={localePrefix === "" ? "/" : localePrefix}
-            className="btn-primary !px-6 !py-3 text-[13.5px]"
+            className="btn-primary !px-6 !py-3 text-[13px]"
           >
             <Home size={15} strokeWidth={1.75} />
             {dict.homeCta}
@@ -209,7 +209,7 @@ export default async function ReservationSuccessBody({
                 px-6 py-3 rounded-full
                 border border-[var(--color-stone-200)]
                 text-[var(--color-stone-700)]
-                text-[13.5px] font-medium tracking-[0.02em]
+                text-[13px] font-medium tracking-[0.02em]
                 hover:border-[var(--brand-coral)]
                 hover:text-[var(--color-stone-900)]
                 hover:bg-[var(--brand-coral-tint)]

@@ -369,7 +369,7 @@ export default function AvailabilityInlineCalendar({
               }
             >
               <div className="px-1 mb-1.5">
-                <span className="font-display text-[12px] font-semibold text-[var(--color-stone-800)] tracking-[-0.01em] capitalize">
+                <span className="font-display text-[11.5px] font-semibold text-[var(--color-stone-800)] tracking-[-0.01em] capitalize">
                   {viewMonth.toLocaleDateString(bcp47, { month: "long" })}
                   <span className="text-[var(--color-stone-400)] font-normal ml-1">
                     {viewMonth.getFullYear()}

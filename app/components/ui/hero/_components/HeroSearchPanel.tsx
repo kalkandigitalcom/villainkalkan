@@ -327,7 +327,7 @@ export default function HeroSearchPanel({
               dateFormat="dd.MM.yyyy"
               minDate={new Date()}
               placeholderText={dict.datePlaceholder}
-              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 w-full font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-ink placeholder:!text-ink placeholder:!opacity-100 cursor-pointer truncate"
+              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 w-full font-display text-[14px] md:text-[15.5px] font-semibold tracking-[-0.01em] !text-ink placeholder:!text-ink placeholder:!opacity-100 cursor-pointer truncate"
               /* 🛡️ PHASE 11 — sentinel string karşılaştırması yerine
                  DOĞRUDAN state kontrolü: `buildHeroDateLabel` sentinel'i
                  TAM OLARAK `!startDate` iken döndürür → davranış birebir
@@ -367,7 +367,7 @@ export default function HeroSearchPanel({
             <select
               value={guests}
               onChange={(e) => setGuests(Number(e.target.value))}
-              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 appearance-none min-w-0 flex-1 font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] !text-ink cursor-pointer"
+              className="!bg-transparent !border-0 !shadow-none !p-0 !rounded-none !outline-none !ring-0 appearance-none min-w-0 flex-1 font-display text-[14px] md:text-[15.5px] font-semibold tracking-[-0.01em] !text-ink cursor-pointer"
               style={{ backgroundImage: "none", paddingRight: 0 }}
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((g) => (
@@ -405,7 +405,7 @@ export default function HeroSearchPanel({
               {dict.regionLabel}
             </span>
             <span className="mt-1.5 flex items-center gap-1.5 w-full">
-              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-ink">
+              <span className="min-w-0 flex-1 truncate font-display text-[14px] md:text-[15.5px] font-semibold tracking-[-0.01em] text-ink">
                 {regions.length
                   ? formatDictionaryString(dict.regionsSelected, {
                       n: regions.length,
@@ -482,7 +482,7 @@ export default function HeroSearchPanel({
               {dict.typeLabel}
             </span>
             <span className="mt-1.5 flex items-center gap-1.5 w-full">
-              <span className="min-w-0 flex-1 truncate font-display text-[15px] md:text-[16.5px] font-semibold tracking-[-0.01em] text-ink">
+              <span className="min-w-0 flex-1 truncate font-display text-[14px] md:text-[15.5px] font-semibold tracking-[-0.01em] text-ink">
                 {categories.length
                   ? formatDictionaryString(dict.typesSelected, {
                       n: categories.length,
@@ -548,7 +548,7 @@ export default function HeroSearchPanel({
             h-[52px] md:h-auto md:min-w-[176px] px-7 md:px-8
             !rounded-[6px] md:!rounded-[3px]
             bg-brand hover:bg-brand-hover
-            text-ink font-display text-[15px] md:text-[15.5px] font-semibold tracking-[0.01em]
+            text-ink font-display text-[14px] md:text-[14.5px] font-semibold tracking-[0.01em]
             shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]
             transition-colors duration-200 motion-reduce:transition-none
             focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
@@ -581,7 +581,7 @@ export default function HeroSearchPanel({
           aria-expanded={advOpen}
           className="
             inline-flex items-center gap-2 rounded-[4px] px-2 py-1.5
-            text-[12.5px] md:text-[13px] font-medium tracking-[0.02em] text-white/90
+            text-[12px] md:text-[12.5px] font-medium tracking-[0.02em] text-white/90
             [text-shadow:0_1px_10px_rgba(8,22,19,0.55)]
             hover:text-white transition-colors motion-reduce:transition-none
             focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
@@ -612,7 +612,7 @@ export default function HeroSearchPanel({
                 className="mt-0.5 h-4 w-4 shrink-0 rounded cursor-pointer"
                 style={{ accentColor: "var(--color-brand)" }}
               />
-              <span className="text-[13px] leading-snug text-[var(--color-stone-700)]">
+              <span className="text-[12.5px] leading-snug text-[var(--color-stone-700)]">
                 {dict.flexibleHint}
               </span>
             </label>
@@ -631,7 +631,7 @@ export default function HeroSearchPanel({
                   {dict.featuresLabel}
                 </div>
                 {features.length > 0 && (
-                  <div className="text-[11.5px] font-medium text-ink">
+                  <div className="text-[11px] font-medium text-ink">
                     {formatDictionaryString(dict.featuresSelected, {
                       n: features.length,
                     })}
@@ -640,7 +640,7 @@ export default function HeroSearchPanel({
               </div>
 
               {featureOptions.length === 0 ? (
-                <div className="mt-2 text-[13px] text-[var(--color-stone-400)]">
+                <div className="mt-2 text-[12.5px] text-[var(--color-stone-400)]">
                   {featuresLoaded ? dict.featuresEmpty : dict.optionsLoading}
                 </div>
               ) : (
@@ -650,7 +650,7 @@ export default function HeroSearchPanel({
                     return (
                       <label
                         key={item.id}
-                        className={`flex items-center gap-3 text-[13.5px] px-2.5 py-2 rounded-[6px] cursor-pointer transition ${
+                        className={`flex items-center gap-3 text-[13px] px-2.5 py-2 rounded-[6px] cursor-pointer transition ${
                           checked
                             ? "bg-brand/[0.08] text-brand-strong font-medium"
                             : "hover:bg-brand/[0.04] text-[var(--color-stone-700)]"

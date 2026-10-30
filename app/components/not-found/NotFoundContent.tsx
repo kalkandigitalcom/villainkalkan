@@ -63,10 +63,10 @@ export default function NotFoundContent({
             <Compass className="w-4 h-4" />
             404
           </span>
-          <h1 className="font-display font-medium text-[30px] md:text-[44px] leading-tight tracking-[-0.02em] text-[var(--color-stone-900)] mt-4">
+          <h1 className="font-display font-medium text-[24px] md:text-[36px] leading-tight tracking-[-0.02em] text-[var(--color-stone-900)] mt-4">
             {dict.title}
           </h1>
-          <p className="mt-4 text-[15px] md:text-[16px] leading-relaxed text-[var(--color-stone-500)] max-w-xl mx-auto">
+          <p className="mt-4 text-[14px] md:text-[15px] leading-relaxed text-[var(--color-stone-500)] max-w-xl mx-auto">
             {dict.body}
           </p>
 
@@ -74,14 +74,14 @@ export default function NotFoundContent({
           <div className="mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
             <Link
               href={prefix === "" ? "/" : prefix}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[14px] font-medium tracking-[0.02em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[13px] font-medium tracking-[0.02em] hover:bg-[var(--color-stone-700)] transition-colors motion-reduce:transition-none"
             >
               <Home className="w-4 h-4" />
               {dict.homeCta}
             </Link>
             <Link
               href={`${prefix}/kiralik-villalar`}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-[var(--color-stone-200)] text-[14px] font-medium text-[var(--color-stone-800)] hover:border-[var(--color-stone-300)] hover:bg-white transition-colors motion-reduce:transition-none"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-[var(--color-stone-200)] text-[13px] font-medium text-[var(--color-stone-800)] hover:border-[var(--color-stone-300)] hover:bg-white transition-colors motion-reduce:transition-none"
             >
               <Search className="w-4 h-4" />
               {dict.villasCta}
@@ -98,7 +98,7 @@ export default function NotFoundContent({
               <p className="text-[10.5px] tracking-[0.28em] uppercase font-medium text-[var(--brand-coral)]">
                 {dict.suggestionsEyebrow}
               </p>
-              <h2 className="font-display font-medium text-[22px] md:text-[26px] text-[var(--color-stone-900)] mt-2 tracking-[-0.02em]">
+              <h2 className="font-display font-medium text-[19px] md:text-[22px] text-[var(--color-stone-900)] mt-2 tracking-[-0.02em]">
                 {dict.suggestionsTitle}
               </h2>
             </div>

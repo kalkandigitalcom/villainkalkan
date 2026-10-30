@@ -164,7 +164,7 @@ export default function ReservationLookup({
             <p className="text-[11px] tracking-[0.22em] uppercase font-medium text-[var(--brand-coral)]">
               {dict.formEyebrow}
             </p>
-            <h2 className="font-display text-[22px] md:text-[26px] text-[var(--color-stone-900)] mt-2 leading-[1.15] tracking-[-0.02em]">
+            <h2 className="font-display text-[19px] md:text-[22px] text-[var(--color-stone-900)] mt-2 leading-[1.15] tracking-[-0.02em]">
               {dict.formTitle}
             </h2>
           </div>
@@ -187,7 +187,7 @@ export default function ReservationLookup({
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 disabled={busy}
-                className="w-full px-4 py-3 rounded-2xl border border-[var(--color-stone-200)] bg-white text-[15px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--color-champagne-500)] focus:ring-2 focus:ring-[var(--color-champagne-500)]/20 transition disabled:opacity-60 tracking-[0.04em]"
+                className="w-full px-4 py-3 rounded-2xl border border-[var(--color-stone-200)] bg-white text-[14px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--color-champagne-500)] focus:ring-2 focus:ring-[var(--color-champagne-500)]/20 transition disabled:opacity-60 tracking-[0.04em]"
               />
             </div>
 
@@ -207,12 +207,12 @@ export default function ReservationLookup({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={busy}
-                className="w-full px-4 py-3 rounded-2xl border border-[var(--color-stone-200)] bg-white text-[15px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--color-champagne-500)] focus:ring-2 focus:ring-[var(--color-champagne-500)]/20 transition disabled:opacity-60"
+                className="w-full px-4 py-3 rounded-2xl border border-[var(--color-stone-200)] bg-white text-[14px] text-[var(--color-stone-900)] placeholder:text-[var(--color-stone-400)] focus:outline-none focus:border-[var(--color-champagne-500)] focus:ring-2 focus:ring-[var(--color-champagne-500)]/20 transition disabled:opacity-60"
               />
             </div>
 
             {status === "error" && errorMsg && (
-              <div className="flex items-start gap-2.5 text-[13px] text-red-700 bg-red-50/60 border border-red-100 rounded-2xl px-4 py-3">
+              <div className="flex items-start gap-2.5 text-[12.5px] text-red-700 bg-red-50/60 border border-red-100 rounded-2xl px-4 py-3">
                 <AlertCircle size={15} className="mt-0.5 shrink-0" />
                 <span>{errorMsg}</span>
               </div>
@@ -221,7 +221,7 @@ export default function ReservationLookup({
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[13.5px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-stone-900)] text-white text-[13px] font-medium tracking-[0.04em] hover:bg-[var(--color-stone-700)] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {busy ? (
                 <>{dict.submitting}</>
@@ -232,7 +232,7 @@ export default function ReservationLookup({
               )}
             </button>
 
-            <p className="text-[11.5px] text-[var(--color-stone-400)] leading-relaxed">
+            <p className="text-[11px] text-[var(--color-stone-400)] leading-relaxed">
               {dict.formHint}
             </p>
           </form>
@@ -289,7 +289,7 @@ function ResultCard({
             >
               {dict[design.labelKey]}
             </span>
-            <p className="text-[14.5px] md:text-[15px] text-[var(--color-stone-700)] mt-2.5 leading-relaxed">
+            <p className="text-[13.5px] md:text-[14px] text-[var(--color-stone-700)] mt-2.5 leading-relaxed">
               {dict[design.messageKey]}
             </p>
           </div>
@@ -367,7 +367,7 @@ function DetailRow({
         </dt>
         <dd
           className={
-            "text-[15px] text-[var(--color-stone-900)] mt-1 leading-snug break-words " +
+            "text-[14px] text-[var(--color-stone-900)] mt-1 leading-snug break-words " +
             (mono ? "tracking-[0.04em] tabular-nums" : "")
           }
         >
@@ -387,10 +387,10 @@ function EmptyState({ dict }: { dict: LookupDict }) {
       <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-[var(--color-stone-100)] text-[var(--color-champagne-700)] shadow-[0_8px_24px_-16px_rgba(27,26,23,0.2)]">
         <Search size={24} strokeWidth={1.75} />
       </span>
-      <h3 className="font-display text-[19px] md:text-[21px] text-[var(--color-stone-900)] mt-5 tracking-[-0.01em]">
+      <h3 className="font-display text-[17px] md:text-[18px] text-[var(--color-stone-900)] mt-5 tracking-[-0.01em]">
         {dict.emptyTitle}
       </h3>
-      <p className="text-[14px] text-[var(--color-stone-500)] mt-2.5 leading-relaxed max-w-sm mx-auto">
+      <p className="text-[13px] text-[var(--color-stone-500)] mt-2.5 leading-relaxed max-w-sm mx-auto">
         {dict.emptyBody}
       </p>
     </div>
