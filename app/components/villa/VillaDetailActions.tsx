@@ -52,26 +52,56 @@ export function VillaShowPhotosButton({
 
 export function VillaAvailabilityShortcut({ locale }: { locale?: Locale }) {
   const dict = getDictionary(locale);
+  /* 🎨 2026-10 — premium görünüm (yalnız tasarım; işlev AYNI).
+     Dış kap bant yüksekliğinde (h-14 = 56px) kalır → lg'de aside'ın
+     `-mt-14` hizası bozulmaz; buton h-11 ile bandın içinde dikeyde
+     ortalanır, üst/alt ~6px nefes payı. Zemin: açık altın geçiş
+     (brand-soft → champagne-100), ince altın kenarlık (ring — global
+     `* { border-color }` kuralı border utility'sini ezdiği için), lacivert metin,
+     lacivert daire içinde altın takvim ikonu. Hover: hafif yükselme +
+     altın gölge + tek seferlik yumuşak parlama (sürekli animasyon YOK). */
   return (
-    <button
-      type="button"
-      onClick={openVillaAvailability}
-      aria-haspopup="dialog"
-      data-villa-availability-shortcut
-      className="
-        flex h-14 w-full items-center justify-center gap-2.5
-        rounded-2xl bg-white ring-1 ring-inset ring-ink/10
-        hover:bg-brand-soft hover:ring-brand/45
-        active:bg-[var(--color-champagne-100)] active:ring-brand/60
-        px-5
-        text-[13px] font-semibold tracking-[0.01em] text-ink
-        shadow-[0_14px_30px_-18px_rgba(27,46,94,0.45)]
-        transition-colors duration-200 motion-reduce:transition-none
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
-      "
-    >
-      <CalendarDays size={18} strokeWidth={1.8} aria-hidden />
-      {dict.villaHero.availabilityCalendar}
-    </button>
+    <div className="flex h-14 items-center">
+      <button
+        type="button"
+        onClick={openVillaAvailability}
+        aria-haspopup="dialog"
+        data-villa-availability-shortcut
+        className="
+          group relative flex h-11 w-full items-center justify-center gap-2.5 overflow-hidden
+          rounded-full ring-1 ring-inset ring-brand/60
+          bg-gradient-to-r from-brand-soft via-[var(--color-champagne-100)] to-brand-soft
+          px-5
+          text-[13px] font-semibold tracking-[0.01em] text-ink
+          shadow-[0_10px_24px_-14px_rgba(27,46,94,0.45),0_4px_12px_-8px_rgba(200,151,58,0.55)]
+          transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none
+          hover:-translate-y-0.5 hover:ring-brand
+          hover:shadow-[0_14px_28px_-14px_rgba(27,46,94,0.5),0_8px_22px_-10px_rgba(200,151,58,0.75)]
+          active:translate-y-0
+          motion-reduce:hover:translate-y-0
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
+        "
+      >
+        {/* Hover parlaması — tek geçiş, yalnız transform (GPU). */}
+        <span
+          aria-hidden="true"
+          className="
+            pointer-events-none absolute inset-y-0 -left-1/2 w-1/2
+            -skew-x-12 bg-gradient-to-r from-transparent via-white/70 to-transparent
+            -translate-x-full opacity-0
+            transition-[transform,opacity] duration-700 ease-out
+            group-hover:translate-x-[300%] group-hover:opacity-100
+            motion-reduce:hidden
+          "
+        />
+        <span
+          aria-hidden="true"
+          className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-brand shadow-[0_2px_6px_-2px_rgba(27,46,94,0.5)]"
+        >
+          <CalendarDays size={15} strokeWidth={2} />
+        </span>
+        <span className="relative">{dict.villaHero.availabilityCalendar}</span>
+      </button>
+    </div>
   );
 }
