@@ -336,9 +336,11 @@ export default function PriceList({
        kabı; her sezon tek satır, iki bölümlü yatay kart (sol: tarih +
        minimum gece, sağ: gecelik fiyat + kısa süreli konaklama/temizlik
        ücreti). Gradient, gölge, giriş animasyonu ve hover-lift YOK.
+       Beyaz kart kabı + "Sezon Fiyatları" başlığı çağıran tarafta
+       (VillaDetailBody `<section>`); bu kap yalnız satır listesidir.
        Container'a `overflow-hidden` BİLEREK eklenmedi — Bilgi popover'ı
        kart sınırının dışına taşabilir. */
-    <div className="mt-5 rounded-[20px] bg-white p-4 md:p-6">
+    <div>
       <div className="space-y-3">
         {segments.map((seg, idx) => {
         /* Currency conversion — eski mantık AYNEN (segment artık

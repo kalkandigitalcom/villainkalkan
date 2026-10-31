@@ -27,7 +27,6 @@ import { Bath, BedDouble, Clock, MapPin, Users } from "lucide-react";
    =============================================================== */
 
 import PriceList from "@/app/components/villa/PriceList";
-import ShortStayFeeNotice from "@/app/components/villa/ShortStayFeeNotice";
 import CollapsibleDescription from "@/app/components/villa/CollapsibleDescription";
 import AccommodationLayout from "@/app/components/villa/AccommodationLayout";
 import VillaPoolSection from "@/app/components/villa/VillaPoolSection";
@@ -349,7 +348,9 @@ export default function VillaDetailBody({
                     sayfada ardışık ve hep açık (navigasyon hedefleri). */}
                 <VillaDetailTabs
                   fiyatlar={
-                    <section>
+                    /* 2026-10 — başlık + sezon kartları TEK beyaz kartta
+                       (açıklama/konaklama kartlarıyla aynı kap). */
+                    <section className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7">
                       <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em] mb-4">
                         {dict.villa.seasonPricesTitle}
                       </h2>
@@ -369,13 +370,9 @@ export default function VillaDetailBody({
                           locale={locale}
                         />
                       )}
-
-                      <ShortStayFeeNotice
-                        cleaningFee={villa.cleaning_fee}
-                        cleaningCurrency={villa.cleaning_currency}
-                        cleaningLimit={villa.cleaning_limit}
-                        locale={locale}
-                      />
+                      {/* Kırmızı kısa süreli konaklama uyarı kartı
+                          (ShortStayFeeNotice) kaldırıldı — ücret bilgisi
+                          artık her sezon kartının içinde (PriceList). */}
                     </section>
                   }
                   konum={
