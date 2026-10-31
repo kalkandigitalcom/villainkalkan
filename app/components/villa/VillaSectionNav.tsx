@@ -142,9 +142,9 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
       data-stuck={stuck ? "true" : undefined}
       style={{ top: headerOffset }}
       className={
-        /* Sitenin mevcut turuncu marka rengi (`--color-accent`, #C8973A)
-           — şeridin tamamı; ayrı beyaz kap yok. */
-        "sticky bg-accent shadow-[0_10px_24px_-22px_rgba(27,46,94,0.45)] px-5 md:px-10 lg:px-16 " +
+        /* 2026-10 — açık nötr bant (`--color-section-nav-bg`, #F5F7FA);
+           önce marka altını (bg-accent). Yükseklik/yerleşim AYNI. */
+        "sticky bg-[var(--color-section-nav-bg)] shadow-[0_10px_24px_-22px_rgba(27,46,94,0.45)] px-5 md:px-10 lg:px-16 " +
         /* Doğal konumda z-index YOK → DOM'da sonra gelen rezervasyon
            kartı şeridin üstüne taşar (kart kendi stacking context'ini
            kurmaz; içindeki popup'lar Header'ın üstüne çıkabilir).
@@ -172,7 +172,8 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
                       onClick={() => scrollToVillaSection(id)}
                       aria-current={isActive ? "true" : undefined}
                       className={
-                        /* Turuncu zeminde koyu lacivert metin (≈5:1 kontrast).
+                        /* Açık nötr zeminde lacivert metin; aktif çizgi marka
+                           altını (2026-10).
                            Aktif öğe zemin DEĞİŞTİRMEZ: yalnız metin genişliği
                            boyunca alttan ince çizgi; hover'da aynı çizgi
                            yarı saydam önizleme olarak belirir. */
@@ -180,8 +181,8 @@ export default function VillaSectionNav({ locale }: { locale?: Locale }) {
                         "after:pointer-events-none after:absolute after:inset-x-4 md:after:inset-x-5 after:bottom-0 after:h-[3px] after:rounded-t-full after:transition-colors after:duration-200 motion-reduce:after:transition-none " +
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink/60 " +
                         (isActive
-                          ? "font-semibold after:bg-ink"
-                          : "font-medium after:bg-transparent hover:after:bg-ink/35")
+                          ? "font-semibold after:bg-brand"
+                          : "font-medium after:bg-transparent hover:after:bg-brand/40")
                       }
                     >
                       {labels[id]}

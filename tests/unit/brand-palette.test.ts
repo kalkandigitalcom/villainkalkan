@@ -79,10 +79,16 @@ describe("Marka paleti — public altın #C8973A", () => {
     expect(PUBLIC_CSS).not.toMatch(/--color-brand:\s*#278bd0;/i);
   });
 
-  it("sayfa zemini: bg-[var(--color-ivory)] tek tanım, #fffaf1; admin istisnası ve token korunur", () => {
+  /* 2026-10 — public sayfa zemini #EAF0F6 (`--color-page-bg`); önce #fffaf1. */
+  it("sayfa zemini: bg-[var(--color-ivory)] tek tanım, --color-page-bg (#EAF0F6); html/body aynı token; admin istisnası ve token korunur", () => {
     const defs = css.match(/\.bg-\\\[var\\\(--color-ivory\\\)\\\]\s*\{[^}]*\}/g) ?? [];
     expect(defs).toHaveLength(2); /* kural + admin istisnası */
-    expect(css).toMatch(/\n  \.bg-\\\[var\\\(--color-ivory\\\)\\\] \{\n    background-color: #fffaf1;\n  \}/);
+    expect(css).toMatch(/--color-page-bg:\s*#eaf0f6;/);
+    expect(css).toMatch(/\n  \.bg-\\\[var\\\(--color-ivory\\\)\\\] \{\n    background-color: var\(--color-page-bg\);\n  \}/);
+    expect(css).toMatch(/\nhtml \{\n  background-color: var\(--color-page-bg\);/);
+    expect(css).toMatch(/\nbody \{[^}]*background: var\(--color-page-bg\);/);
+    expect(css).toMatch(/html:has\(\.admin-shell\) \{\s*background-color: var\(--background\);/);
+    expect(css).not.toContain("#fffaf1");
     expect(css).toMatch(/body:has\(\.admin-shell\)\.bg-\\\[var\\\(--color-ivory\\\)\\\] \{\s*background-color: var\(--color-ivory\);/);
     expect(css).toMatch(/--color-ivory:\s*#f6f8fb;/);
     expect(css).not.toContain("#ffede8d1");

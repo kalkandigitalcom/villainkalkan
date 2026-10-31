@@ -143,16 +143,20 @@ describe("Üst navigasyon şeridi", () => {
     expect(screen.getAllByRole("navigation")).toHaveLength(1);
   });
 
-  it("turuncu marka rengi (bg-accent), ayrı beyaz kap yok; aktif öğe zemin değil alt çizgi", () => {
+  /* 2026-10 — bant açık nötr #F5F7FA (--color-section-nav-bg); aktif
+     alt çizgi marka rengi (brand). */
+  it("açık nötr bant (--color-section-nav-bg), ayrı beyaz kap yok; aktif öğe marka renkli alt çizgi", () => {
     render(<Page />);
-    expect(bar().className).toContain("bg-accent");
+    expect(bar().className).toContain("bg-[var(--color-section-nav-bg)]");
+    expect(bar().className).not.toMatch(/(^|\s)bg-accent(\s|$)/);
     expect(bar().className).not.toContain("bg-white");
     expect(bar().querySelector(".bg-white")).toBeNull();
     const active = navBtn(tr.villaTabs.description);
-    expect(active.className).toContain("after:bg-ink");
+    expect(active.className).toContain("after:bg-brand");
+    expect(active.className).toContain("text-ink");
     expect(active.className).not.toMatch(/(^|\s)bg-(brand|ink|white)\b/);
     expect(navBtn(tr.villaTabs.prices).className).toContain(
-      "hover:after:bg-ink/35",
+      "hover:after:bg-brand/40",
     );
   });
 
@@ -342,6 +346,14 @@ describe("Fotoğrafları Göster → mevcut galeri lightbox'ı", () => {
     expect(
       screen.getByRole("button", { name: "Tüm fotoğrafları gör (4 fotoğraf)" }),
     ).toBeInTheDocument();
+  });
+
+  it("buton zemini #F5F7FA (--color-section-nav-bg), metin lacivert", () => {
+    render(<VillaShowPhotosButton count={3} locale="tr" />);
+    const btn = screen.getByRole("button", { name: "Fotoğrafları Göster (3)" });
+    expect(btn.className).toContain("bg-[var(--color-section-nav-bg)]");
+    expect(btn.className).toMatch(/(^|\s)text-ink(\s|$)/);
+    expect(btn.className).not.toMatch(/(^|\s)bg-brand(\s|$)/);
   });
 
   it("fotoğraf yoksa buton render edilmez", () => {

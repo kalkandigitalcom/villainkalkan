@@ -36,10 +36,10 @@ export function VillaShowPhotosButton({
       data-villa-show-photos
       className="
         inline-flex items-center gap-2.5
-        rounded-full bg-brand hover:bg-brand-hover active:bg-brand-active
+        rounded-full bg-[var(--color-section-nav-bg)] hover:bg-white active:bg-[var(--color-stone-100)]
         px-6 py-3
         text-[13px] font-semibold text-ink
-        shadow-[0_12px_28px_-14px_rgba(200,151,58,0.9)]
+        shadow-[0_12px_28px_-14px_rgba(0,0,0,0.45)]
         transition-colors duration-200 motion-reduce:transition-none
         focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink
       "

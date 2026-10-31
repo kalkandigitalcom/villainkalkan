@@ -17,6 +17,13 @@
      → içerik aynı 1210px çizgisine hizalanır. */
   --container-site: 1210px;
 
+  /* 🎨 PUBLIC SAYFA ZEMİNİ + VİLLA DETAY NAVİGASYON BANDI (2026-10)
+     Tek kaynak: html/body + public kabuk (`bg-[var(--color-ivory)]`
+     override'ı, aşağıda) bu zemini kullanır. Admin kendi zemininde
+     kalır (`body:has(.admin-shell)` kuralları). */
+  --color-page-bg: #eaf0f6;
+  --color-section-nav-bg: #f5f7fa;
+
   /* 🎨 Brand */
   /* 🎨 MARKA PALETİ (2026) — canlı mavi #C8973A · mercan #C8973A ·
      koyu metin #1B2E5E · beyaz. Açık nötrler (ivory, sand,
@@ -239,9 +246,14 @@ h2.text-\[var\(--color-stone-900\)\] {
 }
 
 html {
+  background-color: var(--color-page-bg);
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+/* Admin: html zemini eski nötr değerinde kalır. */
+html:has(.admin-shell) {
+  background-color: var(--background);
 }
 
 body {
@@ -255,19 +267,10 @@ body {
 
      background-attachment: fixed → desktop'ta parallax luxury hissi;
      iOS Safari otomatik scroll fallback (görsel etki minimal). */
-  background:
-    radial-gradient(
-      ellipse 90% 65% at 100% 0%,
-      rgb(200 151 58 / 0.10) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse 80% 55% at 0% 100%,
-      rgb(200 151 58 / 0.08) 0%,
-      transparent 55%
-    ),
-    var(--background);
-  background-attachment: fixed;
+  /* 2026-10 — public zemin düz #EAF0F6 (--color-page-bg); önceki altın
+     ambient glow'lar kaldırıldı. Admin zemini `body:has(.admin-shell)`
+     kuralında AYNEN (daha yüksek özgüllük). */
+  background: var(--color-page-bg);
   color: var(--foreground);
   font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11";
@@ -2119,7 +2122,8 @@ body:has(.admin-shell) {
 
 /* ================================================================
    🎨 SAYFA ZEMİNİ — `bg-[var(--color-ivory)]` (body, public kabuk,
-   404, bakım ekranı) sıcak krem (#fffaf1) tonla boyanır. Tailwind'in
+   404, bakım ekranı) `--color-page-bg` (#EAF0F6) ile boyanır (2026-10;
+   önceki sıcak krem ton kaldırıldı). Tailwind'in
    ürettiği aynı sınıfı `@layer utilities` içinde, kaynak sırasıyla
    sonra gelerek ezer; `--color-ivory` token'ı ve onu kullanan diğer
    bileşenler DEĞİŞMEZ.
@@ -2128,7 +2132,7 @@ body:has(.admin-shell) {
    ================================================================ */
 @layer utilities {
   .bg-\[var\(--color-ivory\)\] {
-    background-color: #fffaf1;
+    background-color: var(--color-page-bg);
   }
   body:has(.admin-shell).bg-\[var\(--color-ivory\)\] {
     background-color: var(--color-ivory);
