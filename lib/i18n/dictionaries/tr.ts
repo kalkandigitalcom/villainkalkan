@@ -309,6 +309,8 @@ export const tr: Dictionary = {
   map: {
     openMap: "Harita",
     directions: "Yol Tarifi",
+    showOnMap: "Haritada Göster",
+    getDirections: "Yol Tarifi Al",
     directionsUnavailableTitle: "Yol tarifi için konum bilgisi yok",
     modalAriaLabel: "{title} — Harita",
     modalAriaLabelFallback: "Villa haritası",

@@ -27,7 +27,7 @@
    =============================================================== */
 
 import { useEffect, useState } from "react";
-import { X, Map as MapIcon, Navigation } from "lucide-react";
+import { X, Map as MapIcon, MapPin, Navigation, Navigation2 } from "lucide-react";
 
 /* 🛡️ PHASE 10G — locale-aware UI metinleri + Google Maps embed `hl=`
    parametresi. `locale` OPSİYONEL, default "tr" → TR çıktısı BİREBİR
@@ -45,6 +45,11 @@ type Props = {
   villaTitle?: string;
   /** 🛡️ PHASE 10G — opsiyonel; verilmezse "tr" (eski davranış). */
   locale?: Locale;
+  /** 2026-10 — "buttons" (varsayılan): sağ kolon "Nerede?" kartındaki
+   *  iki buton. "panel": Yakındaki Noktalar bölümünün sağ paneli —
+   *  üst üste iki eşit aksiyon alanı. Modal, harita verisi ve yol
+   *  tarifi URL'i iki varyantta da BİREBİR aynı. */
+  variant?: "buttons" | "panel";
 };
 
 export default function VillaMapModal({
@@ -54,6 +59,7 @@ export default function VillaMapModal({
   mapEmbed,
   villaTitle,
   locale,
+  variant = "buttons",
 }: Props) {
   const dict = getDictionary(locale);
   const [isOpen, setIsOpen] = useState(false);
@@ -87,9 +93,70 @@ export default function VillaMapModal({
     mapType === "iframe" ? extractSafeMapEmbedSrc(mapEmbed) : null;
   const hasEmbed = !!safeMapEmbedSrc;
   const hasDirections = !!latitude && !!longitude;
+  /* Yol tarifi URL'i — iki varyantta da AYNI. */
+  const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+
+  /* Panel varyantı — aksiyon alanı ortak sınıfları. `lang` — kök
+     <html lang> varsayılan dilde sabit; TR "İ" büyük harfi için
+     CSS uppercase'e doğru dili bildirir. */
+  const panelActionClass =
+    "group flex flex-1 flex-col items-center justify-center gap-3 px-6 py-8 md:py-10 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50";
+  const panelCircleClass =
+    "flex h-14 w-14 items-center justify-center rounded-full bg-white text-blue-600 shadow-[0_4px_14px_-8px_rgba(37,99,235,0.35)] transition-transform duration-200 motion-reduce:transition-none group-hover:scale-105 motion-reduce:group-hover:scale-100";
+  const panelLabelClass =
+    "text-[13px] md:text-[14px] font-extrabold uppercase tracking-[0.06em] text-blue-600";
 
   return (
     <>
+      {variant === "panel" ? (
+        <div className="flex h-full flex-col">
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isOpen}
+            className={panelActionClass}
+          >
+            <span aria-hidden="true" className={panelCircleClass}>
+              <MapPin size={24} strokeWidth={2} />
+            </span>
+            <span lang={dict.map.embedLanguage} className={panelLabelClass}>
+              {dict.map.showOnMap}
+            </span>
+          </button>
+
+          <span aria-hidden="true" className="h-0.5 w-full shrink-0 bg-blue-600" />
+
+          {hasDirections ? (
+            <a
+              href={directionsHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={panelActionClass}
+            >
+              <span aria-hidden="true" className={panelCircleClass}>
+                <Navigation2 size={24} strokeWidth={2} />
+              </span>
+              <span lang={dict.map.embedLanguage} className={panelLabelClass}>
+                {dict.map.getDirections}
+              </span>
+            </a>
+          ) : (
+            <div
+              aria-disabled="true"
+              title={dict.map.directionsUnavailableTitle}
+              className={panelActionClass + " cursor-not-allowed opacity-50"}
+            >
+              <span aria-hidden="true" className={panelCircleClass}>
+                <Navigation2 size={24} strokeWidth={2} />
+              </span>
+              <span lang={dict.map.embedLanguage} className={panelLabelClass}>
+                {dict.map.getDirections}
+              </span>
+            </div>
+          )}
+        </div>
+      ) : (
       <div className="mt-4 grid grid-cols-2 gap-3">
         <button
           type="button"
@@ -113,7 +180,7 @@ export default function VillaMapModal({
 
         {hasDirections ? (
           <a
-            href={`https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`}
+            href={directionsHref}
             target="_blank"
             rel="noopener noreferrer"
             className="
@@ -148,6 +215,7 @@ export default function VillaMapModal({
           </button>
         )}
       </div>
+      )}
 
       {isOpen && (
         <div

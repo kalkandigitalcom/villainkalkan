@@ -428,6 +428,9 @@ export type Dictionary = {
   map: {
     openMap: string;
     directions: string;
+    /** Yakındaki Noktalar paneli aksiyonları (2026-10). */
+    showOnMap: string;
+    getDirections: string;
     directionsUnavailableTitle: string;
     /** template: {title} */
     modalAriaLabel: string;

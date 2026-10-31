@@ -380,6 +380,17 @@ export default function VillaDetailBody({
                       <VillaDistancesSection
                         distances={distances}
                         locale={locale}
+                        mapPanel={
+                          <VillaMapModal
+                            variant="panel"
+                            mapType={villa.map_type}
+                            latitude={villa.latitude}
+                            longitude={villa.longitude}
+                            mapEmbed={villa.map_embed}
+                            villaTitle={villaTitle}
+                            locale={locale}
+                          />
+                        }
                       />
                     </div>
                   }

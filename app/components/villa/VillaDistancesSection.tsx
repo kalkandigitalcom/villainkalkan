@@ -1,17 +1,18 @@
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
 
+import type { ReactNode } from "react";
 import {
   MapPin,
-  UtensilsCrossed,
-  ShoppingBag,
+  Utensils,
+  ShoppingBasket,
   Plane,
   Bus,
-  Building2,
+  Crosshair,
   Cross,
   Fuel,
   GraduationCap,
-  Waves,
+  Umbrella,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { DistanceIconKey } from "@/lib/distance.helper";
@@ -47,13 +48,17 @@ import type { DistanceIconKey } from "@/lib/distance.helper";
    `DISTANCE_ICON_MAP[d.iconKey]` ile ikonu render eder.
    =============================================================== */
 
+/* 2026-10 — referans görsele uygun ikonlar (aynı lucide kütüphanesi):
+   market sepeti, çatal-bıçak, plaj şemsiyesi, otobüs, sağlık artısı,
+   merkez nişangahı, uçak. Anahtar eşleşmesi (getDistanceIconKey)
+   DEĞİŞMEDİ. */
 const DISTANCE_ICON_MAP: Record<DistanceIconKey, LucideIcon> = {
-  restaurant: UtensilsCrossed,
-  store: ShoppingBag,
-  waves: Waves,
+  restaurant: Utensils,
+  store: ShoppingBasket,
+  waves: Umbrella,
   plane: Plane,
   bus: Bus,
-  building: Building2,
+  building: Crosshair,
   cross: Cross,
   fuel: Fuel,
   school: GraduationCap,
@@ -74,8 +79,14 @@ export type TranslatedDistance = {
 export default function VillaDistancesSection({
   distances,
   locale,
+  mapPanel,
 }: {
   distances: TranslatedDistance[];
+  /** 2026-10 — sağ panel (%40): "Haritada Göster" / "Yol Tarifi Al"
+   *  aksiyonları. Çağıran taraf `<VillaMapModal variant="panel" />`
+   *  geçirir (harita/yol tarifi işlevi orada, AYNEN). Verilmezse sol
+   *  liste tam genişlik. */
+  mapPanel?: ReactNode;
   /** 🛡️ PHASE 10G — opsiyonel; verilmezse "tr" (eski davranış). */
   locale?: Locale;
 }) {
@@ -100,63 +111,64 @@ export default function VillaDistancesSection({
         </p>
       </div>
 
-      {/* 🛡️ Component-scoped satır fade/stagger animasyonu +
-          reduced-motion guard — TR'deki AYNI inline stil bloğu. */}
-      <style>{`
-        @media (prefers-reduced-motion: no-preference) {
-          .ynp-row { animation: ynp-fade-in 500ms ease-out both; }
-        }
-        @keyframes ynp-fade-in {
-          from { opacity: 0; transform: translateY(6px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
-      {distances.length === 0 ? (
-        <p className="mt-6 text-[var(--color-stone-400)] text-sm italic">
-          {dict.villa.distancesEmpty}
-        </p>
-      ) : (
+      {/* 🛡️ 2026-10 REFERANS DÜZENİ — tek, yuvarlatılmış kapsayıcı:
+          sol (%60) açık mavi zeminde 2 sütunlu nokta grid'i; sağ (%40)
+          hafif mavi→turkuaz geçişli harita/yol tarifi paneli. Mobilde
+          alt alta. Satır animasyonu/hover kaydırması kaldırıldı. */}
+      <div className="mt-6 md:mt-7 grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-[20px]">
         <div
-          role="list"
-          className="mt-7 md:mt-8 border-t border-[var(--color-stone-100)]"
+          className={
+            "min-w-0 bg-[#e8f1fd] px-6 py-7 sm:px-8 md:py-9 " +
+            (mapPanel ? "md:col-span-3" : "md:col-span-5")
+          }
         >
-          {distances.map((d, i) => {
-            const IconCmp: LucideIcon = DISTANCE_ICON_MAP[d.iconKey];
-            return (
-              <div
-                role="listitem"
-                key={d.id}
-                className="
-                  ynp-row group relative flex items-center gap-4 md:gap-5
-                  py-4 md:py-[18px]
-                  border-b border-[var(--color-stone-100)]
-                  transition-transform duration-300 motion-reduce:transition-none
-                  hover:translate-x-1.5 motion-reduce:hover:translate-x-0
-                "
-                style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}
-              >
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-y-2.5 -left-px w-[2.5px] rounded-full bg-gradient-to-b from-accent to-brand opacity-0 group-hover:opacity-100 transition-opacity duration-300 motion-reduce:transition-none"
-                />
-                <span className="relative shrink-0 w-10 h-10 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-accent/10 to-brand/10 text-ink flex items-center justify-center transition-colors duration-300 motion-reduce:transition-none group-hover:from-accent/20 group-hover:to-brand/20">
-                  <IconCmp size={15} strokeWidth={1.75} />
-                </span>
-                <p className="relative min-w-0 flex-1 text-[13px] md:text-[14px] font-medium text-[var(--color-stone-700)] truncate tracking-[-0.005em]">
-                  {d.displayTitle}
-                </p>
-                <p
-                  className="relative shrink-0 font-display text-[15px] md:text-[16px] text-[var(--color-stone-900)] tracking-[-0.01em]"
-                  style={{ fontVariantNumeric: "tabular-nums" }}
-                >
-                  {d.displayDistance}
-                </p>
-              </div>
-            );
-          })}
+          {distances.length === 0 ? (
+            <p className="text-[var(--color-stone-500)] text-sm italic">
+              {dict.villa.distancesEmpty}
+            </p>
+          ) : (
+            <div
+              role="list"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-7 md:gap-y-9"
+            >
+              {distances.map((d) => {
+                const IconCmp: LucideIcon = DISTANCE_ICON_MAP[d.iconKey];
+                return (
+                  <div
+                    role="listitem"
+                    key={d.id}
+                    className="flex min-w-0 items-start gap-4"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0 text-neutral-900"
+                    >
+                      <IconCmp size={28} strokeWidth={2.25} />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[14px] md:text-[15px] leading-snug text-neutral-700 break-words">
+                        {d.displayTitle}
+                      </p>
+                      <p
+                        className="mt-1 font-display text-[18px] md:text-[20px] font-extrabold leading-tight tracking-[-0.01em] text-neutral-900"
+                        style={{ fontVariantNumeric: "tabular-nums" }}
+                      >
+                        {d.displayDistance}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+
+        {mapPanel && (
+          <div className="min-w-0 md:col-span-2 bg-gradient-to-br from-[#dde9fb] to-[#dcf6ea]">
+            {mapPanel}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

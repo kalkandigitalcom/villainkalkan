@@ -295,6 +295,8 @@ export const en: Dictionary = {
   map: {
     openMap: "Map",
     directions: "Directions",
+    showOnMap: "Show on Map",
+    getDirections: "Get Directions",
     directionsUnavailableTitle: "No location data available for directions",
     modalAriaLabel: "{title} — Map",
     modalAriaLabelFallback: "Villa map",
