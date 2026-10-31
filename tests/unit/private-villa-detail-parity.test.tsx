@@ -169,8 +169,18 @@ describe("/tr/v/[token] — normal villa detayıyla aynı gövde", () => {
     expect(screen.getByText(dict.reviews.title)).toBeTruthy();
     expect(screen.getByTestId("similar-villas-section")).toBeTruthy();
     expect(screen.getByLabelText(dict.booking.mobileCtaAriaLabel)).toBeTruthy();
-    expect(screen.getByText(dict.villa.checkInOutTitle)).toBeTruthy();
     expect(container.querySelector("#booking-sidebar")).not.toBeNull();
+    /* 2026-10 — sidebar sadeleştirildi: giriş/çıkış saatleri, ödeme
+       kolaylığı kartı ve "Nerede?" (Harita/Yol Tarifi) kartı yok. */
+    const sidebar = container.querySelector("#booking-sidebar")!;
+    expect(screen.queryByText(dict.villa.checkInOutTitle)).toBeNull();
+    expect(sidebar.textContent).not.toContain(dict.booking.installmentEyebrow);
+    expect(sidebar.textContent).not.toContain(dict.booking.payNowPerk);
+    expect(sidebar.textContent).not.toContain(dict.booking.payAtCheckinPerk);
+    expect(within(sidebar as HTMLElement).queryByRole("button", { name: dict.map.openMap })).toBeNull();
+    expect(within(sidebar as HTMLElement).queryByRole("button", { name: dict.map.showOnMap })).toBeNull();
+    /* Harita aksiyonu ana içerikteki Yakındaki Noktalar panelinde KALIR. */
+    expect(screen.getByRole("button", { name: dict.map.showOnMap })).toBeTruthy();
     /* Normal detayla AYNI veri seti okunur. */
     expect(discountsMock).toHaveBeenCalledTimes(1);
     expect(icalMock).toHaveBeenCalledTimes(1);

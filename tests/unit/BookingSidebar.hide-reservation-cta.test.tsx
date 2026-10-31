@@ -72,6 +72,37 @@ describe("BookingSidebar — hideReservationCta", () => {
   });
 });
 
+/* 2026-10 — "Ödeme Kolaylığı" (%N Şimdi Öde / Kalanı Tatilde Öde) kartı
+   sidebar'dan kaldırıldı; ön ödeme oranı (custom_prepayment_rate: 20)
+   olsa bile render edilmez. Fiyat özeti, temizlik ücreti ve CTA kalır. */
+describe("BookingSidebar — ödeme kolaylığı kartı kaldırıldı", () => {
+  /* Not: "%20" ön ödeme oranı rezervasyon ÖZETİNDE (hesap satırı) aynen
+     kalır — yalnız ayrı ödeme kolaylığı kartı kaldırıldı. */
+  it("TR: 'Ödeme Kolaylığı', 'Şimdi Öde', 'Kalanı Tatilde Öde' kartı yok", async () => {
+    const { container } = render(<BookingSidebar locale="tr" {...PROPS} />);
+    await waitFor(() => expect(screen.getByText(/Toplam Tutar/)).toBeTruthy());
+    const text = container.textContent || "";
+    expect(text).not.toContain("Ödeme Kolaylığı");
+    expect(text).not.toContain("Şimdi Öde");
+    expect(text).not.toContain("Kalanı Tatilde Öde");
+    expect(screen.getByRole("button", { name: "Rezervasyon Yap" })).toBeTruthy();
+    cleanup();
+  });
+
+  it("EN: kart metinleri yok, CTA ve toplam kalır", async () => {
+    const { container } = render(<BookingSidebar locale="en" {...PROPS} />);
+    await waitFor(() => expect(screen.getAllByText(/Total/).length).toBeGreaterThan(0));
+    const text = container.textContent || "";
+    const { getDictionary } = await import("@/lib/i18n/get-dictionary");
+    const en = getDictionary("en");
+    expect(text).not.toContain(en.booking.installmentEyebrow);
+    expect(text).not.toContain(en.booking.payNowPerk);
+    expect(text).not.toContain(en.booking.payAtCheckinPerk);
+    expect(screen.getByRole("button", { name: en.booking.bookNow })).toBeTruthy();
+    cleanup();
+  });
+});
+
 describe("prop yalnız gizli link (pasif villa) için", () => {
   const read = (rel: string) => readFileSync(join(process.cwd(), rel), "utf-8");
   const code = (rel: string) =>

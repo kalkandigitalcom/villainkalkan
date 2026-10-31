@@ -704,83 +704,9 @@ export default function BookingSidebar({
         </p>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════
-          🛡️ ÖDEME FIRSATI — "Öne Çıkan" alanının YERİNE geldi.
-          ═══════════════════════════════════════════════════════
-          Oran ARTIK DİNAMİK: mevcut `prepaymentRate` (useBookingEngine'den,
-          BookingSummary'nin de kullandığı AYNI değer — villa override →
-          global settings → engine'in kendi fallback'i; kanonik hesap
-          BookingSidebar/engine içinde zaten var, burada YENİDEN
-          hesaplanmadı/fetch edilmedi). Görünürlük guard'ı PrepaymentBadge
-          ile AYNI kural: yalnız 0 < oran < 100 iken gösterilir (aksi halde
-          "%0" / "%100 şimdi..." gibi anlamsız metin render edilmez).
-          Bu, galerinin sol-üstündeki eski PrepaymentBadge overlay'inin
-          YERİNE geçen TEK gösterim — aynı kampanya artık iki yerde
-          render edilmiyor. Hesaplama/API/DB çağrısı hâlâ YOK; yalnız
-          UI text/data-binding düzeltmesi. Konum: rezervasyon formunun
-          EN ALTI (değişmedi). */}
-      {prepaymentRate > 0 && prepaymentRate < 100 && (
-        <div className="pt-1">
-          <style>{`
-            @media (prefers-reduced-motion: no-preference) {
-              .pp-perk-shimmer { animation: pp-perk-sweep 7s ease-in-out infinite; }
-            }
-            @keyframes pp-perk-sweep {
-              0% { background-position: 160% 0; }
-              100% { background-position: -60% 0; }
-            }
-          `}</style>
-          <div
-            className="
-              group relative overflow-hidden rounded-[22px]
-              border border-[var(--color-stone-100)]
-              bg-[#FFFAF1]
-              px-5 py-5 md:px-6 md:py-5
-              transition-transform duration-300 motion-reduce:transition-none
-              hover:-translate-y-1 motion-reduce:hover:translate-y-0
-            "
-          >
-            {/* İnce üst accent çizgisi — turuncu → mavi, çok yavaş shimmer */}
-            <span
-              aria-hidden="true"
-              className="pp-perk-shimmer absolute inset-x-5 top-0 h-[2px] rounded-full opacity-60"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, #C8973A, #C8973A, transparent)",
-                backgroundSize: "220% 100%",
-              }}
-            />
-
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--color-stone-400)]">
-              {dict.booking.installmentEyebrow}
-            </span>
-
-            <div className="mt-2.5 flex items-center gap-4">
-              <span
-                className="
-                  shrink-0 font-display text-[34px] md:text-[38px]
-                  leading-none tracking-[-0.02em] text-brand-strong
-                  animate-pulse [animation-duration:5s] motion-reduce:animate-none
-                "
-              >
-                %{prepaymentRate}
-              </span>
-              <span
-                aria-hidden="true"
-                className="h-10 w-px shrink-0 bg-[var(--color-stone-100)]"
-              />
-              <div className="min-w-0">
-                <p className="text-[13px] font-semibold text-[var(--color-stone-900)] leading-snug">
-                  {dict.booking.payNowPerk}
-                </p>
-                <p className="mt-0.5 text-[13px] text-[var(--color-stone-500)] leading-snug">
-                  {dict.booking.payAtCheckinPerk}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Ödeme kolaylığı kartı ("%N Şimdi Öde / Kalanı Tatilde Öde")
+          sidebar'dan kaldırıldı (2026-10). `prepaymentRate` hesabı ve
+          rezervasyon özetindeki kullanımı DEĞİŞMEDİ. */}
 
       {/* 🛡️ MÜSAİTLİK TAKVİMİ POPUP — dropdown'daki takvimin aynısı
           (aynı BookingCalendar + aynı engine). body'ye portal edilir. */}
