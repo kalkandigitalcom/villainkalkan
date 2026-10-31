@@ -100,11 +100,11 @@ export default function VillaMapModal({
      <html lang> varsayılan dilde sabit; TR "İ" büyük harfi için
      CSS uppercase'e doğru dili bildirir. */
   const panelActionClass =
-    "group flex flex-1 flex-col items-center justify-center gap-3 px-6 py-8 md:py-10 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50";
+    "group flex flex-1 flex-col items-center justify-center gap-3 px-6 py-8 md:py-10 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40";
   const panelCircleClass =
-    "flex h-14 w-14 items-center justify-center rounded-full bg-white text-blue-600 shadow-[0_4px_14px_-8px_rgba(37,99,235,0.35)] transition-transform duration-200 motion-reduce:transition-none group-hover:scale-105 motion-reduce:group-hover:scale-100";
+    "flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-stone-200)] bg-white text-brand transition-colors duration-200 motion-reduce:transition-none group-hover:border-brand";
   const panelLabelClass =
-    "text-[13px] md:text-[14px] font-extrabold uppercase tracking-[0.06em] text-blue-600";
+    "text-[13px] md:text-[14px] font-extrabold uppercase tracking-[0.06em] text-ink";
 
   return (
     <>
@@ -125,7 +125,7 @@ export default function VillaMapModal({
             </span>
           </button>
 
-          <span aria-hidden="true" className="h-0.5 w-full shrink-0 bg-blue-600" />
+          <span aria-hidden="true" className="h-px w-full shrink-0 bg-[var(--color-stone-200)]" />
 
           {hasDirections ? (
             <a

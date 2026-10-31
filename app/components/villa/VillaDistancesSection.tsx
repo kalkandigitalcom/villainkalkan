@@ -92,33 +92,19 @@ export default function VillaDistancesSection({
 }) {
   const dict = getDictionary(locale);
   return (
-    <section>
-      <div className="max-w-xl">
-        <div className="flex items-center gap-2.5 mb-3">
-          <span
-            aria-hidden="true"
-            className="h-px w-9 bg-gradient-to-r from-accent to-brand"
-          />
-          <span className="text-[11px] font-semibold tracking-[0.16em] text-[var(--color-stone-400)]">
-            {dict.villa.distancesEyebrow}
-          </span>
-        </div>
-        <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
-          {dict.villa.distancesTitle}
-        </h2>
-        <p className="mt-2.5 text-[13px] md:text-[13.5px] text-[var(--color-stone-500)] leading-relaxed">
-          {dict.villa.distancesSubtitle}
-        </p>
-      </div>
-
+    /* Görünür başlık bloğu (eyebrow + başlık + açıklama) kaldırıldı
+       (2026-10); bölüm adı ekran okuyucular için aria-label'da. */
+    <section aria-label={dict.villa.distancesTitle}>
       {/* 🛡️ 2026-10 REFERANS DÜZENİ — tek, yuvarlatılmış kapsayıcı:
-          sol (%60) açık mavi zeminde 2 sütunlu nokta grid'i; sağ (%40)
-          hafif mavi→turkuaz geçişli harita/yol tarifi paneli. Mobilde
-          alt alta. Satır animasyonu/hover kaydırması kaldırıldı. */}
-      <div className="mt-6 md:mt-7 grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-[20px]">
+          sol (%60) 2 sütunlu nokta grid'i; sağ (%40) harita/yol tarifi
+          paneli. Mobilde
+          alt alta. Satır animasyonu/hover kaydırması kaldırıldı.
+          Renkler (2026-10 rev.): site paleti — sol açık nötr (sand-50),
+          sağ düz beyaz, ayraçlar stone-200; gradient YOK. */}
+      <div className="grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-[20px] bg-white">
         <div
           className={
-            "min-w-0 bg-[#e8f1fd] px-6 py-7 sm:px-8 md:py-9 " +
+            "min-w-0 bg-[var(--color-sand-50)] px-6 py-7 sm:px-8 md:py-9 " +
             (mapPanel ? "md:col-span-3" : "md:col-span-5")
           }
         >
@@ -141,16 +127,16 @@ export default function VillaDistancesSection({
                   >
                     <span
                       aria-hidden="true"
-                      className="mt-0.5 shrink-0 text-neutral-900"
+                      className="mt-0.5 shrink-0 text-ink"
                     >
                       <IconCmp size={28} strokeWidth={2.25} />
                     </span>
                     <div className="min-w-0">
-                      <p className="text-[14px] md:text-[15px] leading-snug text-neutral-700 break-words">
+                      <p className="text-[14px] md:text-[15px] leading-snug text-[var(--color-stone-600)] break-words">
                         {d.displayTitle}
                       </p>
                       <p
-                        className="mt-1 font-display text-[18px] md:text-[20px] font-extrabold leading-tight tracking-[-0.01em] text-neutral-900"
+                        className="mt-1 font-display text-[18px] md:text-[20px] font-extrabold leading-tight tracking-[-0.01em] text-[var(--color-stone-900)]"
                         style={{ fontVariantNumeric: "tabular-nums" }}
                       >
                         {d.displayDistance}
@@ -164,7 +150,7 @@ export default function VillaDistancesSection({
         </div>
 
         {mapPanel && (
-          <div className="min-w-0 md:col-span-2 bg-gradient-to-br from-[#dde9fb] to-[#dcf6ea]">
+          <div className="min-w-0 md:col-span-2 bg-white border-t md:border-t-0 md:border-l border-[var(--color-stone-200)]">
             {mapPanel}
           </div>
         )}

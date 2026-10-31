@@ -45,6 +45,17 @@ describe("VillaDistancesSection — referans düzeni", () => {
     expect(container.querySelector(".md\\:col-span-2")).toBeTruthy();
   });
 
+  it("görünür başlık bloğu yok; bölüm adı aria-label'da (TR/EN)", () => {
+    const { unmount } = render(<VillaDistancesSection distances={DISTANCES} locale="tr" />);
+    expect(screen.queryByText("ÇEVREYİ KEŞFEDİN")).not.toBeInTheDocument();
+    expect(screen.queryByText("Yakındaki Noktalar")).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Yakındaki Noktalar" })).toBeInTheDocument();
+    unmount();
+    render(<VillaDistancesSection distances={DISTANCES} locale="en" />);
+    expect(screen.getByRole("region", { name: "Nearby Places" })).toBeInTheDocument();
+  });
+
   it("boş liste → mevcut boş-durum metni", () => {
     render(<VillaDistancesSection distances={[]} locale="tr" />);
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
