@@ -60,6 +60,10 @@ type FooterProps = {
   developerCreditLogoUrl?: string | null;
 };
 
+/** Footer'daki "Web Geliştirme: KalkanDigital" (logo) imzası.
+ *  2026-11: talep üzerine gizlendi — true yapılırsa aynen geri gelir. */
+const SHOW_DEVELOPER_CREDIT = false;
+
 export default function Footer({
   settings,
   corporatePages,
@@ -251,7 +255,11 @@ export default function Footer({
 
           {/* 🛡️ KalkanDigital — ajans imzası. Logo: Admin → Webmaster →
               "Admin Logo" (FooterWrapper'dan versiyonlu URL); yoksa metin.
-              Ayrı ve tam ortalanmış, footer'ın SON içeriği. */}
+              Ayrı ve tam ortalanmış, footer'ın SON içeriği.
+              2026-11 — GİZLİ: `SHOW_DEVELOPER_CREDIT` false iken satır
+              (ayraç ve boşluğuyla birlikte) hiç render edilmez. Tekrar
+              göstermek için sabiti true yapmak yeterli. */}
+          {SHOW_DEVELOPER_CREDIT && (
           <div className="mt-8 pt-6 border-t border-[var(--color-stone-200)] text-center">
             <a
               href="https://kalkandigital.com"
@@ -290,6 +298,7 @@ export default function Footer({
               )}
             </a>
           </div>
+          )}
         </div>
       </div>
     </footer>

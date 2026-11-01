@@ -106,12 +106,13 @@ describe("Footer tasarımı", () => {
     vi.doUnmock("next/navigation");
   });
 
-  it("yasal bağlantılar, telif ve KalkanDigital korunur", () => {
-    render(<Footer {...PROPS} />);
+  /* 2026-11 — "Web Geliştirme: KalkanDigital" imzası (logo dahil) gizlendi. */
+  it("yasal bağlantılar ve telif korunur; KalkanDigital imzası/logosu gizli", () => {
+    const { container } = render(<Footer {...PROPS} />);
     expect(screen.getByRole("link", { name: "KVKK" })).toHaveAttribute("href", "/tr/p/kvkk");
     expect(screen.getByText(/2026/)).toBeInTheDocument();
-    const credit = screen.getByRole("link", { name: /KalkanDigital/ });
-    expect(credit).toHaveAttribute("href", "https://kalkandigital.com");
-    expect(credit.textContent).toContain("Web");
+    expect(screen.queryByRole("link", { name: /KalkanDigital/ })).toBeNull();
+    expect(container.querySelector('a[href="https://kalkandigital.com"]')).toBeNull();
+    expect(container.querySelector('img[alt="KalkanDigital"]')).toBeNull();
   });
 });
