@@ -407,7 +407,10 @@ export default async function ShortGapsPageBody({
                 {dict.emptyBody}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+              /* 2026-11 — geniş masaüstü (xl+) 3 sütun; filtre kenar
+                 çubuğu (lg:w-64) yanında 1024–1279px aralığında kartlar
+                 dar kalmasın diye 2 sütun; tablet 2, mobil 1. */
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
                 {/* 1 gap = 1 kart: gap-başına döner; aynı villa birden çok
                     boşluğuyla birden çok kart olarak görünür. Her kart kendi
                     gap_start/gap_end ile fiyat + detay linki üretir. */}
