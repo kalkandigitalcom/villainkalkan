@@ -159,7 +159,7 @@ export default function ReservationLookup({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
       {/* SOL — FORM */}
       <div className="lg:col-span-5">
-        <div className="pub-card p-6 md:p-8">
+        <div className="bg-white border border-[var(--color-stone-100)] rounded-3xl p-6 md:p-8 shadow-[0_8px_40px_-16px_rgb(27_26_23/0.12)]">
           <div className="mb-6">
             <p className="text-[11px] tracking-[0.22em] uppercase font-medium text-[var(--brand-coral)]">
               {dict.formEyebrow}
@@ -268,7 +268,7 @@ function ResultCard({
   const StatusIcon = design.icon;
 
   return (
-    <div className="pub-card overflow-hidden">
+    <div className="rounded-3xl border border-[var(--color-stone-100)] bg-white shadow-[0_8px_40px_-16px_rgb(27_26_23/0.12)] overflow-hidden">
       {/* DURUM BANDI */}
       <div className={"border-b px-6 md:px-8 py-6 " + design.cardClass}>
         <div className="flex items-start gap-4">

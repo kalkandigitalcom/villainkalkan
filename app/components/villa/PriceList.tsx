@@ -401,10 +401,10 @@ export default function PriceList({
           <div
             key={seg.key}
             className={
-              "relative flex flex-col sm:flex-row " +
+              "relative flex flex-col sm:flex-row rounded-xl border " +
               (isDiscounted
-                ? "rounded-xl border border-green-200 "
-                : "pub-card-sm ") +
+                ? "border-green-200 "
+                : "border-[var(--color-stone-200)] ") +
               /* Açık popover'lı satır diğerlerinin üstünde kalsın. */
               (isOpen ? "z-20" : "z-0")
             }

@@ -58,7 +58,7 @@ export default function AccommodationLayout({
   /* Referans tasarım: ince gri-mavi çerçeveli, yuvarlatılmış beyaz oda
      kutusu; solda ikon karosu, sağda ad + detay. Gölge/hover-lift YOK. */
   const roomCardClass =
-    "flex min-w-0 items-start gap-3 pub-card-sm pub-card-hover px-3.5 py-3 md:px-4 md:py-3.5";
+    "flex min-w-0 items-start gap-3 rounded-xl border border-[var(--color-stone-200)] bg-white px-3.5 py-3 md:px-4 md:py-3.5 transition-colors duration-200 hover:border-[var(--color-stone-300)] motion-reduce:transition-none";
   const iconTileClass =
     "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-stone-50)] text-[var(--color-stone-700)]";
   const nameClass =
@@ -71,7 +71,7 @@ export default function AccommodationLayout({
        ekran okuyucular için aria-label ile korunur. */
     <section
       aria-label={dict.accommodation.sectionTitle}
-      className="pub-card pub-card-pad"
+      className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7"
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* YATAK ODALARI */}

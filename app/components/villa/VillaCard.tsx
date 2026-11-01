@@ -352,6 +352,12 @@ export default function VillaCard({
      indirim kartı tasarımları da AYNI fonksiyonu kullanır → tek kaynak).
      Girdiler ve çıktılar ÖNCEKİ yerel değişkenlerle aynı adları taşır. */
   const isDiscountVariant = variant === "discount";
+  /* 2026-11 — fiyat paneli metin renkleri: indirimli kart (altın panel)
+     özgün değerler; normal kart (beyaz şerit) lacivert/gri. */
+  const pAmount = isDiscountVariant ? "text-white" : "text-ink";
+  const pSub = isDiscountVariant ? "text-ink/90" : "text-[var(--color-stone-500)]";
+  const pSub85 = isDiscountVariant ? "text-ink/85" : "text-[var(--color-stone-500)]";
+  const pStrong = isDiscountVariant ? "text-ink" : "text-brand-strong";
   const {
     discountedPrice,
     discountDateRangeLabel,
@@ -923,20 +929,21 @@ export default function VillaCard({
       <article
         data-villa-card={isDiscount ? "discount" : "default"}
         className={
-          "@container relative flex h-full flex-col overflow-hidden " +
+          "@container relative flex h-full flex-col overflow-hidden bg-white " +
           (isDiscount
             ? /* 🛡️ İNDİRİMLİ KİRALIK VİLLALAR — özgün tasarım AYNEN
-                 (public kart sistemi istisnası; DEĞİŞTİRME). */
-              "bg-white " +
+                 (DEĞİŞTİRME). */
               "rounded-[22px] border !border-ink/[0.09] " +
               "shadow-[0_18px_40px_-28px_rgba(26,40,56,0.35)] " +
               "group-hover:shadow-[0_30px_60px_-30px_rgba(26,40,56,0.45)] " +
               "transition-[box-shadow,transform] duration-500 motion-reduce:transition-none " +
               "group-hover:-translate-y-[3px] motion-reduce:group-hover:translate-y-0"
-            : /* 2026-11 — ortak public kart sistemi (globals.css
-                 `.pub-card`): beyaz, #E2E8F0 kenarlık, 16px köşe,
-                 gölgesiz; hover'da yalnız kenarlık + çok hafif gölge. */
-              "pub-card pub-card-hover")
+            : /* 2026-11 — NORMAL VİLLA KARTI: beyaz, ince açık gri
+                 kenarlık (#E2E8F0), 16px köşe, gölgesiz; hover'da yalnız
+                 kenarlık hafifçe koyulaşır (sıçrama/büyüme YOK). */
+              "rounded-[16px] border !border-[#e2e8f0] " +
+              "transition-colors duration-200 motion-reduce:transition-none " +
+              "group-hover:!border-[#cbd5e1]")
         }
       >
         {/* ── FOTOĞRAF ── */}
@@ -955,12 +962,13 @@ export default function VillaCard({
               loading={isLcp ? "eager" : "lazy"}
               fetchPriority={isLcp ? "high" : undefined}
               onError={() => setImgFailed(true)}
-              className="
-                object-cover object-center
-                transition-transform duration-[1000ms] ease-out
-                group-hover:scale-[1.05]
-                motion-reduce:transition-none motion-reduce:group-hover:scale-100
-              "
+              className={
+                "object-cover object-center " +
+                "transition-transform ease-out motion-reduce:transition-none motion-reduce:group-hover:scale-100 " +
+                (isDiscount
+                  ? "duration-[1000ms] group-hover:scale-[1.05]"
+                  : "duration-700 group-hover:scale-[1.02]")
+              }
             />
           ) : (
             /* PREMIUM FALLBACK — baş harf */
@@ -1036,9 +1044,19 @@ export default function VillaCard({
         </div>
 
         {/* ── GÖVDE: bilgi + fiyat paneli ── */}
-        <div className="relative flex flex-1 flex-col @[26rem]:flex-row">
+        <div
+          className={
+            "relative flex flex-1 flex-col " +
+            (isDiscount ? "@[26rem]:flex-row" : "")
+          }
+        >
           {/* BİLGİ */}
-          <div className="min-w-0 flex-1 px-5 pt-4 pb-4 @[26rem]:pb-5">
+          <div
+            className={
+              "min-w-0 flex-1 px-5 pt-4 pb-4 " +
+              (isDiscount ? "@[26rem]:pb-5" : "")
+            }
+          >
             <h3 className="font-display text-[17px] @[26rem]:text-[18px] font-bold leading-[1.15] tracking-[-0.02em] text-ink line-clamp-1">
               {title}
             </h3>
@@ -1092,15 +1110,23 @@ export default function VillaCard({
               tamamında 10px üst boşluk. */}
           <div
             data-price-panel
-            className="
-              relative mt-[10px] flex shrink-0 flex-col items-stretch gap-3.5
-              rounded-tl-[44px] bg-brand px-5 pt-4 pb-4 pl-7 text-ink
-              @[26rem]:w-[41%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0
-              @[26rem]:rounded-tl-[140px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right
-            "
+            className={
+              isDiscount
+                ? /* 🛡️ İndirimli kart — özgün altın kavisli panel AYNEN. */
+                  "relative mt-[10px] flex shrink-0 flex-col items-stretch gap-3.5 " +
+                  "rounded-tl-[44px] bg-brand px-5 pt-4 pb-4 pl-7 text-ink " +
+                  "@[26rem]:w-[41%] @[26rem]:items-end @[26rem]:justify-center @[26rem]:gap-0 " +
+                  "@[26rem]:rounded-tl-[140px] @[26rem]:pl-8 @[26rem]:pr-5 @[26rem]:py-5 @[26rem]:text-right"
+                : /* 2026-11 — normal kart: sade alt şerit; solda fiyat,
+                     sağda lacivert CTA; ince ayraç (altın dolgu YOK). */
+                  "relative flex shrink-0 items-center justify-between gap-3 " +
+                  "border-t !border-[#e2e8f0] bg-white px-5 py-4 text-ink"
+            }
           >
             {/* Fiyat bilgisi grubu. */}
             <div data-price-info className="min-w-0">
+              {/* Renkler: indirimli kart özgün (altın panel üstü); normal
+                  kart beyaz şerit üstünde lacivert/gri. */}
               {isFlexible ? (
                 /* 🛡️ ESNEK EK SONUÇ — fiyat gösterilmez (MEVCUT kural). */
                 <>
@@ -1108,33 +1134,33 @@ export default function VillaCard({
                     <Sparkles size={12} strokeWidth={2} className="text-ink" aria-hidden />
                     {dict.card.flexibleTitle}
                   </p>
-                  <p className="mt-1 text-[11.5px] text-ink/90">{dict.card.flexibleSubtitle}</p>
+                  <p className={"mt-1 text-[11.5px] " + pSub}>{dict.card.flexibleSubtitle}</p>
                 </>
               ) : stayTotal !== null ? (
                 /* 🛡️ TARİH SEÇİLİ — konaklama TOPLAMI (MEVCUT hesap). */
                 <>
                   {stayDateLabel && (
-                    <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/90 tabular-nums">
+                    <p className={"text-[11px] font-medium uppercase tracking-[0.08em] tabular-nums " + pSub}>
                       {stayDateLabel}
                     </p>
                   )}
                   {stayTotalBeforeDiscount !== null && (
-                    <p className="mt-1 text-[12px] text-ink/85 line-through tabular-nums">
+                    <p className={"mt-1 text-[12px] line-through tabular-nums " + pSub85}>
                       {formatDisplayPrice(stayTotalBeforeDiscount, currency, effectiveLocale, stayPriceReady)}
                     </p>
                   )}
-                  <p data-price-amount className="font-display text-[20px] @[26rem]:text-[24px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
+                  <p data-price-amount className={"font-display text-[20px] font-extrabold leading-none tracking-[-0.02em] tabular-nums " + (isDiscount ? "@[26rem]:text-[24px] " : "") + pAmount}>
                     {formatDisplayPrice(stayTotal, currency, effectiveLocale, stayPriceReady)}
                   </p>
                   {/* "N gece" gösterilmez (tarih üst satırda — MEVCUT karar);
                       "Temizlik dahil" MEVCUT koşuluyla. */}
                   {hasCleaning && (
-                    <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] text-ink/85">
+                    <p className={"mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] " + pSub85}>
                       {dict.card.cleaningIncluded}
                     </p>
                   )}
                   {stayDiscountSavings !== null && (
-                    <p data-price-savings className="mt-1 text-[11.5px] font-semibold text-ink tabular-nums">
+                    <p data-price-savings className={"mt-1 text-[11.5px] font-semibold tabular-nums " + pStrong}>
                       {formatDictionaryString(dict.card.totalSavings, {
                         amount: formatDisplayPrice(stayDiscountSavings, currency, effectiveLocale, stayPriceReady),
                       })}
@@ -1165,13 +1191,13 @@ export default function VillaCard({
               ) : price ? (
                 /* Tarih seçilmemiş — gecelik başlangıç fiyatı (MEVCUT). */
                 <>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink/90">
+                  <p className={"text-[11px] font-semibold uppercase tracking-[0.1em] " + pSub}>
                     {dict.card.nightly}
                   </p>
-                  <p data-price-amount className="mt-0.5 font-display text-[20px] @[26rem]:text-[24px] font-extrabold leading-none tracking-[-0.02em] tabular-nums text-white">
+                  <p data-price-amount className={"mt-0.5 font-display text-[20px] font-extrabold leading-none tracking-[-0.02em] tabular-nums " + (isDiscount ? "@[26rem]:text-[24px] " : "") + pAmount}>
                     {formatDisplayPrice(convertedPrice, currency, effectiveLocale, basePriceReady)}
                   </p>
-                  <p className="mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink/85">
+                  <p className={"mt-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] " + pSub85}>
                     {dict.card.startingFromUpper}
                   </p>
                 </>
@@ -1206,14 +1232,23 @@ export default function VillaCard({
               aria-label={isDiscount || reserveInfo ? dict.card.bookNowAriaLabel : undefined}
               onPointerEnter={isDiscount || reserveInfo ? undefined : preloadVillaCardBookingModal}
               onFocus={isDiscount || reserveInfo ? undefined : preloadVillaCardBookingModal}
-              className="
-                shrink-0 inline-flex w-full items-center justify-center whitespace-nowrap
-                h-10 rounded-full bg-white px-5 @[26rem]:mt-4 @[26rem]:w-auto
-                text-[11.5px] font-bold uppercase tracking-[0.1em] text-brand-strong
-                shadow-[0_10px_22px_-12px_rgba(0,0,0,0.55)]
-                hover:bg-brand-soft transition-colors duration-200 motion-reduce:transition-none
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-brand
-              "
+              className={
+                isDiscount
+                  ? /* 🛡️ İndirimli kart CTA — özgün AYNEN. */
+                    "shrink-0 inline-flex w-full items-center justify-center whitespace-nowrap " +
+                    "h-10 rounded-full bg-white px-5 @[26rem]:mt-4 @[26rem]:w-auto " +
+                    "text-[11.5px] font-bold uppercase tracking-[0.1em] text-brand-strong " +
+                    "shadow-[0_10px_22px_-12px_rgba(0,0,0,0.55)] " +
+                    "hover:bg-brand-soft transition-colors duration-200 motion-reduce:transition-none " +
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-brand"
+                  : /* 2026-11 — normal kart CTA: lacivert hap buton,
+                       gölgesiz; hover'da hafif renk geçişi. */
+                    "shrink-0 inline-flex items-center justify-center whitespace-nowrap " +
+                    "h-10 rounded-full bg-ink px-5 " +
+                    "text-[11.5px] font-bold uppercase tracking-[0.1em] text-white " +
+                    "hover:bg-[#24407a] transition-colors duration-200 motion-reduce:transition-none " +
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2"
+              }
             >
               {dict.card.reserve}
             </button>

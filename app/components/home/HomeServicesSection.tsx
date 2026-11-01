@@ -81,20 +81,25 @@ export default function HomeServicesSection({
             <li key={key} className="flex">
               <article
                 data-service-card={key}
-                className="pub-card pub-card-hover pub-card-pad group relative flex w-full flex-col overflow-hidden"
+                className="group relative flex w-full flex-col overflow-hidden rounded-[22px] border border-[var(--color-stone-100)] bg-white p-6 md:p-7 shadow-[0_14px_36px_-26px_rgba(27,46,94,0.28)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_24px_48px_-28px_rgba(27,46,94,0.38)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
               >
+                {/* İnce altın vurgu — yalnız hover'da. */}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-8 top-0 h-[2px] rounded-full bg-gradient-to-r from-transparent via-brand to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 motion-reduce:transition-none"
+                />
                 <span
                   aria-hidden="true"
                   data-service-icon
-                  className="inline-flex size-11 items-center justify-center rounded-xl bg-[var(--color-stone-50)] text-brand-strong"
+                  className="inline-flex size-12 items-center justify-center rounded-full bg-[#FFFAF1] text-brand-strong ring-1 ring-brand/25 transition-colors duration-300 group-hover:bg-brand-soft motion-reduce:transition-none"
                 >
-                  <Icon size={20} strokeWidth={1.75} />
+                  <Icon size={22} strokeWidth={1.75} />
                 </span>
 
-                <h3 className="pub-card-title mt-5 text-[16px] md:text-[17px]">
+                <h3 className="mt-5 font-display text-[17px] md:text-[18px] font-semibold leading-snug tracking-[-0.01em] text-ink">
                   {title}
                 </h3>
-                <p className="pub-card-text mt-2.5">
+                <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--color-stone-500)]">
                   {body}
                 </p>
 

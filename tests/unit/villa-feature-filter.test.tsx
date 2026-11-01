@@ -949,7 +949,7 @@ describe("I) sidebar — /arama entegrasyonu ve i18n", () => {
       classNames.some((c) => c.includes("max-h-[calc(100vh-9rem)]"))
     ).toBe(false);
     expect(src).toContain(
-      'pub-card p-6 flex flex-col"'
+      'rounded-2xl p-6 flex flex-col"'
     );
     /* Mobil drawer'ın iç scroll'u KORUNDU (aksi halde CTA altındaki
        içerik erişilemez olurdu) + desktop'ta kapatıldı. */

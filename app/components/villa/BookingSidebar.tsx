@@ -370,7 +370,9 @@ export default function BookingSidebar({
     <div
       data-booking-panel
       className="
-        pub-card relative
+        relative rounded-[28px]
+        bg-white border border-[var(--color-stone-100)]
+        shadow-[0_28px_64px_-36px_rgba(27,46,94,0.42),0_2px_6px_-2px_rgba(27,46,94,0.06)]
         px-5 pt-7 pb-6 sm:px-6 md:px-7 md:pt-8
         space-y-5
       "
@@ -413,7 +415,7 @@ export default function BookingSidebar({
           dropdown ve guest state/handler'ları AYNEN. ═══ */}
       <div
         data-booking-fields
-        className="pub-card-sm"
+        className="rounded-2xl border border-[var(--color-stone-200)] bg-white shadow-[0_1px_2px_rgba(27,46,94,0.04)]"
       >
       {/* DATE      <div aria-hidden="true" className="h-px bg-[var(--color-stone-100)]" />
 

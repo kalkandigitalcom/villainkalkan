@@ -330,7 +330,8 @@ export default function OfferRequestForm({
       <div
         role="status"
         className="
-          pub-card
+          rounded-3xl bg-white border border-[var(--color-stone-100)]
+          shadow-[0_12px_28px_-18px_rgba(27,26,23,0.10)]
           px-6 py-14 md:px-12 md:py-20 text-center
         "
       >
@@ -654,7 +655,7 @@ export default function OfferRequestForm({
         </div>
       )}
 
-      <div className="pub-card p-6 md:p-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="rounded-3xl bg-white border border-[var(--color-stone-100)] shadow-[0_12px_28px_-18px_rgba(27,26,23,0.10)] p-6 md:p-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <p className="text-[12px] text-[var(--color-stone-500)] max-w-md">
           {dict.privacyNote}
         </p>
@@ -687,7 +688,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="pub-card p-6 md:p-8">
+    <section className="rounded-3xl bg-white border border-[var(--color-stone-100)] shadow-[0_12px_28px_-18px_rgba(27,26,23,0.10)] p-6 md:p-8">
       <div className="flex items-start gap-3">
         <span
           aria-hidden

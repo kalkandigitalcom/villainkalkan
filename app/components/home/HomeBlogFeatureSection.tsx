@@ -51,7 +51,7 @@ export function HomeBlogFeatureView({
         {coverUrl ? (
           <div
             data-blog-feature-cover
-            className="relative aspect-[4/3] w-full overflow-hidden rounded-[16px] border border-[var(--card-border)] bg-[var(--color-sand-50)]"
+            className="relative aspect-[4/3] w-full overflow-hidden rounded-[24px] md:rounded-[28px] bg-[var(--color-sand-50)] shadow-[0_28px_60px_-36px_rgba(27,46,94,0.5)]"
           >
             <Image
               src={coverUrl}

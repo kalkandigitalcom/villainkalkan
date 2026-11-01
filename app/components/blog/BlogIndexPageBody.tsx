@@ -76,7 +76,7 @@ export default async function BlogIndexPageBody({
       <div className="max-w-site mx-auto">
 
         {posts.length === 0 ? (
-          <div className="pub-card p-10 text-center text-[var(--color-stone-500)]">
+          <div className="rounded-2xl border border-[var(--color-stone-200)] bg-white p-10 text-center text-[var(--color-stone-500)]">
             {dict.listEmpty}
           </div>
         ) : (
@@ -94,7 +94,7 @@ export default async function BlogIndexPageBody({
                 <Link
                   key={post.id}
                   href={`${localePrefix}/blog/${post.slug}`}
-                  className="pub-card pub-card-hover group flex flex-col overflow-hidden"
+                  className="group flex flex-col rounded-2xl border border-[var(--color-stone-100)] bg-white overflow-hidden hover:border-[var(--color-stone-200)] hover:shadow-[0_12px_30px_-18px_rgb(27_26_23/0.18)] transition-all motion-reduce:transition-none"
                 >
                   <div className="relative aspect-[16/10] bg-[var(--color-sand-50)] overflow-hidden">
                     {cover ? (

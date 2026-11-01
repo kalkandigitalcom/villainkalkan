@@ -120,12 +120,12 @@ describe("VillaPoolSection — locale etiketleri", () => {
       <VillaPoolSection villa={VILLA} locale="en" />
     );
     const section = container.querySelector("section")!;
-    /* 2026-11 — ortak public kart sistemi (`.pub-card` / `.pub-card-sm`). */
-    expect(section.className).toMatch(/(^|\s)pub-card(\s|$)/);
+    expect(section.className).toMatch(/(^|\s)bg-white(\s|$)/);
     expect(container.querySelector(".grid.grid-cols-1.sm\\:grid-cols-2")).toBeTruthy();
     const cards = container.querySelectorAll("[data-pool-card]");
     cards.forEach((card) => {
-      expect(card.className).toMatch(/(^|\s)pub-card-sm(\s|$)/);
+      expect(card.className).toContain("border");
+      expect(card.className).toMatch(/(^|\s)bg-white(\s|$)/);
     });
     expect(container.innerHTML).not.toMatch(/bg-gradient|sand-100|shadow-/);
     /* Ölçü etiketleri + değerler tanım listesi olarak. */

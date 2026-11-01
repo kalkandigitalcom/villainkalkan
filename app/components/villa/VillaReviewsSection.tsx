@@ -96,7 +96,7 @@ export default function VillaReviewsSection({
   }, [reviews]);
 
   return (
-    <section className="pub-card pub-card-pad">
+    <section className="rounded-[20px] bg-white px-5 py-6 md:px-8 md:py-8">
       {/* ════════════════════════════════════════════════════
           HEADER — başlık + sayı rozeti | büyük ortalama puan
           ════════════════════════════════════════════════════ */}
@@ -162,7 +162,7 @@ export default function VillaReviewsSection({
             {featured && (
               <article
                 data-review-featured
-                className="pub-card relative py-6 pl-7 pr-5 md:py-7 md:pl-9 md:pr-8"
+                className="relative rounded-2xl border border-[var(--color-stone-200)] bg-white py-6 pl-7 pr-5 md:py-7 md:pl-9 md:pr-8"
               >
                 <span
                   aria-hidden="true"
@@ -362,8 +362,9 @@ function ReviewCard({
     <article
       data-review-card
       className="
-        pub-card pub-card-hover relative min-w-0
+        relative min-w-0 rounded-2xl bg-white border border-[var(--color-stone-200)]
         py-5 pl-6 pr-5 md:py-6 md:pl-7 md:pr-6
+        transition-shadow duration-200 hover:ring-1 hover:ring-brand/40 motion-reduce:transition-none
         flex flex-col gap-3.5
       "
     >

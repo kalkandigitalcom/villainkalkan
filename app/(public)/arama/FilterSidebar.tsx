@@ -1023,7 +1023,7 @@ export default function FilterSidebar({
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          className="pub-card pub-card-hover w-full inline-flex items-center justify-between gap-4 px-5 py-4 text-left transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
+          className="w-full inline-flex items-center justify-between gap-4 px-5 py-4 rounded-2xl bg-white border border-[var(--color-stone-100)] text-left hover:border-[var(--color-stone-200)] transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-champagne-500)]/40"
           aria-haspopup="dialog"
           aria-expanded={mobileOpen}
         >
@@ -1069,7 +1069,7 @@ export default function FilterSidebar({
              viewport'a göre kırpıyor ve iç scroll'u zorunlu kılıyordu.
              İkisi de kaldırıldı → card içeriği kadar uzar. Mobil drawer
              (ve içindeki scroll) DEĞİŞMEDİ. */}
-          <div className="pub-card p-6 flex flex-col">
+          <div className="bg-white border border-[var(--color-stone-100)] rounded-2xl p-6 flex flex-col">
             {panel}
           </div>
         </div>

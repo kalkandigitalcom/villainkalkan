@@ -87,16 +87,15 @@ export default function FaqSection({
 
         {/* ── EDITORIAL LİSTE — logic (openIndex, aria, grid-rows collapse)
                BİREBİR aynı; sunum tek bir numaralı satır listesi. Kart/box/
-               ağır shadow YOK — sadece ince üst/alt/ara divider.
-               2026-11: liste ortak beyaz kartın (`.pub-card`) içinde. ── */}
-        <div className="pub-card px-5 md:px-7">
+               ağır shadow YOK — sadece ince üst/alt/ara divider. ── */}
+        <div>
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             const num = String(idx + 1).padStart(2, "0");
             return (
               <article
                 key={faq.id}
-                className="border-b border-[var(--color-stone-100)] last:border-b-0"
+                className="border-b border-[var(--color-stone-100)] first:border-t"
               >
                 <button
                   type="button"
