@@ -1,9 +1,23 @@
-import { Waves } from "lucide-react";
+import {
+  ArrowDownToLine,
+  Baby,
+  House,
+  MoveHorizontal,
+  Ruler,
+  Umbrella,
+  Users,
+  Waves,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import { formatPoolDimension } from "@/lib/dimension.helper";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
-import { buildPoolCards, type PoolCardSource } from "@/lib/pool.helper";
+import {
+  buildPoolCards,
+  type PoolCardSource,
+  type PoolTypeKey,
+} from "@/lib/pool.helper";
 import { getPoolTypeLabel } from "@/lib/pool-label.helper";
 
 /* ===============================================================
@@ -26,10 +40,23 @@ import { getPoolTypeLabel } from "@/lib/pool-label.helper";
    türetilir. Çevrilmiş metinden tip/ikon çıkarımı YAPILMAZ — ikon
    (Waves) zaten tipten bağımsız, section geneline aittir.
 
-   JSX/CSS: TR bloğunun yapısı birebir korunmuştur (aynı container,
-   divide-y satırlar, 3 kolonlu ölçü grid'i); yalnız metinler
-   locale-aware.
+   🎨 2026-10 GÖRSEL DÜZEN (yalnız sunum; veri/koşul DEĞİŞMEDİ):
+     - Beyaz ana kart (açıklama / oda / fiyat kartlarıyla aynı kap).
+     - Her havuz kendi ince çerçeveli beyaz kutusunda: tip ikonu + adı;
+       altında Genişlik / Uzunluk / Derinlik üç sütun (ikonlu etiket +
+       lacivert değer). Masaüstü 2 sütun, mobil tek sütun.
+     - Renkli zemin, gradient, gölge YOK. İkon tipten (canonical
+       PoolTypeKey) seçilir — çevrilmiş metinden çıkarım YOK.
    =============================================================== */
+
+/* Havuz tipine göre minimal ikon (canonical anahtar → ikon). */
+const POOL_TYPE_ICON: Record<PoolTypeKey, LucideIcon> = {
+  private: Waves,
+  private_sheltered: Umbrella,
+  shared: Users,
+  indoor: House,
+  child: Baby,
+};
 
 type Props = {
   villa: PoolCardSource;
@@ -43,51 +70,59 @@ export default function VillaPoolSection({ villa, locale }: Props) {
   const dict = getDictionary(locale);
 
   return (
-    <section>
-      <div className="flex items-center gap-2.5 mb-4">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-ink">
-          <Waves size={16} strokeWidth={1.8} />
-        </span>
-        <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
-          {dict.pool.sectionTitle}
-        </h2>
-      </div>
+    <section className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7">
+      <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
+        {dict.pool.sectionTitle}
+      </h2>
 
-      <div className="rounded-2xl border border-[var(--color-stone-200)] bg-[var(--color-sand-100)] divide-y divide-[var(--color-stone-100)]">
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         {cards.map((c) => {
           const hasDims = !!(c.width || c.length || c.depth);
+          const TypeIcon = POOL_TYPE_ICON[c.type] ?? Waves;
           const rows = [
-            { k: dict.pool.width, v: formatPoolDimension(c.width) },
-            { k: dict.pool.length, v: formatPoolDimension(c.length) },
-            { k: dict.pool.depth, v: formatPoolDimension(c.depth) },
+            { k: dict.pool.width, v: formatPoolDimension(c.width), Icon: MoveHorizontal },
+            { k: dict.pool.length, v: formatPoolDimension(c.length), Icon: Ruler },
+            { k: dict.pool.depth, v: formatPoolDimension(c.depth), Icon: ArrowDownToLine },
           ];
           return (
-            <div key={c.key} className="p-4 md:p-5">
-              <p className="flex items-center gap-2 text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[var(--color-stone-500)]">
+            <div
+              key={c.key}
+              data-pool-card={c.key}
+              className="min-w-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-4 py-4 md:px-5"
+            >
+              <div className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
-                  className="inline-block w-1.5 h-1.5 rounded-full bg-accent"
-                />
-                {getPoolTypeLabel(c.type, locale)}
-              </p>
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-stone-50)] text-ink"
+                >
+                  <TypeIcon size={17} strokeWidth={1.8} />
+                </span>
+                <p className="min-w-0 font-display text-[15px] font-semibold leading-snug tracking-[-0.01em] text-[var(--color-stone-900)]">
+                  {getPoolTypeLabel(c.type, locale)}
+                </p>
+              </div>
+
               {hasDims ? (
-                <div className="mt-3 grid grid-cols-3 gap-2.5">
-                  {rows.map((row) => (
-                    <div
-                      key={row.k}
-                      className="rounded-lg border border-[var(--color-stone-100)] bg-white px-3 py-2.5"
-                    >
-                      <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-[var(--color-stone-400)]">
-                        {row.k}
-                      </p>
-                      <p className="mt-1 font-display text-[15px] md:text-[16px] text-[var(--color-stone-900)] tabular-nums">
-                        {row.v}
-                      </p>
+                <dl className="mt-4 grid grid-cols-3 divide-x divide-[var(--color-stone-200)] border-t border-[var(--color-stone-100)] pt-3.5">
+                  {rows.map(({ k, v, Icon }) => (
+                    <div key={k} className="min-w-0 px-2 first:pl-0 last:pr-0 sm:px-3">
+                      <dt className="flex items-center gap-1.5 text-[11.5px] text-[var(--color-stone-500)]">
+                        <Icon
+                          size={13}
+                          strokeWidth={1.9}
+                          aria-hidden
+                          className="shrink-0 text-brand"
+                        />
+                        <span className="truncate">{k}</span>
+                      </dt>
+                      <dd className="mt-1 font-display text-[15px] md:text-[16px] font-semibold text-[var(--color-stone-900)] tabular-nums">
+                        {v}
+                      </dd>
                     </div>
                   ))}
-                </div>
+                </dl>
               ) : (
-                <p className="mt-2 text-[12.5px] text-[var(--color-stone-400)] italic">
+                <p className="mt-3 text-[12.5px] text-[var(--color-stone-400)] italic">
                   {dict.pool.noDimensions}
                 </p>
               )}

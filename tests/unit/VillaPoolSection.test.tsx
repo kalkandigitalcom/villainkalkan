@@ -84,7 +84,10 @@ describe("VillaPoolSection — locale etiketleri", () => {
     expect(screen.getByText("4 m")).toBeInTheDocument();
   });
 
-  it("🛡️ ikon locale'den ve etiketten ETKİLENMEZ (section başına 1 Waves)", () => {
+  /* 2026-10 düzeni: her havuz kartında tipten (canonical anahtar)
+     seçilen 1 ikon + ölçü satırı başına 1 ikon. İkon sayısı locale'den
+     bağımsız. */
+  it("🛡️ ikon sayısı locale'den ve etiketten ETKİLENMEZ", () => {
     const { container: en } = render(
       <VillaPoolSection villa={VILLA} locale="en" />
     );
@@ -93,28 +96,40 @@ describe("VillaPoolSection — locale etiketleri", () => {
       <VillaPoolSection villa={VILLA} locale="tr" />
     );
     expect(tr.querySelectorAll("svg").length).toBe(enSvg);
-    expect(enSvg).toBe(1);
+    /* 3 havuz tipi ikonu + ana (3 ölçü) + kapalı (3 ölçü); çocuk ölçüsüz */
+    expect(enSvg).toBe(3 + 3 + 3);
   });
 
-  it("🛡️ kart sırası ve sayısı locale'den bağımsız", () => {
+  it("🛡️ kart sırası ve sayısı locale'den bağımsız (ana → kapalı → çocuk)", () => {
     const { container: en } = render(
       <VillaPoolSection villa={VILLA} locale="en" />
     );
     const { container: tr } = render(
       <VillaPoolSection villa={VILLA} locale="tr" />
     );
-    expect(en.querySelectorAll(".p-4.md\\:p-5").length).toBe(
-      tr.querySelectorAll(".p-4.md\\:p-5").length
-    );
+    const order = (c: HTMLElement) =>
+      Array.from(c.querySelectorAll("[data-pool-card]")).map((el) =>
+        el.getAttribute("data-pool-card")
+      );
+    expect(order(en)).toEqual(["main", "indoor", "child"]);
+    expect(order(tr)).toEqual(order(en));
   });
 
-  it("className/grid yapısı TR bloğuyla aynı", () => {
+  it("beyaz ana kart; havuz kutuları ince çerçeveli beyaz, 2 sütunlu grid; renkli zemin/gradient yok", () => {
     const { container } = render(
       <VillaPoolSection villa={VILLA} locale="en" />
     );
-    expect(
-      container.querySelector(".rounded-2xl.border.divide-y")
-    ).toBeTruthy();
-    expect(container.querySelector(".grid.grid-cols-3")).toBeTruthy();
+    const section = container.querySelector("section")!;
+    expect(section.className).toMatch(/(^|\s)bg-white(\s|$)/);
+    expect(container.querySelector(".grid.grid-cols-1.sm\\:grid-cols-2")).toBeTruthy();
+    const cards = container.querySelectorAll("[data-pool-card]");
+    cards.forEach((card) => {
+      expect(card.className).toContain("border");
+      expect(card.className).toMatch(/(^|\s)bg-white(\s|$)/);
+    });
+    expect(container.innerHTML).not.toMatch(/bg-gradient|sand-100|shadow-/);
+    /* Ölçü etiketleri + değerler tanım listesi olarak. */
+    expect(container.querySelectorAll("dl")).toHaveLength(2);
+    expect(container.querySelectorAll("dt")).toHaveLength(6);
   });
 });
