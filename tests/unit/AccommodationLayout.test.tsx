@@ -106,11 +106,12 @@ describe("🛡️ TR REGRESYON", () => {
     const { container } = render(
       <AccommodationLayout locale="tr" bedrooms={BEDROOMS} bathrooms={BATHROOMS} />
     );
-    expect(container.querySelector("section.bg-white")).toBeTruthy();
+    /* 2026-11 — ortak public kart sistemi (globals.css `.pub-card`). */
+    expect(container.querySelector("section.pub-card")).toBeTruthy();
     const grid = container.querySelector(".grid.grid-cols-1.sm\\:grid-cols-2");
     expect(grid).toBeTruthy();
     expect(grid?.className).not.toContain("lg:grid-cols-3");
-    expect(grid?.querySelectorAll(":scope > .rounded-xl.border")).toHaveLength(4);
+    expect(grid?.querySelectorAll(":scope > .pub-card-sm")).toHaveLength(4);
   });
 
   it("başlık altı özet satırı gösterilmez", () => {

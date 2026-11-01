@@ -72,19 +72,22 @@ describe("HomeServicesSection", () => {
     expect(grid).toContain("lg:[&>li:last-child]:col-span-1");
   });
 
-  it("kart görünümü: beyaz, ince kenarlık, hafif gölge; ikon krem dairede ve dekoratif", () => {
+  /* 2026-11 — ortak public kart sistemi (globals.css `.pub-card`):
+     beyaz, #E2E8F0 kenarlık, 16px köşe, gölgesiz; hover'da yalnız
+     kenarlık + çok hafif gölge (sıçrama yok). İkon küçük nötr karoda. */
+  it("kart görünümü: ortak public kart sistemi; ikon küçük nötr karoda ve dekoratif", () => {
     const { container } = render(<HomeServicesSection locale="tr" />);
     const cards = container.querySelectorAll("[data-service-card]");
     expect(cards).toHaveLength(3);
     for (const card of Array.from(cards)) {
       const c = card.className;
-      expect(c).toContain("bg-white");
-      expect(c).toContain("border");
-      expect(c).toMatch(/rounded-\[22px\]/);
-      expect(c).toContain("motion-reduce:transition-none");
+      expect(c.split(/\s+/)).toEqual(
+        expect.arrayContaining(["pub-card", "pub-card-hover", "pub-card-pad"])
+      );
+      expect(c).not.toMatch(/shadow-\[|hover:-translate-y|rounded-\[22px\]/);
       const icon = card.querySelector("[data-service-icon]") as HTMLElement;
       expect(icon).toHaveAttribute("aria-hidden", "true");
-      expect(icon.className).toContain("bg-[#FFFAF1]");
+      expect(icon.className).toContain("bg-[var(--color-stone-50)]");
       expect(icon.querySelector("svg")).not.toBeNull();
     }
   });

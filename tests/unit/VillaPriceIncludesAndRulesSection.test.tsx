@@ -43,7 +43,8 @@ describe("VillaPriceIncludesAndRulesSection — 2026-10 düzeni", () => {
       <VillaPriceIncludesAndRulesSection priceIncludes={INCLUDES} rules={RULES} locale="tr" />
     );
     const card = container.firstElementChild as HTMLElement;
-    expect(card.className).toMatch(/(^|\s)bg-white(\s|$)/);
+    /* 2026-11 — ortak public kart sistemi. */
+    expect(card.className).toMatch(/(^|\s)pub-card(\s|$)/);
     expect(container.querySelectorAll("section")).toHaveLength(2);
     const [incList, rulesList] = screen.getAllByRole("list");
     expect(incList.className).toContain("sm:grid-cols-2");

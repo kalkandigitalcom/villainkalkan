@@ -403,7 +403,7 @@ export default async function ShortGapsPageBody({
 
           <div className="flex-1 min-w-0">
             {visibleGaps.length === 0 ? (
-              <div className="rounded-2xl border border-[var(--color-stone-200)] bg-white p-10 text-center text-[var(--color-stone-500)]">
+              <div className="pub-card p-10 text-center text-[var(--color-stone-500)]">
                 {dict.emptyBody}
               </div>
             ) : (

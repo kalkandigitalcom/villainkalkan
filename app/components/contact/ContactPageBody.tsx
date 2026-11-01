@@ -261,7 +261,7 @@ export default async function ContactPageBody({
 
                 {/* RIGHT — glass form kartı */}
                 <div className="lg:col-span-7">
-                  <div className="relative rounded-[28px] border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_28px_80px_-32px_rgba(27,26,23,0.28)] p-6 md:p-10">
+                  <div className="pub-card relative p-6 md:p-10">
                     {/* iç parıltı */}
                     <div
                       aria-hidden="true"
@@ -304,7 +304,7 @@ export default async function ContactPageBody({
               </h2>
             </div>
           </div>
-          <div className="relative rounded-[28px] p-1.5 bg-gradient-to-br from-[var(--color-sand-100)] via-white to-[var(--color-sand-50)] border border-[var(--color-stone-100)] shadow-[0_28px_80px_-40px_rgba(27,26,23,0.3)]">
+          <div className="pub-card relative p-1.5">
             <div className="relative aspect-[16/10] md:aspect-[21/9] rounded-[22px] overflow-hidden bg-[var(--color-sand-50)]">
               <iframe
                 title={dict.map.iframeTitle}
@@ -428,10 +428,8 @@ function InfoRow({
     <Wrapper
       {...linkProps}
       className={
-        "group relative flex items-center gap-4 rounded-2xl border border-[var(--color-stone-100)] bg-white/70 backdrop-blur-sm px-4 py-4 transition-all duration-300 motion-reduce:transition-none " +
-        (isLink
-          ? "hover:-translate-y-0.5 hover:border-[var(--color-champagne-500)]/40 hover:shadow-[0_18px_44px_-22px_rgba(27,26,23,0.28)] hover:bg-white"
-          : "")
+        "pub-card-sm group relative flex items-center gap-4 px-4 py-4 " +
+        (isLink ? "pub-card-hover" : "")
       }
     >
       <span className="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-[var(--color-sand-100)] to-white ring-1 ring-[var(--color-stone-100)] text-[var(--color-champagne-700)] transition-colors duration-300 group-hover:from-[var(--brand-coral)] group-hover:to-[var(--brand-coral-deep)] group-hover:text-white group-hover:ring-transparent">
@@ -468,7 +466,7 @@ function FaqBlock({
   a: string;
 }) {
   return (
-    <div className="group rounded-3xl border border-[var(--color-stone-100)] bg-white/70 backdrop-blur-sm p-6 md:p-7 transition-all duration-300 motion-reduce:transition-none hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-26px_rgba(27,26,23,0.25)] hover:border-[var(--color-champagne-500)]/30">
+    <div className="pub-card pub-card-hover pub-card-pad group">
       <span className="font-display text-[14px] text-[var(--color-champagne-700)] tabular-nums">
         {index}
       </span>

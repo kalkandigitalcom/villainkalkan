@@ -175,7 +175,7 @@ export default async function ReservationShareView({
       </div>
 
       {/* KONAKLAMA */}
-      <section className="mt-9 rounded-2xl border border-[var(--color-stone-100)] bg-white p-5 md:p-6">
+      <section className="mt-9 pub-card p-5 md:p-6">
         <h2 className="flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-stone-500)]">
           <CalendarDays size={15} className="text-[var(--brand-coral)]" aria-hidden />
           {dict.shareStayHeading}
@@ -244,7 +244,7 @@ export default async function ReservationShareView({
 
       {/* ÖDEME ÖZETİ */}
       {data.total !== null && (
-        <section className="mt-5 rounded-2xl border border-[var(--color-stone-100)] bg-white p-5 md:p-6">
+        <section className="mt-5 pub-card p-5 md:p-6">
           <h2 className="flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-stone-500)]">
             <CreditCard size={15} className="text-[var(--brand-coral)]" aria-hidden />
             {dict.sharePaymentHeading}
@@ -340,7 +340,7 @@ export default async function ReservationShareView({
       )}
 
       {/* MİSAFİR İLETİŞİM */}
-      <section className="mt-5 rounded-2xl border border-[var(--color-stone-100)] bg-white p-5 md:p-6">
+      <section className="mt-5 pub-card p-5 md:p-6">
         <h2 className="flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-stone-500)]">
           <User size={15} className="text-[var(--brand-coral)]" aria-hidden />
           {dict.shareGuestHeading}
@@ -386,7 +386,7 @@ export default async function ReservationShareView({
 
       {/* İLETİŞİM */}
       {(whatsappHref || phoneHref) && (
-        <section className="mt-5 rounded-2xl border border-[var(--color-stone-100)] bg-white p-5 md:p-6 text-center">
+        <section className="mt-5 pub-card p-5 md:p-6 text-center">
           <p className="text-[13px] text-[var(--color-stone-600)]">
             {dict.shareContactNote}
           </p>

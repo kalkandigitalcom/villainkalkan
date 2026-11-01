@@ -923,12 +923,20 @@ export default function VillaCard({
       <article
         data-villa-card={isDiscount ? "discount" : "default"}
         className={
-          "@container relative flex h-full flex-col overflow-hidden bg-white " +
-          "rounded-[22px] border !border-ink/[0.09] " +
-          "shadow-[0_18px_40px_-28px_rgba(26,40,56,0.35)] " +
-          "group-hover:shadow-[0_30px_60px_-30px_rgba(26,40,56,0.45)] " +
-          "transition-[box-shadow,transform] duration-500 motion-reduce:transition-none " +
-          "group-hover:-translate-y-[3px] motion-reduce:group-hover:translate-y-0"
+          "@container relative flex h-full flex-col overflow-hidden " +
+          (isDiscount
+            ? /* 🛡️ İNDİRİMLİ KİRALIK VİLLALAR — özgün tasarım AYNEN
+                 (public kart sistemi istisnası; DEĞİŞTİRME). */
+              "bg-white " +
+              "rounded-[22px] border !border-ink/[0.09] " +
+              "shadow-[0_18px_40px_-28px_rgba(26,40,56,0.35)] " +
+              "group-hover:shadow-[0_30px_60px_-30px_rgba(26,40,56,0.45)] " +
+              "transition-[box-shadow,transform] duration-500 motion-reduce:transition-none " +
+              "group-hover:-translate-y-[3px] motion-reduce:group-hover:translate-y-0"
+            : /* 2026-11 — ortak public kart sistemi (globals.css
+                 `.pub-card`): beyaz, #E2E8F0 kenarlık, 16px köşe,
+                 gölgesiz; hover'da yalnız kenarlık + çok hafif gölge. */
+              "pub-card pub-card-hover")
         }
       >
         {/* ── FOTOĞRAF ── */}

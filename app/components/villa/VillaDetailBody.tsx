@@ -313,7 +313,7 @@ export default function VillaDetailBody({
                   {/* DESCRIPTION — bağımsız beyaz kart */}
                   <section
                     id={VILLA_DESCRIPTION_ANCHOR_ID}
-                    className="scroll-mt-[180px] rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7"
+                    className="scroll-mt-[180px] pub-card pub-card-pad"
                   >
                     <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
                       {dict.villa.aboutTitle}
@@ -350,7 +350,7 @@ export default function VillaDetailBody({
                   fiyatlar={
                     /* 2026-10 — başlık + sezon kartları TEK beyaz kartta
                        (açıklama/konaklama kartlarıyla aynı kap). */
-                    <section className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7">
+                    <section className="pub-card pub-card-pad">
                       <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em] mb-4">
                         {dict.villa.seasonPricesTitle}
                       </h2>
@@ -432,7 +432,7 @@ export default function VillaDetailBody({
                 className="min-w-0 lg:col-span-3 relative pt-0 lg:-mt-14"
               >
                 <VillaAvailabilityShortcut locale={locale} />
-                <div className="mt-3 rounded-[28px] lg:shadow-[0_28px_60px_-32px_rgba(27,46,94,0.45)]">
+                <div className="mt-3">
                   <BookingSidebar
                     villaSlug={villa.slug}
                     villaId={villa.id}

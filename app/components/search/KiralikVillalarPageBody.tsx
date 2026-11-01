@@ -419,7 +419,7 @@ export default async function KiralikVillalarPageBody({
               <div>
                 {totalCount === 0 ? (
                   <div className="px-2 md:px-6">
-                    <div className="rounded-2xl border border-[var(--color-stone-100)] bg-white/60 backdrop-blur-[2px] px-6 py-16 md:px-12 md:py-24 max-w-2xl mx-auto text-center">
+                    <div className="pub-card px-6 py-16 md:px-12 md:py-24 max-w-2xl mx-auto text-center">
                       <p className="text-[11px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-500)]">
                         <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />
                         {dict.emptyEyebrow}
@@ -513,7 +513,7 @@ export default async function KiralikVillalarPageBody({
                 {/* 🛡️ SEO HAKKINDA — results column içinde inline.
                    (Mizanpaj gerekçesi için git geçmişine bakınız; bu
                    fazda yalnız metinler dictionary'ye taşındı.) */}
-                <div className="mt-16 md:mt-20 rounded-2xl bg-[var(--color-sand-50)]/60 border border-[var(--color-stone-100)] px-6 py-10 md:px-10 md:py-14">
+                <div className="pub-card mt-16 md:mt-20 px-6 py-10 md:px-10 md:py-14">
                   <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 md:gap-10">
                     <div className="xl:col-span-2">
                       <p className="text-[11px] tracking-[0.28em] uppercase font-medium text-[var(--color-stone-500)]">

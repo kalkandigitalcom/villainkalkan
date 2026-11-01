@@ -1346,7 +1346,7 @@ export default async function AramaPageBody({
               /* GERÇEK EXCEPTION — eski sağlayıcı/network/runtime hatası.
                  Sadece bu durumda "Arama yüklenemedi" mesajı çıkar.
                  Sidebar dokunulmaz; sağda kart gibi premium error. */
-              <div className="rounded-2xl border border-[var(--color-stone-100)] bg-white px-6 py-16 md:px-10 md:py-20 text-center max-w-xl mx-auto">
+              <div className="pub-card px-6 py-16 md:px-10 md:py-20 text-center max-w-xl mx-auto">
                 <p className="text-[11px] tracking-[0.24em] uppercase font-medium text-[var(--color-stone-500)]">
                   <span className="inline-block w-6 h-px bg-[var(--color-stone-300)] align-middle mr-2" />
                   {dict.errorEyebrow}
@@ -1381,7 +1381,7 @@ export default async function AramaPageBody({
                  Sidebar yanında yumuşak boş state; champagne/stone
                  design system ile birebir uyumlu. */
               <div className="px-2 md:px-6">
-                <div className="rounded-2xl border border-[var(--color-stone-100)] bg-white/60 backdrop-blur-[2px] px-6 py-16 md:px-12 md:py-24 max-w-2xl mx-auto">
+                <div className="pub-card px-6 py-16 md:px-12 md:py-24 max-w-2xl mx-auto">
                   <div className="flex flex-col items-center text-center">
                     {/* Muted subtle icon — emoji YOK */}
                     <div className="w-14 h-14 rounded-full bg-[var(--color-sand-50)] border border-[var(--color-stone-100)] flex items-center justify-center">

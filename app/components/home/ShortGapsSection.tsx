@@ -90,33 +90,6 @@ export default async function ShortGapsSection({
       id="kisa-sureli-firsatlar"
       className="scroll-mt-24 md:scroll-mt-28 px-5 md:px-10 lg:px-16 pt-14 md:pt-20 pb-14 md:pb-20"
     >
-      {/* 🛡️ Component-scoped premium hover styles — globals.css'e
-          dokunulmadı; yalnız bu section'daki .sg-* class'larını
-          hedefler. Sadece hover-tetiklenen tek seferlik geçişler
-          (infinite/otomatik animasyon YOK) — prefers-reduced-motion
-          altında da zaten sorunsuz (transition kapanır, statik kalır). */}
-      <style>{`
-        .sg-shine {
-          position: relative;
-          overflow: hidden;
-        }
-        .sg-shine::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.10) 48%, rgba(255,255,255,0.16) 52%, transparent 65%);
-          transform: translateX(-100%);
-          transition: transform 900ms ease;
-          pointer-events: none;
-        }
-        .group:hover .sg-shine::after {
-          transform: translateX(100%);
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .sg-shine::after { transition: none; display: none; }
-        }
-      `}</style>
-
       <div className="max-w-site mx-auto">
         <HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />
 
@@ -135,28 +108,23 @@ export default async function ShortGapsSection({
               >
                 <div
                   className={
-                    "group relative overflow-hidden rounded-[26px] p-5 h-full flex flex-col " +
-                    "bg-gradient-to-br from-brand via-[#1F443D] to-[#2B5A51] " +
-                    "shadow-[0_18px_40px_-22px_rgba(27,46,94,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] " +
-                    "ring-1 ring-white/10 " +
-                    "hover:shadow-[0_28px_54px_-22px_rgba(27,46,94,0.65)] hover:ring-[var(--brand-coral)]/30 " +
-                    "hover:-translate-y-[3px] " +
-                    "transition-[transform,box-shadow] duration-400 motion-reduce:transition-none motion-reduce:hover:translate-y-0 " +
-                    "sg-shine"
+                    /* 2026-11 — ortak public kart sistemi (beyaz, ince
+                       kenarlık, gölgesiz; koyu gradient zemin kaldırıldı). */
+                    "pub-card pub-card-hover pub-card-pad-sm group relative overflow-hidden h-full flex flex-col"
                   }
                 >
                   {/* ── HEADER — büyük editorial ay tipografisi + fırsat rozeti ── */}
                   <div className="flex items-start justify-between gap-3 mb-1">
                     <div className="min-w-0">
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--brand-coral)]">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-strong">
                         <Sparkles size={11} strokeWidth={2.2} aria-hidden />
                         {dict.badge}
                       </span>
-                      <h3 className="mt-1.5 font-display font-medium text-[20px] md:text-[22px] text-white leading-[1.05] tracking-[-0.02em] truncate">
+                      <h3 className="pub-card-title mt-1.5 text-[18px] md:text-[19px] truncate">
                         {m.label}
                       </h3>
                     </div>
-                    <span className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-white/[0.06] text-white/80 ring-1 ring-white/10">
+                    <span className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--color-stone-50)] text-ink">
                       <CalendarRange className="w-[18px] h-[18px]" />
                     </span>
                   </div>
@@ -164,7 +132,7 @@ export default async function ShortGapsSection({
                   {/* Brand accent underline — turuncu→mavi, ince */}
                   <div
                     aria-hidden="true"
-                    className="mt-3 mb-4 h-[3px] w-14 rounded-full bg-gradient-to-r from-accent to-brand"
+                    className="mt-3 mb-3 h-[2px] w-10 rounded-full bg-brand"
                   />
 
                   {/* ── GECE LİSTESİ — mevcut veri/link/sayı BİREBİR aynı ── */}
@@ -176,18 +144,18 @@ export default async function ShortGapsSection({
                         <li key={nights}>
                           <Link
                             href={localeHref(`/kisa-sureli-tarihler/${m.slug}/${nights}`, locale)}
-                            className="group/row flex items-center justify-between rounded-xl px-3 py-2.5 -mx-1 hover:bg-white/[0.06] transition-colors motion-reduce:transition-none"
+                            className="group/row flex items-center justify-between rounded-lg px-3 py-2.5 -mx-1 hover:bg-[var(--color-stone-50)] transition-colors motion-reduce:transition-none"
                           >
-                            <span className="text-[13px] text-white/75 group-hover/row:text-white transition-colors motion-reduce:transition-none">
+                            <span className="text-[13px] text-[var(--color-stone-600)] group-hover/row:text-ink transition-colors motion-reduce:transition-none">
                               {formatDictionaryString(dict.nightsLabel, {
                                 n: nights,
                               })}
                             </span>
                             <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold tabular-nums">
-                              <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-accent/20 to-brand/20 text-white ring-1 ring-white/10 leading-none">
+                              <span className="px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong leading-none">
                                 {count}
                               </span>
-                              <ArrowUpRight className="w-3.5 h-3.5 text-white/40 group-hover/row:text-[var(--brand-coral)] group-hover/row:translate-x-0.5 transition-[color,transform] motion-reduce:transition-none" />
+                              <ArrowUpRight className="w-3.5 h-3.5 text-[var(--color-stone-400)] group-hover/row:text-brand group-hover/row:translate-x-0.5 transition-[color,transform] motion-reduce:transition-none" />
                             </span>
                           </Link>
                         </li>

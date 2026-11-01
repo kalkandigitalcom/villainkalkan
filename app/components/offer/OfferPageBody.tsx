@@ -51,7 +51,7 @@ export default function OfferPageBody({
           <aside className="lg:col-span-5">
             <ul
               role="list"
-              className="rounded-3xl bg-white border border-[var(--color-stone-100)] shadow-[0_12px_28px_-18px_rgba(27,26,23,0.10)] p-5 md:p-6 space-y-4"
+              className="pub-card p-5 md:p-6 space-y-4"
             >
               <TrustRow
                 icon={<Clock size={16} aria-hidden strokeWidth={1.6} />}

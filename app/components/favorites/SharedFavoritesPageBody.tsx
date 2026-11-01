@@ -122,7 +122,7 @@ export default async function SharedFavoritesPageBody({
         {allStale ? (
           <div
             className="
-              rounded-3xl bg-white border border-[var(--color-stone-100)]
+              pub-card
               px-6 py-12 md:px-10 md:py-16
               text-center
             "
@@ -164,7 +164,7 @@ export default async function SharedFavoritesPageBody({
         <div className="mt-20 md:mt-28">
           <div
             className="
-              rounded-3xl bg-[var(--color-sand-50)] border border-[var(--color-stone-100)]
+              pub-card
               px-6 py-10 md:px-12 md:py-16
               flex flex-col md:flex-row md:items-center md:justify-between gap-6
             "

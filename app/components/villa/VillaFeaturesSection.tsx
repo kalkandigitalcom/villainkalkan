@@ -35,32 +35,35 @@ export default function VillaFeaturesSection({
 }) {
   const dict = getDictionary(locale);
   return (
-    <section>
+    /* 2026-11 — ortak public kart sistemi (beyaz ana kart + ince
+       çerçeveli özellik kutuları). */
+    <section className="pub-card pub-card-pad">
       <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
         {dict.villa.featuresTitle}
       </h2>
 
       {features.length === 0 ? (
-        <div className="card-premium mt-5 p-6 text-sm text-[var(--color-stone-400)] italic">
+        <p className="mt-4 text-sm text-[var(--color-stone-400)] italic">
           {dict.villa.featuresEmpty}
-        </div>
+        </p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-5">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-3 gap-2.5 mt-5">
           {features.map((f) => (
             <div
               key={f.id}
               className="
-                flex items-center gap-2.5
+                pub-card-sm
+                flex min-w-0 items-center gap-2.5
                 text-[var(--color-stone-700)]
-                bg-white border border-[var(--color-stone-100)]
-                rounded-xl px-4 py-3 text-sm
-                hover:border-[var(--color-champagne-300)] hover:shadow-soft
-                transition
+                px-3.5 py-2.5 text-[13.5px] leading-snug break-words
               "
             >
-              <span className="w-5 h-5 rounded-full bg-[var(--color-sand-100)] flex items-center justify-center shrink-0">
-                <Check size={12} className="text-[var(--color-champagne-600)]" />
-              </span>
+              <Check
+                size={15}
+                strokeWidth={2.2}
+                aria-hidden
+                className="shrink-0 text-ink"
+              />
               {f.displayName}
             </div>
           ))}

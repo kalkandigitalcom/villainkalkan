@@ -101,7 +101,7 @@ export default function VillaDistancesSection({
           alt alta. Satır animasyonu/hover kaydırması kaldırıldı.
           Renkler (2026-10 rev.): site paleti — sol açık nötr (sand-50),
           sağ düz beyaz, ayraçlar stone-200; gradient YOK. */}
-      <div className="grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-[20px] bg-white">
+      <div className="pub-card grid grid-cols-1 md:grid-cols-5 overflow-hidden">
         <div
           className={
             "min-w-0 bg-[var(--color-sand-50)] px-6 py-7 sm:px-8 md:py-9 " +

@@ -58,7 +58,7 @@ export default function VillaPriceIncludesAndRulesSection({
   const hasRules = rules.length > 0;
 
   return (
-    <div className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7">
+    <div className="pub-card pub-card-pad">
       {hasIncludes && (
         <section aria-labelledby="villa-price-includes-title">
           <div className="flex items-center gap-2.5">
@@ -123,7 +123,7 @@ export default function VillaPriceIncludesAndRulesSection({
             {rules.map((r) => (
               <li
                 key={r.id}
-                className="flex min-w-0 items-start gap-2.5 rounded-xl border border-[var(--color-stone-200)] bg-white px-3.5 py-2.5 text-[13.5px] leading-snug text-[var(--color-stone-700)]"
+                className="flex min-w-0 items-start gap-2.5 pub-card-sm px-3.5 py-2.5 text-[13.5px] leading-snug text-[var(--color-stone-700)]"
               >
                 <Info
                   size={15}

@@ -128,6 +128,39 @@ describe("Public villa kartı — yeni tasarım", () => {
     expect(panel.textContent).toContain(formatCurrency(9600, "TRY", "tr"));
     expect(panel.querySelector(".line-through")!.textContent).toContain(formatCurrency(12000, "TRY", "tr"));
   });
+
+  /* 2026-11 — ORTAK PUBLIC KART SİSTEMİ: default kart `.pub-card`'a
+     geçti; "İndirimli Kiralık Villalar" (discount variant) ÖZGÜN
+     tasarımını AYNEN korur (sistem istisnası). */
+  it("10) default kart ortak sistemde (pub-card, sıçrama/gölge utility'si yok)", () => {
+    const { container } = render(<VillaCard {...BASE} />);
+    const c = container.querySelector('[data-villa-card="default"]')!.className;
+    expect(c.split(/\s+/)).toEqual(expect.arrayContaining(["pub-card", "pub-card-hover"]));
+    expect(c).not.toMatch(/shadow-\[|translate-y|rounded-\[22px\]/);
+  });
+
+  it("11) 🛡️ discount variant özgün sınıfları BİREBİR (pub-card YOK)", () => {
+    const { container } = render(
+      <VillaCard
+        {...BASE}
+        variant="discount"
+        discount={{ start_date: "2026-11-08", end_date: "2026-11-14", discount_type: "percent", discount_value: 20, currency: null }}
+      />
+    );
+    const c = container.querySelector('[data-villa-card="discount"]')!.className;
+    expect(c).not.toContain("pub-card");
+    for (const cls of [
+      "bg-white",
+      "rounded-[22px]",
+      "!border-ink/[0.09]",
+      "shadow-[0_18px_40px_-28px_rgba(26,40,56,0.35)]",
+      "group-hover:shadow-[0_30px_60px_-30px_rgba(26,40,56,0.45)]",
+      "transition-[box-shadow,transform]",
+      "group-hover:-translate-y-[3px]",
+    ]) {
+      expect(c).toContain(cls);
+    }
+  });
 });
 
 /* ===============================================================
@@ -162,5 +195,18 @@ describe("Ana sayfa Öne Çıkan Villalar — üçlü düzen", () => {
     const src = readFileSync("app/components/villa/VillaList.tsx", "utf-8");
     expect(src).toMatch(/grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6/);
     expect(src).not.toMatch(/(lg|xl):grid-cols-4\b/);
+  });
+});
+
+/* 2026-11 — İndirimli Kiralık Villalar kart bileşenleri ortak kart
+   sistemine GEÇMEDİ (kaynak kilidi). */
+describe("İndirimli Kiralık Villalar — kart tasarımı korunur", () => {
+  it.each([
+    "app/components/home/discount-cards/DiscountVillaCardA.tsx",
+    "app/components/home/discount-cards/DiscountVillaCardB.tsx",
+    "app/components/home/discount-cards/discount-card-design.ts",
+    "app/components/home/DiscountCollection.tsx",
+  ])("%s → pub-card kullanmaz", (file) => {
+    expect(readFileSync(file, "utf-8")).not.toMatch(/pub-card/);
   });
 });

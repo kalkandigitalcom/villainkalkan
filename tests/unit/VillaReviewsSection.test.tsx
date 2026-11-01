@@ -26,7 +26,8 @@ describe("VillaReviewsSection — 2026-10 tasarım", () => {
       <VillaReviewsSection villaId="v1" reviews={REVIEWS} stats={STATS} locale="tr" />
     );
     const section = container.querySelector("section")!;
-    expect(section.className).toMatch(/(^|\s)bg-white(\s|$)/);
+    /* 2026-11 — ortak public kart sistemi. */
+    expect(section.className).toMatch(/(^|\s)pub-card(\s|$)/);
     expect(screen.getByRole("heading", { level: 2, name: "Misafir Yorumları" })).toBeInTheDocument();
     expect(screen.getByText("3 misafir yorumu")).toBeInTheDocument();
     const score = container.querySelector("[data-review-score]")!;

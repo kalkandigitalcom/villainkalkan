@@ -70,7 +70,7 @@ export default function VillaPoolSection({ villa, locale }: Props) {
   const dict = getDictionary(locale);
 
   return (
-    <section className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7">
+    <section className="pub-card pub-card-pad">
       <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
         {dict.pool.sectionTitle}
       </h2>
@@ -88,7 +88,7 @@ export default function VillaPoolSection({ villa, locale }: Props) {
             <div
               key={c.key}
               data-pool-card={c.key}
-              className="min-w-0 rounded-xl border border-[var(--color-stone-200)] bg-white px-4 py-4 md:px-5"
+              className="pub-card-sm min-w-0 px-4 py-4 md:px-5"
             >
               <div className="flex items-center gap-3">
                 <span

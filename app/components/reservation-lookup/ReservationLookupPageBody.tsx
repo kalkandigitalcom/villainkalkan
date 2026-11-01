@@ -78,7 +78,7 @@ export default async function ReservationLookupPageBody({
           {share?.kind === "ok" ? (
             <ReservationShareView data={share.data} locale={locale} />
           ) : share?.kind === "cancelled" ? (
-            <div className="max-w-xl mx-auto rounded-2xl border border-[var(--color-stone-100)] bg-white px-6 py-14 text-center">
+            <div className="pub-card max-w-xl mx-auto px-6 py-14 text-center">
               <h2 className="font-display text-[22px] md:text-[26px] text-[var(--color-stone-900)] tracking-[-0.02em]">
                 {dict.cancelledTitle}
               </h2>
@@ -88,7 +88,7 @@ export default async function ReservationLookupPageBody({
             </div>
           ) : share?.kind === "invalid" ? (
             <>
-              <div className="max-w-xl mx-auto rounded-2xl border border-[var(--color-stone-100)] bg-white px-6 py-10 text-center mb-10">
+              <div className="pub-card max-w-xl mx-auto px-6 py-10 text-center mb-10">
                 <h2 className="font-display text-[20px] md:text-[24px] text-[var(--color-stone-900)] tracking-[-0.02em]">
                   {dict.invalidTitle}
                 </h2>
