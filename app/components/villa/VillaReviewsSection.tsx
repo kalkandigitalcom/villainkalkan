@@ -23,7 +23,14 @@
      - Error: kırmızı inline message
      - Loading state submit button'da
 
-   DESIGN:
+   DESIGN (2026-10 — yalnız sunum; veri/sıra/koşul/form DEĞİŞMEDİ):
+     - Tek beyaz kart; başlık + yorum sayısı rozeti solda, büyük
+       ortalama puan + altın yıldızlar sağda (mobilde alt alta).
+     - Özet ile liste arasında ortası altın elmaslı ince ayraç.
+     - Yorum kartları beyaz, ince çerçeveli; sol kenarda ince altın
+       vurgu çizgisi. Gradient / ağır gölge / renkli zemin YOK.
+     - Uzun metinler `break-words` ile taşmaz.
+   ESKİ DESIGN NOTLARI:
      - rounded-2xl, soft shadow on hover
      - warm neutral palette (sand/stone/champagne)
      - elegant Star icons (lucide)
@@ -76,7 +83,6 @@ export default function VillaReviewsSection({
   locale?: Locale;
 }) {
   const dict = getDictionary(locale);
-  const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
   /* Featured review header'ın altında yer alır; diğerleri liste içinde. */
   const { featured, rest } = useMemo(() => {
     const featuredIdx = reviews.findIndex((r) => r.is_featured);
@@ -90,120 +96,121 @@ export default function VillaReviewsSection({
   }, [reviews]);
 
   return (
-    <section className="space-y-8">
+    <section className="rounded-[20px] bg-white px-5 py-6 md:px-8 md:py-8">
       {/* ════════════════════════════════════════════════════
-          HEADER
+          HEADER — başlık + sayı rozeti | büyük ortalama puan
           ════════════════════════════════════════════════════ */}
-      <header>
-        <p className="eyebrow mb-3 flex items-center gap-2">
-          <Star size={11} /> {dict.reviews.eyebrow}
-        </p>
-        <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
-          {dict.reviews.title}
-        </h2>
+      <header className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="min-w-0">
+          <p className="eyebrow mb-2.5 flex items-center gap-2">
+            <Star size={11} aria-hidden /> {dict.reviews.eyebrow}
+          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h2 className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]">
+              {dict.reviews.title}
+            </h2>
+            {stats.count > 0 && (
+              <span className="inline-flex items-center rounded-full border border-[var(--color-stone-200)] bg-[var(--color-stone-50)] px-3 py-1 text-[12px] font-medium text-ink tabular-nums">
+                {formatDictionaryString(dict.reviews.countLabel, {
+                  n: stats.count,
+                })}
+              </span>
+            )}
+          </div>
+          {stats.count === 0 && (
+            <p className="text-[var(--color-stone-500)] mt-3 text-sm">
+              {dict.reviews.empty}
+            </p>
+          )}
+        </div>
 
-        {stats.count > 0 ? (
-          <div className="flex items-center gap-4 mt-4 flex-wrap">
-            <div className="inline-flex items-baseline gap-2">
-              <span
-                className="font-display text-[26px] md:text-[32px] text-[var(--color-stone-900)] tracking-[-0.02em] tabular-nums"
-              >
+        {stats.count > 0 && (
+          <div
+            data-review-score
+            className="flex shrink-0 items-center gap-4"
+          >
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-display text-[44px] md:text-[52px] font-semibold leading-none tracking-[-0.03em] text-ink tabular-nums">
                 {stats.average.toFixed(1)}
               </span>
-              <span className="text-[var(--color-stone-500)] text-sm">
+              <span className="text-[13px] font-medium text-[var(--color-stone-400)]">
                 {dict.reviews.outOfFive}
               </span>
             </div>
-            <StarRow value={stats.average} size={16} locale={locale} />
-            <span className="text-[13px] text-[var(--color-stone-500)] tabular-nums">
-              {formatDictionaryString(dict.reviews.countLabel, {
-                n: stats.count,
-              })}
-            </span>
+            <span
+              aria-hidden="true"
+              className="h-10 w-px bg-[var(--color-stone-200)]"
+            />
+            <StarRow value={stats.average} size={18} locale={locale} />
           </div>
-        ) : (
-          <p className="text-[var(--color-stone-500)] mt-4 text-sm">
-            {dict.reviews.empty}
-          </p>
         )}
       </header>
 
-      {/* ════════════════════════════════════════════════════
-          FEATURED REVIEW (varsa)
-          ════════════════════════════════════════════════════ */}
-      {featured && (
-        <article
-          className="
-            relative rounded-2xl
-            bg-[var(--color-sand-50)] border border-[var(--color-stone-100)]
-            p-6 md:p-8
-            shadow-soft
-          "
-        >
-          <span
-            className="
-              absolute top-4 right-4
-              inline-flex items-center gap-1.5
-              text-[10.5px] tracking-[0.18em] uppercase font-medium
-              text-[var(--color-champagne-700)]
-            "
-            aria-label={dict.reviews.featuredAriaLabel}
-          >
-            <Sparkles size={11} />
-            {dict.reviews.featuredBadge}
-          </span>
-          <Quote
-            size={28}
-            className="text-[var(--color-champagne-500)] opacity-50"
-            aria-hidden
-          />
-          <p
-            className="
-              mt-3 text-[15px] md:text-[16px] leading-[1.75]
-              text-[var(--color-stone-700)] italic
-              whitespace-pre-line
-            "
-          >
-            {featured.comment}
-          </p>
-          <div className="mt-5 flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
-              <Avatar name={featured.guest_name} />
-              <div>
-                <p className="font-display text-[14px] text-[var(--color-stone-900)] tracking-[-0.01em]">
-                  {featured.guest_name}
-                </p>
-                {featured.created_at && (
-                  <p className="text-[11px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
-                    {formatDateForLocale(featured.created_at, effectiveLocale)}
-                  </p>
-                )}
-              </div>
-            </div>
-            <StarRow value={featured.rating} size={14} locale={locale} />
+      {(featured || rest.length > 0) && (
+        <>
+          {/* İnce ayraç — ortada küçük altın elmas */}
+          <div aria-hidden="true" className="my-6 md:my-7 flex items-center gap-3">
+            <span className="h-px flex-1 bg-[var(--color-stone-200)]" />
+            <span className="h-1.5 w-1.5 rotate-45 rounded-[1px] bg-brand" />
+            <span className="h-px flex-1 bg-[var(--color-stone-200)]" />
           </div>
-        </article>
-      )}
 
-      {/* ════════════════════════════════════════════════════
-          REVIEW LIST
-          ════════════════════════════════════════════════════ */}
-      {rest.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {rest.map((r) => (
-            <ReviewCard key={r.id} review={r} locale={locale} />
-          ))}
-        </div>
+          <div className="space-y-4">
+            {/* ════════════════════════════════════════════════════
+                FEATURED REVIEW (varsa)
+                ════════════════════════════════════════════════════ */}
+            {featured && (
+              <article
+                data-review-featured
+                className="relative rounded-2xl border border-[var(--color-stone-200)] bg-white py-6 pl-7 pr-5 md:py-7 md:pl-9 md:pr-8"
+              >
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-6 bottom-6 w-[3px] rounded-r-full bg-brand"
+                />
+                <div className="flex items-start justify-between gap-4">
+                  <Quote
+                    size={24}
+                    className="shrink-0 text-brand opacity-70"
+                    aria-hidden
+                  />
+                  <span
+                    className="inline-flex items-center gap-1.5 text-[10.5px] tracking-[0.18em] uppercase font-medium text-[var(--color-champagne-700)]"
+                    aria-label={dict.reviews.featuredAriaLabel}
+                  >
+                    <Sparkles size={11} aria-hidden />
+                    {dict.reviews.featuredBadge}
+                  </span>
+                </div>
+                <p className="mt-3 text-[15px] md:text-[16px] leading-[1.8] text-[var(--color-stone-700)] italic whitespace-pre-line break-words">
+                  {featured.comment}
+                </p>
+                <ReviewMeta review={featured} locale={locale} starSize={14} />
+              </article>
+            )}
+
+            {/* ════════════════════════════════════════════════════
+                REVIEW LIST
+                ════════════════════════════════════════════════════ */}
+            {rest.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {rest.map((r) => (
+                  <ReviewCard key={r.id} review={r} locale={locale} />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {/* ════════════════════════════════════════════════════
           FORM — accordion (default kapalı)
           ════════════════════════════════════════════════════
-          UX: form default kapalı; "Yorum Yap" CTA görünür.
-          Tıklayınca form expand olur, tekrar tıklayınca toggle.
           Submit logic / form state / API / validation YALNIZ
           ReviewForm içinde — accordion sadece visibility layer'ı. */}
-      <ReviewFormAccordion villaId={villaId} locale={locale} />
+      <div className="mt-7">
+        <ReviewFormAccordion villaId={villaId} locale={locale} />
+      </div>
     </section>
   );
 }
@@ -287,11 +294,11 @@ function Avatar({ name }: { name: string }) {
   return (
     <span
       className="
-        w-10 h-10 rounded-full
-        bg-[var(--color-sand-100)]
-        border border-[var(--color-stone-100)]
+        w-10 h-10 shrink-0 rounded-full
+        bg-[var(--color-stone-50)]
+        ring-1 ring-inset ring-brand/35
         flex items-center justify-center
-        font-display text-[13px] text-[var(--color-champagne-700)]
+        font-display text-[13px] font-semibold text-ink
         tracking-[-0.01em]
       "
       aria-hidden
@@ -302,8 +309,46 @@ function Avatar({ name }: { name: string }) {
 }
 
 /* ===============================================================
-   REVIEW CARD — list item
+   REVIEW META — avatar + ad + tarih | yıldızlar (featured altbilgisi)
    =============================================================== */
+function ReviewMeta({
+  review,
+  locale,
+  starSize,
+}: {
+  review: VillaReviewPublic;
+  locale?: Locale;
+  starSize: number;
+}) {
+  const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
+  const name = String(review.guest_name || "").trim();
+  return (
+    <div className="mt-5 flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-center gap-3 min-w-0">
+        {name && <Avatar name={name} />}
+        <div className="min-w-0">
+          {name && (
+            <p className="font-display text-[14.5px] font-semibold text-[var(--color-stone-900)] tracking-[-0.01em] truncate">
+              {name}
+            </p>
+          )}
+          {review.created_at && (
+            <p className="text-[12px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
+              {formatDateForLocale(review.created_at, effectiveLocale)}
+            </p>
+          )}
+        </div>
+      </div>
+      <StarRow value={review.rating} size={starSize} locale={locale} />
+    </div>
+  );
+}
+
+/* ===============================================================
+   REVIEW CARD — list item
+   ===============================================================
+   Beyaz, ince çerçeveli kart; sol kenarda ince altın vurgu çizgisi.
+   Ad/tarih yoksa o satır çizilmez (sahte içerik YOK). */
 function ReviewCard({
   review,
   locale,
@@ -312,26 +357,32 @@ function ReviewCard({
   locale?: Locale;
 }) {
   const effectiveLocale: Locale = locale ?? DEFAULT_LOCALE;
+  const name = String(review.guest_name || "").trim();
   return (
     <article
+      data-review-card
       className="
-        rounded-2xl bg-white border border-[var(--color-stone-100)]
-        p-5 md:p-6
-        hover:border-[var(--color-champagne-300)]
-        hover:shadow-[0_8px_20px_-12px_rgb(27_26_23/0.08)]
-        transition-colors motion-reduce:transition-none
-        flex flex-col gap-3
+        relative min-w-0 rounded-2xl bg-white border border-[var(--color-stone-200)]
+        py-5 pl-6 pr-5 md:py-6 md:pl-7 md:pr-6
+        transition-shadow duration-200 hover:ring-1 hover:ring-brand/40 motion-reduce:transition-none
+        flex flex-col gap-3.5
       "
     >
+      <span
+        aria-hidden="true"
+        className="absolute left-0 top-5 bottom-5 w-[2px] rounded-r-full bg-brand/60"
+      />
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <Avatar name={review.guest_name} />
+          {name && <Avatar name={name} />}
           <div className="min-w-0">
-            <p className="font-display text-[14px] text-[var(--color-stone-900)] tracking-[-0.01em] truncate">
-              {review.guest_name}
-            </p>
+            {name && (
+              <p className="font-display text-[14.5px] font-semibold text-[var(--color-stone-900)] tracking-[-0.01em] truncate">
+                {name}
+              </p>
+            )}
             {review.created_at && (
-              <p className="text-[11px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
+              <p className="text-[12px] text-[var(--color-stone-400)] mt-0.5 tabular-nums">
                 {formatDateForLocale(review.created_at, effectiveLocale)}
               </p>
             )}
@@ -340,12 +391,7 @@ function ReviewCard({
         <StarRow value={review.rating} size={13} locale={locale} />
       </div>
 
-      <p
-        className="
-          text-[13.5px] text-[var(--color-stone-700)]
-          leading-[1.7] whitespace-pre-line
-        "
-      >
+      <p className="text-[14px] text-[var(--color-stone-700)] leading-[1.75] whitespace-pre-line break-words">
         {review.comment}
       </p>
     </article>
