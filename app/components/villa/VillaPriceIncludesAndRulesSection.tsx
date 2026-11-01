@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Info, ScrollText, Ticket } from "lucide-react";
 
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
@@ -17,6 +17,16 @@ import type { Locale } from "@/lib/i18n/config";
    Server component; server-only translation/repository koduna HİÇ
    erişmez. Hardcoded TR metinleri ("Konaklama ücretine dahil",
    "Konaklama kuralları") BİLİNÇLİ OLARAK ÇEVRİLMEDİ (kapsam dışı).
+
+   🎨 2026-10 GÖRSEL DÜZEN (yalnız sunum; veri/koşul DEĞİŞMEDİ):
+     - TEK beyaz ana kart (açıklama / oda / havuz kartlarıyla aynı kap).
+     - Üstte "Konaklama Ücretine Dahil Olanlar": bilet ikonlu başlık,
+       lacivert onay işaretli 2 sütunlu sade liste (mobil tek sütun).
+     - Hemen altında, ince ayraçla "Konaklama Kuralları": ince
+       çerçeveli küçük satır kutuları (2 sütun / mobil tek sütun).
+     - Emerald/rose renkli zeminler, hover gölgesi kaldırıldı.
+     - Veri modelinde "dahil olmayan" hizmet alanı YOK → çarpı işaretli
+       liste render EDİLMEZ (içerik uydurulmaz).
    =============================================================== */
 
 export type TranslatedPriceInclude = {
@@ -44,82 +54,87 @@ export default function VillaPriceIncludesAndRulesSection({
     return null;
   }
 
-  return (
-    <div
-      className={
-        "grid grid-cols-1 gap-4 md:gap-5 " +
-        (priceIncludes.length > 0 && rules.length > 0
-          ? "lg:grid-cols-2 lg:items-start"
-          : "")
-      }
-    >
-      {priceIncludes.length > 0 && (
-        <section
-          className="
-            rounded-3xl border border-emerald-100
-            bg-emerald-50/60
-            p-6 md:p-7
-          "
-        >
-          <h2 className="font-display text-2xl md:text-3xl text-emerald-900 tracking-[-0.015em]">
-            {dict.villa.priceIncludesTitle}
-          </h2>
+  const hasIncludes = priceIncludes.length > 0;
+  const hasRules = rules.length > 0;
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-            {priceIncludes.map((p) => (
-              <div
-                key={p.id}
-                className="
-                  flex items-center gap-2.5
-                  text-[var(--color-stone-700)]
-                  bg-white border border-emerald-100
-                  rounded-xl px-4 py-3 text-sm
-                  hover:border-emerald-300 hover:shadow-soft
-                  transition
-                "
-              >
-                <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                  <Check size={12} className="text-emerald-600" />
-                </span>
-                {p.displayTitle}
-              </div>
-            ))}
+  return (
+    <div className="rounded-[20px] bg-white px-5 py-6 md:px-7 md:py-7">
+      {hasIncludes && (
+        <section aria-labelledby="villa-price-includes-title">
+          <div className="flex items-center gap-2.5">
+            <Ticket
+              size={20}
+              strokeWidth={1.8}
+              aria-hidden
+              className="shrink-0 text-ink"
+            />
+            <h2
+              id="villa-price-includes-title"
+              className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]"
+            >
+              {dict.villa.priceIncludesTitle}
+            </h2>
           </div>
+
+          <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+            {priceIncludes.map((p) => (
+              <li
+                key={p.id}
+                className="flex min-w-0 items-start gap-3 text-[14px] leading-snug text-[var(--color-stone-700)]"
+              >
+                <Check
+                  size={17}
+                  strokeWidth={2.2}
+                  aria-hidden
+                  className="mt-px shrink-0 text-ink"
+                />
+                <span className="min-w-0 break-words">{p.displayTitle}</span>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
-      {rules.length > 0 && (
+      {hasRules && (
         <section
-          className="
-            rounded-3xl border border-rose-100
-            bg-rose-50/60
-            p-6 md:p-7
-          "
+          aria-labelledby="villa-rules-title"
+          className={
+            hasIncludes
+              ? "mt-7 border-t border-[var(--color-stone-200)] pt-7"
+              : ""
+          }
         >
-          <h2 className="font-display text-2xl md:text-3xl text-rose-900 tracking-[-0.015em]">
-            {dict.villa.rulesTitle}
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-            {rules.map((r) => (
-              <div
-                key={r.id}
-                className="
-                  flex items-center gap-2.5
-                  text-[var(--color-stone-700)]
-                  bg-white border border-rose-100
-                  rounded-xl px-4 py-3 text-sm
-                  hover:border-rose-300 hover:shadow-soft
-                  transition
-                "
-              >
-                <span className="w-5 h-5 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
-                  <Check size={12} className="text-rose-600" />
-                </span>
-                {r.displayTitle}
-              </div>
-            ))}
+          <div className="flex items-center gap-2.5">
+            <ScrollText
+              size={20}
+              strokeWidth={1.8}
+              aria-hidden
+              className="shrink-0 text-ink"
+            />
+            <h2
+              id="villa-rules-title"
+              className="font-display text-2xl md:text-3xl text-[var(--color-stone-900)] tracking-[-0.015em]"
+            >
+              {dict.villa.rulesTitle}
+            </h2>
           </div>
+
+          <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {rules.map((r) => (
+              <li
+                key={r.id}
+                className="flex min-w-0 items-start gap-2.5 rounded-xl border border-[var(--color-stone-200)] bg-white px-3.5 py-2.5 text-[13.5px] leading-snug text-[var(--color-stone-700)]"
+              >
+                <Info
+                  size={15}
+                  strokeWidth={2}
+                  aria-hidden
+                  className="mt-px shrink-0 text-brand"
+                />
+                <span className="min-w-0 break-words">{r.displayTitle}</span>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </div>

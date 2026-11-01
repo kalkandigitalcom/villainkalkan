@@ -45,8 +45,9 @@ describe("TR byte-identity — villa detay sayfası (kiralik-villa/[slug])", () 
     [tr.pool.length, "Uzunluk"],
     [tr.pool.depth, "Derinlik"],
     [tr.pool.noDimensions, "Ölçü bilgisi yok"],
-    [tr.villa.priceIncludesTitle, "Konaklama ücretine dahil"],
-    [tr.villa.rulesTitle, "Konaklama kuralları"],
+    /* 2026-10 — başlıklar talep üzerine güncellendi. */
+    [tr.villa.priceIncludesTitle, "Konaklama Ücretine Dahil Olanlar"],
+    [tr.villa.rulesTitle, "Konaklama Kuralları"],
     [tr.villa.checkInOutTitle, "Villa Giriş & Çıkış Saatleri"],
     [tr.villa.checkInLabel, "Giriş · Check-in"],
     [tr.villa.checkOutLabel, "Çıkış · Check-out"],
