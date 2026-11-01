@@ -17,15 +17,17 @@ import {
 import HomeSectionHeading from "@/app/components/home/HomeSectionHeading";
 
 /* 🛡️ KART GÖRSELİ `sizes` — yalnız ana sayfa VillaList grid'ine göre
-   (kart 1 / sm+ 2 sütun; max-w 1280). Değerler ölçülen kart
-   genişliği × 1.41 güvenlik payı (16:9 cover kırpma × hover 1.06) ile
-   hesaplandı; ≤1023px mevcut değer AYNEN korunur. Grid/padding
-   sınıfları değişirse bu değer yeniden hesaplanmalı. */
+   (2026-11: kart 1 / sm+ 2 / lg+ 3 sütun; içerik max-w-site 1210px).
+   lg+ kart genişliği ≈ (100vw − 256px) / 3 (bölüm px-16 ×2 + panel
+   px-8 ×2 + 2 sütun boşluğu); × 1.41 güvenlik payı (16:9 cover kırpma ×
+   hover 1.06) → calc(47vw − 120px), üst sınır ≈ 360px × 1.41 ≈ 510px.
+   ≤1023px mevcut değerler AYNEN korunur. Grid/padding sınıfları
+   değişirse bu değer yeniden hesaplanmalı. */
 const VILLA_LIST_CARD_SIZES =
   "(max-width: 640px) 100vw, " +
   "(max-width: 1023px) 50vw, " +
-  "(max-width: 1407px) calc(70.5vw - 113px), " +
-  "880px";
+  "(max-width: 1340px) calc(47vw - 120px), " +
+  "510px";
 
 export default async function VillaList({
   locale = DEFAULT_LOCALE,
@@ -102,8 +104,9 @@ export default async function VillaList({
            dominant kalır. */}
         <HomeSectionHeading title={dict.title} subtitle={dict.subtitle} />
 
-        {/* 🛡️ FAZ 39L — Grid spacing tightened (cards focus). */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-10 md:gap-y-12">
+        {/* 🛡️ FAZ 39L — Grid spacing tightened (cards focus).
+            2026-11 — masaüstü (lg+) 3 sütun; tablet 2, mobil 1 (AYNEN). */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-10 md:gap-y-12">
           {villas.map((villa) => (
             <VillaCard
               key={villa.slug || villa.id}

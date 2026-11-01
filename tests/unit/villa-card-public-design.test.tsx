@@ -142,7 +142,6 @@ describe("Public villa listeleri — ikili düzen", () => {
     ["app/components/search/AramaPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-6/g],
     ["app/components/search/KiralikVillalarPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-6/g],
     ["app/(public)/favoriler/FavoritesGrid.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-x-6/g],
-    ["app/components/villa/VillaList.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-x-6/g],
     ["app/components/villa/SimilarVillasSection.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-6/g],
     ["app/components/short-gaps/ShortGapsPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-6/g],
     ["app/components/favorites/SharedFavoritesPageBody.tsx", /grid grid-cols-1 sm:grid-cols-2 gap-x-6/g],
@@ -153,5 +152,15 @@ describe("Public villa listeleri — ikili düzen", () => {
     const src = readFileSync(file, "utf-8");
     expect(src).toMatch(re);
     expect(src).not.toMatch(/(lg|xl):grid-cols-[34]\b/);
+  });
+});
+
+/* 2026-11 — ana sayfa "Öne Çıkan Villalar" (VillaList) istisnası:
+   masaüstü 3, tablet 2, mobil 1 sütun. */
+describe("Ana sayfa Öne Çıkan Villalar — üçlü düzen", () => {
+  it("VillaList → grid-cols-1 sm:grid-cols-2 lg:grid-cols-3; 4 sütun yok", () => {
+    const src = readFileSync("app/components/villa/VillaList.tsx", "utf-8");
+    expect(src).toMatch(/grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6/);
+    expect(src).not.toMatch(/(lg|xl):grid-cols-4\b/);
   });
 });

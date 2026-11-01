@@ -759,7 +759,7 @@ export type Dictionary = {
      🛡️ PHASE 11 — PUBLIC LAYOUT KABUĞU (app/(public)/layout.tsx)
      ===============================================================
      BottomNav · SearchBottomSheet · VillaSearchBox · CookieConsent ·
-     ScrollToTopButton · FloatingSocial metinleri.
+     FloatingSocial metinleri. (ScrollToTopButton 2026-11'de kaldırıldı.)
 
      ⚠️ Bu componentler LAYOUT'tan render edilir; layout bir server
      component olduğu ve request locale'ini okuyamadığı için (Phase 7E)
@@ -798,10 +798,6 @@ export type Dictionary = {
       message: string;
       details: string;
       accept: string;
-    };
-    scrollTop: {
-      label: string;
-      ariaLabel: string;
     };
     floatingSocial: {
       ariaLabel: string;

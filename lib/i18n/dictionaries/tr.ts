@@ -592,10 +592,6 @@ export const tr: Dictionary = {
       details: "Detaylar",
       accept: "Kabul Et",
     },
-    scrollTop: {
-      label: "Yukarı Çık",
-      ariaLabel: "Sayfanın başına dön",
-    },
     floatingSocial: {
       ariaLabel: "Hızlı iletişim",
       call: "Hemen Ara",

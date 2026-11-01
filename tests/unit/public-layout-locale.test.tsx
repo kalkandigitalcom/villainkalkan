@@ -2,7 +2,8 @@
    🛡️ PHASE 11 — PUBLIC LAYOUT KABUĞU i18n TESTLERİ
    ===============================================================
    Kapsam: BottomNav · SearchBottomSheet · VillaSearchBox ·
-           CookieConsent · ScrollToTopButton · FloatingSocialClient
+           CookieConsent · FloatingSocialClient
+           (ScrollToTopButton 2026-11'de kaldırıldı — bkz. bölüm 5)
 
    `footer-locale.test.tsx` / `header-locale.test.tsx` (Phase 9A/9B) ile
    AYNI `usePathname` mock deseni — yeni test altyapısı İCAT EDİLMEDİ.
@@ -13,7 +14,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
@@ -36,7 +37,6 @@ import BottomNav from "@/app/components/layout/BottomNav";
 import SearchBottomSheet from "@/app/components/layout/SearchBottomSheet";
 import VillaSearchBox from "@/app/components/layout/VillaSearchBox";
 import CookieConsent from "@/app/components/layout/CookieConsent";
-import ScrollToTopButton from "@/app/components/layout/ScrollToTopButton";
 import FloatingSocialClient from "@/app/components/layout/FloatingSocialClient";
 
 /** Blok + satır yorumlarını sıyırır — kaynak kilidi testleri YALNIZ
@@ -350,22 +350,17 @@ describe("4) CookieConsent — locale", () => {
 /* ===============================================================
    5) SCROLL TO TOP
    =============================================================== */
-describe("5) ScrollToTopButton — locale", () => {
-  it("5a) TR — ESKİ metinler BİREBİR", () => {
-    render(<ScrollToTopButton />);
-    expect(screen.getByText("Yukarı Çık")).toBeInTheDocument();
-    expect(screen.getByLabelText("Sayfanın başına dön")).toBeInTheDocument();
+describe("5) ScrollToTopButton — kaldırıldı (2026-11)", () => {
+  it("5a) bileşen dosyası yok; public layout render etmiyor", () => {
+    expect(existsSync("app/components/layout/ScrollToTopButton.tsx")).toBe(false);
+    const layout = readFileSync("app/(public)/layout.tsx", "utf-8");
+    expect(layout).not.toContain("ScrollToTopButton");
   });
 
-  it("5b) EN — çevrilmiş metinler", () => {
-    for (const locale of ["en"] as const) {
-      usePathnameMock.mockReturnValue(PATHS[locale]);
-      const d = getDictionary(locale).layout.scrollTop;
-      const { unmount } = render(<ScrollToTopButton />);
-      expect(screen.getByText(d.label)).toBeInTheDocument();
-      expect(screen.getByLabelText(d.ariaLabel)).toBeInTheDocument();
-      expect(screen.queryByText("Yukarı Çık")).not.toBeInTheDocument();
-      unmount();
+  it("5b) 'Yukarı Çık' / 'Back to top' metinleri sözlükte yok", () => {
+    for (const locale of ["tr", "en"] as const) {
+      const layout = getDictionary(locale).layout as Record<string, unknown>;
+      expect(layout.scrollTop).toBeUndefined();
     }
   });
 });
@@ -484,10 +479,6 @@ describe("7) dictionary + kaynak kilidi", () => {
       [
         "app/components/layout/CookieConsent.tsx",
         ['"Çerez bilgilendirmesi"', "Kabul Et", ">Detaylar<"],
-      ],
-      [
-        "app/components/layout/ScrollToTopButton.tsx",
-        ['"Sayfanın başına dön"', "Yukarı Çık"],
       ],
       [
         "app/components/layout/FloatingSocialClient.tsx",
