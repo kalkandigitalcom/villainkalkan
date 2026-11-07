@@ -5,6 +5,10 @@ import { reservationServerRepository } from "@/lib/db/reservation.repository.ser
 import { verifyPublicReservationPrice } from "@/app/services/reservation/_helpers/price-verify";
 import { verifyPublicReservationStayRules } from "@/app/services/reservation/_helpers/stay-verify";
 import { validatePublicReservationDates } from "@/app/services/reservation/_helpers/date-verify";
+import {
+  assertVillaAcceptsRentalBooking,
+  SALE_ONLY_RESERVATION_ERROR,
+} from "@/app/services/reservation/_helpers/rental-listing-verify";
 import { applyRateLimit } from "@/lib/rate-limit";
 /* 🛡️ Uluslararası telefon — TR-only regex KALDIRILDI. Yeni kütüphane YOK. */
 import {
@@ -107,6 +111,19 @@ export async function POST(req: Request): Promise<Response> {
     }
   }
 
+  /* 🛡️ SATILIK MODÜLÜ — KİRALIK İLAN GUARD'I (migration 103).
+     Yalnız satılık (`listed_for_rent=false`) mülke doğrudan API isteğiyle
+     bile rezervasyon OLUŞTURULAMAZ. Fiyat hesabından ve createReservation'dan
+     ÖNCE çalışır. Kiralık mülklerde davranış AYNEN (guard geçer); hata
+     zarfı ({ ok:false, error }, 400) mevcut kapılarla aynı. */
+  try {
+    await assertVillaAcceptsRentalBooking(body?.villa_id);
+  } catch (err) {
+    const msg =
+      err instanceof Error ? err.message : SALE_ONLY_RESERVATION_ERROR;
+    console.error("[api.public.reservations] create FAILED:", msg);
+    return NextResponse.json({ ok: false, error: msg }, { status: 400 });
+  }
   /* 🛡️ SEC-06 F2 — `paid_amount` ASLA client'tan alınmaz. Public
      rezervasyon her zaman ödenmemiş (pending) başlar; tahsilat admin
      tarafından sonradan işlenir. Client zaten 0 gönderiyor

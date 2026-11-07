@@ -9,6 +9,10 @@ import "server-only";
    dönüş şekli aynen. Runtime testi yeşil olmadan production'a deploy
    edilmemeli. */
 import { dbAdminNative as dbAdmin } from "@/lib/db/native";
+import {
+  withPublicRentalVisibility,
+  withRentalListing,
+} from "@/lib/db/villa-visibility";
 /* 🛡️ Villa Migration S6A — listForAdmin server-side search için. Anon
    repo'daki `buildVillaSearchOrClause` ile BYTE-IDENTICAL replika (aşağıda);
    native→anon ters bağımlılık yaratmamak için helper burada; yalnız pure
@@ -137,11 +141,11 @@ export const villaAdminRepository = {
      field parity.
   =============================================================== */
   async findActiveLocationIds() {
-    return await dbAdmin
+    return await withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select("location_id")
-      .eq("is_active", true)
-      .is("deleted_at", null);
+    );
   },
 
   /* ===============================================================
@@ -153,11 +157,11 @@ export const villaAdminRepository = {
      (/arama `findSearchResults` ile aynı bölge predicate'i). Başka
      hiçbir caller'ı yok; mevcut sorgular DEĞİŞMEDİ. */
   async findActiveVillaIdsByLocationIds(locationIds: string[]) {
-    return await dbAdmin
+    return await withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select("id")
-      .eq("is_active", true)
-      .is("deleted_at", null)
+    )
       .in("location_id", locationIds);
   },
 
@@ -230,7 +234,8 @@ export const villaAdminRepository = {
      maybeSingle: 0→null, 1→row, >1→error (native queryMaybeOne = eski sağlayıcı).
   =============================================================== */
   async findBySlug(slug: string): Promise<Record<string, unknown> | null> {
-    const { data, error } = await dbAdmin
+    const { data, error } = await withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -243,9 +248,8 @@ export const villaAdminRepository = {
         )
       `
       )
+    )
       .eq("slug", slug)
-      .eq("is_active", true)
-      .is("deleted_at", null)
       .maybeSingle();
 
     if (error) {
@@ -318,7 +322,9 @@ export const villaAdminRepository = {
     if (typeof token !== "string" || token.trim().length === 0) {
       return null;
     }
-    const { data, error } = await dbAdmin
+    const { data, error } = await withRentalListing(
+      /* 🛡️ 103 — satılık-only mülk bu kiralık yüzeyde de görünmez. */
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -331,6 +337,7 @@ export const villaAdminRepository = {
         )
       `
       )
+    )
       .eq("private_access_token", token)
       .is("deleted_at", null)
       .maybeSingle();
@@ -417,7 +424,8 @@ export const villaAdminRepository = {
         villa_prices `.villa_id` FK index'i CI'de doğrulanmalı (ölçek).
   =============================================================== */
   async listPublic(): Promise<Record<string, unknown>[]> {
-    const { data, error } = await dbAdmin
+    const { data, error } = await withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -435,8 +443,7 @@ export const villaAdminRepository = {
         )
       `
       )
-      .eq("is_active", true)
-      .is("deleted_at", null)
+    )
       .order("is_cover", {
         referencedTable: "villa_images",
         ascending: false,
@@ -477,7 +484,8 @@ export const villaAdminRepository = {
   async findNotFoundSuggestions(
     limit: number
   ): Promise<Record<string, unknown>[]> {
-    const { data, error } = await dbAdmin
+    const { data, error } = await withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -487,8 +495,7 @@ export const villaAdminRepository = {
         villa_prices (price, currency)
       `
       )
-      .eq("is_active", true)
-      .is("deleted_at", null)
+    )
       .order("is_cover", {
         referencedTable: "villa_images",
         ascending: false,
@@ -541,7 +548,8 @@ export const villaAdminRepository = {
     expandedRegions: string[];
     guests: number | null;
   }) {
-    let q = dbAdmin
+    let q = withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       /* 🛡️ ROLLBACK (production incident) — `select("*")` GERİ ALINDI.
          Açık kolon listesi denendi ve production'da `/arama` "Arama
@@ -580,8 +588,7 @@ export const villaAdminRepository = {
         )
       `
       )
-      .eq("is_active", true)
-      .is("deleted_at", null)
+    )
       .order("is_cover", {
         referencedTable: "villa_images",
         ascending: false,
@@ -635,7 +642,9 @@ export const villaAdminRepository = {
      (`private_access_token`) varsa, /v/[token] linkiyle. `deleted_at IS
      NULL` AYNEN. */
   async findCardsByIds(ids: string[]) {
-    return await dbAdmin
+    return await withRentalListing(
+      /* 🛡️ 103 — satılık-only mülk bu kiralık yüzeyde de görünmez. */
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -646,6 +655,7 @@ export const villaAdminRepository = {
       villa_discounts (start_date, end_date, discount_type, discount_value, currency)
     `
       )
+    )
       .in("id", ids)
       .is("deleted_at", null)
       .order("is_cover", {
@@ -687,7 +697,8 @@ export const villaAdminRepository = {
     excludeIds: string[];
     limit: number;
   }) {
-    let q = dbAdmin
+    let q = withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -697,8 +708,7 @@ export const villaAdminRepository = {
   villa_prices ( price, currency, start_date, end_date )
 `
       )
-      .eq("is_active", true)
-      .is("deleted_at", null)
+    )
       .order("is_cover", { referencedTable: "villa_images", ascending: false })
       .order("sort_order", { referencedTable: "villa_images", ascending: true })
       .limit(1, { referencedTable: "villa_images" })
@@ -736,7 +746,8 @@ export const villaAdminRepository = {
     typeIdFilter: string[] | null;
     guests: number;
   }) {
-    let q = dbAdmin
+    let q = withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -746,8 +757,7 @@ export const villaAdminRepository = {
       villa_prices (price, currency, start_date, end_date)
     `
       )
-      .eq("is_active", true)
-      .is("deleted_at", null)
+    )
       .in("id", opts.gapVillaIds)
       .order("is_cover", {
         referencedTable: "villa_images",
@@ -1160,7 +1170,8 @@ export const villaAdminRepository = {
        ile uyumlu. Tek fark `db` → `dbAdmin`.
   =============================================================== */
   async findActiveImagesByIds(ids: string[]) {
-    return await dbAdmin
+    return await withPublicRentalVisibility(
+      dbAdmin
       .from<{
         id: string;
         villa_images: Array<{
@@ -1179,9 +1190,8 @@ export const villaAdminRepository = {
         )
       `
       )
-      .in("id", ids)
-      .eq("is_active", true)
-      .is("deleted_at", null);
+    )
+      .in("id", ids);
   },
 
   /* ===============================================================
@@ -1223,7 +1233,8 @@ export const villaAdminRepository = {
     const needle = normalizeSearchText(term);
     if (needle.length === 0) return [];
     const pattern = `%${escapeLikePattern(needle)}%`;
-    const { data, error } = await dbAdmin
+    const { data, error } = await withPublicRentalVisibility(
+      dbAdmin
       .from<{
         id: string;
         title: string | null;
@@ -1238,8 +1249,7 @@ export const villaAdminRepository = {
       .select(
         `id, title, slug, location:villa_locations(name), villa_images (image_url, is_cover, sort_order)`
       )
-      .eq("is_active", true)
-      .is("deleted_at", null)
+    )
       .ilike("search_title", pattern)
       .limit(limit);
 
@@ -1277,7 +1287,8 @@ export const villaAdminRepository = {
     );
     if (cleaned.length === 0) return [];
 
-    const { data, error } = await dbAdmin
+    const { data, error } = await withPublicRentalVisibility(
+      dbAdmin
       .from("villa")
       .select(
         `
@@ -1295,9 +1306,8 @@ export const villaAdminRepository = {
         )
       `
       )
+    )
       .in("id", cleaned)
-      .eq("is_active", true)
-      .is("deleted_at", null)
       .order("is_cover", {
         referencedTable: "villa_images",
         ascending: false,
@@ -1426,6 +1436,25 @@ export const villaAdminRepository = {
   },
 
   /* ===============================================================
+     READ — kiralık ilan durumu (rezervasyon guard'ı, migration 103)
+     ===============================================================
+     Yalnız `id, listed_for_rent, deleted_at`. Filtre YOK (pasif/silinmiş
+     villa da okunur — guard yalnız satılık-only kuralını uygular, mevcut
+     diğer kurallar kendi katmanlarında AYNEN kalır).
+     Tüketici: app/services/reservation/_helpers/rental-listing-verify.ts */
+  async findRentalListingStatusById(id: string) {
+    return await dbAdmin
+      .from<{
+        id: string;
+        listed_for_rent: boolean | null;
+        deleted_at: string | null;
+      }>("villa")
+      .select("id, listed_for_rent, deleted_at")
+      .eq("id", id)
+      .maybeSingle();
+  },
+
+  /* ===============================================================
      READ — admin select list (/api/admin/villas GET delege)
      ===============================================================
      Slim projeksiyon (id, title, slug, is_active, deleted_at). Conditional:
@@ -1440,7 +1469,11 @@ export const villaAdminRepository = {
   async findAdminSelectList(activeOnly: boolean) {
     const baseQuery = dbAdmin
       .from("villa")
-      .select("id, title, slug, is_active, deleted_at");
+      /* 🛡️ 104/105 — `listed_for_rent` seçime EKLENDİ (filtre YOK):
+         satılık-only mülk eleme kuralı route'ta
+         (`filterRentalSelectList`), düzenleme ekranlarının mevcut
+         villasını koruyabilmesi için. */
+      .select("id, title, slug, is_active, deleted_at, listed_for_rent");
     return await (activeOnly
       ? baseQuery
           .eq("is_active", true)
@@ -1547,10 +1580,14 @@ export const villaAdminRepository = {
      deseni): `from<{id,title,slug}>` → consumer tip zinciri kırılmaz;
      runtime AYNI. Tek fark `db` → `dbAdmin`.
   =============================================================== */
+  /* 🛡️ SATILIK MODÜLÜ — tek tüketici manuel blok "ekle" formu (kiralık
+     bağlam) → satılık-only mülkler listelenmez (migration 103). */
   async findAllIdTitleSlug() {
-    return await dbAdmin
+    return await withRentalListing(
+      dbAdmin
       .from<{ id: string; title: string; slug: string }>("villa")
       .select("id, title, slug")
+    )
       .is("deleted_at", null);
   },
 
@@ -1578,11 +1615,11 @@ export const villaAdminRepository = {
     for (let page = 0; page < MAX_PAGES; page++) {
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      const { data, error } = await dbAdmin
+      const { data, error } = await withPublicRentalVisibility(
+        dbAdmin
         .from<{ slug: string | null; created_at: string | null }>("villa")
         .select("slug, created_at")
-        .eq("is_active", true)
-        .is("deleted_at", null)
+      )
         .range(from, to);
 
       if (error) {

@@ -41,6 +41,7 @@ import { getFaqs, type Faq } from "@/app/services/faq.service";
    BAŞINA AYRI cache key'i kullanılır (aşağıya bkz.) — çapraz-dil
    sızıntısı yapısal olarak imkânsız. */
 import { applyFaqTranslations } from "@/lib/i18n/get-faq-translations.server";
+import { isPublicRentalVillaRow } from "@/lib/db/villa-visibility";
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/config";
 import {
   getApprovedVillaReviews,
@@ -417,6 +418,8 @@ export const getCachedHomepageCollectionVillas = unstable_cache(
         guests: number | null;
         is_active: boolean | null;
         deleted_at: string | null;
+        /* 🛡️ 103 — eski cache/şema satırında yoksa kiralık sayılır. */
+        listed_for_rent?: boolean | null;
         location: { name: string } | null;
         villa_images: Array<{
           image_url: string | null;
@@ -441,7 +444,7 @@ export const getCachedHomepageCollectionVillas = unstable_cache(
       if (!v || !v.id) continue;
       /* Public visibility: pasif veya silinmiş villayı homepage'de
          gösterme (admin koleksiyonda bıraksa bile defensive). */
-      if (v.is_active === false || v.deleted_at != null) continue;
+      if (!isPublicRentalVillaRow(v)) continue;
 
       const rawImages = Array.isArray(v.villa_images) ? v.villa_images : [];
       const sortedImages = [...rawImages].sort((a, b) => {
@@ -594,6 +597,8 @@ export const getCachedDiscountCollectionVillas = unstable_cache(
         guests: number | null;
         is_active: boolean | null;
         deleted_at: string | null;
+        /* 🛡️ 103 — eski cache/şema satırında yoksa kiralık sayılır. */
+        listed_for_rent?: boolean | null;
         location: { name: string } | null;
         villa_images: Array<{
           image_url: string | null;
@@ -645,7 +650,7 @@ export const getCachedDiscountCollectionVillas = unstable_cache(
     for (const r of rows) {
       const v = r.villa;
       if (!v || !v.id) continue;
-      if (v.is_active === false || v.deleted_at != null) continue;
+      if (!isPublicRentalVillaRow(v)) continue;
 
       const rawImages = Array.isArray(v.villa_images) ? v.villa_images : [];
       const sortedImages = [...rawImages].sort((a, b) => {

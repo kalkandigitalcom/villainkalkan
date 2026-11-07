@@ -10,6 +10,9 @@ import {
   updateReservationStatus,
 } from "@/app/services/reservation.service";
 import { reservationServerRepository } from "@/lib/db/reservation.repository.server";
+import {
+  assertVillaAcceptsRentalBooking,
+} from "@/app/services/reservation/_helpers/rental-listing-verify";
 import type {
   ReservationCreateInput,
   ReservationStatusLegacy,
@@ -113,6 +116,9 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   try {
+    /* 🛡️ SATILIK MODÜLÜ — satılık-only mülke yeni rezervasyon YOK
+       (migration 103). Kiralık mülklerde guard geçer; hata → 400. */
+    await assertVillaAcceptsRentalBooking(body?.villa_id);
     const created = await createReservation(body, {
       insertRepository: reservationServerRepository,
     });

@@ -67,12 +67,12 @@ export default function Page() {
       try {
         /* Paralel fetch — manual row + villa list. Eski RSC ile
            aynı sıra/semantik (Promise.all). */
-        const [resvRes, villasRes] = await Promise.all([
-          adminFetch(
-            `/api/admin/manual-reservations/${encodeURIComponent(id)}`
-          ),
-          adminFetch("/api/admin/villas"),
-        ]);
+        /* 🛡️ SATILIK MODÜLÜ — villa listesi artık blok satırından SONRA
+           çekilir: liste yalnız kiralık mülkleri döner, bloğun MEVCUT
+           villası `includeId` ile korunur (kayıt değişmeden açılır). */
+        const resvRes = await adminFetch(
+          `/api/admin/manual-reservations/${encodeURIComponent(id)}`
+        );
 
         if (cancelled) return;
 
@@ -91,6 +91,14 @@ export default function Page() {
           return;
         }
         setReservation(resvJson.manual_reservation);
+
+        const currentVillaId = resvJson.manual_reservation.villa_id;
+        const villasRes = await adminFetch(
+          currentVillaId
+            ? `/api/admin/villas?includeId=${encodeURIComponent(currentVillaId)}`
+            : "/api/admin/villas"
+        );
+        if (cancelled) return;
 
         /* Villas fetch — fail-soft. Eski page'de hata → console.error
            + [] fallback. */

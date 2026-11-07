@@ -75,7 +75,7 @@ export const villaReviewServerRepository = {
       .select(
         `id, guest_name, rating, comment, created_at, is_featured,
        villa:villa_id (
-         id, slug, title, is_active, deleted_at,
+         id, slug, title, is_active, deleted_at, listed_for_rent,
          location:villa_locations(name),
          villa_images ( image_url, is_cover, sort_order )
        )`

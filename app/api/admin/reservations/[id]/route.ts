@@ -11,6 +11,9 @@ import {
   deleteReservationById,
 } from "@/app/services/reservation.service";
 import { reservationServerRepository } from "@/lib/db/reservation.repository.server";
+import {
+  assertVillaAcceptsRentalBooking,
+} from "@/app/services/reservation/_helpers/rental-listing-verify";
 import type { ReservationUpdateInput } from "@/app/services/reservation/types";
 
 /* ===============================================================
@@ -117,6 +120,18 @@ export async function PATCH(
        audit, mail dispatch). Hata mesajı caller'a aynen iletilir
        (BYTE-IDENTICAL toast). 040 admin-only RLS: server-context anon
        `db` UPDATE 0 row → silent fail; service-role repo geçilir. */
+    /* 🛡️ SATILIK MODÜLÜ — rezervasyon BAŞKA bir villaya taşınıyorsa
+       hedef satılık-only olamaz (migration 103). Villa değişmiyorsa
+       (veya body villa_id taşımıyorsa) guard hiç DB okumaz → mevcut
+       rezervasyonların düzenlenmesi AYNEN çalışır. */
+    const targetVillaId = (body as { villa_id?: unknown })?.villa_id;
+    if (typeof targetVillaId === "string" && targetVillaId.length > 0) {
+      const { data: existing } = await reservationServerRepository.findById(id);
+      await assertVillaAcceptsRentalBooking(targetVillaId, {
+        currentVillaId:
+          (existing as { villa_id?: string | null } | null)?.villa_id ?? null,
+      });
+    }
     await updateReservationFull(id, body, {
       repository: reservationServerRepository,
     });

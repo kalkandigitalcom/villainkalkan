@@ -7,6 +7,7 @@
    app-layer authz service/route sınırında. */
 import { villaReviewServerRepository as villaReviewRepository } from "@/lib/db/villa-review.repository.server";
 import { resolveVillaImageUrl } from "@/lib/storage.helpers";
+import { isPublicRentalVillaRow } from "@/lib/db/villa-visibility";
 /* 🛡️ Tarih doğrulaması projenin MEVCUT timezone mantığını kullanır
    (formatDateTr/formatDateForLocale ile aynı toIstanbulDate zinciri).
    Yeni timezone sistemi İCAT EDİLMEDİ. */
@@ -378,6 +379,8 @@ export async function getFeaturedHomepageReviews(): Promise<
       title: string | null;
       is_active: boolean | null;
       deleted_at: string | null;
+      /* 🛡️ 103 — yoksa kiralık sayılır (isPublicRentalVillaRow). */
+      listed_for_rent?: boolean | null;
       location: { name: string | null } | null;
       villa_images: VillaImageRow[] | null;
     } | null;
@@ -391,8 +394,7 @@ export async function getFeaturedHomepageReviews(): Promise<
     if (!v || !v.id || !v.slug) continue;
     /* Defansif: pasif veya silinmiş villaya ait testimonial homepage'de
        gösterilmesin. Public/SEO surface'i ile parity. */
-    if (v.is_active === false) continue;
-    if (v.deleted_at != null) continue;
+    if (!isPublicRentalVillaRow(v)) continue;
 
     /* Cover image — mapVilla / homepage collection pattern'i ile
        birebir aynı kural. */

@@ -7,6 +7,8 @@ import {
   deleteManualReservation as deleteManualReservationService,
   getVillaAvailabilitySnapshot as getVillaAvailabilitySnapshotService,
 } from "@/app/services/manualReservation.service";
+import { assertVillaAcceptsRentalBooking } from "@/app/services/reservation/_helpers/rental-listing-verify";
+import { manualReservationServerRepository } from "@/lib/db/manual-reservation.repository.server";
 
 /* ===============================================================
    🛡️ MANUAL RESERVATION — SERVER ACTIONS (thin wrapper, FAZ 4 S2)
@@ -24,6 +26,8 @@ export async function createManualReservationAction(
   ...args: Parameters<typeof createManualReservationService>
 ): ReturnType<typeof createManualReservationService> {
   await requirePermission("manual_reservations");
+  /* 🛡️ SATILIK MODÜLÜ — satılık-only mülke yeni blok YOK (migration 103). */
+  await assertVillaAcceptsRentalBooking(args[0]?.villa_id);
   return createManualReservationService(...args);
 }
 
@@ -31,6 +35,18 @@ export async function updateManualReservationAction(
   ...args: Parameters<typeof updateManualReservationService>
 ): ReturnType<typeof updateManualReservationService> {
   await requirePermission("manual_reservations");
+  /* 🛡️ SATILIK MODÜLÜ — blok BAŞKA bir villaya taşınıyorsa hedef
+     satılık-only olamaz. Villa değişmiyorsa guard DB okumadan geçer →
+     mevcut blokların düzenlenmesi AYNEN çalışır. */
+  const [blockId, patch] = args;
+  if (patch?.villa_id) {
+    const { data: existing } =
+      await manualReservationServerRepository.findById(blockId);
+    await assertVillaAcceptsRentalBooking(patch.villa_id, {
+      currentVillaId:
+        (existing as { villa_id?: string | null } | null)?.villa_id ?? null,
+    });
+  }
   return updateManualReservationService(...args);
 }
 

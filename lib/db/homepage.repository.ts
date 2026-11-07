@@ -69,6 +69,7 @@ export const homepageRepository = {
           guests,
           is_active,
           deleted_at,
+          listed_for_rent,
           location:villa_locations(name),
           villa_images (
             image_url,

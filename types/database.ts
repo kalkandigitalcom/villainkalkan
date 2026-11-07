@@ -90,6 +90,11 @@ export interface VillaRow {
   /* Visibility — migration 003 */
   is_active: boolean | null;
   deleted_at: string | null;
+  /* İlan türü — migration 103. Opsiyonel: eski satır/fixture'larda
+   *  yoksa kiralık sayılır (DB DEFAULT listed_for_rent=TRUE,
+   *  listed_for_sale=FALSE). */
+  listed_for_rent?: boolean;
+  listed_for_sale?: boolean;
   /* Ordering — migration 006 */
   sort_order: number;
   /* 🛡️ FAZ 26B — Minimum konaklama gece sayısı.

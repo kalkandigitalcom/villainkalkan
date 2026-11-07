@@ -44,6 +44,13 @@ vi.mock("@/lib/db/reservation.repository.server", () => ({
 vi.mock("@/app/services/reservation/_helpers/stay-verify", () => ({
   verifyPublicReservationStayRules: (...a: unknown[]) => verifyStay(...a),
 }));
+/* 🛡️ SATILIK MODÜLÜ — kiralık ilan guard'ı bu dosyanın kapsamı DIŞINDA
+   (fiyat akışı test ediliyor); test villası kiralık kabul edilir.
+   Guard davranışı: tests/unit/sale-only-reservation-guard.test.ts. */
+vi.mock("@/app/services/reservation/_helpers/rental-listing-verify", () => ({
+  assertVillaAcceptsRentalBooking: async () => undefined,
+  SALE_ONLY_RESERVATION_ERROR: "Bu mülk yalnızca satılıktır; rezervasyon oluşturulamaz.",
+}));
 vi.mock("@/lib/rate-limit", () => ({
   applyRateLimit: async () => null,
 }));

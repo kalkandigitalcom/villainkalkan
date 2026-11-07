@@ -9,6 +9,7 @@ import {
   VILLA_SELECT_LIST_READERS,
 } from "@/lib/auth/admin-permission-map";
 import { villaAdminRepository } from "@/lib/db/villa.repository.server";
+import { filterRentalSelectList } from "@/lib/db/villa-visibility";
 import { villaDiscountRepository } from "@/lib/db/villa-discount.repository.server";
 import { createVillaFull } from "@/app/services/villa-admin.service";
 import { invalidateVillasCache } from "@/lib/villas-cache-invalidation.server";
@@ -61,10 +62,14 @@ export async function GET(req: Request): Promise<NextResponse> {
      ek field'lar mevcut consumer'lar için harmless (type ignore). */
   let activeOnly = false;
   let hasDiscount = false;
+  /* 🛡️ SATILIK MODÜLÜ — includeId: düzenleme ekranlarının mevcut
+     villası (satılık-only olsa bile) listede korunur. */
+  let includeId: string | null = null;
   try {
     const params = new URL(req.url).searchParams;
     activeOnly = (params.get("activeOnly") || "") === "1";
     hasDiscount = (params.get("hasDiscount") || "") === "1";
+    includeId = (params.get("includeId") || "").trim() || null;
   } catch {
     /* URL parse hata → default */
   }
@@ -80,7 +85,11 @@ export async function GET(req: Request): Promise<NextResponse> {
     );
   }
 
-  let villas = data || [];
+  /* 🛡️ SATILIK MODÜLÜ (migration 103) — bu listenin TÜM tüketicileri
+     kiralık bağlamdadır (rezervasyon formları, manuel blok, ana sayfa /
+     indirim koleksiyonu, yorumlar). Satılık-only mülkler çıkarılır;
+     kiralık ve kiralık+satılık mülkler AYNEN döner. */
+  let villas = filterRentalSelectList(data || [], includeId);
 
   /* 🛡️ hasDiscount=1: TEK ek sorgu (villa_discounts.villa_id kolonu,
      tüm kayıtlar) → Set'e çevrilip in-memory filtre. Villa sayısından

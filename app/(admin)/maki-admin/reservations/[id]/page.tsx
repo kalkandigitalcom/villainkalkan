@@ -387,10 +387,16 @@ export default function AdminReservationDetailPage() {
   ---------------------------------------------- */
   useEffect(() => {
     /* 🛡️ FAZ 2 frontend purge — adminFetch GET /api/admin/villas.
-       Aynı select shape ({ id, title }). */
+       Aynı select shape ({ id, title }).
+       🛡️ SATILIK MODÜLÜ — liste yalnız kiralık mülkleri döner;
+       rezervasyonun MEVCUT villası (sonradan satılık-only yapılmış olsa
+       bile) `includeId` ile listede korunur → kayıt değişmeden açılır. */
+    if (!originalVillaId) return;
     (async () => {
       try {
-        const res = await adminFetch("/api/admin/villas");
+        const res = await adminFetch(
+          `/api/admin/villas?includeId=${encodeURIComponent(originalVillaId)}`
+        );
         const json = (await res.json().catch(() => ({}))) as {
           ok?: boolean;
           villas?: Array<{ id: string; title: string }>;
@@ -402,7 +408,7 @@ export default function AdminReservationDetailPage() {
         /* fail-soft: dropdown boş kalır. */
       }
     })();
-  }, []);
+  }, [originalVillaId]);
 
   /* ---------------------------------------------
      🔥 ORIGINAL VILLA ID — bir kez kilitlenir
