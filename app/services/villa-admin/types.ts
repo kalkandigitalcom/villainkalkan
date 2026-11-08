@@ -9,6 +9,8 @@
    eski tip ile birebir aynı. Compile-time drift YOK.
 =============================================================== */
 
+import type { ListingType } from "@/lib/sale-listing.helper";
+
 /** Wizard form state'inin service-side görünümü. Tüm alanlar
  *  opsiyonel (admin partial save yapabilir; defensive). */
 export type VillaForm = {
@@ -119,6 +121,9 @@ export type VillaFormPayload = {
   selectedRules?: string[];
   /** undefined → relation'a dokunulmaz (update). */
   selectedPriceIncludes?: string[];
+  /** 🛡️ Satılık modülü (migration 103) — ilan türü. undefined →
+   *  create'te DB DEFAULT (kiralık), update'te mevcut değer korunur. */
+  listingType?: ListingType;
 };
 
 /** updateVillaFull için VillaFormPayload + zorunlu id. */

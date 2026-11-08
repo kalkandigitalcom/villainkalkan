@@ -54,7 +54,7 @@ import {
    bu yüzden `tests/unit/translation-schema.test.ts` (migration 082
    SQL'ini doğrular) DEĞİŞMEDİ; burada test edilen şey KOD
    REGISTRY'sidir. `villa_location` (Phase 10I) ile AYNI desen. */
-describe("TRANSLATION_ENTITY_CONFIG — 10 tablo, doğru table/parentIdColumn", () => {
+describe("TRANSLATION_ENTITY_CONFIG — 11 tablo, doğru table/parentIdColumn", () => {
   const expected: Record<
     TranslationEntity,
     { table: string; parentIdColumn: string }
@@ -87,10 +87,15 @@ describe("TRANSLATION_ENTITY_CONFIG — 10 tablo, doğru table/parentIdColumn", 
       table: "payment_method_translations",
       parentIdColumn: "payment_method_id",
     },
+    /* 🛡️ MIGRATION 104 — satılık ilan çevirileri (Satılık İlanlar modülü). */
+    villa_sale_listing: {
+      table: "villa_sale_listing_translations",
+      parentIdColumn: "villa_id",
+    },
   };
 
-  it("tam olarak 10 entity içeriyor", () => {
-    expect(Object.keys(TRANSLATION_ENTITY_CONFIG)).toHaveLength(10);
+  it("tam olarak 11 entity içeriyor", () => {
+    expect(Object.keys(TRANSLATION_ENTITY_CONFIG)).toHaveLength(11);
   });
 
   /* 🛡️ PHASE 10I — REGRESYON KİLİDİ: bölge çevirisi geri gelmesin. */

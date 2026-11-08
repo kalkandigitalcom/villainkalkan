@@ -8,6 +8,7 @@ import { setVillaDistancesServer } from "../villa-distance.service.server";
 import { setVillaPricesServer } from "../villa-price.service.server";
 
 import { buildVillaCorePayload } from "./_helpers/payload";
+import { listingTypeColumns } from "./_helpers/listing-type";
 import { generateUniqueSlug } from "./_helpers/slug";
 import { sanitizeDistances } from "./_helpers/distances";
 import {
@@ -63,6 +64,7 @@ export async function updateVillaFull({
   prices,
   selectedRules,
   selectedPriceIncludes,
+  listingType,
 }: VillaUpdatePayload): Promise<true> {
 
   if (!form.title) {
@@ -81,12 +83,16 @@ export async function updateVillaFull({
      Predicate (.eq("id", id)) repo içinde aynen. */
   const { error } = await villaAdminRepository.updateVillaById(
     id,
-    buildVillaCorePayload({
-      form,
-      mapData,
-      selectedLocation,
-      slug,
-    })
+    {
+      ...buildVillaCorePayload({
+        form,
+        mapData,
+        selectedLocation,
+        slug,
+      }),
+      /* 🛡️ Satılık modülü — ilan türü (undefined → kolon gönderilmez). */
+      ...listingTypeColumns(listingType),
+    }
   );
 
   if (error) {

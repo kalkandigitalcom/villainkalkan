@@ -194,6 +194,19 @@ export const RELATION_METADATA: Readonly<Record<string, ReadonlyArray<RelationDe
     },
   ],
 
+  /* 🛡️ Migration 104 — villa_sale_listings → villa (admin satılık ilan
+     listesi: villa:villa_id(title, slug, is_active, deleted_at,
+     listed_for_rent, listed_for_sale)). */
+  villa_sale_listings: [
+    {
+      alias: "villa",
+      table: "villa",
+      cardinality: "one",
+      localKey: "villa_id",
+      foreignKey: "id",
+    },
+  ],
+
   /* manual_reservations → villa (liste: villa:villa_id(title)). */
   manual_reservations: [
     {

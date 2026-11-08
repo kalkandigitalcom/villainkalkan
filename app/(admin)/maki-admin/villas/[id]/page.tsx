@@ -39,6 +39,8 @@ import PricingCalendarCanvas from "@/app/components/admin/villa/PricingCalendarC
 import WizardStepBar from "@/app/components/admin/villa-form/WizardStepBar";
 import StickyActionBar from "@/app/components/admin/villa-form/StickyActionBar";
 import BasicInfoStep from "@/app/components/admin/villa-form/BasicInfoStep";
+import ListingTypeStep from "@/app/components/admin/villa-form/ListingTypeStep";
+import { listingTypeFromFlags, type ListingType } from "@/lib/sale-listing.helper";
 import AmenitiesStep from "@/app/components/admin/villa-form/AmenitiesStep";
 import LocationStep from "@/app/components/admin/villa-form/LocationStep";
 import PricingStep from "@/app/components/admin/villa-form/PricingStep";
@@ -160,6 +162,12 @@ export default function EditVilla() {
   ];
   const TOTAL_STEPS = STEPS.length;
   const [currentStep, setCurrentStep] = useState<number>(1);
+  /* 🛡️ Satılık modülü (migration 103) — ilan türü. `initialListingType`
+     DB'den yüklenen (son kaydedilen) değer: uyarı + audit "before" için. */
+  const [listingType, setListingType] = useState<ListingType>("rent");
+  const [initialListingType, setInitialListingType] = useState<
+    ListingType | undefined
+  >(undefined);
   const goNext = () =>
     setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS));
   const goBack = () =>
@@ -196,6 +204,13 @@ export default function EditVilla() {
         setBathroomLayout(
           hydrateVillaBathroomLayoutFromRow(data as Record<string, unknown>)
         );
+        {
+          const lt = listingTypeFromFlags(
+            data as { listed_for_rent?: boolean | null; listed_for_sale?: boolean | null }
+          );
+          setListingType(lt);
+          setInitialListingType(lt);
+        }
       }
 
       /* 🛡️ Migration 050 — grup köklerini gizle (AYNEN). */
@@ -292,6 +307,9 @@ export default function EditVilla() {
           youtubeVideos,
           bedroomLayout,
           bathroomLayout,
+          /* Yüklenmeden (initialListingType yok) ilan türü GÖNDERİLMEZ →
+             mevcut DB değeri aynen korunur. */
+          listingType: initialListingType !== undefined ? listingType : undefined,
         });
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: _omit, ...bodyPayload } = fullPayload;
@@ -336,6 +354,7 @@ export default function EditVilla() {
           prices,
         }),
       }).catch(() => {});
+      if (initialListingType !== undefined) setInitialListingType(listingType);
     } catch (err: unknown) {
       console.error("Update error:", err);
       const msg = err instanceof Error ? err.message : "Bir hata oluştu";
@@ -389,6 +408,13 @@ export default function EditVilla() {
         {/* STEP 1 — Detaylar / Açıklama / Badge / YouTube Videoları */}
         {currentStep === 1 && (
           <>
+            {/* 🛡️ Satılık modülü — ilan türü. */}
+            <ListingTypeStep
+              value={listingType}
+              onChange={setListingType}
+              villaId={id}
+              initialValue={initialListingType}
+            />
             <BasicInfoStep
               form={form}
               setForm={setFormLoose}

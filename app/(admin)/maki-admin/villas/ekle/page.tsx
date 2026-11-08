@@ -46,6 +46,8 @@ import PricingCalendarCanvas from "@/app/components/admin/villa/PricingCalendarC
 import WizardStepBar from "@/app/components/admin/villa-form/WizardStepBar";
 import StickyActionBar from "@/app/components/admin/villa-form/StickyActionBar";
 import BasicInfoStep from "@/app/components/admin/villa-form/BasicInfoStep";
+import ListingTypeStep from "@/app/components/admin/villa-form/ListingTypeStep";
+import type { ListingType } from "@/lib/sale-listing.helper";
 import AmenitiesStep from "@/app/components/admin/villa-form/AmenitiesStep";
 import LocationStep from "@/app/components/admin/villa-form/LocationStep";
 import PricingStep from "@/app/components/admin/villa-form/PricingStep";
@@ -169,6 +171,8 @@ export default function EditVilla() {
   ];
   const TOTAL_STEPS = STEPS.length;
   const [currentStep, setCurrentStep] = useState<number>(1);
+  /* 🛡️ Satılık modülü (migration 103) — ilan türü; yeni mülk kiralık başlar. */
+  const [listingType, setListingType] = useState<ListingType>("rent");
 
   const goNext = () => {
     // Step 1 zorunlu alan kontrolü (mevcut handleCreate guard ile aynı kural).
@@ -301,6 +305,7 @@ export default function EditVilla() {
               youtubeVideos,
               bedroomLayout,
               bathroomLayout,
+              listingType,
             })
           ),
         });
@@ -379,6 +384,8 @@ export default function EditVilla() {
         {/* STEP 1 — Detaylar / Açıklama / Badge / YouTube Videoları */}
         {currentStep === 1 && (
           <>
+            {/* 🛡️ Satılık modülü — ilan türü (varsayılan: kiralık). */}
+            <ListingTypeStep value={listingType} onChange={setListingType} />
             <BasicInfoStep
               form={form}
               setForm={setFormLoose}

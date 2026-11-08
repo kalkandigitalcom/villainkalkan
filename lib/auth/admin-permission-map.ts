@@ -28,6 +28,7 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
   { href: "/maki-admin/price-includes", need: "price_includes" },
   { href: "/maki-admin/locations", need: "locations" },
   { href: "/maki-admin/villa-listesi", need: "villa_lists" },
+  { href: "/maki-admin/sale-listings", need: "sale_listings" },
   { href: "/maki-admin/reservations", need: "reservations" },
   { href: "/maki-admin/manual-reservations", need: "manual_reservations" },
   { href: "/maki-admin/external-reservations", need: "external_calendars" },

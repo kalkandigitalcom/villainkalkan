@@ -18,6 +18,18 @@ import type { Locale } from "./config";
 
 /* ---------- Satır tipleri (migration 082 kolonlarıyla birebir) ---------- */
 
+/** 🛡️ MIGRATION 104 — villa_sale_listing_translations (yalnız 'tr'). */
+export type VillaSaleListingTranslationRow = {
+  id: string;
+  villa_id: string;
+  locale: Locale;
+  sale_description: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type VillaTranslationRow = {
   id: string;
   villa_id: string;
@@ -188,7 +200,10 @@ export type TranslationEntity =
      şema (parent_id + locale + çevrilebilir alan) BİREBİR aynı. */
   | "menu"
   /* 🛡️ MIGRATION 088 — aynı şema; ödeme yöntemi etiketleri. */
-  | "payment_method";
+  | "payment_method"
+  /* 🛡️ MIGRATION 104 — satılık ilan metinleri (parent = villa_id;
+     villa_sale_listings PK'si villa_id). */
+  | "villa_sale_listing";
 
 export type TranslationRowFor<E extends TranslationEntity> = E extends "villa"
   ? VillaTranslationRow
@@ -210,7 +225,9 @@ export type TranslationRowFor<E extends TranslationEntity> = E extends "villa"
                     ? MenuTranslationRow
                     : E extends "payment_method"
                       ? PaymentMethodTranslationRow
-                      : never;
+                      : E extends "villa_sale_listing"
+                        ? VillaSaleListingTranslationRow
+                        : never;
 
 export type TranslationEntityConfig = {
   /** migration 082 tablo adı. */
@@ -259,5 +276,10 @@ export const TRANSLATION_ENTITY_CONFIG: Record<
   payment_method: {
     table: "payment_method_translations",
     parentIdColumn: "payment_method_id",
+  },
+  /* 🛡️ MIGRATION 104 — satılık ilan çevirileri (UNIQUE villa_id, locale). */
+  villa_sale_listing: {
+    table: "villa_sale_listing_translations",
+    parentIdColumn: "villa_id",
   },
 };

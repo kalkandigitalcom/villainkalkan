@@ -351,4 +351,21 @@ export const reservationServerRepository = {
       )
       .order("created_at", { ascending: false });
   },
+
+  /* ===============================================================
+     READ — yaklaşan aktif rezervasyon var mı? (ilan türü değişikliği)
+     ===============================================================
+     Satılık modülü: kiralık bir villa "Sadece satılık" yapılmadan önce
+     ileri tarihli (end_date > bugün) pending/confirmed rezervasyonu
+     olup olmadığı kontrol edilir. YALNIZ SELECT; rezervasyon satırları
+     DEĞİŞMEZ. En fazla 1 satır okunur (varlık kontrolü). */
+  async findUpcomingActiveIdForVilla(villaId: string, todayYmd: string) {
+    return await dbAdmin
+      .from<{ id: string }>("reservations")
+      .select("id")
+      .eq("villa_id", villaId)
+      .in("status", ["pending", "confirmed"])
+      .gt("end_date", todayYmd)
+      .limit(1);
+  },
 };

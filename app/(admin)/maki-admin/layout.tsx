@@ -40,6 +40,7 @@ import {
   Wallet,
   Share2,
   Tag,
+  Building2,
 } from "lucide-react";
 
 import {
@@ -129,6 +130,12 @@ const menuGroups: MenuGroup[] = [
         href: "/maki-admin/villa-listesi",
         icon: Share2,
         permissionKey: "villa_lists",
+      },
+      {
+        name: "Satılık İlanlar",
+        href: "/maki-admin/sale-listings",
+        icon: Building2,
+        permissionKey: "sale_listings",
       },
     ],
   },

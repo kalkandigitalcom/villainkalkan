@@ -10,6 +10,10 @@ import {
 } from "@/lib/auth/admin-permission-map";
 import { villaAdminRepository } from "@/lib/db/villa.repository.server";
 import { filterRentalSelectList } from "@/lib/db/villa-visibility";
+import {
+  extractAdminContextFromRequest,
+  insertAdminActivityLog,
+} from "@/app/services/admin-activity-log.service";
 import { villaDiscountRepository } from "@/lib/db/villa-discount.repository.server";
 import { createVillaFull } from "@/app/services/villa-admin.service";
 import { invalidateVillasCache } from "@/lib/villas-cache-invalidation.server";
@@ -155,6 +159,18 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   try {
     const newId = await createVillaFull(body);
+    /* 🛡️ Satılık modülü — kiralık dışı ilan türüyle oluşturma server-side
+       audit'e yazılır (fail-safe). Varsayılan (kiralık) için ek kayıt yok. */
+    if (body?.listingType && body.listingType !== "rent") {
+      await insertAdminActivityLog(extractAdminContextFromRequest(req, auth.caller), {
+        action: "villa.listing_type_changed",
+        entity_type: "villa",
+        entity_id: newId,
+        entity_title: body.form?.title ?? null,
+        before_data: null,
+        after_data: { listing_type: body.listingType },
+      });
+    }
     /* 🛡️ Başarılı oluşturma → public villa listesi cache'i tazelenir. */
     invalidateVillasCache("admin.villas.create");
     return NextResponse.json({ ok: true, id: newId });

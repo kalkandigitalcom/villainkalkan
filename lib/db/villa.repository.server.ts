@@ -1447,9 +1447,10 @@ export const villaAdminRepository = {
       .from<{
         id: string;
         listed_for_rent: boolean | null;
+        listed_for_sale: boolean | null;
         deleted_at: string | null;
       }>("villa")
-      .select("id, listed_for_rent, deleted_at")
+      .select("id, listed_for_rent, listed_for_sale, deleted_at")
       .eq("id", id)
       .maybeSingle();
   },

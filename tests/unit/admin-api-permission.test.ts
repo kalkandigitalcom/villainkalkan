@@ -362,9 +362,11 @@ describe("C) her admin API handler'ı izin kontrolü içerir", () => {
   ]);
 
   /* +1: villas/[id]/gallery/upload-url (galeri direct-to-R2 imzalı URL).
-     −3: villa-license-checks (Belge Kontrol sistemi kaldırıldı). */
-  it("taranan dosya sayısı (56 admin API dosyası)", () => {
-    expect(files.length).toBe(56);
+     −3: villa-license-checks (Belge Kontrol sistemi kaldırıldı).
+     +3: sale-listings, sale-listings/[villaId], sale-listings/villa-options
+         (Satılık İlanlar modülü — "sale_listings" izni). */
+  it("taranan dosya sayısı (59 admin API dosyası)", () => {
+    expect(files.length).toBe(59);
   });
 
   for (const f of files) {

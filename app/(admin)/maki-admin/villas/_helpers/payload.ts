@@ -1,4 +1,5 @@
 import { slugifyTr } from "@/lib/slug";
+import type { ListingType } from "@/lib/sale-listing.helper";
 import type { VillaYouTubeVideo } from "@/lib/youtube.helper";
 import type {
   BedroomLayoutItem,
@@ -54,6 +55,9 @@ export type BuildVillaCreatePayloadInput = {
      Mevcut test'ler ve eski caller'lar bu alanları geçmese de kırılmaz. */
   bedroomLayout?: BedroomLayoutItem[];
   bathroomLayout?: BathroomLayoutItem[];
+  /* 🛡️ Satılık modülü — ilan türü; verilmezse payload'a HİÇ eklenmez
+     (eski key-set aynen → service DB default / mevcut değeri korur). */
+  listingType?: ListingType;
 };
 
 /* createVillaFull payload — ekle/handleCreate inline'ın aynen kopyası.
@@ -74,6 +78,7 @@ export function buildVillaCreatePayload(
     youtubeVideos,
     bedroomLayout,
     bathroomLayout,
+    listingType,
   } = input;
 
   /* 🛡️ Form spread BYTE-IDENTICAL eski payload ile:
@@ -107,6 +112,7 @@ export function buildVillaCreatePayload(
     // 🔥 master/relation — id arrays
     selectedRules,
     selectedPriceIncludes,
+    ...(listingType ? { listingType } : {}),
   };
 }
 
@@ -127,6 +133,9 @@ export type BuildVillaUpdatePayloadInput = {
      Mevcut test'ler ve eski caller'lar bu alanları geçmese de kırılmaz. */
   bedroomLayout?: BedroomLayoutItem[];
   bathroomLayout?: BathroomLayoutItem[];
+  /* 🛡️ Satılık modülü — ilan türü; verilmezse payload'a HİÇ eklenmez
+     (eski key-set aynen → service DB default / mevcut değeri korur). */
+  listingType?: ListingType;
 };
 
 /* updateVillaFull payload — [id]/handleUpdate inline'ın aynen kopyası.
@@ -151,6 +160,7 @@ export function buildVillaUpdatePayload(
     youtubeVideos,
     bedroomLayout,
     bathroomLayout,
+    listingType,
   } = input;
 
   /* 🛡️ Form spread BYTE-IDENTICAL eski payload ile:
@@ -181,5 +191,6 @@ export function buildVillaUpdatePayload(
     // 🔥 master/relation — id arrays
     selectedRules,
     selectedPriceIncludes,
+    ...(listingType ? { listingType } : {}),
   };
 }

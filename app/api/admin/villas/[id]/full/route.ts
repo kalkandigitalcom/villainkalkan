@@ -7,6 +7,15 @@ import {
 } from "@/lib/auth/action-authz";
 import { updateVillaFull } from "@/app/services/villa-admin.service";
 import { invalidateVillasCache } from "@/lib/villas-cache-invalidation.server";
+import {
+  checkListingTypeChange,
+  readCurrentListingType,
+} from "@/app/services/villa-admin/listing-type.service";
+import {
+  extractAdminContextFromRequest,
+  insertAdminActivityLog,
+} from "@/app/services/admin-activity-log.service";
+import { isListingType } from "@/lib/sale-listing.helper";
 import type { VillaUpdatePayload } from "@/app/services/villa-admin/types";
 
 /* ===============================================================
@@ -80,8 +89,43 @@ export async function PUT(
     );
   }
 
+  /* 🛡️ SATILIK MODÜLÜ — "Sadece satılık"a geçiş, ileri tarihli aktif
+     rezervasyonu olan villada reddedilir (rezervasyonlar DEĞİŞMEZ).
+     listingType gönderilmeyen / kiralık kalan güncellemelerde no-op. */
+  const listingTypeError = await checkListingTypeChange(
+    id,
+    (body as { listingType?: unknown })?.listingType
+  );
+  if (listingTypeError) {
+    return NextResponse.json(
+      { ok: false, error: listingTypeError },
+      { status: 409 }
+    );
+  }
+
+  /* 🛡️ Audit için önceki ilan türü — yalnız tür gönderildiyse okunur. */
+  const requestedListingType = (body as { listingType?: unknown })?.listingType;
+  const previousListingType = isListingType(requestedListingType)
+    ? await readCurrentListingType(id)
+    : null;
+
   try {
     await updateVillaFull({ id, ...body } as VillaUpdatePayload);
+    /* 🛡️ İlan türü değiştiyse server-side audit (fail-safe; asla throw etmez). */
+    if (
+      isListingType(requestedListingType) &&
+      previousListingType !== null &&
+      previousListingType !== requestedListingType
+    ) {
+      await insertAdminActivityLog(extractAdminContextFromRequest(req, auth.caller), {
+        action: "villa.listing_type_changed",
+        entity_type: "villa",
+        entity_id: id,
+        entity_title: body.form?.title ?? null,
+        before_data: { listing_type: previousListingType },
+        after_data: { listing_type: requestedListingType },
+      });
+    }
     /* 🛡️ Başarılı güncelleme (başlık/kapasite/bölge/fiyat/rozet…) →
        public villa listesi cache'i tazelenir. */
     invalidateVillasCache("admin.villas.full.update");

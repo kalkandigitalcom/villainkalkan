@@ -217,7 +217,9 @@ export type ActivityEntityType =
   | "offer_request"
   | "contact_message"
   /* FAZ 56B — external iCal sync entity (Airbnb/Booking/VRBO sync events) */
-  | "external_calendar";
+  | "external_calendar"
+  /* Migration 104 — satılık ilan (villa_sale_listings) */
+  | "sale_listing";
 
 export type ActivityLogPayload = {
   action: string; // dot.case: "villa.update", "reservation.status_change"

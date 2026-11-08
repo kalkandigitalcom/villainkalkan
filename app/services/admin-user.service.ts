@@ -197,6 +197,9 @@ export const SIDEBAR_PERMISSIONS: PermissionItem[] = [
   { key: "price_includes", label: "Fiyata Dahil", group: "Mülkler" },
   { key: "locations", label: "Bölgeler", group: "Mülkler" },
   { key: "villa_lists", label: "Mülk Listesi", group: "Mülkler" },
+  /* 🛡️ Satılık İlanlar (migration 104/106). Mevcut "villas" yetkili
+     admin'lere migration 107 ile idempotent grant edilir. */
+  { key: "sale_listings", label: "Satılık İlanlar", group: "Mülkler" },
 
   // Rezervasyon
   {
