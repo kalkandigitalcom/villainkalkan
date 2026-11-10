@@ -160,7 +160,9 @@ describe("HeaderWrapper — cache sarmalayıcılarını kullanır", () => {
 
     expect(getCachedMenuMock).toHaveBeenCalledTimes(1);
     expect(getMenuDirect).not.toHaveBeenCalled();
-    expect(el.props.menu).toEqual(CACHED_MENU);
+    /* 🌐 Aşama 5 — kodla eklenen "Satılık Villalar" öğesi menünün
+       SONUNA eklenir; cache'ten gelen öğeler AYNEN korunur. */
+    expect(el.props.menu).toEqual([...CACHED_MENU, expect.objectContaining({ href: "/satilik-villalar" })]);
   });
 
   it("2) settings CACHE'ten okunur, `getPublicSettings()` DOĞRUDAN çağrılmaz", async () => {
@@ -188,7 +190,9 @@ describe("HeaderWrapper — cache sarmalayıcılarını kullanır", () => {
 
     expect(el.props.siteLogo).toBeNull();
     expect(el.props.trHomeHref).toBe("/");
-    expect(el.props.menu).toEqual([]);
+    /* Menü okunamazsa da yalnız kodla eklenen "Satılık Villalar"
+       öğesi kalır (DB'den hiçbir öğe gelmez — önceki fallback). */
+    expect(el.props.menu).toEqual([expect.objectContaining({ href: "/satilik-villalar" })]);
   });
 });
 

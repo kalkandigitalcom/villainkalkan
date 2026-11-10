@@ -55,6 +55,8 @@ const EXACT_LOCALE_ROUTED_PATHS: readonly string[] = [
   /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — `/en|de/blog` GERÇEK route dosyası
      var (ortak `BlogIndexPageBody` + `blog_post_translations`). */
   "/blog",
+  /* 🌐 SATILIK VİLLALAR (Aşama 5) — EN kök + /tr route dosyaları. */
+  "/satilik-villalar",
 ];
 
 /** Dinamik segment taşıyan (ör. `[slug]`) route'ların base prefix'leri.
@@ -87,6 +89,8 @@ const PREFIXED_LOCALE_ROUTED_PATHS: readonly string[] = [
      değiştirici bu sayfalarda ana sayfaya düşüyordu. */
   "/villa-turleri/",
   "/bolgeler/",
+  /* 🌐 SATILIK VİLLA DETAY — /satilik-villa/[slug] + /tr karşılığı. */
+  "/satilik-villa/",
 ];
 
 /**

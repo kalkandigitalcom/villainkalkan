@@ -26,6 +26,11 @@ import {
   type PublicHomeResolution,
 } from "@/lib/i18n/public-home";
 import { buildLocaleAlternates } from "@/lib/i18n/seo-alternates";
+import { listPublicSaleSitemapRows } from "@/app/services/sale-listing-public.service";
+import {
+  SALE_ARCHIVE_PATH,
+  saleDetailPath,
+} from "@/lib/sale-listing-public.helper";
 
 /* ===============================================================
    🛡️ SITEMAP — Next.js App Router (production-grade, dynamic)
@@ -254,6 +259,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
+  /* ---------- 🌐 SATILIK VİLLALAR (Aşama 5) ----------
+     Liste sayfası her zaman; detaylar YALNIZ public görünür ilanlar
+     (yayında + aktif + satılık villa — listPublicSaleSitemapRows).
+     Taslak / yayından kaldırılmış ilan sitemap'e GİRMEZ. Fail-soft. */
+  let saleEntries: MetadataRoute.Sitemap = [
+    {
+      url: url(SALE_ARCHIVE_PATH),
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.8,
+      ...(multilingualEnabled
+        ? { alternates: { languages: languageAlternates(SALE_ARCHIVE_PATH) } }
+        : {}),
+    },
+  ];
+  try {
+    const saleRows = await listPublicSaleSitemapRows();
+    saleEntries = saleEntries.concat(
+      saleRows.map((r) => ({
+        url: url(saleDetailPath(r.slug)),
+        lastModified: toDate(r.lastModified),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+        ...(multilingualEnabled
+          ? { alternates: { languages: languageAlternates(saleDetailPath(r.slug)) } }
+          : {}),
+      }))
+    );
+  } catch (err) {
+    console.error(
+      "[sitemap] sale fetch EXCEPTION:",
+      err instanceof Error ? err.message : err
+    );
+  }
+
   /* ---------- DİNAMİK: SEO LANDING (/villa-turleri, /bolgeler) ----------
      Yalnız slug'lı + en az 1 aktif villalı kategori ve bölge GRUP
      KÖKLERİ (alt bölgeler ASLA). Kaynak: mevcut taxonomy/villa sayaç
@@ -368,6 +408,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticEntries,
     ...landingEntries,
     ...villaEntries,
+    ...saleEntries,
     ...pageEntries,
     ...blogIndexEntry,
     ...blogEntries,

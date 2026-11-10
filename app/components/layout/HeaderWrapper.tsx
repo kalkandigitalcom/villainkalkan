@@ -13,6 +13,7 @@ import Header from "./Header";
    mekanizması KURULMADI; tag'ler ("settings" / "menu") ve
    revalidateSettings()/revalidateMenu() invalidation yolu AYNEN. */
 import { getCachedMenu, getCachedSettings } from "@/lib/cache.helpers";
+import { withSaleVillasNavItem } from "@/lib/sale-listing-public.helper";
 import { resolveAssetUrlVersioned } from "@/lib/storage.helpers";
 /* 🛡️ PHASE 10H — `source_type: "category"` menü öğeleri villa tipi
    adını gösterir; EN/DE karşılıkları migration 082'deki
@@ -229,6 +230,11 @@ export default async function HeaderWrapper() {
     console.error("❌ HeaderWrapper menu error:", err);
     menuItems = [];
   }
+
+  /* 🌐 SATILIK VİLLALAR — ana navigasyon + mobil menü (aynı `menu`
+     dizisi). Kodla eklenir, DB menüsü DEĞİŞMEZ; admin menüsünde zaten
+     /satilik-villalar öğesi varsa eklenmez. */
+  menuItems = withSaleVillasNavItem(menuItems);
 
   return (
     <Header

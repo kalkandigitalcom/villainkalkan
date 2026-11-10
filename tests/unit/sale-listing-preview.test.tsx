@@ -153,6 +153,7 @@ const viewData = (status: "draft" | "published" | "unpublished"): SaleVillaDetai
   map: { mapType: "coords", latitude: 36.2, longitude: 29.4, mapEmbed: null },
   siteWhatsappLink: null,
   sitePhone: null,
+  seo: { title: null, description: null },
 });
 
 beforeEach(() => {
@@ -347,13 +348,19 @@ function walk(dir: string): string[] {
 }
 
 describe("güvenlik kilitleri", () => {
-  it("önizleme YALNIZ /maki-admin altında; public rotalarda satılık detay/önizleme yok", () => {
+  it("önizleme YALNIZ /maki-admin altında; public rotalar yalnız 'public' modunu kullanır", () => {
     expect(saleListingPreviewHref(V)).toBe(`/maki-admin/sale-listings/${V}/onizleme`);
+    /* Aşama 5: public sayfalar ortak modül üzerinden çalışır; hiçbir
+       public dosya önizleme modunu / önizleme bileşenini kullanamaz. */
     const publicFiles = walk(join(root, "app/(public)"));
     for (const f of publicFiles) {
       const src = readFileSync(f, "utf-8");
-      expect(src, f).not.toMatch(/SaleVillaDetail|sale-villa-detail|loadSaleVillaDetail/);
+      expect(src, f).not.toMatch(/mode:\s*"preview"|SalePreviewBanner|loadSaleVillaDetail/);
     }
+    const route = read("app/components/sale/sale-public-route.tsx");
+    expect(route).toContain('mode: "public"');
+    expect(route).not.toContain('mode: "preview"');
+    expect(route).not.toContain("SalePreviewBanner");
   });
 
   it("'?preview=true' gibi bir bayrak hiçbir satılık kodunda okunmuyor", () => {
@@ -378,9 +385,12 @@ describe("güvenlik kilitleri", () => {
     expect(l).toBeGreaterThan(g);
   });
 
-  it("sitemap satılık / önizleme adresi içermiyor; robots /maki-admin'i kapatıyor", () => {
+  it("sitemap önizleme adresi içermiyor; robots /maki-admin'i kapatıyor", () => {
+    /* Aşama 5: sitemap yayındaki satılık ilanları içerir (yalnız
+       public görünür satırlar); önizleme / admin adresi ASLA. */
     const sitemap = read("app/sitemap.ts");
-    expect(sitemap).not.toMatch(/satilik|sale-listing|onizleme/);
+    expect(sitemap).not.toMatch(/onizleme|maki-admin\/sale/);
+    expect(sitemap).toContain("listPublicSaleSitemapRows()");
     expect(read("app/robots.ts")).toMatch(/DISALLOW_PATHS[\s\S]*?"\/maki-admin"/);
     expect(read("middleware.ts")).toContain('"/maki-admin/:path*"');
   });

@@ -119,6 +119,65 @@ export const saleListingRepository = {
       .order("title", { ascending: true });
   },
 
+  /* ===============================================================
+     🌐 PUBLIC OKUMALAR (Aşama 5) — yalnız YAYINDAKİ ilanlar
+     ===============================================================
+     SQL seviyesinde: is_published = true AND publication_status =
+     'published'. Villa koşulları (aktif, silinmemiş, listed_for_sale)
+     embed üzerinden gelir ve servis katmanında
+     `isPublicSaleListingVisible` ile AYRICA uygulanır (çift kapı). */
+
+  /** Public liste kartları (villa + bölge + görseller embed). */
+  async findPublishedPublicCards() {
+    return await dbAdmin
+      .from("villa_sale_listings")
+      .select(
+        `
+        villa_id, reference_code, sale_price, sale_currency, price_on_request,
+        sale_status, property_type, room_layout, bathrooms, built_area_m2,
+        plot_area_m2, sale_sort_order, is_featured, is_published,
+        publication_status, published_at, created_at,
+        villa:villa_id (
+          id, title, slug, is_active, deleted_at, listed_for_sale,
+          location_id, bedrooms, bathrooms,
+          location:villa_locations(name),
+          villa_images ( image_url, is_cover, sort_order )
+        )
+      `
+      )
+      .eq("is_published", true)
+      .eq("publication_status", "published")
+      .order("sale_sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
+  },
+
+  /** Sitemap — yayındaki ilanların slug + tarih bilgisi. */
+  async findPublishedSitemapRows() {
+    return await dbAdmin
+      .from("villa_sale_listings")
+      .select(
+        `
+        villa_id, is_published, publication_status, published_at, updated_at,
+        villa:villa_id ( slug, is_active, deleted_at, listed_for_sale )
+      `
+      )
+      .eq("is_published", true)
+      .eq("publication_status", "published");
+  },
+
+  /** Public detay — slug → villa id (yalnız satılık, aktif, silinmemiş
+   *  villa). İlanın yayın kontrolü yükleyicide (`mode: "public"`). */
+  async findSaleVillaIdBySlug(slug: string) {
+    return await dbAdmin
+      .from<{ id: string }>("villa")
+      .select("id")
+      .eq("slug", slug)
+      .eq("listed_for_sale", true)
+      .eq("is_active", true)
+      .is("deleted_at", null)
+      .maybeSingle();
+  },
+
   /** Seçenek listesinden düşülecek: zaten ilanı olan villa id'leri. */
   async findAllVillaIds() {
     return await dbAdmin

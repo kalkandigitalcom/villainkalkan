@@ -168,5 +168,11 @@ export async function loadSaleVillaDetail(
     },
     siteWhatsappLink: settings?.whatsapp_link ?? null,
     sitePhone: settings?.phone ?? null,
+    seo: {
+      title:
+        ((resolveTranslatedField(trRow?.seo_title, listing.seo_title) as string | null) || "").trim() || null,
+      description:
+        ((resolveTranslatedField(trRow?.seo_description, listing.seo_description) as string | null) || "").trim() || null,
+    },
   };
 }

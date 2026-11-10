@@ -40,6 +40,13 @@ vi.mock("@/lib/db/blog.repository", () => ({
     findActiveSlugs: (...args: unknown[]) => findActiveSlugsMock(...args),
   },
 }));
+/* 🌐 Satılık villalar (Aşama 5) — bu dosya kiralık/CMS/blog sitemap'ini
+   test eder; satılık ilan satırları boş döner (yalnız /satilik-villalar
+   liste entry'si eklenir). Satılık sitemap davranışı:
+   tests/unit/sale-public-pages.test.tsx. */
+vi.mock("@/app/services/sale-listing-public.service", () => ({
+  listPublicSaleSitemapRows: async () => [],
+}));
 vi.mock("@/lib/cache.helpers", () => ({
   getCachedSettings: (...args: unknown[]) => getCachedSettingsMock(...args),
 }));
@@ -215,8 +222,9 @@ describe("sitemap() — URL yapısı: EN prefix'siz (varsayılan), TR /tr", () =
     expect(blogAlt.languages.en).toBe("https://example.com/blog/ilk-yazi");
     expect(blogAlt.languages["x-default"]).toBe(blogAlt.languages.en);
 
-    // 9 İngilizce entry (4 statik + 2 villa + 1 page + 1 blog-index + 1 blog) + 9 Türkçe kardeş
-    expect(entries).toHaveLength(18);
+    // 10 İngilizce entry (4 statik + 2 villa + 1 satılık liste + 1 page +
+    // 1 blog-index + 1 blog) + 10 Türkçe kardeş
+    expect(entries).toHaveLength(20);
   });
 
   it("10b) villa fetch exception atarsa (fail-soft) diğer entry'ler yine döner (ÖNCEKİ davranış)", async () => {

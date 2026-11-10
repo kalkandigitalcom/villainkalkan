@@ -58,4 +58,9 @@ export type SaleVillaDetailData = {
   };
   siteWhatsappLink: string | null;
   sitePhone: string | null;
+  /** İlanın SEO alanları (TR'de çeviri, boşsa İngilizce canonical). */
+  seo: {
+    title: string | null;
+    description: string | null;
+  };
 };
