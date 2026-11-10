@@ -326,3 +326,102 @@ export function isUuid(v: unknown): v is string {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
   );
 }
+
+/* ---------------- PUBLIC GÖRÜNÜRLÜK (Aşama 5 + önizleme) */
+
+/**
+ * Satılık ilanın NORMAL ziyaretçiye gösterilip gösterilemeyeceği — tek
+ * kural. Taslak / yayından kaldırılmış ilan, satılık olmayan, pasif veya
+ * silinmiş villa → ASLA. Admin önizlemesi bu kontrolü BİLİNÇLİ olarak
+ * atlar (yetki kontrolünden sonra); public sorgular bunu kullanmak
+ * zorundadır.
+ */
+export function isPublicSaleListingVisible(
+  listing:
+    | { is_published?: boolean | null; publication_status?: string | null }
+    | null
+    | undefined,
+  villa:
+    | {
+        is_active?: boolean | null;
+        deleted_at?: string | null;
+        listed_for_sale?: boolean | null;
+      }
+    | null
+    | undefined
+): boolean {
+  if (!listing || !villa) return false;
+  if (listing.is_published !== true) return false;
+  if (listing.publication_status !== "published") return false;
+  if (villa.listed_for_sale !== true) return false;
+  if (villa.is_active === false) return false;
+  if (villa.deleted_at) return false;
+  return true;
+}
+
+/**
+ * WhatsApp bağlantısı: ilanın danışman numarası öncelikli, yoksa site
+ * genel WhatsApp bağlantısı. Mesaj URL-encode edilir. Uygun numara yoksa
+ * null (buton gösterilmez).
+ */
+export function buildSaleWhatsappHref(
+  agentWhatsapp: string | null | undefined,
+  siteWhatsappLink: string | null | undefined,
+  message: string
+): string | null {
+  const digits = (agentWhatsapp || "").replace(/\D/g, "");
+  const text = encodeURIComponent(message);
+  if (digits.length >= 8) return `https://wa.me/${digits}?text=${text}`;
+  const site = (siteWhatsappLink || "").trim();
+  if (!site) return null;
+  try {
+    const u = new URL(site);
+    if (!/^(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com|whatsapp\.com)$/i.test(u.hostname)) {
+      return site;
+    }
+    u.searchParams.set("text", message);
+    return u.toString();
+  } catch {
+    return null;
+  }
+}
+
+/** tel: bağlantısı (yalnız rakam ve baştaki +). */
+export function buildSalePhoneHref(phone: string | null | undefined): string | null {
+  const raw = (phone || "").trim();
+  if (!raw) return null;
+  const cleaned = raw.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
+  return cleaned.replace(/\D/g, "").length >= 6 ? `tel:${cleaned}` : null;
+}
+
+/** Satış fiyatı biçimi (kuruşsuz). EN → en-GB, TR → tr-TR gruplama. */
+export function formatSalePrice(
+  amount: number,
+  currency: string,
+  locale: "en" | "tr"
+): string {
+  try {
+    return new Intl.NumberFormat(locale === "tr" ? "tr-TR" : "en-GB", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch {
+    return `${Math.round(amount)} ${currency}`;
+  }
+}
+
+/* ---------------- ADMIN ÖNİZLEME YOLU */
+
+/** Admin önizleme adresi (yalnız /maki-admin altında — public rotada
+ *  önizleme modu YOK). */
+export function saleListingPreviewHref(villaId: string, locale?: "en" | "tr"): string {
+  const base = `/maki-admin/sale-listings/${encodeURIComponent(villaId)}/onizleme`;
+  return locale === "tr" ? `${base}?lang=tr` : base;
+}
+
+/** /maki-admin/sale-listings/<villaId>/onizleme — admin kabuğu olmadan
+ *  render edilen önizleme yolu (maki-admin/layout.tsx). */
+export function isSaleListingPreviewPath(pathname: string | null | undefined): boolean {
+  return /^\/maki-admin\/sale-listings\/[^/]+\/onizleme\/?$/.test(pathname || "");
+}

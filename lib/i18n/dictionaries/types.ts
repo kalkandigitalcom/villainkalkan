@@ -1496,6 +1496,62 @@ export type Dictionary = {
     filtersAriaLabel: string;
   };
 
+  /* 🛡️ SATILIK İLAN DETAYI (admin önizleme; Aşama 5 public sayfa aynı
+     bileşeni kullanır). `whatsappMessage`: formatDictionaryString — `{title}`, `{ref}`. */
+  sale: {
+    previewBannerTitle: string;
+    previewBannerPublished: string;
+    previewBannerBody: string;
+    previewStatusLabel: string;
+    previewLanguageLabel: string;
+    previewBackToAdmin: string;
+    previewContactDisabled: string;
+    forSale: string;
+    referenceLabel: string;
+    priceLabel: string;
+    priceOnRequest: string;
+    statusAvailable: string;
+    statusReserved: string;
+    statusSold: string;
+    factsTitle: string;
+    factRooms: string;
+    factBedrooms: string;
+    factBathrooms: string;
+    factBuiltArea: string;
+    factPlotArea: string;
+    factFloors: string;
+    factYearBuilt: string;
+    descriptionTitle: string;
+    descriptionEmpty: string;
+    generalFeaturesTitle: string;
+    generalFeaturesEmpty: string;
+    technicalTitle: string;
+    techPropertyType: string;
+    techRoomLayout: string;
+    techGardenArea: string;
+    techTitleDeed: string;
+    techSaleStatus: string;
+    techReference: string;
+    yes: string;
+    no: string;
+    locationTitle: string;
+    contactTitle: string;
+    contactBody: string;
+    contactWhatsapp: string;
+    contactPhone: string;
+    whatsappMessage: string;
+    sqm: string;
+    propertyTypes: {
+      villa: string;
+      detached_house: string;
+      apartment: string;
+      duplex: string;
+      land: string;
+      commercial: string;
+      other: string;
+    };
+  };
+
   /* 🛡️ PUBLIC ÇOKLU DİL TAMAMLAMA — global 404 (app/not-found.tsx). */
   notFound: {
     metaTitle: string;

@@ -609,3 +609,101 @@ describe("migration 106 / 107", () => {
     expect(code("db/migrations/105_short_gaps_rental_only.sql")).toMatch(/AND v\.listed_for_rent = true;/);
   });
 });
+
+/* ================================================================ 6
+   🛡️ "İlan okunamadı" KÖK NEDEN KİLİDİ (2026-11)
+   Production'da kod deploy edildi ama migration 106 uygulanmadı →
+   `column "property_type" does not exist` (42703) her okumayı düşürüyordu
+   ve admin yalnız genel "İlan okunamadı" görüyordu (yerel PG'de yeniden
+   üretildi). Artık şema hatası ayrı ve açık raporlanır; sorgu kolonları
+   migration'larla senkron kilitlenir.
+================================================================ */
+import {
+  SALE_SCHEMA_OUTDATED_ERROR,
+  listSaleListings,
+} from "@/app/services/sale-listing.service";
+import { GET as itemGET } from "@/app/api/admin/sale-listings/[villaId]/route";
+
+describe("hata sınıflandırma — şema eksikliği vs. bulunamadı vs. yetki", () => {
+  const undefinedColumn = { message: 'column "property_type" does not exist', code: "42703" };
+
+  it("eksik kolon (migration 106 yok) → 503 + açık şema mesajı; güvenli log", async () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    repo.findByVillaId.mockResolvedValueOnce({ data: null, error: undefinedColumn });
+    const r = await getSaleListing(V_SALE);
+    expect(r).toEqual({ ok: false, status: 503, error: SALE_SCHEMA_OUTDATED_ERROR });
+    expect(spy).toHaveBeenCalledWith("[saleListing.get] FAILED", {
+      code: "42703",
+      message: 'column "property_type" does not exist',
+      villaId: V_SALE,
+    });
+    repo.findAllForAdmin.mockResolvedValueOnce({ data: null, error: undefinedColumn });
+    expect(await listSaleListings()).toMatchObject({ ok: false, status: 503 });
+  });
+
+  it("eksik tablo (42P01) da şema hatası sayılır", async () => {
+    repo.findByVillaId.mockResolvedValueOnce({ data: null, error: { message: 'relation "x" does not exist', code: "42P01" } });
+    expect(await getSaleListing(V_SALE)).toMatchObject({ status: 503 });
+  });
+
+  it("diğer DB hatası → 500 + hata kodu; çeviri hatası ayrı mesaj", async () => {
+    repo.findByVillaId.mockResolvedValueOnce({ data: null, error: { message: "timeout", code: "57014" } });
+    expect(await getSaleListing(V_SALE)).toEqual({
+      ok: false,
+      status: 500,
+      error: "İlan okunamadı (DB hata kodu: 57014)",
+    });
+    repo.findByVillaId.mockResolvedValueOnce({ data: listingRow(V_SALE), error: null });
+    trRepo.findOne.mockResolvedValueOnce({ data: null, error: { message: "x", code: "08006" } });
+    expect(await getSaleListing(V_SALE)).toMatchObject({ status: 500, error: "Türkçe çeviri okunamadı (DB hata kodu: 08006)" });
+  });
+
+  it("route GET: 503 / 404 / 403 / 400 ayrı durum ve mesaj taşır", async () => {
+    const get = (id: string) => itemGET(req(`/api/admin/sale-listings/${id}`), ctx(id));
+    repo.findByVillaId.mockResolvedValueOnce({ data: null, error: undefinedColumn });
+    const schema = await get(V_SALE);
+    expect(schema.status).toBe(503);
+    expect((await schema.json()).error).toBe(SALE_SCHEMA_OUTDATED_ERROR);
+
+    const missing = await get(V_SALE);
+    expect(missing.status).toBe(404);
+    expect((await missing.json()).error).toBe("İlan bulunamadı");
+
+    expect((await get("not-a-uuid")).status).toBe(400);
+
+    callerHasPermission.mockResolvedValueOnce(false);
+    const forbidden = await get(V_SALE);
+    expect(forbidden.status).toBe(403);
+    expect((await forbidden.json()).error).toBe("Bu işlem için yetkiniz yok");
+  });
+
+  it("detay sayfası API'ye ilan id'si değil villa id'si (PK) gönderir", () => {
+    const page = read("app/(admin)/maki-admin/sale-listings/[villaId]/page.tsx");
+    expect(page).toContain("adminFetch(`/api/admin/sale-listings/${encodeURIComponent(villaId)}`)");
+    expect(read("app/(admin)/maki-admin/sale-listings/_components/SaleListingList.tsx")).toContain(
+      "href={`/maki-admin/sale-listings/${r.villa_id}`}"
+    );
+    expect(code("db/migrations/104_villa_sale_listings.sql")).toMatch(/villa_id\s+uuid PRIMARY KEY/);
+  });
+
+  it("repository'nin okuduğu her kolon 104 veya 106 migration'ında tanımlı (şema drift kilidi)", async () => {
+    const { SALE_LISTING_COLUMNS } = await vi.importActual<
+      typeof import("@/lib/db/sale-listing.repository.server")
+    >("@/lib/db/sale-listing.repository.server");
+    const cols = SALE_LISTING_COLUMNS.split(",").map((c) => c.trim()).filter(Boolean);
+    const m104 = code("db/migrations/104_villa_sale_listings.sql");
+    const t104 = m104.slice(
+      m104.indexOf("CREATE TABLE IF NOT EXISTS public.villa_sale_listings ("),
+      m104.indexOf("CREATE TABLE IF NOT EXISTS public.villa_sale_listing_translations")
+    );
+    const m106 = code("db/migrations/106_sale_listing_admin_fields.sql");
+    const defined104 = new Set([...t104.matchAll(/^\s{2}([a-z_0-9]+)\s+(?:uuid|text|numeric|boolean|integer|timestamptz)/gm)].map((x) => x[1]));
+    const defined106 = new Set([...m106.matchAll(/ADD COLUMN IF NOT EXISTS ([a-z_0-9]+)/g)].map((x) => x[1]));
+    const missing = cols.filter((c) => !defined104.has(c) && !defined106.has(c));
+    expect(missing).toEqual([]);
+    /* 106 kolonları gerçekten sorguda → 106 production ön koşulu. */
+    expect(cols.filter((c) => defined106.has(c)).sort()).toEqual(
+      ["bathrooms", "is_featured", "property_type", "publication_status", "published_at"]
+    );
+  });
+});

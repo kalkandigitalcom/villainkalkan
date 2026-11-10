@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   Building2,
   ChevronLeft,
+  Eye,
   ChevronRight,
   Pencil,
   Search,
@@ -20,6 +21,7 @@ import { formatMoney } from "@/lib/format";
 import {
   PUBLICATION_STATUSES,
   PUBLICATION_STATUS_LABELS,
+  saleListingPreviewHref,
   type PublicationStatus,
 } from "@/lib/sale-listing.helper";
 import {
@@ -302,6 +304,18 @@ export default function SaleListingList({
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1.5">
+                        {/* 🛡️ Önizleme — her yayın durumunda (taslak / yayında /
+                            kaldırılmış). Yetki kontrolü önizleme sayfasında. */}
+                        <a
+                          href={saleListingPreviewHref(r.villa_id)}
+                          target="_blank"
+                          rel="noopener"
+                          aria-label={`${r.villa?.title || "İlan"} önizle`}
+                          className="inline-flex items-center gap-1.5 text-[13px] text-[var(--color-stone-700)] hover:text-[var(--color-stone-900)] px-3 py-1.5 rounded-lg border border-transparent hover:bg-white hover:border-[var(--color-champagne-300)]"
+                        >
+                          <Eye size={13} />
+                          Önizle
+                        </a>
                         <Link
                           href={`/maki-admin/sale-listings/${r.villa_id}`}
                           className="inline-flex items-center gap-1.5 text-[13px] text-[var(--color-stone-700)] hover:text-[var(--color-stone-900)] px-3 py-1.5 rounded-lg border border-transparent hover:bg-white hover:border-[var(--color-champagne-300)]"

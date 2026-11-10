@@ -60,6 +60,53 @@ export type SaleListingDetail = {
 type Fail = { ok: false; error: string; status: number };
 const fail = (error: string, status = 400): Fail => ({ ok: false, error, status });
 
+/* ===============================================================
+   🛡️ DB HATA SINIFLANDIRMA + GÜVENLİ LOG
+   ===============================================================
+   Kök neden (2026-11): kod, migration 106 production'da uygulanmadan
+   deploy edildiğinde her okuma `column "property_type" does not exist`
+   (SQLSTATE 42703) ile düşüyor, admin yalnız genel "İlan okunamadı"
+   görüyordu. Artık:
+     • 42703 (undefined_column) / 42P01 (undefined_table) → 503 + açık
+       "veritabanı şeması güncel değil" mesajı (hangi migration).
+     • Diğer DB hataları → 500 + bağlama özel mesaj + hata kodu.
+   Log: yalnız bağlam, SQLSTATE ve PostgreSQL mesajı (kolon/tablo adı
+   içerir; kullanıcı verisi, bağlantı dizesi, şifre İÇERMEZ). */
+export const SALE_SCHEMA_OUTDATED_ERROR =
+  "Satılık ilan veritabanı şeması güncel değil (eksik kolon veya tablo). Satılık modülü migration'larının (103, 104, 106) veritabanında uygulandığını doğrulayın; ayrıntı sunucu logunda.";
+
+const SCHEMA_ERROR_CODES = new Set(["42703", "42P01"]);
+
+export function isSaleSchemaError(error: { code?: string } | null | undefined): boolean {
+  return !!error?.code && SCHEMA_ERROR_CODES.has(error.code);
+}
+
+function logDbError(
+  context: string,
+  error: { message?: string; code?: string } | null | undefined,
+  extra?: Record<string, string>
+) {
+  console.error(`[saleListing.${context}] FAILED`, {
+    code: error?.code ?? null,
+    message: error?.message ?? "unknown",
+    ...extra,
+  });
+}
+
+function dbFail(
+  context: string,
+  error: { message?: string; code?: string } | null | undefined,
+  fallbackMessage: string,
+  extra?: Record<string, string>
+): Fail {
+  logDbError(context, error, extra);
+  if (isSaleSchemaError(error)) return fail(SALE_SCHEMA_OUTDATED_ERROR, 503);
+  return fail(
+    error?.code ? `${fallbackMessage} (DB hata kodu: ${error.code})` : fallbackMessage,
+    500
+  );
+}
+
 export type SaleVillaOption = {
   id: string;
   title: string | null;
@@ -75,8 +122,7 @@ export async function listSaleListings(): Promise<
 > {
   const { data, error } = await saleListingRepository.findAllForAdmin();
   if (error) {
-    console.error("[saleListing.list] FAILED", error.message);
-    return fail("Satılık ilanlar okunamadı", 500);
+    return dbFail("list", error, "Satılık ilanlar okunamadı");
   }
   return { ok: true, listings: (data || []) as unknown as SaleListingRow[] };
 }
@@ -87,8 +133,7 @@ export async function getSaleListing(
   if (!isUuid(villaId)) return fail("Geçersiz villa", 400);
   const { data, error } = await saleListingRepository.findByVillaId(villaId);
   if (error) {
-    console.error("[saleListing.get] FAILED", error.message);
-    return fail("İlan okunamadı", 500);
+    return dbFail("get", error, "İlan okunamadı", { villaId });
   }
   if (!data) return fail("İlan bulunamadı", 404);
 
@@ -98,8 +143,7 @@ export async function getSaleListing(
     TRANSLATION_LOCALE
   );
   if (tr.error) {
-    console.error("[saleListing.get] translation FAILED", tr.error.message);
-    return fail("Çeviri okunamadı", 500);
+    return dbFail("get.translation", tr.error, "Türkçe çeviri okunamadı", { villaId });
   }
   return {
     ok: true,
@@ -118,11 +162,7 @@ export async function listSaleVillaOptions(
     saleListingRepository.findAllVillaIds(),
   ]);
   if (villas.error || taken.error) {
-    console.error(
-      "[saleListing.villaOptions] FAILED",
-      villas.error?.message || taken.error?.message
-    );
-    return fail("Villa listesi okunamadı", 500);
+    return dbFail("villaOptions", villas.error || taken.error, "Villa listesi okunamadı");
   }
   const takenIds = new Set((taken.data || []).map((r) => r.villa_id));
   return {
@@ -163,8 +203,7 @@ function publicationColumns(
 async function assertSaleVilla(villaId: string): Promise<SaleListingVilla | Fail> {
   const { data, error } = await saleListingRepository.findVillaContext(villaId);
   if (error) {
-    console.error("[saleListing] villa read FAILED", error.message);
-    return fail("Villa doğrulanamadı", 500);
+    return dbFail("villaContext", error, "Villa doğrulanamadı", { villaId });
   }
   if (!data || data.deleted_at) return fail("Villa bulunamadı", 404);
   if (data.listed_for_sale !== true) {
@@ -183,8 +222,7 @@ async function assertReferenceCodeFree(
   if (!code) return null;
   const { data, error } = await saleListingRepository.findReferenceCodeOwner(code);
   if (error) {
-    console.error("[saleListing] reference check FAILED", error.message);
-    return fail("Referans kodu doğrulanamadı", 500);
+    return dbFail("referenceCheck", error, "Referans kodu doğrulanamadı");
   }
   if (data && data.villa_id !== villaId) {
     return fail("Bu referans kodu başka bir ilanda kullanılıyor", 409);
@@ -196,7 +234,8 @@ function mapWriteError(error: { message: string; code?: string }): Fail {
   if (error.code === "23505") return fail("Bu villa veya referans kodu için zaten bir ilan var", 409);
   if (error.code === "23514") return fail("İlan bilgileri veritabanı kurallarına uymuyor", 400);
   if (error.code === "23503") return fail("Villa bulunamadı", 404);
-  return fail("İlan kaydedilemedi", 500);
+  if (isSaleSchemaError(error)) return fail(SALE_SCHEMA_OUTDATED_ERROR, 503);
+  return fail(error.code ? `İlan kaydedilemedi (DB hata kodu: ${error.code})` : "İlan kaydedilemedi", 500);
 }
 
 async function saveTranslation(
@@ -217,7 +256,7 @@ async function saveTranslation(
     { ...tr.value }
   );
   if (error || !data) {
-    console.error("[saleListing] translation upsert FAILED", error?.message);
+    logDbError("translationUpsert", error, { villaId });
     return fail("İlan kaydedildi ancak Türkçe çeviri kaydedilemedi", 500);
   }
   return { ok: true, value: pickTranslation(data) };
@@ -247,7 +286,7 @@ export async function createSaleListing(
   if ("ok" in villa) return villa;
 
   const existing = await saleListingRepository.findByVillaId(villaId);
-  if (existing.error) return fail("İlan doğrulanamadı", 500);
+  if (existing.error) return dbFail("create.existing", existing.error, "İlan doğrulanamadı", { villaId });
   if (existing.data) return fail("Bu villa için zaten bir satılık ilan var", 409);
 
   const refErr = await assertReferenceCodeFree(v.value.reference_code, villaId);
@@ -260,7 +299,7 @@ export async function createSaleListing(
     ...publicationColumns(publication_status, null),
   });
   if (error || !data) {
-    console.error("[saleListing.create] FAILED", error?.message);
+    logDbError("create", error, { villaId });
     return mapWriteError(error ?? { message: "no row" });
   }
 
@@ -305,7 +344,7 @@ export async function updateSaleListing(
     ...publicationColumns(publication_status, current.listing),
   });
   if (error) {
-    console.error("[saleListing.update] FAILED", error.message);
+    logDbError("update", error, { villaId });
     return mapWriteError(error);
   }
   if (!data) return fail("İlan bulunamadı", 404);
@@ -333,8 +372,7 @@ export async function deleteSaleListing(
   if (!current.ok) return current;
   const { error } = await saleListingRepository.deleteByVillaId(villaId);
   if (error) {
-    console.error("[saleListing.delete] FAILED", error.message);
-    return fail("İlan silinemedi", 500);
+    return dbFail("delete", error, "İlan silinemedi", { villaId });
   }
   return {
     ok: true,

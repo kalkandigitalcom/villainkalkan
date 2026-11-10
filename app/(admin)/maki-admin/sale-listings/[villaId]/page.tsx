@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
+import { saleListingPreviewHref } from "@/lib/sale-listing.helper";
 
 import { adminFetch } from "@/lib/admin-fetch";
 import SaleListingForm from "../_components/SaleListingForm";
@@ -57,14 +58,27 @@ export default function Page() {
 
   return (
     <div className="space-y-8 w-full">
-      <div>
-        <p className="eyebrow">Satılık İlanlar</p>
-        <h1 className="font-display text-3xl md:text-4xl text-[var(--color-stone-900)] mt-2 tracking-[-0.02em] truncate">
-          {detail?.listing.villa?.title || "Satılık ilan"}
-        </h1>
-        <p className="text-sm text-[var(--color-stone-500)] mt-2">
-          Satış bilgilerini, çeviriyi ve yayın durumunu güncelle.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="min-w-0">
+          <p className="eyebrow">Satılık İlanlar</p>
+          <h1 className="font-display text-3xl md:text-4xl text-[var(--color-stone-900)] mt-2 tracking-[-0.02em] truncate">
+            {detail?.listing.villa?.title || "Satılık ilan"}
+          </h1>
+          <p className="text-sm text-[var(--color-stone-500)] mt-2">
+            Satış bilgilerini, çeviriyi ve yayın durumunu güncelle.
+          </p>
+        </div>
+        {state === "ready" && (
+          <a
+            href={saleListingPreviewHref(villaId)}
+            target="_blank"
+            rel="noopener"
+            className="btn-ghost self-start"
+          >
+            <Eye size={15} />
+            Önizle
+          </a>
+        )}
       </div>
 
       {state === "loading" && (

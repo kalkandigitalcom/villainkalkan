@@ -57,6 +57,7 @@ import { NotificationBell } from "@/app/components/admin/notifications/Notificat
    fonksiyonlar ilgili admin sayfalarının ZATEN çağırdığı fonksiyonların
    birebir aynısı. */
 import { adminFetch } from "@/lib/admin-fetch";
+import { isSaleListingPreviewPath } from "@/lib/sale-listing.helper";
 import { getOfferRequestsAction } from "./offer-requests/offer-requests.action";
 import { listMessagesAction } from "./messages/messages.action";
 import { getVillaReviewsForAdminAction } from "@/app/services/villa-review.action";
@@ -546,6 +547,21 @@ export default function AdminLayout({
      senkronizasyonu için), ama UI bypass eder.
   ---------------------------------------------- */
   if (pathname === "/maki-admin/login") {
+    return (
+      <AdminSessionGuard>
+        <NotificationProvider>
+          <main>{children}</main>
+        </NotificationProvider>
+      </AdminSessionGuard>
+    );
+  }
+
+  /* ---------------------------------------------
+     🔥 SATILIK İLAN ÖNİZLEME — admin kabuğu (sidebar/topbar) OLMADAN,
+     public tasarımla render. Oturum/yetki AYNEN: middleware +
+     AdminSessionGuard + sale-listings layout'u + sayfa içi kapı.
+  ---------------------------------------------- */
+  if (isSaleListingPreviewPath(pathname)) {
     return (
       <AdminSessionGuard>
         <NotificationProvider>
