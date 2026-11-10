@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   deleteSaleListing,
   getSaleListing,
+  saleListingDisplayTitle,
   updateSaleListing,
   type SaleListingWriteInput,
 } from "@/app/services/sale-listing.service";
@@ -17,11 +18,15 @@ import {
 } from "@/lib/auth/action-authz";
 
 /* ===============================================================
-   🛡️ /api/admin/sale-listings/[villaId] — TEK İLAN (oku/güncelle/sil)
+   🛡️ /api/admin/sale-listings/[id] — TEK İLAN (oku/güncelle/sil)
    ===============================================================
-   GET    → { ok, listing, translation_tr }
-   PUT    → body: { listing: {...}, translation_tr?: {...} }
-   DELETE → yalnız satılık ilan satırı (+ çevirisi, FK CASCADE).
+   [id] = ilan kimliği (108). Eski bağlantılar için villa id de kabul
+   edilir (servis id → villa_id sırasıyla çözer).
+   GET    → { ok, listing, translation_tr, feature_ids }
+   PUT    → body: { listing: {...}, property?: {...} (yalnız bağımsız),
+                    translation_tr?: {...} }
+   DELETE → satılık ilan satırı (+ çeviri, fotoğraf, olanak — FK
+            CASCADE; bağımsız ilanın R2 fotoğrafları da silinir).
             Villa kaydı ve kiralık verisi DEĞİŞMEZ.
    Yetki: authorizeAdminCaller + "sale_listings". Audit: server-side.
 =============================================================== */
@@ -29,7 +34,7 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type Ctx = { params: Promise<{ villaId: string }> };
+type Ctx = { params: Promise<{ id: string }> };
 
 function json(res: { ok: false; error: string; status: number }) {
   return NextResponse.json({ ok: false, error: res.error }, { status: res.status });
@@ -45,14 +50,15 @@ export async function GET(req: Request, ctx: Ctx): Promise<NextResponse> {
   if (!(await callerHasPermission(auth.caller.id, "sale_listings"))) {
     return NextResponse.json({ ok: false, error: FORBIDDEN_MESSAGE }, { status: 403 });
   }
-  const { villaId } = await ctx.params;
+  const { id } = await ctx.params;
 
-  const res = await getSaleListing(villaId);
+  const res = await getSaleListing(id);
   if (!res.ok) return json(res);
   return NextResponse.json({
     ok: true,
     listing: res.listing,
     translation_tr: res.translation_tr,
+    feature_ids: res.feature_ids,
   });
 }
 
@@ -66,7 +72,7 @@ export async function PUT(req: Request, ctx: Ctx): Promise<NextResponse> {
   if (!(await callerHasPermission(auth.caller.id, "sale_listings"))) {
     return NextResponse.json({ ok: false, error: FORBIDDEN_MESSAGE }, { status: 403 });
   }
-  const { villaId } = await ctx.params;
+  const { id } = await ctx.params;
 
   let body: SaleListingWriteInput;
   try {
@@ -75,26 +81,35 @@ export async function PUT(req: Request, ctx: Ctx): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "Geçersiz istek" }, { status: 400 });
   }
 
-  const res = await updateSaleListing(villaId, body);
+  const res = await updateSaleListing(id, body);
   if (!res.ok) return json(res);
 
   await insertAdminActivityLog(extractAdminContextFromRequest(req, auth.caller), {
     action: "sale_listing.updated",
     entity_type: "sale_listing",
-    entity_id: villaId,
-    entity_title: res.listing.villa?.title || "Satılık ilan",
+    entity_id: res.listing.id,
+    entity_title: saleListingDisplayTitle(res.listing),
     before_data: {
       ...res.before.listing,
       villa: undefined,
+      location: undefined,
       translation_tr: res.before.translation_tr,
+      feature_ids: res.before.feature_ids,
     },
-    after_data: { ...res.listing, villa: undefined, translation_tr: res.translation_tr },
+    after_data: {
+      ...res.listing,
+      villa: undefined,
+      location: undefined,
+      translation_tr: res.translation_tr,
+      feature_ids: res.feature_ids,
+    },
   });
 
   return NextResponse.json({
     ok: true,
     listing: res.listing,
     translation_tr: res.translation_tr,
+    feature_ids: res.feature_ids,
   });
 }
 
@@ -108,21 +123,22 @@ export async function DELETE(req: Request, ctx: Ctx): Promise<NextResponse> {
   if (!(await callerHasPermission(auth.caller.id, "sale_listings"))) {
     return NextResponse.json({ ok: false, error: FORBIDDEN_MESSAGE }, { status: 403 });
   }
-  const { villaId } = await ctx.params;
+  const { id } = await ctx.params;
 
-  const res = await deleteSaleListing(villaId);
+  const res = await deleteSaleListing(id);
   if (!res.ok) return json(res);
 
   await insertAdminActivityLog(extractAdminContextFromRequest(req, auth.caller), {
     action: "sale_listing.deleted",
     entity_type: "sale_listing",
-    entity_id: villaId,
-    entity_title:
-      res.before.listing.villa?.title || "Satılık ilan",
+    entity_id: res.before.listing.id,
+    entity_title: saleListingDisplayTitle(res.before.listing),
     before_data: {
       ...res.before.listing,
       villa: undefined,
+      location: undefined,
       translation_tr: res.before.translation_tr,
+      feature_ids: res.before.feature_ids,
     },
   });
 

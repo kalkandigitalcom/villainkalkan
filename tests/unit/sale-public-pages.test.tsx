@@ -18,6 +18,8 @@ const h = vi.hoisted(() => ({
     findPublishedPublicCards: vi.fn(),
     findPublishedSitemapRows: vi.fn(),
     findSaleVillaIdBySlug: vi.fn(),
+    findListingIdByVillaId: vi.fn(),
+    findStandaloneIdBySlug: vi.fn(),
   },
   load: vi.fn(),
   rates: { rates: { EUR: 40, GBP: 50, USD: 35 }, updatedAt: null } as { rates: Record<string, number>; updatedAt: null },
@@ -94,7 +96,9 @@ const villa = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 const row = (over: Record<string, unknown> = {}, villaOver: Record<string, unknown> = {}) => ({
+  id: "v",
   villa_id: "v",
+  source: "villa",
   reference_code: "VIK-1", // DB'de duran eski kolon — karta sızmamalı
   sale_price: "450000.00",
   sale_currency: "EUR",
@@ -116,7 +120,8 @@ const row = (over: Record<string, unknown> = {}, villaOver: Record<string, unkno
 });
 
 const card = (over: Partial<SalePublicCard>): SalePublicCard => ({
-  villaId: "v",
+  listingId: "v",
+  source: "villa",
   slug: "s",
   title: "T",
   locationId: R1,
@@ -142,6 +147,9 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.spyOn(console, "error").mockImplementation(() => {});
   vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
+  /* 108: villa slug → villa id → ilan id; bağımsız ilan yok (varsayılan). */
+  h.repo.findListingIdByVillaId.mockResolvedValue({ data: { id: "v" }, error: null });
+  h.repo.findStandaloneIdBySlug.mockResolvedValue({ data: null, error: null });
 });
 
 /* ================================================================ 1 */
@@ -182,12 +190,12 @@ describe("liste yardımcıları", () => {
 
   it("bölge, tip ve fiyat filtreleri; fiyat filtresinde 'fiyat sorunuz' gizlenir", () => {
     const cards = [
-      card({ villaId: "a", locationId: R1, propertyType: "villa", salePrice: 300000 }),
-      card({ villaId: "b", locationId: R2, propertyType: "apartment", salePrice: 200000, saleCurrency: "GBP" }),
-      card({ villaId: "c", locationId: R1, propertyType: "villa", priceOnRequest: true, salePrice: null }),
+      card({ listingId: "a", locationId: R1, propertyType: "villa", salePrice: 300000 }),
+      card({ listingId: "b", locationId: R2, propertyType: "apartment", salePrice: 200000, saleCurrency: "GBP" }),
+      card({ listingId: "c", locationId: R1, propertyType: "villa", priceOnRequest: true, salePrice: null }),
     ];
     const f = parseSaleArchiveParams({});
-    const ids = (x: SalePublicCard[]) => x.map((c) => c.villaId);
+    const ids = (x: SalePublicCard[]) => x.map((c) => c.listingId);
     expect(ids(filterSaleCards(cards, { ...f, regionId: R1 }, h.rates.rates))).toEqual(["a", "c"]);
     expect(ids(filterSaleCards(cards, { ...f, propertyType: "apartment" }, h.rates.rates))).toEqual(["b"]);
     // GBP 200.000 → 250.000 EUR
@@ -197,11 +205,11 @@ describe("liste yardımcıları", () => {
 
   it("sıralama: öne çıkan, fiyat (fiyatsız sonda), en yeni; sayfalama", () => {
     const cards = [
-      card({ villaId: "a", salePrice: 300000, createdAt: "2026-01-01" }),
-      card({ villaId: "b", salePrice: 100000, isFeatured: true, createdAt: "2026-03-01" }),
-      card({ villaId: "c", priceOnRequest: true, salePrice: null, createdAt: "2026-02-01" }),
+      card({ listingId: "a", salePrice: 300000, createdAt: "2026-01-01" }),
+      card({ listingId: "b", salePrice: 100000, isFeatured: true, createdAt: "2026-03-01" }),
+      card({ listingId: "c", priceOnRequest: true, salePrice: null, createdAt: "2026-02-01" }),
     ];
-    const ids = (x: SalePublicCard[]) => x.map((c) => c.villaId);
+    const ids = (x: SalePublicCard[]) => x.map((c) => c.listingId);
     expect(ids(sortSaleCards(cards, "featured", {}))[0]).toBe("b");
     expect(ids(sortSaleCards(cards, "price-asc", {}))).toEqual(["b", "a", "c"]);
     expect(ids(sortSaleCards(cards, "price-desc", {}))).toEqual(["a", "b", "c"]);
@@ -241,10 +249,10 @@ describe("yayın durumu — public kapı", () => {
 
   it("servis: SQL filtresine rağmen gelen taslak satır JS kapısında elenir; hata → boş liste", async () => {
     h.repo.findPublishedPublicCards.mockResolvedValue({
-      data: [row(), row({ villa_id: "d", publication_status: "draft", is_published: false })],
+      data: [row(), row({ id: "d", villa_id: "d", publication_status: "draft", is_published: false })],
       error: null,
     });
-    expect((await listPublicSaleCards()).map((c) => c.villaId)).toEqual(["v"]);
+    expect((await listPublicSaleCards()).map((c) => c.listingId)).toEqual(["v"]);
     h.repo.findPublishedPublicCards.mockResolvedValue({ data: null, error: { message: "x", code: "42703" } });
     expect(await listPublicSaleCards()).toEqual([]);
   });
@@ -338,7 +346,8 @@ describe("liste sayfası", () => {
 
 /* ================================================================ 4 */
 const detail = (over: Partial<SaleVillaDetailData> = {}): SaleVillaDetailData => ({
-  villaId: "v",
+  listingId: "v",
+  source: "villa",
   title: "Villa Azure",
   slug: "villa-azure",
   locationName: "Kalkan",

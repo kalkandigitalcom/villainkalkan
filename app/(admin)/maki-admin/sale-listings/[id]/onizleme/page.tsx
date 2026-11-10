@@ -10,7 +10,7 @@ import { loadSaleVillaDetail } from "@/app/services/sale-villa-detail.service";
 import type { Locale } from "@/lib/i18n/config";
 
 /* ===============================================================
-   🛡️ /maki-admin/sale-listings/[villaId]/onizleme[?lang=tr]
+   🛡️ /maki-admin/sale-listings/[id]/onizleme[?lang=tr]
    SATILIK İLAN — ADMIN ÖNİZLEME
    ===============================================================
    GÜVENLİK (katmanlı; hiçbiri URL parametresine bağlı DEĞİL):
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-  params: Promise<{ villaId: string }>;
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ lang?: string | string[] }>;
 };
 
@@ -49,12 +49,12 @@ export default async function SaleListingPreviewPage({ params, searchParams }: P
   const denied = await adminPermissionGate(auth.caller.id, "sale_listings");
   if (denied) return denied;
 
-  const { villaId } = await params;
+  const { id } = await params;
   const sp = searchParams ? await searchParams : {};
   const rawLang = Array.isArray(sp?.lang) ? sp.lang[0] : sp?.lang;
   const locale: Locale = rawLang === "tr" ? "tr" : "en";
 
-  const data = await loadSaleVillaDetail(villaId, { locale, mode: "preview" });
+  const data = await loadSaleVillaDetail(id, { locale, mode: "preview" });
   if (!data) notFound();
 
   return (
@@ -65,7 +65,7 @@ export default async function SaleListingPreviewPage({ params, searchParams }: P
         preview
         banner={
           <SalePreviewBanner
-            villaId={data.villaId}
+            listingId={data.listingId}
             locale={locale}
             status={data.listing.publicationStatus}
           />

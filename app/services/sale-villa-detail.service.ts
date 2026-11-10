@@ -1,6 +1,9 @@
 import "server-only";
 
-import { saleListingRepository } from "@/lib/db/sale-listing.repository.server";
+import {
+  saleListingRepository,
+  type SaleListingImageRow,
+} from "@/lib/db/sale-listing.repository.server";
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import { villaAdminRepository } from "@/lib/db/villa.repository.server";
 import { getVillaImages } from "@/app/services/villa-image/villa-image.read";
@@ -29,20 +32,25 @@ import type { SaleListingRow } from "@/app/services/sale-listing.service";
 import type { SaleVillaDetailData } from "@/app/components/sale/sale-villa-detail.types";
 
 /* ===============================================================
-   🛡️ SATILIK VİLLA DETAY — VERİ YÜKLEYİCİ (önizleme + Aşama 5 public)
+   🛡️ SATILIK İLAN DETAY — VERİ YÜKLEYİCİ (önizleme + public)
    ===============================================================
-   TEK yükleyici, iki mod:
+   TEK yükleyici, iki mod, iki kaynak (migration 108):
      • "preview" → yayın durumundan BAĞIMSIZ (taslak / yayında /
        kaldırılmış). YALNIZ yetki kontrolünden SONRA çağrılır
-       (/maki-admin/sale-listings/[villaId]/onizleme sayfası).
+       (/maki-admin/sale-listings/[id]/onizleme sayfası).
      • "public"  → `isPublicSaleListingVisible` geçmezse null (taslak,
-       kaldırılmış, satılık olmayan / pasif / silinmiş villa ASLA).
-   Kiralık veri yalnız OKUNUR (görseller, olanaklar, mesafeler, harita);
-   fiyat takvimi / rezervasyon / iCal hiç okunmaz.
-   Dil: İngilizce canonical; TR'de `villa_sale_listing_translations` ve
-   olanak çevirileri, boş alan İngilizceye düşer. Villa ve bölge adı
-   özel isimdir — çevrilmez. Önizleme her zaman en güncel çeviriyi
-   okur (cache'siz).
+       kaldırılmış; villa kaynağında satılık olmayan / pasif / silinmiş
+       villa ASLA).
+     • source="villa"      → başlık, galeri, olanaklar, mesafeler, harita
+       villadan OKUNUR (kiralık veri yalnız okunur; fiyat takvimi /
+       rezervasyon / iCal hiç okunmaz).
+     • source="standalone" → başlık, bölge, koordinat, fotoğraflar
+       (sale_listing_images) ve olanaklar (sale_listing_features) ilanın
+       kendisinden; villa tablosu hiç okunmaz.
+   Dil: İngilizce canonical; TR'de `villa_sale_listing_translations`
+   (bağımsız ilanda başlık dahil) ve olanak çevirileri, boş alan
+   İngilizceye düşer. Villa ve bölge adı özel isimdir — çevrilmez.
+   Önizleme her zaman en güncel çeviriyi okur (cache'siz).
 =============================================================== */
 
 export type SaleVillaDetailMode = "preview" | "public";
@@ -53,70 +61,153 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-export async function loadSaleVillaDetail(
-  villaId: string,
-  opts: { locale: Locale; mode: SaleVillaDetailMode }
-): Promise<SaleVillaDetailData | null> {
-  if (!isUuid(villaId)) return null;
+type TrRow = {
+  title?: string | null;
+  sale_description?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+} | null;
 
-  const [listingRes, villa] = await Promise.all([
-    saleListingRepository.findByVillaId(villaId),
-    villaAdminRepository.findById(villaId),
-  ]);
-  if (listingRes.error) {
+/** İlan id ile (eski bağlantılar için villa id de kabul edilir). */
+async function readListing(id: string): Promise<SaleListingRow | null> {
+  const byId = await saleListingRepository.findById(id);
+  if (byId.error) {
     console.error("[saleVillaDetail] listing read FAILED", {
-      code: (listingRes.error as { code?: string }).code ?? null,
-      message: listingRes.error.message,
-      villaId,
+      code: (byId.error as { code?: string }).code ?? null,
+      message: byId.error.message,
+      id,
     });
     throw new Error("Satılık ilan okunamadı");
   }
-  const listing = listingRes.data as unknown as SaleListingRow | null;
-  if (!listing || !villa) return null;
-
-  const villaFlags = {
-    is_active: villa.is_active as boolean | null,
-    deleted_at: villa.deleted_at as string | null,
-    listed_for_sale: villa.listed_for_sale as boolean | null,
-  };
-  if (opts.mode === "public" && !isPublicSaleListingVisible(listing, villaFlags)) {
-    return null;
+  if (byId.data) return byId.data as unknown as SaleListingRow;
+  const byVilla = await saleListingRepository.findByVillaId(id);
+  if (byVilla.error) {
+    console.error("[saleVillaDetail] listing read FAILED", {
+      code: (byVilla.error as { code?: string }).code ?? null,
+      message: byVilla.error.message,
+      id,
+    });
+    throw new Error("Satılık ilan okunamadı");
   }
+  return (byVilla.data as unknown as SaleListingRow | null) ?? null;
+}
+
+export async function loadSaleVillaDetail(
+  listingId: string,
+  opts: { locale: Locale; mode: SaleVillaDetailMode }
+): Promise<SaleVillaDetailData | null> {
+  if (!isUuid(listingId)) return null;
+  const listing = await readListing(listingId);
+  if (!listing) return null;
 
   const locale = opts.locale;
-  const [images, features, distances, settings, trRow] = await Promise.all([
-    getVillaImages(villaId),
-    getVillaFeaturesByVilla(villaId) as Promise<Feature[]>,
-    getVillaDistances(villaId),
-    getCachedSettings().catch(() => null),
+  const trPromise: Promise<TrRow> =
     locale === DEFAULT_LOCALE
       ? Promise.resolve(null)
       : translationRepository
-          .findOne("villa_sale_listing", villaId, locale)
-          .then((r) => r.data ?? null),
-  ]);
-  const featureTranslations = await getTranslationsForParents(
-    "villa_feature",
-    features.map((f) => f.id),
-    locale
-  );
+          .findOne("villa_sale_listing", listing.id, locale)
+          .then((r) => (r.data as TrRow) ?? null);
 
-  const imageUrls = images
-    .map((img) => resolveVillaImageUrl(img.image_url))
-    .filter((u): u is string => typeof u === "string" && u.length > 0);
+  /* ---------------- Kaynak: villa ya da bağımsız ---------------- */
+  let title: string;
+  let slug: string | null;
+  let locationName: string | null;
+  let imageUrls: string[];
+  let features: Feature[];
+  let distancesRaw: { id: string; title: string; distance: string }[] = [];
+  let map: SaleVillaDetailData["map"];
+  let villaBedrooms: number | null = null;
+  let villaBathrooms: number | null = null;
+  let trRow: TrRow;
+  const settingsPromise = getCachedSettings().catch(() => null);
+
+  if (listing.source === "standalone") {
+    if (opts.mode === "public" && !isPublicSaleListingVisible(listing, null)) return null;
+    const [imgs, featureIds, tr] = await Promise.all([
+      saleListingRepository.findImages(listing.id),
+      saleListingRepository.findFeatureIds(listing.id),
+      trPromise,
+    ]);
+    trRow = tr;
+    const ids = (featureIds.data || []).map((f) => f.feature_id);
+    const featureRows =
+      ids.length > 0 ? await saleListingRepository.findFeaturesByIds(ids) : { data: [] as Feature[] };
+    features = (featureRows.data || []) as Feature[];
+    const images = ((imgs.data || []) as SaleListingImageRow[])
+      .slice()
+      .sort((a, b) => (a.is_cover === b.is_cover ? a.sort_order - b.sort_order : a.is_cover ? -1 : 1));
+    imageUrls = images
+      .map((img) => resolveVillaImageUrl(img.image_url))
+      .filter((u): u is string => typeof u === "string" && u.length > 0);
+    title = String(resolveTranslatedField(trRow?.title, listing.title) ?? listing.title ?? "");
+    slug = listing.slug;
+    locationName = listing.location?.name ?? null;
+    const lat = num(listing.latitude);
+    const lng = num(listing.longitude);
+    map = {
+      mapType: lat !== null && lng !== null ? "coords" : null,
+      latitude: lat,
+      longitude: lng,
+      mapEmbed: null,
+    };
+  } else {
+    const villaId = listing.villa_id as string;
+    const villa = await villaAdminRepository.findById(villaId);
+    if (!villa) return null;
+    const villaFlags = {
+      is_active: villa.is_active as boolean | null,
+      deleted_at: villa.deleted_at as string | null,
+      listed_for_sale: villa.listed_for_sale as boolean | null,
+    };
+    if (opts.mode === "public" && !isPublicSaleListingVisible(listing, villaFlags)) {
+      return null;
+    }
+    const [images, villaFeatures, distances, tr] = await Promise.all([
+      getVillaImages(villaId),
+      getVillaFeaturesByVilla(villaId) as Promise<Feature[]>,
+      getVillaDistances(villaId),
+      trPromise,
+    ]);
+    trRow = tr;
+    features = villaFeatures;
+    distancesRaw = distances || [];
+    imageUrls = images
+      .map((img) => resolveVillaImageUrl(img.image_url))
+      .filter((u): u is string => typeof u === "string" && u.length > 0);
+    title = String(villa.title || "");
+    slug = (villa.slug as string | null) ?? null;
+    const location = villa.location as { name?: string | null } | null;
+    locationName = location?.name ?? null;
+    villaBedrooms = num(villa.bedrooms);
+    villaBathrooms = num(villa.bathrooms);
+    map = {
+      mapType: (villa.map_type as string | null) ?? null,
+      latitude: num(villa.latitude),
+      longitude: num(villa.longitude),
+      mapEmbed: (villa.map_embed as string | null) ?? null,
+    };
+  }
+
+  const [settings, featureTranslations] = await Promise.all([
+    settingsPromise,
+    getTranslationsForParents(
+      "villa_feature",
+      features.map((f) => f.id),
+      locale
+    ),
+  ]);
 
   const description = resolveTranslatedField(
     trRow?.sale_description,
     listing.sale_description
   );
 
-  const location = villa.location as { name?: string | null } | null;
-
   return {
-    villaId,
-    title: String(villa.title || ""),
-    slug: (villa.slug as string | null) ?? null,
-    locationName: location?.name ?? null,
+    listingId: listing.id,
+    source: listing.source === "standalone" ? "standalone" : "villa",
+    title,
+    slug,
+    locationName,
     imageUrls,
     watermark: {
       logo:
@@ -133,8 +224,8 @@ export async function loadSaleVillaDetail(
       saleStatus: listing.sale_status,
       propertyType: listing.property_type,
       roomLayout: listing.room_layout,
-      bedrooms: num(villa.bedrooms),
-      bathrooms: num(listing.bathrooms) ?? num(villa.bathrooms),
+      bedrooms: num(listing.bedrooms) ?? villaBedrooms,
+      bathrooms: num(listing.bathrooms) ?? villaBathrooms,
       builtAreaM2: num(listing.built_area_m2),
       plotAreaM2: num(listing.plot_area_m2),
       floors: num(listing.floors),
@@ -151,18 +242,13 @@ export async function loadSaleVillaDetail(
         resolveTranslatedField(featureTranslations.get(f.id)?.name, f.name) ?? ""
       ),
     })),
-    distances: (distances || []).map((d: { id: string; title: string; distance: string }) => ({
+    distances: distancesRaw.map((d) => ({
       id: d.id,
       displayTitle: getTranslatedDistanceLabel(d.title, locale),
       displayDistance: d.distance,
       iconKey: getDistanceIconKey(d.title),
     })),
-    map: {
-      mapType: (villa.map_type as string | null) ?? null,
-      latitude: num(villa.latitude),
-      longitude: num(villa.longitude),
-      mapEmbed: (villa.map_embed as string | null) ?? null,
-    },
+    map,
     siteWhatsappLink: settings?.whatsapp_link ?? null,
     sitePhone: settings?.phone ?? null,
     seo: {

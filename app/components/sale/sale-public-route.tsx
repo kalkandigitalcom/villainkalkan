@@ -8,7 +8,7 @@ import SaleVillaDetail from "./SaleVillaDetail";
 import { buildSaleListingJsonLd } from "./sale-structured-data";
 import { JsonLd, buildBreadcrumb } from "@/app/components/seo/StructuredData";
 import { loadSaleVillaDetail } from "@/app/services/sale-villa-detail.service";
-import { findPublicSaleVillaIdBySlug } from "@/app/services/sale-listing-public.service";
+import { findPublicSaleListingIdsBySlug } from "@/app/services/sale-listing-public.service";
 import { getCachedSettings } from "@/lib/cache.helpers";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
@@ -26,15 +26,18 @@ import {
    ===============================================================
    Kiralık `villa-detail-route.tsx` deseni: EN ve TR sayfa dosyaları
    AYNI modülü `locale` ile çağırır (kopya mantık YOK).
-   GÖRÜNÜRLÜK: slug → yalnız satılık + aktif + silinmemiş villa;
-   ilan yükleyici `mode: "public"` → yayında olmayan ilan null → 404.
+   GÖRÜNÜRLÜK: slug → (1) satılık + aktif + silinmemiş villanın ilanı,
+   yoksa (2) bağımsız gayrimenkul ilanı (108). İlan yükleyici
+   `mode: "public"` → yayında olmayan ilan null → 404.
    Admin önizlemesi (önizleme modu) bu modülü KULLANMAZ.
 =============================================================== */
 
 const loadPublicBySlug = cache(async (slug: string, locale: Locale) => {
-  const villaId = await findPublicSaleVillaIdBySlug(slug);
-  if (!villaId) return null;
-  return loadSaleVillaDetail(villaId, { locale, mode: "public" });
+  for (const listingId of await findPublicSaleListingIdsBySlug(slug)) {
+    const data = await loadSaleVillaDetail(listingId, { locale, mode: "public" });
+    if (data) return data;
+  }
+  return null;
 });
 
 function siteUrl(path: string): string {

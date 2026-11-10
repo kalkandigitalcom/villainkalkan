@@ -4,30 +4,37 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Eye, Plus } from "lucide-react";
-import { saleListingPreviewHref } from "@/lib/sale-listing.helper";
+import {
+  SALE_LISTING_SOURCE_LABELS,
+  saleListingPreviewHref,
+} from "@/lib/sale-listing.helper";
 
 import { adminFetch } from "@/lib/admin-fetch";
 import SaleListingForm from "../_components/SaleListingForm";
-import type { SaleListingClientDetail } from "../_components/types";
+import type { SaleFormOptionsLite, SaleListingClientDetail } from "../_components/types";
 
 /* ===============================================================
-   🛡️ /maki-admin/sale-listings/[villaId] — satılık ilan düzenle
-   İlan yoksa (404) → "İlan oluştur" bağlantısı (?villa=<id>).
+   🛡️ /maki-admin/sale-listings/[id] — satılık ilan düzenle
+   [id] = ilan kimliği (108). Eski bağlantılar (villa id) sunucuda
+   villa_id ile çözülür. İlan yoksa (404) → "İlan oluştur" bağlantısı
+   (?villa=<id> — villa düzenleme ekranından gelen akış).
+   Bağımsız gayrimenkulde bölge/özellik seçenekleri ayrıca yüklenir.
    =============================================================== */
 
 export default function Page() {
-  const params = useParams<{ villaId: string }>();
-  const villaId = params?.villaId || "";
+  const params = useParams<{ id: string }>();
+  const id = params?.id || "";
   const [detail, setDetail] = useState<SaleListingClientDetail | null>(null);
+  const [options, setOptions] = useState<SaleFormOptionsLite | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "missing" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!villaId) return;
+    if (!id) return;
     let cancelled = false;
     (async () => {
       try {
-        const res = await adminFetch(`/api/admin/sale-listings/${encodeURIComponent(villaId)}`);
+        const res = await adminFetch(`/api/admin/sale-listings/${encodeURIComponent(id)}`);
         const json = (await res.json().catch(() => ({}))) as {
           ok?: boolean;
           error?: string;
@@ -42,7 +49,17 @@ export default function Page() {
           setState("error");
           return;
         }
-        setDetail({ listing: json.listing, translation_tr: json.translation_tr ?? null });
+        if (json.listing.source === "standalone") {
+          const optRes = await adminFetch("/api/admin/sale-listings/form-options");
+          const optJson = (await optRes.json().catch(() => ({}))) as { ok?: boolean } & Partial<SaleFormOptionsLite>;
+          if (cancelled) return;
+          setOptions({ locations: optJson.locations || [], features: optJson.features || [] });
+        }
+        setDetail({
+          listing: json.listing,
+          translation_tr: json.translation_tr ?? null,
+          feature_ids: json.feature_ids ?? [],
+        });
         setState("ready");
       } catch {
         if (!cancelled) {
@@ -54,23 +71,28 @@ export default function Page() {
     return () => {
       cancelled = true;
     };
-  }, [villaId]);
+  }, [id]);
+
+  const l = detail?.listing;
+  const heading = (l?.source === "standalone" ? l?.title : l?.villa?.title) || "Satılık ilan";
 
   return (
     <div className="space-y-8 w-full">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="min-w-0">
-          <p className="eyebrow">Satılık İlanlar</p>
+          <p className="eyebrow">
+            Satılık İlanlar{l ? ` · ${SALE_LISTING_SOURCE_LABELS[l.source] ?? ""}` : ""}
+          </p>
           <h1 className="font-display text-3xl md:text-4xl text-[var(--color-stone-900)] mt-2 tracking-[-0.02em] truncate">
-            {detail?.listing.villa?.title || "Satılık ilan"}
+            {heading}
           </h1>
           <p className="text-sm text-[var(--color-stone-500)] mt-2">
             Satış bilgilerini, çeviriyi ve yayın durumunu güncelle.
           </p>
         </div>
-        {state === "ready" && (
+        {state === "ready" && l && (
           <a
-            href={saleListingPreviewHref(villaId)}
+            href={saleListingPreviewHref(l.id)}
             target="_blank"
             rel="noopener"
             className="btn-ghost self-start"
@@ -89,8 +111,8 @@ export default function Page() {
       )}
       {state === "missing" && (
         <div className="card-premium p-10 text-center space-y-4">
-          <p className="text-sm text-[var(--color-stone-600)]">Bu villa için henüz satılık ilan yok.</p>
-          <Link href={`/maki-admin/sale-listings/ekle?villa=${encodeURIComponent(villaId)}`} className="btn-primary inline-flex">
+          <p className="text-sm text-[var(--color-stone-600)]">Bu kayıt için henüz satılık ilan yok.</p>
+          <Link href={`/maki-admin/sale-listings/ekle?villa=${encodeURIComponent(id)}`} className="btn-primary inline-flex">
             <Plus size={15} />
             İlan oluştur
           </Link>
@@ -101,6 +123,7 @@ export default function Page() {
           mode="edit"
           detail={detail}
           villaTitle={detail.listing.villa?.title ?? null}
+          formOptions={options}
         />
       )}
     </div>

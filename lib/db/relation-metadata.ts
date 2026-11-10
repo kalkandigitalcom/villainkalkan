@@ -196,7 +196,10 @@ export const RELATION_METADATA: Readonly<Record<string, ReadonlyArray<RelationDe
 
   /* 🛡️ Migration 104 — villa_sale_listings → villa (admin satılık ilan
      listesi: villa:villa_id(title, slug, is_active, deleted_at,
-     listed_for_rent, listed_for_sale)). */
+     listed_for_rent, listed_for_sale)). villa_id NULL (108 bağımsız
+     ilan) → korelasyonlu alt sorgu null döner.
+     🛡️ Migration 108 — bağımsız ilanın kendi bölgesi ve fotoğrafları
+     (public kart + admin liste). */
   villa_sale_listings: [
     {
       alias: "villa",
@@ -204,6 +207,24 @@ export const RELATION_METADATA: Readonly<Record<string, ReadonlyArray<RelationDe
       cardinality: "one",
       localKey: "villa_id",
       foreignKey: "id",
+    },
+    {
+      alias: "location",
+      table: "villa_locations",
+      cardinality: "one",
+      localKey: "location_id",
+      foreignKey: "id",
+    },
+    {
+      alias: "sale_listing_images",
+      table: "sale_listing_images",
+      cardinality: "many",
+      localKey: "id",
+      foreignKey: "listing_id",
+      orderBy: [
+        { column: "is_cover", direction: "desc" },
+        { column: "sort_order", direction: "asc" },
+      ],
     },
   ],
 

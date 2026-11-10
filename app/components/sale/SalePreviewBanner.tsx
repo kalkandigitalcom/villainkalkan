@@ -20,18 +20,18 @@ const STATUS_TR: Record<PublicationStatus, string> = {
 };
 
 export default function SalePreviewBanner({
-  villaId,
+  listingId,
   locale,
   status,
 }: {
-  villaId: string;
+  listingId: string;
   locale: Locale;
   status: PublicationStatus;
 }) {
   /* Şerit admin arayüzüdür → her zaman Türkçe (önizlenen içerik dili
      EN/TR seçicisinden bağımsız). */
   const t = getDictionary("tr").sale;
-  const base = saleListingPreviewHref(villaId);
+  const base = saleListingPreviewHref(listingId);
   const pill = (active: boolean) =>
     "rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition " +
     (active ? "bg-white text-amber-900" : "text-white/85 hover:bg-white/15");
@@ -54,12 +54,12 @@ export default function SalePreviewBanner({
             <Link href={base} className={pill(locale === "en")} aria-current={locale === "en" ? "true" : undefined}>
               EN
             </Link>
-            <Link href={saleListingPreviewHref(villaId, "tr")} className={pill(locale === "tr")} aria-current={locale === "tr" ? "true" : undefined}>
+            <Link href={saleListingPreviewHref(listingId, "tr")} className={pill(locale === "tr")} aria-current={locale === "tr" ? "true" : undefined}>
               TR
             </Link>
           </span>
           <Link
-            href={`/maki-admin/sale-listings/${villaId}`}
+            href={`/maki-admin/sale-listings/${listingId}`}
             className="rounded-lg border border-white/40 px-3 py-1.5 text-[12.5px] font-medium hover:bg-white/10"
           >
             {t.previewBackToAdmin}

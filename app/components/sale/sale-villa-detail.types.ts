@@ -5,6 +5,7 @@ import type {
   PropertyType,
   PublicationStatus,
   SaleCurrency,
+  SaleListingSource,
   SaleStatus,
 } from "@/lib/sale-listing.helper";
 
@@ -14,7 +15,10 @@ import type {
    Tamamen çözülmüş (dil + fallback) değerler; bileşen DB'ye dokunmaz.
 =============================================================== */
 export type SaleVillaDetailData = {
-  villaId: string;
+  /** İlan kimliği (108). */
+  listingId: string;
+  /** villa = mevcut villadan; standalone = bağımsız gayrimenkul. */
+  source: SaleListingSource;
   title: string;
   slug: string | null;
   locationName: string | null;

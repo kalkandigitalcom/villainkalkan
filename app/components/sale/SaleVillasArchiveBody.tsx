@@ -180,7 +180,7 @@ export default async function SaleVillasArchiveBody({
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-7">
                   {items.map((c, i) => (
-                    <SaleVillaCard key={c.villaId} card={c} locale={locale} priority={i === 0} />
+                    <SaleVillaCard key={c.listingId} card={c} locale={locale} priority={i === 0} />
                   ))}
                 </div>
               )}

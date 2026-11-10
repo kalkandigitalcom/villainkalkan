@@ -19,19 +19,23 @@ import { join } from "node:path";
 const { repo, trRepo } = vi.hoisted(() => ({
   repo: {
     findAllForAdmin: vi.fn(),
+    findById: vi.fn(),
     findByVillaId: vi.fn(),
     insert: vi.fn(),
-    updateByVillaId: vi.fn(),
-    deleteByVillaId: vi.fn(),
+    updateById: vi.fn(),
+    deleteById: vi.fn(),
     findVillaContext: vi.fn(),
     findSaleVillaOptions: vi.fn(),
     findAllVillaIds: vi.fn(),
+    findFeatureIds: vi.fn(),
+    findImages: vi.fn(),
   },
   trRepo: { findOne: vi.fn(), upsertOne: vi.fn() },
 }));
 vi.mock("@/lib/db/sale-listing.repository.server", () => ({ saleListingRepository: repo }));
 
 vi.mock("@/lib/db/translation.repository.server", () => ({ translationRepository: trRepo }));
+vi.mock("@/lib/storage/server", () => ({ removeServer: vi.fn() }));
 
 const authorizeAdminCaller = vi.fn();
 vi.mock("@/lib/admin-route-auth", () => ({
@@ -107,7 +111,7 @@ import { GET as listGET, POST as createPOST } from "@/app/api/admin/sale-listing
 import {
   DELETE as itemDELETE,
   PUT as itemPUT,
-} from "@/app/api/admin/sale-listings/[villaId]/route";
+} from "@/app/api/admin/sale-listings/[id]/route";
 import { GET as optionsGET } from "@/app/api/admin/sale-listings/villa-options/route";
 import { listingTypeColumns } from "@/app/services/villa-admin/_helpers/listing-type";
 import {
@@ -140,8 +144,12 @@ const villaCtx = (id: string, over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
+/* Villa kaynaklı ilan (108: `id` + source). Bu dosyada sadelik için ilan
+   id = villa id; id ≠ villa_id ayrımı sale-listings-standalone testinde. */
 const listingRow = (id: string, over: Record<string, unknown> = {}) => ({
+  id,
   villa_id: id,
+  source: "villa",
   reference_code: null,
   sale_price: 100000,
   sale_currency: "EUR",
@@ -164,13 +172,19 @@ beforeEach(() => {
     data: [V_SALE, V_RENT, V_BOTH].includes(id) ? villaCtx(id) : null,
     error: null,
   }));
+  repo.findById.mockResolvedValue({ data: null, error: null });
   repo.findByVillaId.mockResolvedValue({ data: null, error: null });
-  repo.insert.mockImplementation(async (p: Record<string, unknown>) => ({ data: { ...p, created_at: "x", updated_at: "x" }, error: null }));
-  repo.updateByVillaId.mockImplementation(async (id: string, p: Record<string, unknown>) => ({ data: { villa_id: id, ...p }, error: null }));
-  repo.deleteByVillaId.mockResolvedValue({ error: null });
+  repo.insert.mockImplementation(async (p: Record<string, unknown>) => ({
+    data: { id: p.villa_id ?? "99999999-9999-9999-9999-999999999999", ...p, created_at: "x", updated_at: "x" },
+    error: null,
+  }));
+  repo.updateById.mockImplementation(async (id: string, p: Record<string, unknown>) => ({ data: { id, villa_id: id, source: "villa", ...p }, error: null }));
+  repo.deleteById.mockResolvedValue({ error: null });
+  repo.findFeatureIds.mockResolvedValue({ data: [], error: null });
+  repo.findImages.mockResolvedValue({ data: [], error: null });
   trRepo.findOne.mockResolvedValue({ data: null, error: null });
   trRepo.upsertOne.mockImplementation(async (_e: string, id: string, locale: string, f: Record<string, unknown>) => ({
-    data: { id: "t1", villa_id: id, locale, ...f },
+    data: { id: "t1", listing_id: id, locale, ...f },
     error: null,
   }));
   authorizeAdminCaller.mockResolvedValue({
@@ -272,7 +286,7 @@ describe("validateSaleListingInput", () => {
   });
   it("Türkçe çeviri doğrulama: boş → null, uzun → hata", () => {
     const ok = validateSaleListingTranslationInput({ sale_description: "  ", seo_title: "Başlık" });
-    expect(ok.ok && ok.value).toEqual({ sale_description: null, seo_title: "Başlık", seo_description: null });
+    expect(ok.ok && ok.value).toEqual({ title: null, sale_description: null, seo_title: "Başlık", seo_description: null });
     expect(validateSaleListingTranslationInput({ seo_description: "x".repeat(301) }).ok).toBe(false);
   });
 });
@@ -315,6 +329,7 @@ describe("servis — oluşturma", () => {
   it("Türkçe çeviri locale='tr' ile kaydedilir; boş çeviri satır oluşturmaz", async () => {
     await createSaleListing({ villa_id: V_SALE, listing: {}, translation_tr: { sale_description: "Satılık" } });
     expect(trRepo.upsertOne).toHaveBeenCalledWith("villa_sale_listing", V_SALE, "tr", {
+      title: null,
       sale_description: "Satılık",
       seo_title: null,
       seo_description: null,
@@ -335,14 +350,14 @@ describe("servis — okuma / güncelleme / silme", () => {
     repo.findByVillaId.mockResolvedValueOnce({ data: listingRow(V_SALE), error: null });
     trRepo.findOne.mockResolvedValueOnce({ data: { sale_description: "TR", seo_title: null, seo_description: null }, error: null });
     const r = await getSaleListing(V_SALE);
-    expect(r.ok && r.translation_tr).toEqual({ sale_description: "TR", seo_title: null, seo_description: null });
+    expect(r.ok && r.translation_tr).toEqual({ title: null, sale_description: "TR", seo_title: null, seo_description: null });
     expect(trRepo.findOne).toHaveBeenCalledWith("villa_sale_listing", V_SALE, "tr");
   });
   it("update: yayından kaldırma villa satılık olmasa da serbest; yayına alma satılık villa ister", async () => {
     repo.findByVillaId.mockResolvedValue({ data: listingRow(V_RENT, { publication_status: "published", is_published: true, published_at: "2026-10-01T00:00:00Z" }), error: null });
     const off = await updateSaleListing(V_RENT, { listing: { publication_status: "unpublished", sale_price: 1 } });
     expect(off.ok).toBe(true);
-    const payload = repo.updateByVillaId.mock.calls[0][1];
+    const payload = repo.updateById.mock.calls[0][1];
     expect(payload).toMatchObject({ is_published: false, publication_status: "unpublished", published_at: "2026-10-01T00:00:00Z" });
     const on = await updateSaleListing(V_RENT, { listing: { publication_status: "published", sale_price: 1 } });
     expect(on).toMatchObject({ ok: false, status: 409 });
@@ -353,7 +368,7 @@ describe("servis — okuma / güncelleme / silme", () => {
       listing: { sale_price: 3, reference_code: "NEW", agent_whatsapp: "+90 1", agent_phone: "+90 2" },
     });
     expect(r.ok).toBe(true);
-    const payload = repo.updateByVillaId.mock.calls[0][1] as Record<string, unknown>;
+    const payload = repo.updateById.mock.calls[0][1] as Record<string, unknown>;
     for (const k of ["reference_code", "agent_whatsapp", "agent_phone"]) {
       expect(payload).not.toHaveProperty(k);
     }
@@ -365,6 +380,7 @@ describe("servis — okuma / güncelleme / silme", () => {
     trRepo.findOne.mockResolvedValue({ data: { sale_description: "Eski", seo_title: null, seo_description: null }, error: null });
     await updateSaleListing(V_SALE, { listing: { sale_price: 2 }, translation_tr: { sale_description: "" } });
     expect(trRepo.upsertOne).toHaveBeenCalledWith("villa_sale_listing", V_SALE, "tr", {
+      title: null,
       sale_description: null,
       seo_title: null,
       seo_description: null,
@@ -374,7 +390,7 @@ describe("servis — okuma / güncelleme / silme", () => {
     expect(await deleteSaleListing(V_SALE)).toMatchObject({ ok: false, status: 404 });
     repo.findByVillaId.mockResolvedValueOnce({ data: listingRow(V_SALE), error: null });
     expect((await deleteSaleListing(V_SALE)).ok).toBe(true);
-    expect(repo.deleteByVillaId).toHaveBeenCalledWith(V_SALE);
+    expect(repo.deleteById).toHaveBeenCalledWith(V_SALE);
   });
   it("villa seçenekleri: ilanı olanlar düşer, includeId korunur", async () => {
     repo.findSaleVillaOptions.mockResolvedValue({ data: [villaCtx(V_SALE), villaCtx(V_BOTH)], error: null });
@@ -388,7 +404,7 @@ describe("servis — okuma / güncelleme / silme", () => {
 
 /* ================================================================ 3 */
 const req = (url: string, init?: RequestInit) => new Request(`http://localhost${url}`, init);
-const ctx = (villaId: string) => ({ params: Promise.resolve({ villaId }) });
+const ctx = (id: string) => ({ params: Promise.resolve({ id }) });
 
 describe("API yetkilendirme", () => {
   const calls = () => [
@@ -557,7 +573,7 @@ describe("admin liste / form saf yardımcıları", () => {
     const create = buildSaleListingRequestBody(st, V_SALE) as Record<string, unknown>;
     expect(create.villa_id).toBe(V_SALE);
     expect((create.listing as Record<string, unknown>).sale_description).toBe("EN");
-    expect(create.translation_tr).toEqual({ sale_description: "TR", seo_title: "", seo_description: "" });
+    expect(create.translation_tr).toEqual({ title: "", sale_description: "TR", seo_title: "", seo_description: "" });
     expect(buildSaleListingRequestBody(st)).not.toHaveProperty("villa_id");
   });
 });
@@ -577,14 +593,23 @@ describe("kiralık sistem koruması (kaynak kilitleri)", () => {
       "lib/db/sale-listing.repository.server.ts",
       "app/services/sale-listing.service.ts",
       "app/api/admin/sale-listings/route.ts",
-      "app/api/admin/sale-listings/[villaId]/route.ts",
+      "app/api/admin/sale-listings/[id]/route.ts",
+      "app/services/sale-listing-image.service.ts",
+      "app/services/sale-villa-detail.service.ts",
+      "app/services/sale-listing-public.service.ts",
+      "app/api/admin/sale-listings/[id]/images/route.ts",
+      "app/api/admin/sale-listings/[id]/images/upload-url/route.ts",
+      "app/api/admin/sale-listings/[id]/images/[imageId]/route.ts",
     ]) {
       const src = code(p);
       expect(src, p).not.toMatch(/villa_prices|reservations|manual_reservations|external_calendar|villa_discounts|villa_short_gaps/);
     }
     const repoSrc = code("lib/db/sale-listing.repository.server.ts");
     const writeTargets = [...repoSrc.matchAll(/\.from\("([a-z_]+)"\)\s*\.(insert|update|delete)\(/g)].map((m) => m[1]);
-    expect(new Set(writeTargets)).toEqual(new Set(["villa_sale_listings"]));
+    /* 108: yalnız satılık tablolarına yazar; `villa` (kiralık) tablosuna ASLA. */
+    expect(new Set(writeTargets)).toEqual(
+      new Set(["villa_sale_listings", "sale_listing_features", "sale_listing_images"])
+    );
   });
   it("villa güncellemede satılık-only geçişi rezervasyonlara yalnız OKUMA yapar", () => {
     const src = code("lib/db/reservation.repository.server.ts");
@@ -638,7 +663,7 @@ import {
   SALE_SCHEMA_OUTDATED_ERROR,
   listSaleListings,
 } from "@/app/services/sale-listing.service";
-import { GET as itemGET } from "@/app/api/admin/sale-listings/[villaId]/route";
+import { GET as itemGET } from "@/app/api/admin/sale-listings/[id]/route";
 
 describe("hata sınıflandırma — şema eksikliği vs. bulunamadı vs. yetki", () => {
   const undefinedColumn = { message: 'column "property_type" does not exist', code: "42703" };
@@ -651,7 +676,7 @@ describe("hata sınıflandırma — şema eksikliği vs. bulunamadı vs. yetki",
     expect(spy).toHaveBeenCalledWith("[saleListing.get] FAILED", {
       code: "42703",
       message: 'column "property_type" does not exist',
-      villaId: V_SALE,
+      id: V_SALE,
     });
     repo.findAllForAdmin.mockResolvedValueOnce({ data: null, error: undefinedColumn });
     expect(await listSaleListings()).toMatchObject({ ok: false, status: 503 });
@@ -693,16 +718,23 @@ describe("hata sınıflandırma — şema eksikliği vs. bulunamadı vs. yetki",
     expect((await forbidden.json()).error).toBe("Bu işlem için yetkiniz yok");
   });
 
-  it("detay sayfası API'ye ilan id'si değil villa id'si (PK) gönderir", () => {
-    const page = read("app/(admin)/maki-admin/sale-listings/[villaId]/page.tsx");
-    expect(page).toContain("adminFetch(`/api/admin/sale-listings/${encodeURIComponent(villaId)}`)");
+  it("108: detay sayfası ve liste ilan kimliği (PK id) kullanır; eski villa id bağlantısı çözülür", async () => {
+    const page = read("app/(admin)/maki-admin/sale-listings/[id]/page.tsx");
+    expect(page).toContain("adminFetch(`/api/admin/sale-listings/${encodeURIComponent(id)}`)");
     expect(read("app/(admin)/maki-admin/sale-listings/_components/SaleListingList.tsx")).toContain(
-      "href={`/maki-admin/sale-listings/${r.villa_id}`}"
+      "href={`/maki-admin/sale-listings/${r.id}`}"
     );
-    expect(code("db/migrations/104_villa_sale_listings.sql")).toMatch(/villa_id\s+uuid PRIMARY KEY/);
+    expect(code("db/migrations/108_sale_listings_standalone.sql")).toContain(
+      "ADD CONSTRAINT villa_sale_listings_pkey PRIMARY KEY (id)"
+    );
+    /* Eski bağlantı (villa id): id ile bulunamaz → villa_id ile çözülür. */
+    repo.findByVillaId.mockResolvedValueOnce({ data: listingRow(V_SALE), error: null });
+    expect((await getSaleListing(V_SALE)).ok).toBe(true);
+    expect(repo.findById).toHaveBeenCalledWith(V_SALE);
+    expect(repo.findByVillaId).toHaveBeenCalledWith(V_SALE);
   });
 
-  it("repository'nin okuduğu her kolon 104 veya 106 migration'ında tanımlı (şema drift kilidi)", async () => {
+  it("repository'nin okuduğu her kolon 104, 106 veya 108 migration'ında tanımlı (şema drift kilidi)", async () => {
     const { SALE_LISTING_COLUMNS } = await vi.importActual<
       typeof import("@/lib/db/sale-listing.repository.server")
     >("@/lib/db/sale-listing.repository.server");
@@ -715,8 +747,15 @@ describe("hata sınıflandırma — şema eksikliği vs. bulunamadı vs. yetki",
     const m106 = code("db/migrations/106_sale_listing_admin_fields.sql");
     const defined104 = new Set([...t104.matchAll(/^\s{2}([a-z_0-9]+)\s+(?:uuid|text|numeric|boolean|integer|timestamptz)/gm)].map((x) => x[1]));
     const defined106 = new Set([...m106.matchAll(/ADD COLUMN IF NOT EXISTS ([a-z_0-9]+)/g)].map((x) => x[1]));
-    const missing = cols.filter((c) => !defined104.has(c) && !defined106.has(c));
+    const m108 = code("db/migrations/108_sale_listings_standalone.sql");
+    const t108 = m108.slice(0, m108.indexOf("ALTER TABLE public.villa_sale_listing_translations"));
+    const defined108 = new Set([...t108.matchAll(/ADD COLUMN IF NOT EXISTS ([a-z_0-9]+)/g)].map((x) => x[1]));
+    const missing = cols.filter((c) => !defined104.has(c) && !defined106.has(c) && !defined108.has(c));
     expect(missing).toEqual([]);
+    /* 108 kolonları sorguda → 108 production ön koşulu. */
+    expect(cols.filter((c) => defined108.has(c)).sort()).toEqual(
+      ["bedrooms", "id", "latitude", "location_id", "longitude", "slug", "source", "title"]
+    );
     /* 106 kolonları gerçekten sorguda → 106 production ön koşulu. */
     expect(cols.filter((c) => defined106.has(c)).sort()).toEqual(
       ["bathrooms", "is_featured", "property_type", "publication_status", "published_at"]

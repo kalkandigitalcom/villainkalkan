@@ -87,10 +87,11 @@ describe("TRANSLATION_ENTITY_CONFIG — 11 tablo, doğru table/parentIdColumn", 
       table: "payment_method_translations",
       parentIdColumn: "payment_method_id",
     },
-    /* 🛡️ MIGRATION 104 — satılık ilan çevirileri (Satılık İlanlar modülü). */
+    /* 🛡️ MIGRATION 104 + 108 — satılık ilan çevirileri; 108'den beri
+       parent = ilan kimliği (bağımsız gayrimenkulde villa yok). */
     villa_sale_listing: {
       table: "villa_sale_listing_translations",
-      parentIdColumn: "villa_id",
+      parentIdColumn: "listing_id",
     },
   };
 

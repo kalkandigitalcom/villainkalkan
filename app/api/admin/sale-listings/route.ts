@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   createSaleListing,
   listSaleListings,
+  saleListingDisplayTitle,
   type SaleListingWriteInput,
 } from "@/app/services/sale-listing.service";
 import {
@@ -19,8 +20,11 @@ import {
    🛡️ /api/admin/sale-listings — SATILIK İLAN LİSTE + OLUŞTURMA
    ===============================================================
    GET  → { ok, listings }      (admin liste; filtre/arama/sayfalama client)
-   POST → { ok, listing, translation_tr }
-          body: { villa_id, listing: {...}, translation_tr?: {...} }
+   POST → { ok, listing, translation_tr, feature_ids }
+          body (mevcut villadan):  { source?: "villa", villa_id, listing, translation_tr? }
+          body (bağımsız, 108):    { source: "standalone", property: { title, slug?,
+                                     location_id?, latitude?, longitude?, feature_ids? },
+                                     listing, translation_tr? }
    Yetki: authorizeAdminCaller + callerHasPermission("sale_listings").
    Audit: başarılı oluşturma server-side insertAdminActivityLog.
    Kiralık sisteme (villa_prices, rezervasyon, takvim) DOKUNMAZ.
@@ -73,14 +77,21 @@ export async function POST(req: Request): Promise<NextResponse> {
   await insertAdminActivityLog(extractAdminContextFromRequest(req, auth.caller), {
     action: "sale_listing.created",
     entity_type: "sale_listing",
-    entity_id: res.listing.villa_id,
-    entity_title: res.listing.villa?.title || "Satılık ilan",
-    after_data: { ...res.listing, villa: undefined, translation_tr: res.translation_tr },
+    entity_id: res.listing.id,
+    entity_title: saleListingDisplayTitle(res.listing),
+    after_data: {
+      ...res.listing,
+      villa: undefined,
+      location: undefined,
+      translation_tr: res.translation_tr,
+      feature_ids: res.feature_ids,
+    },
   });
 
   return NextResponse.json({
     ok: true,
     listing: res.listing,
     translation_tr: res.translation_tr,
+    feature_ids: res.feature_ids,
   });
 }

@@ -64,14 +64,14 @@ export default function Page() {
             Satılık İlanlar
           </h1>
           <p className="text-sm text-[var(--color-stone-500)] mt-2">
-            Satılık olarak işaretlenen mülklerin satış bilgileri. Kiralık
-            fiyat, takvim ve rezervasyonlardan bağımsızdır.
+            Mevcut villalardan oluşturulan satılık ilanlar ve bağımsız
+            gayrimenkuller. Kiralık fiyat, takvim ve rezervasyonlardan bağımsızdır.
           </p>
         </div>
 
         <Link href="/maki-admin/sale-listings/ekle" className="btn-primary self-start">
           <Plus size={15} />
-          Yeni İlan
+          Yeni İlan Ekle
         </Link>
       </div>
 

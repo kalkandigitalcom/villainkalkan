@@ -24,7 +24,10 @@ export function saleDetailPath(slug: string): string {
 }
 
 export type SalePublicCard = {
-  villaId: string;
+  /** İlan kimliği (108). */
+  listingId: string;
+  /** villa = mevcut villadan; standalone = bağımsız gayrimenkul. */
+  source: "villa" | "standalone";
   slug: string;
   title: string;
   locationId: string | null;

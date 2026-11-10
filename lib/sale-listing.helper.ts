@@ -2,7 +2,8 @@
    🛡️ SATILIK İLAN — SAF TİPLER, SABİTLER ve DOĞRULAMA (client-safe)
    ===============================================================
    DB şeması: migration 104 (villa_sale_listings +
-   villa_sale_listing_translations) + 106 (admin alanları). Bu dosya DB'ye
+   villa_sale_listing_translations) + 106 (admin alanları) + 108
+   (ilan kimliği `id`, kaynak: mevcut villa | bağımsız gayrimenkul). Bu dosya DB'ye
    dokunmaz; admin formu (client) ve servis (server) AYNI kuralları
    buradan kullanır → doğrulama tek yerde.
 
@@ -13,6 +14,8 @@
    DİL: İngilizce canonical (villa_sale_listings.sale_description /
    seo_*), Türkçe çeviri `villa_sale_listing_translations` (locale='tr').
 =============================================================== */
+
+import { slugifyTr } from "@/lib/slug";
 
 /* ---------------- İLAN TÜRÜ (villa.listed_for_rent / listed_for_sale) */
 
@@ -52,6 +55,19 @@ export function listingFlagsFor(type: ListingType): {
     listed_for_rent: type === "rent" || type === "both",
     listed_for_sale: type === "sale" || type === "both",
   };
+}
+
+/* ---------------- İLAN KAYNAĞI (migration 108) */
+
+export const SALE_LISTING_SOURCES = ["villa", "standalone"] as const;
+export type SaleListingSource = (typeof SALE_LISTING_SOURCES)[number];
+export const SALE_LISTING_SOURCE_LABELS: Record<SaleListingSource, string> = {
+  villa: "Mevcut Villa",
+  standalone: "Bağımsız Gayrimenkul",
+};
+
+export function isSaleListingSource(v: unknown): v is SaleListingSource {
+  return typeof v === "string" && (SALE_LISTING_SOURCES as readonly string[]).includes(v);
 }
 
 /* ---------------- SATILIK İLAN ALANLARI */
@@ -105,6 +121,8 @@ export type SaleListingValues = {
   plot_area_m2: number | null;
   built_area_m2: number | null;
   room_layout: string | null;
+  /** 108 — iki kaynakta da geçerli; villa kaynağında boşsa villa değeri. */
+  bedrooms: number | null;
   bathrooms: number | null;
   floors: number | null;
   year_built: number | null;
@@ -121,12 +139,17 @@ export type SaleListingValues = {
 
 /** Türkçe çeviri alanları (villa_sale_listing_translations, locale='tr'). */
 export type SaleListingTranslationValues = {
+  /** 108 — yalnız bağımsız ilan başlığının Türkçesi (villa adı çevrilmez). */
+  title: string | null;
   sale_description: string | null;
   seo_title: string | null;
   seo_description: string | null;
 };
 
 export const SALE_LIMITS = {
+  title: 160,
+  slug: 120, // DB CHECK villa_sale_listings_slug_format_check ile AYNI
+  maxFeatures: 200,
   roomLayout: 20,
   titleDeedType: 60,
   description: 10000,
@@ -214,6 +237,8 @@ export function validateSaleListingInput(
   if (!built.ok) return built;
   const garden = optionalNumber(r.garden_area_m2, "Bahçe alanı", { min: 0, max: SALE_LIMITS.maxArea });
   if (!garden.ok) return garden;
+  const bedrooms = optionalNumber(r.bedrooms, "Yatak odası sayısı", { min: 0, max: 100, integer: true });
+  if (!bedrooms.ok) return bedrooms;
   const bathrooms = optionalNumber(r.bathrooms, "Banyo sayısı", { min: 0, max: 100, integer: true });
   if (!bathrooms.ok) return bathrooms;
   const floors = optionalNumber(r.floors, "Kat sayısı", { min: 0, max: 100, integer: true });
@@ -260,6 +285,7 @@ export function validateSaleListingInput(
       plot_area_m2: plot.value,
       built_area_m2: built.value,
       room_layout: roomLayout,
+      bedrooms: bedrooms.value,
       bathrooms: bathrooms.value,
       floors: floors.value,
       year_built: year.value,
@@ -276,27 +302,108 @@ export function validateSaleListingInput(
   };
 }
 
-/** Türkçe çeviri girdisi (yalnız 3 metin alanı). */
+/** Türkçe çeviri girdisi (başlık + 3 metin alanı). */
 export function validateSaleListingTranslationInput(
   raw: unknown
 ): ValidationResult<SaleListingTranslationValues> {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const title = text(r.title);
   const description = text(r.sale_description);
   const seoTitle = text(r.seo_title);
   const seoDescription = text(r.seo_description);
   const lenError =
+    maxLen(title, SALE_LIMITS.title, "Türkçe başlık") ||
     maxLen(description, SALE_LIMITS.description, "Türkçe açıklama") ||
     maxLen(seoTitle, SALE_LIMITS.seoTitle, "Türkçe SEO başlık") ||
     maxLen(seoDescription, SALE_LIMITS.seoDescription, "Türkçe SEO açıklama");
   if (lenError) return { ok: false, error: lenError };
   return {
     ok: true,
-    value: { sale_description: description, seo_title: seoTitle, seo_description: seoDescription },
+    value: { title, sale_description: description, seo_title: seoTitle, seo_description: seoDescription },
   };
 }
 
 export function isEmptyTranslation(t: SaleListingTranslationValues): boolean {
-  return !t.sale_description && !t.seo_title && !t.seo_description;
+  return !t.title && !t.sale_description && !t.seo_title && !t.seo_description;
+}
+
+/* ---------------- BAĞIMSIZ GAYRİMENKUL (migration 108) */
+
+/** Bağımsız ilanın kendi mülk bilgileri (villa kaydı YOK). */
+export type StandalonePropertyValues = {
+  title: string;
+  slug: string;
+  location_id: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  feature_ids: string[];
+};
+
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/** Başlık / serbest metin → URL slug'ı (Türkçe karakter dönüşümlü,
+ *  [a-z0-9-], en fazla SALE_LIMITS.slug). DB CHECK ile aynı biçim. */
+export function normalizeSaleSlug(v: unknown): string {
+  return slugifyTr(typeof v === "string" ? v : "")
+    .slice(0, SALE_LIMITS.slug)
+    .replace(/-+$/g, "");
+}
+
+export function isValidSaleSlug(v: unknown): v is string {
+  return typeof v === "string" && v.length <= SALE_LIMITS.slug && SLUG_RE.test(v);
+}
+
+/**
+ * Bağımsız gayrimenkul alanları. Slug boşsa başlıktan üretilir; verilen
+ * slug normalize edilir (büyük harf / Türkçe karakter / boşluk). Bilinmeyen
+ * anahtarlar yok sayılır.
+ */
+export function validateStandalonePropertyInput(
+  raw: unknown
+): ValidationResult<StandalonePropertyValues> {
+  if (!raw || typeof raw !== "object") return { ok: false, error: "Gayrimenkul bilgileri eksik" };
+  const r = raw as Record<string, unknown>;
+
+  const title = text(r.title);
+  if (!title) return { ok: false, error: "Başlık zorunludur" };
+  const titleErr = maxLen(title, SALE_LIMITS.title, "Başlık");
+  if (titleErr) return { ok: false, error: titleErr };
+
+  const slug = normalizeSaleSlug(text(r.slug) ?? title);
+  if (!isValidSaleSlug(slug)) {
+    return { ok: false, error: "Geçerli bir URL (slug) girin: harf, rakam ve tire" };
+  }
+
+  const loc = text(r.location_id);
+  if (loc && !isUuid(loc)) return { ok: false, error: "Geçersiz bölge" };
+
+  const lat = optionalNumber(r.latitude, "Enlem", { min: -90, max: 90 });
+  if (!lat.ok) return lat;
+  const lng = optionalNumber(r.longitude, "Boylam", { min: -180, max: 180 });
+  if (!lng.ok) return lng;
+  if ((lat.value === null) !== (lng.value === null)) {
+    return { ok: false, error: "Enlem ve boylam birlikte girilmeli" };
+  }
+
+  const rawFeatures = r.feature_ids === undefined || r.feature_ids === null ? [] : r.feature_ids;
+  if (!Array.isArray(rawFeatures)) return { ok: false, error: "Geçersiz özellik listesi" };
+  if (rawFeatures.length > SALE_LIMITS.maxFeatures) {
+    return { ok: false, error: "Çok fazla özellik seçildi" };
+  }
+  if (!rawFeatures.every((f) => isUuid(f))) return { ok: false, error: "Geçersiz özellik" };
+  const featureIds = [...new Set(rawFeatures as string[])];
+
+  return {
+    ok: true,
+    value: {
+      title,
+      slug,
+      location_id: loc,
+      latitude: lat.value,
+      longitude: lng.value,
+      feature_ids: featureIds,
+    },
+  };
 }
 
 /** UUID biçim kontrolü (path param'lar DB'ye gitmeden önce). */
@@ -318,7 +425,12 @@ export function isUuid(v: unknown): v is string {
  */
 export function isPublicSaleListingVisible(
   listing:
-    | { is_published?: boolean | null; publication_status?: string | null }
+    | {
+        is_published?: boolean | null;
+        publication_status?: string | null;
+        source?: string | null;
+        slug?: string | null;
+      }
     | null
     | undefined,
   villa:
@@ -330,9 +442,13 @@ export function isPublicSaleListingVisible(
     | null
     | undefined
 ): boolean {
-  if (!listing || !villa) return false;
+  if (!listing) return false;
   if (listing.is_published !== true) return false;
   if (listing.publication_status !== "published") return false;
+  /* 108 — bağımsız gayrimenkul: villa kaydı YOK; yalnız yayın durumu
+     + kendi slug'ı. (Villa bayrakları bu ilan için anlamsız.) */
+  if (listing.source === "standalone") return !!listing.slug;
+  if (!villa) return false;
   if (villa.listed_for_sale !== true) return false;
   if (villa.is_active === false) return false;
   if (villa.deleted_at) return false;
@@ -398,12 +514,12 @@ export function formatSalePrice(
 
 /** Admin önizleme adresi (yalnız /maki-admin altında — public rotada
  *  önizleme modu YOK). */
-export function saleListingPreviewHref(villaId: string, locale?: "en" | "tr"): string {
-  const base = `/maki-admin/sale-listings/${encodeURIComponent(villaId)}/onizleme`;
+export function saleListingPreviewHref(listingId: string, locale?: "en" | "tr"): string {
+  const base = `/maki-admin/sale-listings/${encodeURIComponent(listingId)}/onizleme`;
   return locale === "tr" ? `${base}?lang=tr` : base;
 }
 
-/** /maki-admin/sale-listings/<villaId>/onizleme — admin kabuğu olmadan
+/** /maki-admin/sale-listings/<ilanId>/onizleme — admin kabuğu olmadan
  *  render edilen önizleme yolu (maki-admin/layout.tsx). */
 export function isSaleListingPreviewPath(pathname: string | null | undefined): boolean {
   return /^\/maki-admin\/sale-listings\/[^/]+\/onizleme\/?$/.test(pathname || "");

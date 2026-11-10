@@ -21,7 +21,7 @@ const h = vi.hoisted(() => ({
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   }),
-  repo: { findByVillaId: vi.fn() },
+  repo: { findById: vi.fn(), findByVillaId: vi.fn() },
   villaRepo: { findById: vi.fn() },
   trRepo: { findOne: vi.fn() },
 }));
@@ -98,7 +98,9 @@ const villaRow = (over: Record<string, unknown> = {}) => ({
 /* reference_code / agent_* DB'de duran ESKİ kolonlar: kod bunları artık
    okumaz. Mock'ta bırakıldı → görünüm modeline sızmadığı test edilir. */
 const listingRow = (status: "draft" | "published" | "unpublished") => ({
+  id: V,
   villa_id: V,
+  source: "villa",
   reference_code: "VIK-1",
   sale_price: "1250000.00",
   sale_currency: "EUR",
@@ -122,7 +124,8 @@ const listingRow = (status: "draft" | "published" | "unpublished") => ({
 });
 
 const viewData = (status: "draft" | "published" | "unpublished"): SaleVillaDetailData => ({
-  villaId: V,
+  listingId: V,
+  source: "villa",
   title: "Villa Azure",
   slug: "villa-azure",
   locationName: "Kalkan",
@@ -161,6 +164,9 @@ beforeEach(() => {
   h.auth = { ok: true, caller: { id: "admin-1", authUserId: "au", email: "a@a", is_active: true } };
   h.gate.mockResolvedValue(null);
   h.villaRepo.findById.mockResolvedValue(villaRow());
+  /* 108: yükleyici önce ilan id ile arar; bulunamazsa villa id (eski
+     bağlantılar) ile — bu dosyadaki mock'lar villa_id yolunu kullanır. */
+  h.repo.findById.mockResolvedValue({ data: null, error: null });
   h.trRepo.findOne.mockResolvedValue({ data: null, error: null });
 });
 
@@ -172,9 +178,9 @@ describe("önizleme sayfası — yetki kapısı ve durumlar", () => {
       loadSaleVillaDetail: (...a: unknown[]) => h.load(...a),
     }));
     h.load.mockResolvedValue(status ? viewData(status) : null);
-    const mod = await import("@/app/(admin)/maki-admin/sale-listings/[villaId]/onizleme/page");
+    const mod = await import("@/app/(admin)/maki-admin/sale-listings/[id]/onizleme/page");
     const el = await mod.default({
-      params: Promise.resolve({ villaId: V }),
+      params: Promise.resolve({ id: V }),
       searchParams: Promise.resolve(lang ? { lang } : {}),
     });
     return { mod, el };
@@ -328,7 +334,7 @@ describe("ortak detay bileşeni", () => {
   });
 
   it("uyarı şeridi admin için Türkçe; dil seçici ve geri dönüş bağlantısı", () => {
-    render(<SalePreviewBanner villaId={V} locale="en" status="unpublished" />);
+    render(<SalePreviewBanner listingId={V} locale="en" status="unpublished" />);
     expect(screen.getByText(/ÖNİZLEME – Bu ilan henüz yayında değil/)).toBeTruthy();
     expect(screen.getByText("Yayından kaldırıldı")).toBeTruthy();
     expect(screen.getByRole("link", { name: "TR" }).getAttribute("href")).toBe(saleListingPreviewHref(V, "tr"));
@@ -374,7 +380,7 @@ describe("güvenlik kilitleri", () => {
 
   it("'?preview=true' gibi bir bayrak hiçbir satılık kodunda okunmuyor", () => {
     for (const p of [
-      "app/(admin)/maki-admin/sale-listings/[villaId]/onizleme/page.tsx",
+      "app/(admin)/maki-admin/sale-listings/[id]/onizleme/page.tsx",
       "app/services/sale-villa-detail.service.ts",
       "app/components/sale/SaleVillaDetail.tsx",
     ]) {
@@ -384,7 +390,7 @@ describe("güvenlik kilitleri", () => {
   });
 
   it("sayfa veriyi oturum + yetki kontrolünden SONRA okur", () => {
-    const src = read("app/(admin)/maki-admin/sale-listings/[villaId]/onizleme/page.tsx");
+    const src = read("app/(admin)/maki-admin/sale-listings/[id]/onizleme/page.tsx");
     const body = src.slice(src.indexOf("export default async function"));
     const a = body.indexOf("authorizeAdminSession()");
     const g = body.indexOf('adminPermissionGate(auth.caller.id, "sale_listings")');
@@ -420,6 +426,7 @@ describe("admin listesi — Önizle her durumda", () => {
     );
     const rows = (["draft", "published", "unpublished"] as const).map((s, i) => ({
       ...listingRow(s),
+      id: `${i}5555555-5555-5555-5555-555555555555`,
       villa_id: `${i}2222222-2222-2222-2222-222222222222`,
       created_at: "2026-11-01T00:00:00Z",
       villa: { id: String(i), title: `Villa ${s}`, slug: "v", is_active: true, deleted_at: null, listed_for_rent: false, listed_for_sale: true },
@@ -432,7 +439,7 @@ describe("admin listesi — Önizle her durumda", () => {
     const links = screen.getAllByRole("link", { name: /önizle$/ });
     expect(links).toHaveLength(3);
     links.forEach((a, i) => {
-      expect(a.getAttribute("href")).toBe(saleListingPreviewHref(rows[i].villa_id));
+      expect(a.getAttribute("href")).toBe(saleListingPreviewHref(rows[i].id));
       expect(a.getAttribute("target")).toBe("_blank");
     });
   });

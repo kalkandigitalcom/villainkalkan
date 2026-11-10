@@ -21,6 +21,7 @@ import { formatMoney } from "@/lib/format";
 import {
   PUBLICATION_STATUSES,
   PUBLICATION_STATUS_LABELS,
+  SALE_LISTING_SOURCE_LABELS,
   saleListingPreviewHref,
   type PublicationStatus,
 } from "@/lib/sale-listing.helper";
@@ -31,10 +32,11 @@ import {
 import type { SaleListingClientRow } from "./types";
 
 /* ===============================================================
-   🛡️ SATILIK İLAN LİSTESİ — filtre (yayın durumu), arama (villa adı),
-   client-side sayfalama (manual-reservations paritesi:
-   ?page, ?pageSize, ?status URL state; default'lar URL'e yazılmaz).
-   Silme: DELETE /api/admin/sale-listings/[villaId] (server-side audit).
+   🛡️ SATILIK İLAN LİSTESİ — filtre (yayın durumu), arama (ilan adı:
+   villa adı veya bağımsız gayrimenkul başlığı), client-side sayfalama
+   (manual-reservations paritesi: ?page, ?pageSize, ?status URL state;
+   default'lar URL'e yazılmaz). Kaynak sütunu: Mevcut Villa / Bağımsız
+   Gayrimenkul (108). Silme: DELETE /api/admin/sale-listings/[id].
    =============================================================== */
 
 const ALLOWED_PAGE_SIZES = [10, 30, 50, 100] as const;
@@ -65,10 +67,20 @@ export function filterSaleListings(
   return rows.filter((r) => {
     if (status !== "all" && r.publication_status !== status) return false;
     if (!q) return true;
-    const hay = normalizeSearchText(r.villa?.title || "");
+    const hay = normalizeSearchText(listingTitle(r));
     return hay.includes(q);
   });
 }
+
+/** Liste başlığı: villa adı (mevcut villadan) veya ilanın kendi başlığı. */
+export function listingTitle(r: Pick<SaleListingClientRow, "source" | "title" | "villa">): string {
+  return (r.source === "standalone" ? r.title : r.villa?.title) || "";
+}
+
+const SOURCE_BADGE: Record<SaleListingClientRow["source"], string> = {
+  villa: "admin-badge admin-badge--neutral",
+  standalone: "admin-badge admin-badge--confirmed",
+};
 
 const STATUS_BADGE: Record<PublicationStatus, string> = {
   published: "admin-badge admin-badge--confirmed",
@@ -83,6 +95,8 @@ function priceLabel(r: SaleListingClientRow): string {
 }
 
 function villaWarning(r: SaleListingClientRow): string | null {
+  /* Bağımsız gayrimenkulün villa kaydı yoktur (108) → villa uyarısı yok. */
+  if (r.source === "standalone") return null;
   const v = r.villa;
   if (!v) return "Villa bulunamadı";
   if (v.deleted_at) return "Villa çöp kutusunda";
@@ -160,24 +174,26 @@ export default function SaleListingList({
     const ok = await confirm({
       title: "Satılık ilan silinsin mi?",
       description:
-        "Yalnız satış bilgileri ve Türkçe çevirisi silinir. Villa kaydı, kiralık fiyatlar, takvim ve rezervasyonlar etkilenmez.",
+        row.source === "standalone"
+          ? "Bağımsız gayrimenkul ilanı, fotoğrafları ve çevirisi kalıcı olarak silinir. Kiralık villalar etkilenmez."
+          : "Yalnız satış bilgileri ve Türkçe çevirisi silinir. Villa kaydı, kiralık fiyatlar, takvim ve rezervasyonlar etkilenmez.",
       confirmLabel: "Sil",
       variant: "danger",
     });
     if (!ok) return;
-    setDeletingId(row.villa_id);
+    setDeletingId(row.id);
     try {
       const res = await adminFetch(
-        `/api/admin/sale-listings/${encodeURIComponent(row.villa_id)}`,
+        `/api/admin/sale-listings/${encodeURIComponent(row.id)}`,
         { method: "DELETE" }
       );
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok || !json.ok) throw new Error(json.error || `HTTP ${res.status}`);
-      setData((prev) => prev.filter((x) => x.villa_id !== row.villa_id));
-      toast.success("İlan silindi", { id: `sale-delete-${row.villa_id}` });
+      setData((prev) => prev.filter((x) => x.id !== row.id));
+      toast.success("İlan silindi", { id: `sale-delete-${row.id}` });
     } catch (err) {
       toast.error("İlan silinemedi", {
-        id: `sale-delete-${row.villa_id}`,
+        id: `sale-delete-${row.id}`,
         description: err instanceof Error ? err.message : undefined,
       });
     } finally {
@@ -195,7 +211,7 @@ export default function SaleListingList({
           Henüz satılık ilan yok
         </h3>
         <p className="text-sm text-[var(--color-stone-500)] mt-2">
-          Önce mülkün ilan türünü “Satılık” yapın, ardından “Yeni İlan” ile satış bilgilerini ekleyin.
+          “Yeni İlan” ile mevcut bir villadan satılık ilan oluşturun veya bağımsız bir gayrimenkul ekleyin.
         </p>
       </div>
     );
@@ -230,7 +246,7 @@ export default function SaleListingList({
         <div className="admin-pill-search flex-1 min-w-[200px]">
           <Search size={14} className="text-[var(--admin-muted-2)]" />
           <input
-            placeholder="Villa adı ara…"
+            placeholder="İlan veya villa adı ara…"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -266,7 +282,8 @@ export default function SaleListingList({
           <table className="w-full text-sm min-w-[760px]">
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-[0.08em] text-[var(--color-stone-400)] border-b border-[var(--color-stone-100)]">
-                <th className="px-5 py-3 font-semibold">Villa</th>
+                <th className="px-5 py-3 font-semibold">İlan</th>
+                <th className="px-3 py-3 font-semibold">Kaynak</th>
                 <th className="px-3 py-3 font-semibold text-right">Satış fiyatı</th>
                 <th className="px-3 py-3 font-semibold">Para birimi</th>
                 <th className="px-3 py-3 font-semibold">Yayın</th>
@@ -278,15 +295,20 @@ export default function SaleListingList({
               {pageItems.map((r) => {
                 const warn = villaWarning(r);
                 return (
-                  <tr key={r.villa_id} className="hover:bg-[var(--color-sand-50)]">
+                  <tr key={r.id} className="hover:bg-[var(--color-sand-50)]">
                     <td className="px-5 py-3.5">
                       <div className="font-medium text-[var(--color-stone-900)] flex items-center gap-1.5">
                         {r.is_featured && (
                           <Star size={12} className="text-[var(--color-champagne-600)] fill-current" aria-label="Öne çıkan" />
                         )}
-                        {r.villa?.title || "—"}
+                        {listingTitle(r) || "—"}
                       </div>
                       {warn && <div className="text-[11px] text-amber-700 mt-0.5">{warn}</div>}
+                    </td>
+                    <td className="px-3 py-3.5">
+                      <span className={SOURCE_BADGE[r.source] ?? SOURCE_BADGE.villa} data-sale-source={r.source}>
+                        {SALE_LISTING_SOURCE_LABELS[r.source] ?? SALE_LISTING_SOURCE_LABELS.villa}
+                      </span>
                     </td>
                     <td className="px-3 py-3.5 text-right tabular-nums">{priceLabel(r)}</td>
                     <td className="px-3 py-3.5">{r.sale_currency}</td>
@@ -303,17 +325,17 @@ export default function SaleListingList({
                         {/* 🛡️ Önizleme — her yayın durumunda (taslak / yayında /
                             kaldırılmış). Yetki kontrolü önizleme sayfasında. */}
                         <a
-                          href={saleListingPreviewHref(r.villa_id)}
+                          href={saleListingPreviewHref(r.id)}
                           target="_blank"
                           rel="noopener"
-                          aria-label={`${r.villa?.title || "İlan"} önizle`}
+                          aria-label={`${listingTitle(r) || "İlan"} önizle`}
                           className="inline-flex items-center gap-1.5 text-[13px] text-[var(--color-stone-700)] hover:text-[var(--color-stone-900)] px-3 py-1.5 rounded-lg border border-transparent hover:bg-white hover:border-[var(--color-champagne-300)]"
                         >
                           <Eye size={13} />
                           Önizle
                         </a>
                         <Link
-                          href={`/maki-admin/sale-listings/${r.villa_id}`}
+                          href={`/maki-admin/sale-listings/${r.id}`}
                           className="inline-flex items-center gap-1.5 text-[13px] text-[var(--color-stone-700)] hover:text-[var(--color-stone-900)] px-3 py-1.5 rounded-lg border border-transparent hover:bg-white hover:border-[var(--color-champagne-300)]"
                         >
                           <Pencil size={13} />
@@ -322,11 +344,11 @@ export default function SaleListingList({
                         <button
                           type="button"
                           onClick={() => handleDelete(r)}
-                          disabled={deletingId === r.villa_id}
+                          disabled={deletingId === r.id}
                           className="inline-flex items-center gap-1.5 text-[13px] text-red-600 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-40"
                         >
                           <Trash2 size={13} />
-                          {deletingId === r.villa_id ? "Siliniyor…" : "Sil"}
+                          {deletingId === r.id ? "Siliniyor…" : "Sil"}
                         </button>
                       </div>
                     </td>
