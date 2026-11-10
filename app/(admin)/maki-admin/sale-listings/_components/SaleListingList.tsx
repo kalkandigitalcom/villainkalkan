@@ -31,8 +31,8 @@ import {
 import type { SaleListingClientRow } from "./types";
 
 /* ===============================================================
-   🛡️ SATILIK İLAN LİSTESİ — filtre (yayın durumu), arama (villa adı /
-   referans kodu), client-side sayfalama (manual-reservations paritesi:
+   🛡️ SATILIK İLAN LİSTESİ — filtre (yayın durumu), arama (villa adı),
+   client-side sayfalama (manual-reservations paritesi:
    ?page, ?pageSize, ?status URL state; default'lar URL'e yazılmaz).
    Silme: DELETE /api/admin/sale-listings/[villaId] (server-side audit).
    =============================================================== */
@@ -65,7 +65,7 @@ export function filterSaleListings(
   return rows.filter((r) => {
     if (status !== "all" && r.publication_status !== status) return false;
     if (!q) return true;
-    const hay = normalizeSearchText(`${r.villa?.title || ""} ${r.reference_code || ""}`);
+    const hay = normalizeSearchText(r.villa?.title || "");
     return hay.includes(q);
   });
 }
@@ -230,7 +230,7 @@ export default function SaleListingList({
         <div className="admin-pill-search flex-1 min-w-[200px]">
           <Search size={14} className="text-[var(--admin-muted-2)]" />
           <input
-            placeholder="Villa adı veya referans kodu ara…"
+            placeholder="Villa adı ara…"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -267,7 +267,6 @@ export default function SaleListingList({
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-[0.08em] text-[var(--color-stone-400)] border-b border-[var(--color-stone-100)]">
                 <th className="px-5 py-3 font-semibold">Villa</th>
-                <th className="px-3 py-3 font-semibold">Referans</th>
                 <th className="px-3 py-3 font-semibold text-right">Satış fiyatı</th>
                 <th className="px-3 py-3 font-semibold">Para birimi</th>
                 <th className="px-3 py-3 font-semibold">Yayın</th>
@@ -288,9 +287,6 @@ export default function SaleListingList({
                         {r.villa?.title || "—"}
                       </div>
                       {warn && <div className="text-[11px] text-amber-700 mt-0.5">{warn}</div>}
-                    </td>
-                    <td className="px-3 py-3.5 font-mono text-[12.5px] text-[var(--color-stone-700)]">
-                      {r.reference_code || "—"}
                     </td>
                     <td className="px-3 py-3.5 text-right tabular-nums">{priceLabel(r)}</td>
                     <td className="px-3 py-3.5">{r.sale_currency}</td>

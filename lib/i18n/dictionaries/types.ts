@@ -1497,7 +1497,7 @@ export type Dictionary = {
   };
 
   /* 🛡️ SATILIK İLAN DETAYI (admin önizleme; Aşama 5 public sayfa aynı
-     bileşeni kullanır). `whatsappMessage`: formatDictionaryString — `{title}`, `{ref}`. */
+     bileşeni kullanır). `whatsappMessage`: formatDictionaryString — `{title}`. */
   sale: {
     previewBannerTitle: string;
     previewBannerPublished: string;
@@ -1507,7 +1507,6 @@ export type Dictionary = {
     previewBackToAdmin: string;
     previewContactDisabled: string;
     forSale: string;
-    referenceLabel: string;
     priceLabel: string;
     priceOnRequest: string;
     statusAvailable: string;
@@ -1531,7 +1530,6 @@ export type Dictionary = {
     techGardenArea: string;
     techTitleDeed: string;
     techSaleStatus: string;
-    techReference: string;
     yes: string;
     no: string;
     locationTitle: string;

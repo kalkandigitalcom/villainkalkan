@@ -95,6 +95,8 @@ const villaRow = (over: Record<string, unknown> = {}) => ({
   location: { name: "Kalkan" },
   ...over,
 });
+/* reference_code / agent_* DB'de duran ESKİ kolonlar: kod bunları artık
+   okumaz. Mock'ta bırakıldı → görünüm modeline sızmadığı test edilir. */
 const listingRow = (status: "draft" | "published" | "unpublished") => ({
   villa_id: V,
   reference_code: "VIK-1",
@@ -127,7 +129,6 @@ const viewData = (status: "draft" | "published" | "unpublished"): SaleVillaDetai
   imageUrls: ["https://cdn.test/a.webp"],
   watermark: { logo: null, enabled: false, opacity: 0.15, position: "center", size: 25 },
   listing: {
-    referenceCode: "VIK-1",
     salePrice: 1250000,
     saleCurrency: "EUR",
     priceOnRequest: false,
@@ -144,15 +145,13 @@ const viewData = (status: "draft" | "published" | "unpublished"): SaleVillaDetai
     hasGarden: true,
     gardenAreaM2: 400,
     description: "Sea view villa.",
-    agentWhatsapp: "+90 555 111 22 33",
-    agentPhone: null,
     publicationStatus: status,
   },
   features: [{ id: "f1", displayName: "Infinity pool" }],
   distances: [{ id: "d1", displayTitle: "Beach", displayDistance: "1 km", iconKey: "waves" }],
   map: { mapType: "coords", latitude: 36.2, longitude: 29.4, mapEmbed: null },
-  siteWhatsappLink: null,
-  sitePhone: null,
+  siteWhatsappLink: "https://wa.me/905550000000",
+  sitePhone: "+90 242 000 00 00",
   seo: { title: null, description: null },
 });
 
@@ -249,6 +248,12 @@ describe("ortak veri yükleyici — preview vs public", () => {
     expect(d?.listing.bathrooms).toBe(3); // ilan alanı boş → villa değeri
     expect(d?.imageUrls).toEqual(["https://cdn.test/villas/a.webp"]);
     expect(d?.map).toMatchObject({ mapType: "coords", latitude: 36.2 });
+    // İletişim YALNIZ Genel Ayarlar; ilan bazlı alanlar/referans sızmaz.
+    expect(d?.siteWhatsappLink).toBe("https://wa.me/905550000000");
+    expect(d?.sitePhone).toBe("+90 242 000 00 00");
+    for (const k of ["referenceCode", "agentWhatsapp", "agentPhone"]) {
+      expect(d?.listing).not.toHaveProperty(k);
+    }
   });
 
   it("public: taslak ve yayından kaldırılmış ilan ASLA dönmez; yayındaki döner", async () => {
@@ -294,10 +299,11 @@ describe("ortak veri yükleyici — preview vs public", () => {
 
 /* ================================================================ 3 */
 describe("ortak detay bileşeni", () => {
-  it("bölümler: fiyat, referans, konum, temel bilgiler, açıklama, özellikler, harita", () => {
-    render(<SaleVillaDetail data={viewData("published")} locale="en" />);
+  it("bölümler: fiyat, konum, temel bilgiler, açıklama, özellikler, harita (referans YOK)", () => {
+    const { container } = render(<SaleVillaDetail data={viewData("published")} locale="en" />);
     expect(screen.getAllByText("€1,250,000").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("VIK-1").length).toBe(2); // başlık + teknik tablo
+    expect(container.querySelector("[data-sale-reference]")).toBeNull();
+    expect(screen.queryByText(/Reference no\.|Ref\./)).toBeNull();
     for (const h2 of ["Key facts", "About this property", "General features", "Technical details", "Location"]) {
       expect(screen.getByRole("heading", { name: h2 })).toBeTruthy();
     }
@@ -305,10 +311,12 @@ describe("ortak detay bileşeni", () => {
     expect(screen.getByText("Sea view villa.")).toBeTruthy();
   });
 
-  it("public (preview=false): gerçek WhatsApp bağlantısı, mesaj kodlanmış", () => {
+  it("public (preview=false): Genel Ayarlar WhatsApp + telefonu, mesajda referans yok", () => {
     const html = renderToStaticMarkup(<SaleVillaDetail data={viewData("published")} locale="en" />);
     expect(html).toContain('data-sale-contact="live"');
-    expect(html).toMatch(/href="https:\/\/wa\.me\/905551112233\?text=Hello/);
+    expect(html).toMatch(/href="https:\/\/wa\.me\/905550000000\?text=Hello/);
+    expect(html).toContain('href="tel:+902420000000"');
+    expect(html).not.toMatch(/Ref\.|%28Ref/);
     expect(html).not.toContain("data-sale-preview-banner");
   });
 
@@ -327,10 +335,11 @@ describe("ortak detay bileşeni", () => {
     expect(screen.getByRole("link", { name: "İlana dön" }).getAttribute("href")).toBe(`/maki-admin/sale-listings/${V}`);
   });
 
-  it("WhatsApp: danışman numarası öncelikli, yoksa site linki, ikisi de yoksa null", () => {
-    expect(buildSaleWhatsappHref("+90 555 111 22 33", null, "Hi")).toBe("https://wa.me/905551112233?text=Hi");
-    expect(buildSaleWhatsappHref(null, "https://wa.me/905550000000", "Hi there")).toBe("https://wa.me/905550000000?text=Hi+there");
+  it("WhatsApp yalnız Genel Ayarlar: whatsapp_link, yoksa ayarlardaki telefondan wa.me, ikisi de yoksa null", () => {
+    expect(buildSaleWhatsappHref("https://wa.me/905550000000", "+90 242 000 00 00", "Hi there")).toBe("https://wa.me/905550000000?text=Hi+there");
+    expect(buildSaleWhatsappHref(null, "+90 242 000 00 00", "Hi")).toBe("https://wa.me/902420000000?text=Hi");
     expect(buildSaleWhatsappHref(null, null, "Hi")).toBeNull();
+    expect(buildSaleWhatsappHref("", "12", "Hi")).toBeNull();
   });
 });
 

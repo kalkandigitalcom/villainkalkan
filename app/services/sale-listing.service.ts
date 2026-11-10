@@ -20,7 +20,8 @@ import type { VillaSaleListingTranslationRow } from "@/lib/i18n/translations.typ
    KURALLAR:
      • İlan yalnız VAR OLAN, SİLİNMEMİŞ ve `listed_for_sale=true` villaya
        bağlanabilir (villa başına en fazla 1 ilan — PK villa_id).
-     • Referans kodu benzersiz (DB UNIQUE + önceden kontrol → net mesaj).
+     • reference_code / agent_whatsapp / agent_phone kolonları DB'de duruyor
+       ama kod artık OKUMAZ/YAZMAZ (iletişim yalnız Genel Ayarlar).
      • Yalnız beyaz listedeki alanlar yazılır (validateSaleListingInput);
        kiralık fiyat / villa / rezervasyon tablolarına YAZILMAZ.
      • Yayın durumu: publication_status ⇔ is_published senkron
@@ -215,23 +216,8 @@ async function assertSaleVilla(villaId: string): Promise<SaleListingVilla | Fail
   return data;
 }
 
-async function assertReferenceCodeFree(
-  code: string | null,
-  villaId: string
-): Promise<Fail | null> {
-  if (!code) return null;
-  const { data, error } = await saleListingRepository.findReferenceCodeOwner(code);
-  if (error) {
-    return dbFail("referenceCheck", error, "Referans kodu doğrulanamadı");
-  }
-  if (data && data.villa_id !== villaId) {
-    return fail("Bu referans kodu başka bir ilanda kullanılıyor", 409);
-  }
-  return null;
-}
-
 function mapWriteError(error: { message: string; code?: string }): Fail {
-  if (error.code === "23505") return fail("Bu villa veya referans kodu için zaten bir ilan var", 409);
+  if (error.code === "23505") return fail("Bu villa için zaten bir ilan var", 409);
   if (error.code === "23514") return fail("İlan bilgileri veritabanı kurallarına uymuyor", 400);
   if (error.code === "23503") return fail("Villa bulunamadı", 404);
   if (isSaleSchemaError(error)) return fail(SALE_SCHEMA_OUTDATED_ERROR, 503);
@@ -289,9 +275,6 @@ export async function createSaleListing(
   if (existing.error) return dbFail("create.existing", existing.error, "İlan doğrulanamadı", { villaId });
   if (existing.data) return fail("Bu villa için zaten bir satılık ilan var", 409);
 
-  const refErr = await assertReferenceCodeFree(v.value.reference_code, villaId);
-  if (refErr) return refErr;
-
   const { publication_status, ...rest } = v.value;
   const { data, error } = await saleListingRepository.insert({
     villa_id: villaId,
@@ -334,9 +317,6 @@ export async function updateSaleListing(
     const villa = await assertSaleVilla(villaId);
     if ("ok" in villa) return villa;
   }
-
-  const refErr = await assertReferenceCodeFree(v.value.reference_code, villaId);
-  if (refErr) return refErr;
 
   const { publication_status, ...rest } = v.value;
   const { data, error } = await saleListingRepository.updateByVillaId(villaId, {

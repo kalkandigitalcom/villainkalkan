@@ -24,7 +24,6 @@ type ImageRow = { image_url: string | null; is_cover: boolean | null; sort_order
 
 type CardRow = {
   villa_id: string;
-  reference_code: string | null;
   sale_price: number | string | null;
   sale_currency: SaleCurrency;
   price_on_request: boolean | null;
@@ -86,7 +85,6 @@ export function mapSaleCardRow(r: CardRow): SalePublicCard | null {
     locationId: v.location_id ?? null,
     locationName: v.location?.name ?? null,
     coverImage: coverOf(v.villa_images),
-    referenceCode: r.reference_code,
     salePrice: num(r.sale_price),
     saleCurrency: r.sale_currency,
     priceOnRequest: r.price_on_request === true,

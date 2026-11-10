@@ -127,7 +127,6 @@ export async function loadSaleVillaDetail(
       size: settings?.watermark_size ?? 25,
     },
     listing: {
-      referenceCode: listing.reference_code,
       salePrice: num(listing.sale_price),
       saleCurrency: listing.sale_currency,
       priceOnRequest: listing.price_on_request === true,
@@ -144,8 +143,6 @@ export async function loadSaleVillaDetail(
       hasGarden: listing.has_garden === true,
       gardenAreaM2: num(listing.garden_area_m2),
       description: (description as string | null) || null,
-      agentWhatsapp: listing.agent_whatsapp,
-      agentPhone: listing.agent_phone,
       publicationStatus: listing.publication_status,
     },
     features: features.map((f) => ({

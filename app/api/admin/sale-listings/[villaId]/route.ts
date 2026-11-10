@@ -82,7 +82,7 @@ export async function PUT(req: Request, ctx: Ctx): Promise<NextResponse> {
     action: "sale_listing.updated",
     entity_type: "sale_listing",
     entity_id: villaId,
-    entity_title: res.listing.villa?.title || res.listing.reference_code || "Satılık ilan",
+    entity_title: res.listing.villa?.title || "Satılık ilan",
     before_data: {
       ...res.before.listing,
       villa: undefined,
@@ -118,7 +118,7 @@ export async function DELETE(req: Request, ctx: Ctx): Promise<NextResponse> {
     entity_type: "sale_listing",
     entity_id: villaId,
     entity_title:
-      res.before.listing.villa?.title || res.before.listing.reference_code || "Satılık ilan",
+      res.before.listing.villa?.title || "Satılık ilan",
     before_data: {
       ...res.before.listing,
       villa: undefined,

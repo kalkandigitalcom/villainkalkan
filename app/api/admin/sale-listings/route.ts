@@ -74,7 +74,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     action: "sale_listing.created",
     entity_type: "sale_listing",
     entity_id: res.listing.villa_id,
-    entity_title: res.listing.villa?.title || res.listing.reference_code || "Satılık ilan",
+    entity_title: res.listing.villa?.title || "Satılık ilan",
     after_data: { ...res.listing, villa: undefined, translation_tr: res.translation_tr },
   });
 

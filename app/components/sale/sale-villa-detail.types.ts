@@ -27,7 +27,6 @@ export type SaleVillaDetailData = {
     size: number;
   };
   listing: {
-    referenceCode: string | null;
     salePrice: number | null;
     saleCurrency: SaleCurrency;
     priceOnRequest: boolean;
@@ -44,8 +43,6 @@ export type SaleVillaDetailData = {
     hasGarden: boolean;
     gardenAreaM2: number | null;
     description: string | null;
-    agentWhatsapp: string | null;
-    agentPhone: string | null;
     publicationStatus: PublicationStatus;
   };
   features: TranslatedFeature[];
@@ -56,6 +53,8 @@ export type SaleVillaDetailData = {
     longitude: number | null;
     mapEmbed: string | null;
   };
+  /** İletişim — YALNIZ Genel Ayarlar (settings.whatsapp_link / settings.phone).
+   *  İlan bazlı numara yok; önizleme ve public aynı değerleri kullanır. */
   siteWhatsappLink: string | null;
   sitePhone: string | null;
   /** İlanın SEO alanları (TR'de çeviri, boşsa İngilizce canonical). */

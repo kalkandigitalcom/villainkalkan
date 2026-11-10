@@ -30,7 +30,8 @@ import ListingTypeStep from "@/app/components/admin/villa-form/ListingTypeStep";
 const V = "22222222-2222-2222-2222-222222222222";
 const row = (over: Record<string, unknown>) => ({
   villa_id: V,
-  reference_code: "VIK-1",
+  reference_code: "VIK-1", // DB'de duran eski kolon — UI'da gösterilmemeli
+  agent_whatsapp: "+90 555 111 22 33",
   sale_price: 450000,
   sale_currency: "EUR",
   price_on_request: false,
@@ -59,7 +60,9 @@ describe("SaleListingForm", () => {
         villaOptions={[{ id: V, title: "Deniz Villası", slug: "d", is_active: true, listed_for_rent: false }]}
       />
     );
-    for (const label of ["Referans kodu", "Satış fiyatı", "Para birimi", "Arsa alanı (m²)", "Kapalı alan (m²)", "Oda sayısı", "Banyo sayısı", "Kat sayısı", "Yapım yılı", "Gayrimenkul tipi", "Yayın durumu", "Sıralama"]) {
+    expect(screen.queryByText("Referans kodu")).toBeNull();
+    expect(screen.queryByPlaceholderText("VIK-S-001")).toBeNull();
+    for (const label of ["Satış fiyatı", "Para birimi", "Arsa alanı (m²)", "Kapalı alan (m²)", "Oda sayısı", "Banyo sayısı", "Kat sayısı", "Yapım yılı", "Gayrimenkul tipi", "Yayın durumu", "Sıralama"]) {
       expect(screen.getByText(label)).toBeTruthy();
     }
     fireEvent.change(screen.getByPlaceholderText("450000"), { target: { value: "500000" } });
@@ -93,13 +96,23 @@ describe("SaleListingForm", () => {
         detail={{ listing: row({}) as never, translation_tr: { sale_description: "TR metin", seo_title: null, seo_description: null } }}
       />
     );
-    expect(screen.getByDisplayValue("VIK-1")).toBeTruthy();
     expect(screen.getByDisplayValue("TR metin")).toBeTruthy();
+    // Referans kodu ve ilan bazlı WhatsApp/telefon alanları formda YOK.
+    expect(screen.queryByDisplayValue("VIK-1")).toBeNull();
+    expect(screen.queryByDisplayValue("+90 555 111 22 33")).toBeNull();
+    expect(screen.queryByText("Referans kodu")).toBeNull();
+    expect(screen.queryByText("WhatsApp")).toBeNull();
+    expect(screen.queryByText("Telefon")).toBeNull();
+    expect(screen.getByText(/WhatsApp ve telefon Genel Ayarlar'dan alınır/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Kaydet/ }));
     await waitFor(() => expect(adminFetch).toHaveBeenCalled());
     expect(adminFetch.mock.calls[0][0]).toBe(`/api/admin/sale-listings/${V}`);
     expect(adminFetch.mock.calls[0][1].method).toBe("PUT");
-    expect(JSON.parse(adminFetch.mock.calls[0][1].body)).not.toHaveProperty("villa_id");
+    const body = JSON.parse(adminFetch.mock.calls[0][1].body);
+    expect(body).not.toHaveProperty("villa_id");
+    for (const k of ["reference_code", "agent_whatsapp", "agent_phone"]) {
+      expect(body.listing).not.toHaveProperty(k);
+    }
   });
 });
 
@@ -111,15 +124,17 @@ describe("SaleListingList", () => {
 
   it("kolonlar, fiyat, durum rozeti ve villa uyarısı", () => {
     render(<SaleListingList initialData={data} />);
-    for (const h of ["Villa", "Referans", "Satış fiyatı", "Para birimi", "Yayın", "Oluşturulma"]) {
+    for (const h of ["Villa", "Satış fiyatı", "Para birimi", "Yayın", "Oluşturulma"]) {
       expect(screen.getByRole("columnheader", { name: h })).toBeTruthy();
     }
+    expect(screen.queryByRole("columnheader", { name: "Referans" })).toBeNull();
+    expect(screen.queryByText("VIK-1")).toBeNull();
     expect(screen.getAllByText("€450.000")).toHaveLength(2);
     expect(screen.getByText("Villa satılık işaretli değil")).toBeTruthy();
     expect(screen.getAllByRole("link", { name: /Düzenle/ })[0].getAttribute("href")).toBe(`/maki-admin/sale-listings/${V}`);
   });
 
-  it("durum filtresi URL'den okunur; arama villa adı + referans kodu", () => {
+  it("durum filtresi URL'den okunur; arama yalnız villa adı", () => {
     search = "status=draft";
     const { unmount } = render(<SaleListingList initialData={data} />);
     expect(screen.queryByText("Deniz Villası")).toBeNull();
@@ -127,7 +142,7 @@ describe("SaleListingList", () => {
     unmount();
     search = "";
     render(<SaleListingList initialData={data} />);
-    fireEvent.change(screen.getByPlaceholderText(/referans kodu ara/), { target: { value: "vik-1" } });
+    fireEvent.change(screen.getByPlaceholderText(/Villa adı ara/), { target: { value: "deniz" } });
     expect(screen.getByText("Deniz Villası")).toBeTruthy();
     expect(screen.queryByText("Şelale Evi")).toBeNull();
   });

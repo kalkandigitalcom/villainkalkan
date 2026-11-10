@@ -4,7 +4,7 @@
    2) Yayın durumu: taslak / kaldırılmış / pasif / satılık olmayan ilan
       public kartlara, detaya ve sitemap'e GİRMEZ.
    3) Liste sayfası render: kartlar, filtreler, diller, JSON-LD.
-   4) Detay: public mod, gerçek WhatsApp, 404, SEO (title, canonical,
+   4) Detay: public mod, Genel Ayarlar WhatsApp/telefon, referans yok, 404, SEO (title, canonical,
       hreflang), RealEstateListing.
    5) Sitemap ve navigasyon.
 =============================================================== */
@@ -95,7 +95,7 @@ const villa = (over: Record<string, unknown> = {}) => ({
 });
 const row = (over: Record<string, unknown> = {}, villaOver: Record<string, unknown> = {}) => ({
   villa_id: "v",
-  reference_code: "VIK-1",
+  reference_code: "VIK-1", // DB'de duran eski kolon — karta sızmamalı
   sale_price: "450000.00",
   sale_currency: "EUR",
   price_on_request: false,
@@ -122,7 +122,6 @@ const card = (over: Partial<SalePublicCard>): SalePublicCard => ({
   locationId: R1,
   locationName: "Kalkan",
   coverImage: null,
-  referenceCode: null,
   salePrice: 100000,
   saleCurrency: "EUR",
   priceOnRequest: false,
@@ -237,6 +236,7 @@ describe("yayın durumu — public kapı", () => {
       builtAreaM2: 240,
       locationName: "Kalkan",
     });
+    expect(c).not.toHaveProperty("referenceCode");
   });
 
   it("servis: SQL filtresine rağmen gelen taslak satır JS kapısında elenir; hata → boş liste", async () => {
@@ -288,6 +288,8 @@ describe("liste sayfası", () => {
   it("EN: kartlar, fiyat, oda/banyo/m², detay linki, filtre formu, JSON-LD", async () => {
     const html = renderToStaticMarkup(await SaleVillasArchiveBody({ locale: "en" }));
     expect(html.match(/<article[^>]*data-sale-card/g)?.length).toBe(2);
+    expect(html).not.toContain("VIK-1");
+    expect(html).not.toMatch(/Ref\./);
     expect(html).toContain('href="/satilik-villa/villa-azure"');
     expect(html).toContain("€450,000");
     expect(html).toContain("£200,000");
@@ -343,7 +345,6 @@ const detail = (over: Partial<SaleVillaDetailData> = {}): SaleVillaDetailData =>
   imageUrls: ["https://cdn.test/a.webp"],
   watermark: { logo: null, enabled: false, opacity: 0.15, position: "center", size: 25 },
   listing: {
-    referenceCode: "VIK-1",
     salePrice: 450000,
     saleCurrency: "EUR",
     priceOnRequest: false,
@@ -360,27 +361,29 @@ const detail = (over: Partial<SaleVillaDetailData> = {}): SaleVillaDetailData =>
     hasGarden: false,
     gardenAreaM2: null,
     description: "Sea view villa with infinity pool.",
-    agentWhatsapp: "+90 555 111 22 33",
-    agentPhone: null,
     publicationStatus: "published",
   },
   features: [],
   distances: [],
   map: { mapType: "coords", latitude: 36.2, longitude: 29.4, mapEmbed: null },
   siteWhatsappLink: "https://wa.me/905550000000",
-  sitePhone: null,
+  sitePhone: "+90 242 000 00 00",
   seo: { title: null, description: null },
   ...over,
 });
 
 describe("detay sayfası", () => {
-  it("yayındaki ilan: public mod, gerçek WhatsApp (danışman numarası), RealEstateListing", async () => {
+  it("yayındaki ilan: public mod, Genel Ayarlar WhatsApp + telefon, RealEstateListing (referans yok)", async () => {
     h.repo.findSaleVillaIdBySlug.mockResolvedValue({ data: { id: "v" }, error: null });
     h.load.mockResolvedValue(detail());
     const html = renderToStaticMarkup(await renderSaleDetailPage({ slug: "villa-azure", locale: "en" }));
     expect(h.load).toHaveBeenCalledWith("v", { locale: "en", mode: "public" });
     expect(html).toContain('data-sale-contact="live"');
-    expect(html).toMatch(/href="https:\/\/wa\.me\/905551112233\?text=Hello/);
+    expect(html).toMatch(/href="https:\/\/wa\.me\/905550000000\?text=Hello/);
+    expect(html).toContain('href="tel:+902420000000"');
+    expect(html).not.toContain("data-sale-reference");
+    expect(html).not.toContain('"identifier"');
+    expect(html).not.toMatch(/Ref\.|Reference no\./);
     expect(html).not.toContain("data-sale-preview-banner");
     expect(html).toContain('"@type":"RealEstateListing"');
     expect(html).toContain('"priceCurrency":"EUR"');
@@ -388,11 +391,15 @@ describe("detay sayfası", () => {
     expect(html).toContain('"@type":"BreadcrumbList"');
   });
 
-  it("danışman numarası yoksa site genel WhatsApp numarası", async () => {
+  it("whatsapp_link boşsa Genel Ayarlar telefonundan wa.me; ikisi de yoksa buton yok", async () => {
     h.repo.findSaleVillaIdBySlug.mockResolvedValue({ data: { id: "v" }, error: null });
-    h.load.mockResolvedValue(detail({ listing: { ...detail().listing, agentWhatsapp: null } }));
+    h.load.mockResolvedValue(detail({ siteWhatsappLink: null }));
     const html = renderToStaticMarkup(await renderSaleDetailPage({ slug: "villa-azure", locale: "tr" }));
-    expect(html).toMatch(/href="https:\/\/wa\.me\/905550000000\?text=Merhaba/);
+    expect(html).toMatch(/href="https:\/\/wa\.me\/902420000000\?text=Merhaba/);
+    h.load.mockResolvedValue(detail({ siteWhatsappLink: null, sitePhone: null }));
+    const none = renderToStaticMarkup(await renderSaleDetailPage({ slug: "villa-azure", locale: "tr" }));
+    expect(none).not.toContain("wa.me");
+    expect(none).not.toContain("tel:");
   });
 
   it("taslak / kaldırılmış (yükleyici null) veya bilinmeyen slug → 404", async () => {

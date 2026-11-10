@@ -109,11 +109,6 @@ export default function SaleVillaCard({
           <p className="font-display text-[21px] font-bold leading-none tracking-[-0.02em] text-[var(--color-stone-900)] tabular-nums" data-sale-card-price>
             {price}
           </p>
-          {card.referenceCode && (
-            <span className="text-[11px] text-[var(--color-stone-400)]">
-              {t.referenceLabel} {card.referenceCode}
-            </span>
-          )}
         </div>
       </div>
     </article>

@@ -30,7 +30,6 @@ export type SalePublicCard = {
   locationId: string | null;
   locationName: string | null;
   coverImage: string | null;
-  referenceCode: string | null;
   salePrice: number | null;
   saleCurrency: SaleCurrency;
   priceOnRequest: boolean;

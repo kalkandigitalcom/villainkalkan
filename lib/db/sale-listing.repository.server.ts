@@ -18,11 +18,11 @@ import { dbAdminNative as dbAdmin } from "./native";
 
 /** Liste + detay için kolon kümesi (tek kaynak). */
 export const SALE_LISTING_COLUMNS = `
-  villa_id, reference_code, sale_price, sale_currency, price_on_request,
+  villa_id, sale_price, sale_currency, price_on_request,
   sale_status, property_type, plot_area_m2, built_area_m2, room_layout,
   bathrooms, floors, year_built, title_deed_type, has_garden,
   garden_area_m2, sale_description, seo_title, seo_description,
-  sale_sort_order, is_featured, agent_whatsapp, agent_phone,
+  sale_sort_order, is_featured,
   is_published, publication_status, published_at, created_at, updated_at
 `;
 
@@ -47,15 +47,6 @@ export const saleListingRepository = {
       .from("villa_sale_listings")
       .select(`${SALE_LISTING_COLUMNS}, ${VILLA_EMBED}`)
       .eq("villa_id", villaId)
-      .maybeSingle();
-  },
-
-  /** Referans kodu çakışması (başka bir villaya ait aynı kod). */
-  async findReferenceCodeOwner(referenceCode: string) {
-    return await dbAdmin
-      .from<{ villa_id: string }>("villa_sale_listings")
-      .select("villa_id")
-      .eq("reference_code", referenceCode)
       .maybeSingle();
   },
 
@@ -133,7 +124,7 @@ export const saleListingRepository = {
       .from("villa_sale_listings")
       .select(
         `
-        villa_id, reference_code, sale_price, sale_currency, price_on_request,
+        villa_id, sale_price, sale_currency, price_on_request,
         sale_status, property_type, room_layout, bathrooms, built_area_m2,
         plot_area_m2, sale_sort_order, is_featured, is_published,
         publication_status, published_at, created_at,

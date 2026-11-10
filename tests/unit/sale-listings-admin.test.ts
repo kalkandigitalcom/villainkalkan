@@ -20,7 +20,6 @@ const { repo, trRepo } = vi.hoisted(() => ({
   repo: {
     findAllForAdmin: vi.fn(),
     findByVillaId: vi.fn(),
-    findReferenceCodeOwner: vi.fn(),
     insert: vi.fn(),
     updateByVillaId: vi.fn(),
     deleteByVillaId: vi.fn(),
@@ -166,7 +165,6 @@ beforeEach(() => {
     error: null,
   }));
   repo.findByVillaId.mockResolvedValue({ data: null, error: null });
-  repo.findReferenceCodeOwner.mockResolvedValue({ data: null, error: null });
   repo.insert.mockImplementation(async (p: Record<string, unknown>) => ({ data: { ...p, created_at: "x", updated_at: "x" }, error: null }));
   repo.updateByVillaId.mockImplementation(async (id: string, p: Record<string, unknown>) => ({ data: { villa_id: id, ...p }, error: null }));
   repo.deleteByVillaId.mockResolvedValue({ error: null });
@@ -209,10 +207,9 @@ describe("ilan türü ↔ bayraklar", () => {
 });
 
 describe("validateSaleListingInput", () => {
-  it("varsayılanlar + normalize (referans büyük harf, sayılar)", () => {
-    const r = validateSaleListingInput({ reference_code: " vik-1 ", sale_price: "450.000".replace(".", ""), bathrooms: "3" });
+  it("varsayılanlar + normalize (sayılar)", () => {
+    const r = validateSaleListingInput({ sale_price: "450.000".replace(".", ""), bathrooms: "3" });
     expect(r.ok && r.value).toMatchObject({
-      reference_code: "VIK-1",
       sale_price: 450000,
       bathrooms: 3,
       sale_currency: "EUR",
@@ -220,6 +217,21 @@ describe("validateSaleListingInput", () => {
       property_type: "villa",
       sale_status: "available",
     });
+  });
+  it("kaldırılan alanlar: referans kodu ve ilan bazlı WhatsApp/telefon gönderilse bile yazılmaz", () => {
+    const r = validateSaleListingInput({
+      sale_price: 1,
+      reference_code: "VIK-1",
+      agent_whatsapp: "+90 555 111 22 33",
+      agent_phone: "+90 555 111 22 44",
+    });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    for (const k of ["reference_code", "agent_whatsapp", "agent_phone"]) {
+      expect(Object.keys(r.value)).not.toContain(k);
+    }
+    // Eski "geçersiz referans" doğrulaması da yok (alan tamamen yok sayılır).
+    expect(validateSaleListingInput({ reference_code: "ab cd" }).ok).toBe(true);
   });
   it("beyaz liste: kiralık fiyat / villa alanları DÜŞÜRÜLÜR", () => {
     const r = validateSaleListingInput({
@@ -243,7 +255,6 @@ describe("validateSaleListingInput", () => {
     [{ bathrooms: "2.5" }, "Banyo sayısı tam sayı olmalı"],
     [{ year_built: 1700 }, "Yapım yılı 1800 ile 2200 arasında olmalı"],
     [{ sale_price: -1 }, "Satış fiyatı 0 ile"],
-    [{ reference_code: "ab cd" }, "Referans kodu yalnız"],
     [{ seo_title: "x".repeat(121) }, "SEO başlık 120"],
   ])("geçersiz girdi reddedilir %#", (input, msg) => {
     const r = validateSaleListingInput(input);
@@ -279,15 +290,9 @@ describe("servis — oluşturma", () => {
     expect(await createSaleListing({ villa_id: "x'; DROP TABLE villa;--", listing: {} })).toMatchObject({ ok: false, status: 400 });
     expect(repo.findVillaContext).toHaveBeenCalledTimes(1);
   });
-  it("villa başına tek ilan; referans kodu çakışması 409", async () => {
+  it("villa başına tek ilan → 409", async () => {
     repo.findByVillaId.mockResolvedValueOnce({ data: listingRow(V_SALE), error: null });
     expect(await createSaleListing({ villa_id: V_SALE, listing: {} })).toMatchObject({ ok: false, status: 409 });
-    repo.findReferenceCodeOwner.mockResolvedValueOnce({ data: { villa_id: V_BOTH }, error: null });
-    expect(await createSaleListing({ villa_id: V_SALE, listing: { reference_code: "R-1" } })).toMatchObject({
-      ok: false,
-      status: 409,
-      error: "Bu referans kodu başka bir ilanda kullanılıyor",
-    });
     expect(repo.insert).not.toHaveBeenCalled();
   });
   it("satılık ve kiralık+satılık villalarda oluşturur; yalnız beyaz liste + yayın kolonları yazılır", async () => {
@@ -341,6 +346,17 @@ describe("servis — okuma / güncelleme / silme", () => {
     expect(payload).toMatchObject({ is_published: false, publication_status: "unpublished", published_at: "2026-10-01T00:00:00Z" });
     const on = await updateSaleListing(V_RENT, { listing: { publication_status: "published", sale_price: 1 } });
     expect(on).toMatchObject({ ok: false, status: 409 });
+  });
+  it("update: eski reference_code / agent_* kolonlarına YAZILMAZ (DB'deki mevcut değer korunur)", async () => {
+    repo.findByVillaId.mockResolvedValue({ data: listingRow(V_SALE, { reference_code: "VIK-OLD" }), error: null });
+    const r = await updateSaleListing(V_SALE, {
+      listing: { sale_price: 3, reference_code: "NEW", agent_whatsapp: "+90 1", agent_phone: "+90 2" },
+    });
+    expect(r.ok).toBe(true);
+    const payload = repo.updateByVillaId.mock.calls[0][1] as Record<string, unknown>;
+    for (const k of ["reference_code", "agent_whatsapp", "agent_phone"]) {
+      expect(payload).not.toHaveProperty(k);
+    }
   });
   it("update: çeviri gönderilmezse çeviriye dokunulmaz; mevcut çeviri boşaltılabilir", async () => {
     repo.findByVillaId.mockResolvedValue({ data: listingRow(V_SALE), error: null });
@@ -528,13 +544,13 @@ describe("admin liste / form saf yardımcıları", () => {
     listingRow(V_BOTH, { reference_code: "VIK-2", publication_status: "draft", villa: villaCtx(V_BOTH, { title: "Şelale Evi" }) }),
     listingRow(V_RENT, { reference_code: "OLD-9", publication_status: "unpublished", villa: villaCtx(V_RENT, { title: "Eski" }) }),
   ] as never[];
-  it("durum filtresi + villa adı / referans kodu araması (TR-tolerant)", () => {
+  it("durum filtresi + villa adı araması (TR-tolerant); referans kodu ile arama yok", () => {
     expect(filterSaleListings(rows, "all", "").length).toBe(3);
     expect(filterSaleListings(rows, "published", "").map((r) => r.villa_id)).toEqual([V_SALE]);
     expect(filterSaleListings(rows, "unpublished", "").map((r) => r.villa_id)).toEqual([V_RENT]);
     expect(filterSaleListings(rows, "all", "selale").map((r) => r.villa_id)).toEqual([V_BOTH]);
-    expect(filterSaleListings(rows, "all", "vik-1").map((r) => r.villa_id)).toEqual([V_SALE]);
-    expect(filterSaleListings(rows, "draft", "vik-1")).toEqual([]);
+    expect(filterSaleListings(rows, "all", "deniz").map((r) => r.villa_id)).toEqual([V_SALE]);
+    expect(filterSaleListings(rows, "all", "vik-1")).toEqual([]);
   });
   it("form gövdesi: EN canonical + translation_tr; villa_id yalnız oluşturmada", () => {
     const st = { ...initialSaleFormState(null), sale_description: "EN", tr_sale_description: "TR" };

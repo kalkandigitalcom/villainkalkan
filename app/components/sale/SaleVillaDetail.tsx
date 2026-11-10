@@ -5,7 +5,6 @@ import {
   CalendarDays,
   Check,
   DoorOpen,
-  Hash,
   Layers,
   LandPlot,
   MapPin,
@@ -93,15 +92,13 @@ export default function SaleVillaDetail({
       ? t.priceOnRequest
       : formatSalePrice(l.salePrice, l.saleCurrency, locale === "tr" ? "tr" : "en");
 
+  /* İletişim YALNIZ Genel Ayarlar'dan (ilan bazlı numara/fallback yok). */
   const whatsappHref = buildSaleWhatsappHref(
-    l.agentWhatsapp,
     data.siteWhatsappLink,
-    formatDictionaryString(t.whatsappMessage, {
-      title: data.title,
-      ref: l.referenceCode || "—",
-    })
+    data.sitePhone,
+    formatDictionaryString(t.whatsappMessage, { title: data.title })
   );
-  const phoneHref = buildSalePhoneHref(l.agentPhone || data.sitePhone);
+  const phoneHref = buildSalePhoneHref(data.sitePhone);
 
   const facts: { key: string; Icon: LucideIcon; label: string; value: string }[] = [
     l.roomLayout ? { key: "rooms", Icon: DoorOpen, label: t.factRooms, value: l.roomLayout } : null,
@@ -123,7 +120,6 @@ export default function SaleVillaDetail({
     ...(l.yearBuilt ? [[t.factYearBuilt, String(l.yearBuilt)] as [string, string]] : []),
     ...(l.titleDeedType ? [[t.techTitleDeed, l.titleDeedType] as [string, string]] : []),
     [t.techSaleStatus, statusLabel],
-    ...(l.referenceCode ? [[t.techReference, l.referenceCode] as [string, string]] : []),
   ];
 
   const hasMap =
@@ -179,12 +175,6 @@ export default function SaleVillaDetail({
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin size={15} className="text-accent" aria-hidden />
                     {data.locationName}
-                  </span>
-                )}
-                {l.referenceCode && (
-                  <span className="inline-flex items-center gap-1.5" data-sale-reference>
-                    <Hash size={14} aria-hidden />
-                    {t.referenceLabel} <strong className="font-semibold text-[var(--color-stone-800)]">{l.referenceCode}</strong>
                   </span>
                 )}
               </div>

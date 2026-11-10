@@ -43,7 +43,6 @@ import type {
    =============================================================== */
 
 type FormState = {
-  reference_code: string;
   sale_price: string;
   sale_currency: SaleCurrency;
   price_on_request: boolean;
@@ -63,8 +62,6 @@ type FormState = {
   seo_description: string;
   sale_sort_order: string;
   is_featured: boolean;
-  agent_whatsapp: string;
-  agent_phone: string;
   publication_status: PublicationStatus;
   tr_sale_description: string;
   tr_seo_title: string;
@@ -77,7 +74,6 @@ export function initialSaleFormState(detail?: SaleListingClientDetail | null): F
   const l = detail?.listing;
   const tr = detail?.translation_tr;
   return {
-    reference_code: str(l?.reference_code),
     sale_price: str(l?.sale_price),
     sale_currency: l?.sale_currency ?? "EUR",
     price_on_request: l?.price_on_request ?? false,
@@ -97,8 +93,6 @@ export function initialSaleFormState(detail?: SaleListingClientDetail | null): F
     seo_description: str(l?.seo_description),
     sale_sort_order: str(l?.sale_sort_order ?? 0),
     is_featured: l?.is_featured ?? false,
-    agent_whatsapp: str(l?.agent_whatsapp),
-    agent_phone: str(l?.agent_phone),
     publication_status: l?.publication_status ?? "draft",
     tr_sale_description: str(tr?.sale_description),
     tr_seo_title: str(tr?.seo_title),
@@ -109,7 +103,6 @@ export function initialSaleFormState(detail?: SaleListingClientDetail | null): F
 /** Form state → API gövdesi (saf; test edilir). */
 export function buildSaleListingRequestBody(form: FormState, villaId?: string) {
   const listing = {
-    reference_code: form.reference_code,
     sale_price: form.sale_price,
     sale_currency: form.sale_currency,
     price_on_request: form.price_on_request,
@@ -129,8 +122,6 @@ export function buildSaleListingRequestBody(form: FormState, villaId?: string) {
     seo_description: form.seo_description,
     sale_sort_order: form.sale_sort_order,
     is_featured: form.is_featured,
-    agent_whatsapp: form.agent_whatsapp,
-    agent_phone: form.agent_phone,
     publication_status: form.publication_status,
   };
   const translation_tr = {
@@ -280,9 +271,6 @@ export default function SaleListingForm({
 
       <Section eyebrow="Adım 2" title="Fiyat ve durum" subtitle="Satış fiyatı kiralık fiyatlardan tamamen ayrıdır.">
         <div className="grid md:grid-cols-3 gap-4">
-          <Field label="Referans kodu" hint="Harf, rakam ve . _ - / — benzersiz">
-            {input("reference_code", { maxLength: SALE_LIMITS.referenceCode, placeholder: "VIK-S-001" })}
-          </Field>
           <Field label="Satış fiyatı">
             {input("sale_price", { inputMode: "decimal", placeholder: "450000", disabled: form.price_on_request })}
           </Field>
@@ -362,10 +350,8 @@ export default function SaleListingForm({
         </div>
       </Section>
 
-      <Section eyebrow="Adım 5" title="İletişim ve yayın" subtitle="Satış danışmanı iletişim bilgileri, sıralama ve yayın durumu.">
+      <Section eyebrow="Adım 5" title="Sıralama ve yayın" subtitle="Sıralama ve yayın durumu. WhatsApp ve telefon Genel Ayarlar'dan alınır.">
         <div className="grid md:grid-cols-3 gap-4">
-          <Field label="WhatsApp">{input("agent_whatsapp", { maxLength: SALE_LIMITS.phone, placeholder: "+90…" })}</Field>
-          <Field label="Telefon">{input("agent_phone", { maxLength: SALE_LIMITS.phone, placeholder: "+90…" })}</Field>
           <Field label="Sıralama" hint="Küçük sayı önce gösterilir">{input("sale_sort_order", { inputMode: "numeric" })}</Field>
           <Field label="Yayın durumu">
             <select className="input" value={form.publication_status} onChange={(e) => set("publication_status", e.target.value as PublicationStatus)}>

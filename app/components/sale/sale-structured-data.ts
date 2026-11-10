@@ -80,7 +80,6 @@ export function buildSaleListingJsonLd(
       url,
     };
   }
-  if (l.referenceCode) ld.identifier = l.referenceCode;
   return ld;
 }
 

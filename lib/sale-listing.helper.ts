@@ -97,7 +97,6 @@ export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
 
 /** Admin formunun gönderdiği / servisin yazdığı NORMALİZE alan kümesi. */
 export type SaleListingValues = {
-  reference_code: string | null;
   sale_price: number | null;
   sale_currency: SaleCurrency;
   price_on_request: boolean;
@@ -117,8 +116,6 @@ export type SaleListingValues = {
   seo_description: string | null;
   sale_sort_order: number;
   is_featured: boolean;
-  agent_whatsapp: string | null;
-  agent_phone: string | null;
   publication_status: PublicationStatus;
 };
 
@@ -130,13 +127,11 @@ export type SaleListingTranslationValues = {
 };
 
 export const SALE_LIMITS = {
-  referenceCode: 40,
   roomLayout: 20,
   titleDeedType: 60,
   description: 10000,
   seoTitle: 120, // SeoStep ile AYNI
   seoDescription: 300, // SeoStep ile AYNI
-  phone: 32,
   maxPrice: 999_999_999_999.99, // numeric(14,2)
   maxArea: 99_999_999.99, // numeric(10,2)
 } as const;
@@ -228,30 +223,18 @@ export function validateSaleListingInput(
   const sort = optionalNumber(r.sale_sort_order, "Sıralama", { min: -100000, max: 100000, integer: true });
   if (!sort.ok) return sort;
 
-  const referenceCode = text(r.reference_code);
-  if (referenceCode && !/^[A-Za-z0-9][A-Za-z0-9._\-/]*$/.test(referenceCode)) {
-    return {
-      ok: false,
-      error: "Referans kodu yalnız harf, rakam ve . _ - / içerebilir",
-    };
-  }
   const roomLayout = text(r.room_layout);
   const titleDeed = text(r.title_deed_type);
   const description = text(r.sale_description);
   const seoTitle = text(r.seo_title);
   const seoDescription = text(r.seo_description);
-  const whatsapp = text(r.agent_whatsapp);
-  const phone = text(r.agent_phone);
 
   const lenError =
-    maxLen(referenceCode, SALE_LIMITS.referenceCode, "Referans kodu") ||
     maxLen(roomLayout, SALE_LIMITS.roomLayout, "Oda sayısı") ||
     maxLen(titleDeed, SALE_LIMITS.titleDeedType, "Tapu tipi") ||
     maxLen(description, SALE_LIMITS.description, "Satış açıklaması") ||
     maxLen(seoTitle, SALE_LIMITS.seoTitle, "SEO başlık") ||
-    maxLen(seoDescription, SALE_LIMITS.seoDescription, "SEO açıklama") ||
-    maxLen(whatsapp, SALE_LIMITS.phone, "WhatsApp") ||
-    maxLen(phone, SALE_LIMITS.phone, "Telefon");
+    maxLen(seoDescription, SALE_LIMITS.seoDescription, "SEO açıklama");
   if (lenError) return { ok: false, error: lenError };
 
   const priceOnRequest = r.price_on_request === true;
@@ -269,7 +252,6 @@ export function validateSaleListingInput(
   return {
     ok: true,
     value: {
-      reference_code: referenceCode ? referenceCode.toUpperCase() : null,
       sale_price: price.value,
       sale_currency: currency.value,
       price_on_request: priceOnRequest,
@@ -289,8 +271,6 @@ export function validateSaleListingInput(
       seo_description: seoDescription,
       sale_sort_order: sort.value ?? 0,
       is_featured: r.is_featured === true,
-      agent_whatsapp: whatsapp,
-      agent_phone: phone,
       publication_status: publication.value,
     },
   };
@@ -360,20 +340,23 @@ export function isPublicSaleListingVisible(
 }
 
 /**
- * WhatsApp bağlantısı: ilanın danışman numarası öncelikli, yoksa site
- * genel WhatsApp bağlantısı. Mesaj URL-encode edilir. Uygun numara yoksa
- * null (buton gösterilmez).
+ * WhatsApp bağlantısı — YALNIZ Genel Ayarlar'dan (ilan bazlı numara yok).
+ * Site geneliyle (FloatingSocial / kiralık detay) aynı sıra:
+ *   1) settings.whatsapp_link (admin'in girdiği tam URL)
+ *   2) settings.phone hanelerinden wa.me
+ * Mesaj eklenir; uygun bağlantı yoksa null (buton gösterilmez).
  */
 export function buildSaleWhatsappHref(
-  agentWhatsapp: string | null | undefined,
   siteWhatsappLink: string | null | undefined,
+  sitePhone: string | null | undefined,
   message: string
 ): string | null {
-  const digits = (agentWhatsapp || "").replace(/\D/g, "");
-  const text = encodeURIComponent(message);
-  if (digits.length >= 8) return `https://wa.me/${digits}?text=${text}`;
   const site = (siteWhatsappLink || "").trim();
-  if (!site) return null;
+  if (!site) {
+    const digits = (sitePhone || "").replace(/\D/g, "");
+    if (digits.length < 8) return null;
+    return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+  }
   try {
     const u = new URL(site);
     if (!/^(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com|whatsapp\.com)$/i.test(u.hostname)) {
