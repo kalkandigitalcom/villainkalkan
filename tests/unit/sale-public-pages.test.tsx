@@ -373,8 +373,6 @@ const detail = (over: Partial<SaleVillaDetailData> = {}): SaleVillaDetailData =>
     publicationStatus: "published",
   },
   features: [],
-  distances: [],
-  map: { mapType: "coords", latitude: 36.2, longitude: 29.4, mapEmbed: null },
   siteWhatsappLink: "https://wa.me/905550000000",
   sitePhone: "+90 242 000 00 00",
   seo: { title: null, description: null },

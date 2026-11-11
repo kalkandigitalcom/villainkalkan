@@ -55,9 +55,6 @@ export function buildSaleListingJsonLd(
   if (data.locationName) {
     residence.address = { "@type": "PostalAddress", addressLocality: data.locationName, addressCountry: "TR" };
   }
-  if (data.map.mapType === "coords" && data.map.latitude && data.map.longitude) {
-    residence.geo = { "@type": "GeoCoordinates", latitude: data.map.latitude, longitude: data.map.longitude };
-  }
 
   const ld: Record<string, unknown> = {
     "@context": "https://schema.org",

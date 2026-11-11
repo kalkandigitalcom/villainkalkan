@@ -754,7 +754,7 @@ describe("hata sınıflandırma — şema eksikliği vs. bulunamadı vs. yetki",
     expect(missing).toEqual([]);
     /* 108 kolonları sorguda → 108 production ön koşulu. */
     expect(cols.filter((c) => defined108.has(c)).sort()).toEqual(
-      ["bedrooms", "id", "latitude", "location_id", "longitude", "slug", "source", "title"]
+      ["bedrooms", "id", "location_id", "slug", "source", "title"]
     );
     /* 106 kolonları gerçekten sorguda → 106 production ön koşulu. */
     expect(cols.filter((c) => defined106.has(c)).sort()).toEqual(

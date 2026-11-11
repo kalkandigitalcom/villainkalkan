@@ -151,8 +151,6 @@ const viewData = (status: "draft" | "published" | "unpublished"): SaleVillaDetai
     publicationStatus: status,
   },
   features: [{ id: "f1", displayName: "Infinity pool" }],
-  distances: [{ id: "d1", displayTitle: "Beach", displayDistance: "1 km", iconKey: "waves" }],
-  map: { mapType: "coords", latitude: 36.2, longitude: 29.4, mapEmbed: null },
   siteWhatsappLink: "https://wa.me/905550000000",
   sitePhone: "+90 242 000 00 00",
   seo: { title: null, description: null },
@@ -253,7 +251,9 @@ describe("ortak veri yükleyici — preview vs public", () => {
     expect(d?.listing.salePrice).toBe(1250000);
     expect(d?.listing.bathrooms).toBe(3); // ilan alanı boş → villa değeri
     expect(d?.imageUrls).toEqual(["https://cdn.test/villas/a.webp"]);
-    expect(d?.map).toMatchObject({ mapType: "coords", latitude: 36.2 });
+    /* Satılık detayda harita / konum (mesafeler) yok → görünüm modelinde de yok. */
+    expect(d).not.toHaveProperty("map");
+    expect(d).not.toHaveProperty("distances");
     // İletişim YALNIZ Genel Ayarlar; ilan bazlı alanlar/referans sızmaz.
     expect(d?.siteWhatsappLink).toBe("https://wa.me/905550000000");
     expect(d?.sitePhone).toBe("+90 242 000 00 00");
@@ -305,14 +305,19 @@ describe("ortak veri yükleyici — preview vs public", () => {
 
 /* ================================================================ 3 */
 describe("ortak detay bileşeni", () => {
-  it("bölümler: fiyat, konum, temel bilgiler, açıklama, özellikler, harita (referans YOK)", () => {
+  it("bölümler: fiyat, temel bilgiler, açıklama, özellikler (referans ve Konum/harita bölümü YOK)", () => {
     const { container } = render(<SaleVillaDetail data={viewData("published")} locale="en" />);
     expect(screen.getAllByText("€1,250,000").length).toBeGreaterThan(0);
     expect(container.querySelector("[data-sale-reference]")).toBeNull();
     expect(screen.queryByText(/Reference no\.|Ref\./)).toBeNull();
-    for (const h2 of ["Key facts", "About this property", "General features", "Technical details", "Location"]) {
+    for (const h2 of ["Key facts", "About this property", "General features", "Technical details"]) {
       expect(screen.getByRole("heading", { name: h2 })).toBeTruthy();
     }
+    expect(screen.queryByRole("heading", { name: "Location" })).toBeNull();
+    expect(container.querySelector("#sale-location")).toBeNull();
+    expect(container.querySelector("iframe")).toBeNull();
+    /* Bölge adı başlık altında korunur. */
+    expect(screen.getAllByText("Kalkan").length).toBeGreaterThan(0);
     expect(screen.getByText("Infinity pool")).toBeTruthy();
     expect(screen.getByText("Sea view villa.")).toBeTruthy();
   });

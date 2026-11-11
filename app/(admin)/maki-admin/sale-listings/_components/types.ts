@@ -26,8 +26,6 @@ export type SaleListingClientRow = SaleListingValues & {
   title: string | null;
   slug: string | null;
   location_id: string | null;
-  latitude: number | string | null;
-  longitude: number | string | null;
   location?: { id: string; name: string | null } | null;
   is_published: boolean;
   published_at: string | null;

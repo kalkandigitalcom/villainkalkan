@@ -1192,7 +1192,6 @@ export const tr: Dictionary = {
     techSaleStatus: "Satış durumu",
     yes: "Var",
     no: "Yok",
-    locationTitle: "Konum",
     contactTitle: "Bu mülkle ilgileniyor musunuz?",
     contactBody: "Detaylar, belgeler ve yerinde görme randevusu için satış ekibimize WhatsApp'tan yazın.",
     contactWhatsapp: "WhatsApp'tan bilgi al",

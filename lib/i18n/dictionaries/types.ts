@@ -1532,7 +1532,6 @@ export type Dictionary = {
     techSaleStatus: string;
     yes: string;
     no: string;
-    locationTitle: string;
     contactTitle: string;
     contactBody: string;
     contactWhatsapp: string;

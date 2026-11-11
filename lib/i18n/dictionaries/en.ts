@@ -1160,7 +1160,6 @@ export const en: Dictionary = {
     techSaleStatus: "Sale status",
     yes: "Yes",
     no: "No",
-    locationTitle: "Location",
     contactTitle: "Interested in this property?",
     contactBody: "Message our sales team on WhatsApp for details, documents and viewing appointments.",
     contactWhatsapp: "Ask on WhatsApp",

@@ -13,8 +13,6 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import Gallery from "@/app/components/villa/Gallery";
-import VillaDistancesSection from "@/app/components/villa/VillaDistancesSection";
-import VillaMapModal from "@/app/components/villa/VillaMapModal";
 import SaleContactActions from "./SaleContactActions";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { formatDictionaryString } from "@/lib/i18n/format-dictionary-string";
@@ -30,9 +28,10 @@ import type { SaleVillaDetailData } from "./sale-villa-detail.types";
    🏡 SATILIK VİLLA DETAY — ORTAK BİLEŞEN (önizleme + Aşama 5 public)
    ===============================================================
    Kiralık detayın TASARIM DİLİNİ (galeri, Manrope başlıklar, beyaz
-   yuvarlak kartlar, sand-100 zemin, harita/yol tarifi paneli) referans
-   alır; kiralık sayfanın kopyası DEĞİLDİR. Rezervasyon, takvim, kiralık
-   fiyat ve favori bileşenleri KULLANILMAZ.
+   yuvarlak kartlar, sand-100 zemin) referans alır; kiralık sayfanın
+   kopyası DEĞİLDİR. Rezervasyon, takvim, kiralık fiyat ve favori
+   bileşenleri KULLANILMAZ. Harita / konum (mesafeler) bölümü satılık
+   detayda YOK (bölge adı başlık altında gösterilir).
    Bileşen veri ÇEKMEZ — tamamen çözülmüş `SaleVillaDetailData` alır.
    `preview` → iletişim butonları devre dışı (bkz. SaleContactActions);
    `banner` → sayfa üstü önizleme uyarısı slotu (public'te verilmez).
@@ -121,11 +120,6 @@ export default function SaleVillaDetail({
     ...(l.titleDeedType ? [[t.techTitleDeed, l.titleDeedType] as [string, string]] : []),
     [t.techSaleStatus, statusLabel],
   ];
-
-  const hasMap =
-    (data.map.mapType === "coords" && !!data.map.latitude && !!data.map.longitude) ||
-    (data.map.mapType === "iframe" && !!data.map.mapEmbed);
-  const showLocation = data.distances.length > 0 || hasMap;
 
   const paragraphs = (l.description || "")
     .split(/\n{2,}/)
@@ -250,32 +244,6 @@ export default function SaleVillaDetail({
                 </dl>
               </Card>
             </div>
-
-            {/* ═══ 6 — HARİTA + KONUM ═══ */}
-            {showLocation && (
-              <section id="sale-location" className="scroll-mt-28">
-                <h2 className="mb-4 font-display text-[20px] md:text-[22px] font-semibold tracking-[-0.015em] text-[var(--color-stone-900)]">
-                  {t.locationTitle}
-                </h2>
-                <VillaDistancesSection
-                  distances={data.distances}
-                  locale={locale}
-                  mapPanel={
-                    hasMap ? (
-                      <VillaMapModal
-                        variant="panel"
-                        mapType={data.map.mapType ?? undefined}
-                        latitude={data.map.latitude ?? undefined}
-                        longitude={data.map.longitude ?? undefined}
-                        mapEmbed={data.map.mapEmbed ?? undefined}
-                        villaTitle={data.title}
-                        locale={locale}
-                      />
-                    ) : undefined
-                  }
-                />
-              </section>
-            )}
           </div>
 
           {/* ═══ FİYAT KARTI (sağ, sticky) ═══ */}

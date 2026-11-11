@@ -86,9 +86,14 @@ describe("bağımsız gayrimenkul formu", () => {
   it("alanlar + slug başlıktan üretilir + POST gövdesi (source, property, TR başlık); kayıt sonrası düzenleme sayfası", async () => {
     adminFetch.mockResolvedValue(ok({ listing: { id: LS } }));
     render(<SaleListingForm mode="create" source="standalone" formOptions={options} />);
-    for (const label of ["Bölge", "Enlem", "Boylam", "Yatak odası", "Banyo sayısı", "Özellikler", "Fotoğraf galerisi"]) {
+    for (const label of ["Bölge", "Yatak odası", "Banyo sayısı", "Özellikler", "Fotoğraf galerisi"]) {
       expect(screen.getAllByText(label).length).toBeGreaterThan(0);
     }
+    /* Enlem / boylam alanları, açıklamaları ve örnekleri formda YOK. */
+    for (const gone of ["Enlem", "Boylam"]) expect(screen.queryByText(gone)).toBeNull();
+    expect(screen.queryByPlaceholderText("36.2654")).toBeNull();
+    expect(screen.queryByPlaceholderText("29.4126")).toBeNull();
+    expect(screen.queryByText(/Harita için/)).toBeNull();
     expect(screen.getByText(/Fotoğraflar ilan oluşturulduktan sonra/)).toBeTruthy();
     fireEvent.change(screen.getByPlaceholderText("Sea view villa in Kalkan"), { target: { value: "Çamlık Evi Kalkan" } });
     expect((screen.getByPlaceholderText("sea-view-villa-in-kalkan") as HTMLInputElement).value).toBe("camlik-evi-kalkan");
@@ -221,14 +226,15 @@ describe("bağımsız ilan detay render + JSON-LD", () => {
       titleDeedType: null, hasGarden: false, gardenAreaM2: null, description: "House.", publicationStatus: "published",
     },
     features: [{ id: F1, displayName: "Infinity pool" }],
-    distances: [],
-    map: { mapType: "coords", latitude: 36.26, longitude: 29.41, mapEmbed: null },
     siteWhatsappLink: "https://wa.me/905550000000",
     sitePhone: "+90 242 000 00 00",
     seo: { title: null, description: null },
   };
-  it("aynı detay tasarımı; Genel Ayarlar iletişimi; JSON-LD bağımsız slug ile", () => {
+  it("aynı detay tasarımı (Konum/harita yok); Genel Ayarlar iletişimi; JSON-LD bağımsız slug ile", () => {
     const html = renderToStaticMarkup(<SaleVillaDetail data={data} locale="en" />);
+    expect(html).not.toContain("sale-location");
+    expect(html).not.toMatch(/>Location</);
+    expect(html).toContain("Kalkan");
     expect(html).toContain("Sea View Plot");
     expect(html).toContain("Infinity pool");
     expect(html).toMatch(/href="https:\/\/wa\.me\/905550000000\?text=Hello/);
@@ -237,5 +243,7 @@ describe("bağımsız ilan detay render + JSON-LD", () => {
     expect(ld["@type"]).toBe("RealEstateListing");
     expect(String(ld.url)).toContain("/tr/satilik-villa/sea-view-plot");
     expect(JSON.stringify(ld)).not.toContain("identifier");
+    expect(JSON.stringify(ld)).not.toContain("GeoCoordinates");
+    expect(JSON.stringify(ld)).toContain('"addressLocality":"Kalkan"');
   });
 });

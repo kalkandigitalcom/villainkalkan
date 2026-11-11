@@ -67,8 +67,6 @@ export type SaleListingRow = SaleListingValues & {
   title: string | null;
   slug: string | null;
   location_id: string | null;
-  latitude: number | string | null;
-  longitude: number | string | null;
   is_published: boolean;
   published_at: string | null;
   created_at: string;
@@ -356,8 +354,6 @@ function standaloneColumns(p: StandalonePropertyValues) {
     title: p.title,
     slug: p.slug,
     location_id: p.location_id,
-    latitude: p.latitude,
-    longitude: p.longitude,
   };
 }
 

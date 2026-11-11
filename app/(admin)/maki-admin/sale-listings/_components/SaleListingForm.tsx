@@ -44,7 +44,7 @@ import type {
      olanak ve konum villadan gelir. Villa seçilince yatak odası /
      banyo boşsa villadaki değerle doldurulur (başlangıç verisi).
    • source="standalone" → bağımsız gayrimenkul: başlık (EN/TR), URL,
-     bölge, koordinat, olanaklar ve (kayıttan sonra) fotoğraf galerisi
+     bölge, olanaklar ve (kayıttan sonra) fotoğraf galerisi
      ilanın kendisine aittir. Kiralık villa kaydı oluşturulmaz.
    • Doğrulama client'ta ÖN kontrol (validate* yardımcıları); asıl
      karar sunucuda AYNI fonksiyonlarla verilir.
@@ -60,8 +60,6 @@ export type SaleFormState = {
   slug: string;
   slug_touched: boolean;
   location_id: string;
-  latitude: string;
-  longitude: string;
   feature_ids: string[];
   /* ortak satış alanları */
   sale_price: string;
@@ -101,8 +99,6 @@ export function initialSaleFormState(detail?: SaleListingClientDetail | null): S
     slug: str(l?.slug),
     slug_touched: !!l?.slug,
     location_id: str(l?.location_id),
-    latitude: str(l?.latitude),
-    longitude: str(l?.longitude),
     feature_ids: detail?.feature_ids ?? [],
     sale_price: str(l?.sale_price),
     sale_currency: l?.sale_currency ?? "EUR",
@@ -174,8 +170,6 @@ export function buildSaleListingRequestBody(
       title: form.title,
       slug: form.slug,
       location_id: form.location_id,
-      latitude: form.latitude,
-      longitude: form.longitude,
       feature_ids: form.feature_ids,
     };
     return mode === "create"
@@ -396,12 +390,6 @@ export default function SaleListingForm({
                   <option key={l.id} value={l.id}>{l.name || "—"}</option>
                 ))}
               </select>
-            </Field>
-            <Field label="Enlem" hint="Harita için (opsiyonel). Örn: 36.2654">
-              {input("latitude", { inputMode: "decimal", placeholder: "36.2654" })}
-            </Field>
-            <Field label="Boylam" hint="Örn: 29.4126">
-              {input("longitude", { inputMode: "decimal", placeholder: "29.4126" })}
             </Field>
           </div>
         </Section>

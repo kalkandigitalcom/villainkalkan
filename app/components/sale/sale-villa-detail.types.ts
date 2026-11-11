@@ -1,5 +1,4 @@
 import type { WatermarkPosition } from "@/app/services/settings.types";
-import type { TranslatedDistance } from "@/app/components/villa/VillaDistancesSection";
 import type { TranslatedFeature } from "@/app/components/villa/VillaFeaturesSection";
 import type {
   PropertyType,
@@ -50,13 +49,6 @@ export type SaleVillaDetailData = {
     publicationStatus: PublicationStatus;
   };
   features: TranslatedFeature[];
-  distances: TranslatedDistance[];
-  map: {
-    mapType: string | null;
-    latitude: number | null;
-    longitude: number | null;
-    mapEmbed: string | null;
-  };
   /** İletişim — YALNIZ Genel Ayarlar (settings.whatsapp_link / settings.phone).
    *  İlan bazlı numara yok; önizleme ve public aynı değerleri kullanır. */
   siteWhatsappLink: string | null;

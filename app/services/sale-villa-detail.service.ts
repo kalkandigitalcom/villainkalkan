@@ -7,7 +7,6 @@ import {
 import { translationRepository } from "@/lib/db/translation.repository.server";
 import { villaAdminRepository } from "@/lib/db/villa.repository.server";
 import { getVillaImages } from "@/app/services/villa-image/villa-image.read";
-import { getVillaDistances } from "@/app/services/villa-distance.service";
 import {
   getVillaFeaturesByVilla,
   type Feature,
@@ -17,8 +16,6 @@ import {
   resolveTranslatedField,
 } from "@/lib/i18n/get-translation.server";
 import { getCachedSettings } from "@/lib/cache.helpers";
-import { getDistanceIconKey } from "@/lib/distance.helper";
-import { getTranslatedDistanceLabel } from "@/lib/distance-label.helper";
 import {
   resolveAssetUrlVersioned,
   resolveVillaImageUrl,
@@ -41,10 +38,10 @@ import type { SaleVillaDetailData } from "@/app/components/sale/sale-villa-detai
      • "public"  → `isPublicSaleListingVisible` geçmezse null (taslak,
        kaldırılmış; villa kaynağında satılık olmayan / pasif / silinmiş
        villa ASLA).
-     • source="villa"      → başlık, galeri, olanaklar, mesafeler, harita
+     • source="villa"      → başlık, galeri, olanaklar ve bölge adı
        villadan OKUNUR (kiralık veri yalnız okunur; fiyat takvimi /
        rezervasyon / iCal hiç okunmaz).
-     • source="standalone" → başlık, bölge, koordinat, fotoğraflar
+     • source="standalone" → başlık, bölge, fotoğraflar
        (sale_listing_images) ve olanaklar (sale_listing_features) ilanın
        kendisinden; villa tablosu hiç okunmaz.
    Dil: İngilizce canonical; TR'de `villa_sale_listing_translations`
@@ -114,8 +111,6 @@ export async function loadSaleVillaDetail(
   let locationName: string | null;
   let imageUrls: string[];
   let features: Feature[];
-  let distancesRaw: { id: string; title: string; distance: string }[] = [];
-  let map: SaleVillaDetailData["map"];
   let villaBedrooms: number | null = null;
   let villaBathrooms: number | null = null;
   let trRow: TrRow;
@@ -142,14 +137,6 @@ export async function loadSaleVillaDetail(
     title = String(resolveTranslatedField(trRow?.title, listing.title) ?? listing.title ?? "");
     slug = listing.slug;
     locationName = listing.location?.name ?? null;
-    const lat = num(listing.latitude);
-    const lng = num(listing.longitude);
-    map = {
-      mapType: lat !== null && lng !== null ? "coords" : null,
-      latitude: lat,
-      longitude: lng,
-      mapEmbed: null,
-    };
   } else {
     const villaId = listing.villa_id as string;
     const villa = await villaAdminRepository.findById(villaId);
@@ -162,15 +149,13 @@ export async function loadSaleVillaDetail(
     if (opts.mode === "public" && !isPublicSaleListingVisible(listing, villaFlags)) {
       return null;
     }
-    const [images, villaFeatures, distances, tr] = await Promise.all([
+    const [images, villaFeatures, tr] = await Promise.all([
       getVillaImages(villaId),
       getVillaFeaturesByVilla(villaId) as Promise<Feature[]>,
-      getVillaDistances(villaId),
       trPromise,
     ]);
     trRow = tr;
     features = villaFeatures;
-    distancesRaw = distances || [];
     imageUrls = images
       .map((img) => resolveVillaImageUrl(img.image_url))
       .filter((u): u is string => typeof u === "string" && u.length > 0);
@@ -180,12 +165,6 @@ export async function loadSaleVillaDetail(
     locationName = location?.name ?? null;
     villaBedrooms = num(villa.bedrooms);
     villaBathrooms = num(villa.bathrooms);
-    map = {
-      mapType: (villa.map_type as string | null) ?? null,
-      latitude: num(villa.latitude),
-      longitude: num(villa.longitude),
-      mapEmbed: (villa.map_embed as string | null) ?? null,
-    };
   }
 
   const [settings, featureTranslations] = await Promise.all([
@@ -242,13 +221,6 @@ export async function loadSaleVillaDetail(
         resolveTranslatedField(featureTranslations.get(f.id)?.name, f.name) ?? ""
       ),
     })),
-    distances: distancesRaw.map((d) => ({
-      id: d.id,
-      displayTitle: getTranslatedDistanceLabel(d.title, locale),
-      displayDistance: d.distance,
-      iconKey: getDistanceIconKey(d.title),
-    })),
-    map,
     siteWhatsappLink: settings?.whatsapp_link ?? null,
     sitePhone: settings?.phone ?? null,
     seo: {

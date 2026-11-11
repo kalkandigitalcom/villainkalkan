@@ -291,8 +291,6 @@ describe("2) bağımsız gayrimenkul — oluştur / güncelle / sil", () => {
       title: "Deniz Manzaralı Müstakil Ev",
       slug: "deniz-manzarali-mustakil-ev",
       location_id: LOC,
-      latitude: 36.2654,
-      longitude: 29.4126,
       bedrooms: 3,
       property_type: "detached_house",
       publication_status: "draft",
@@ -313,6 +311,23 @@ describe("2) bağımsız gayrimenkul — oluştur / güncelle / sil", () => {
     expect(r.ok && r.feature_ids).toEqual([F1, F2]);
   });
 
+  it("enlem / boylam: gönderilse bile yok sayılır; oluşturma ve güncelleme bu alanlara bağımlı değil", async () => {
+    const r = await createSaleListing(standaloneInput({ latitude: "abc", longitude: "999" }));
+    expect(r.ok).toBe(true);
+    const payload = h.repo.insert.mock.calls[0][0];
+    expect(payload).not.toHaveProperty("latitude");
+    expect(payload).not.toHaveProperty("longitude");
+    const v = validateStandalonePropertyInput({ title: "X", latitude: "36.1" });
+    expect(v.ok && Object.keys(v.value).sort()).toEqual(["feature_ids", "location_id", "slug", "title"]);
+
+    /* Güncelleme: mevcut DB koordinatlarına YAZILMAZ (kolon değeri korunur). */
+    h.repo.findById.mockResolvedValue({ data: standaloneListing(), error: null });
+    await updateSaleListing(LS, { property: { title: "Sea View Plot", slug: "sea-view-plot" }, listing: { sale_price: 1 } });
+    const upd = h.repo.updateById.mock.calls[0][1];
+    expect(upd).not.toHaveProperty("latitude");
+    expect(upd).not.toHaveProperty("longitude");
+  });
+
   it("slug çakışması: başka ilan veya HERHANGİ bir villa → 409, kayıt yok", async () => {
     h.repo.findListingIdBySlug.mockResolvedValueOnce({ data: { id: "other" }, error: null });
     expect(await createSaleListing(standaloneInput())).toMatchObject({ ok: false, status: 409 });
@@ -328,8 +343,6 @@ describe("2) bağımsız gayrimenkul — oluştur / güncelle / sil", () => {
   it.each([
     [{ title: "" }, "Başlık zorunludur"],
     [{ location_id: "x" }, "Geçersiz bölge"],
-    [{ latitude: "36.1", longitude: "" }, "birlikte"],
-    [{ latitude: "120", longitude: "29" }, "Enlem"],
     [{ feature_ids: ["nope"] }, "Geçersiz özellik"],
     [{ title: "!!!", slug: "" }, "slug"],
   ])("geçersiz bağımsız ilan girdisi reddedilir %#", async (over, msg) => {
@@ -497,7 +510,7 @@ describe("3) bağımsız ilan fotoğrafları", () => {
 
 /* ================================================================ 4 + 7 */
 describe("4/7) çeviriler ve önizleme yükleyicisi (iki kaynak)", () => {
-  it("bağımsız: kendi başlığı/bölgesi/fotoğrafları/olanakları/haritası; villa tablosu okunmaz", async () => {
+  it("bağımsız: kendi başlığı/bölgesi/fotoğrafları/olanakları; harita/konum yok; villa tablosu okunmaz", async () => {
     h.repo.findById.mockResolvedValue({ data: standaloneListing(), error: null });
     h.repo.findImages.mockResolvedValue({
       data: [
@@ -516,13 +529,14 @@ describe("4/7) çeviriler ve önizleme yükleyicisi (iki kaynak)", () => {
       slug: "sea-view-plot",
       locationName: "Kalkan",
       imageUrls: ["https://cdn.test/sale-listings/a.webp", "https://cdn.test/sale-listings/b.webp"],
-      map: { mapType: "coords", latitude: 36.2654, longitude: 29.4126, mapEmbed: null },
-      distances: [],
       siteWhatsappLink: "https://wa.me/905550000000",
       sitePhone: "+90 242 000 00 00",
     });
     expect(d?.listing).toMatchObject({ bedrooms: 3, bathrooms: 2, propertyType: "detached_house" });
     expect(d?.features).toEqual([{ id: F1, displayName: "Infinity pool" }]);
+    /* DB'de eski koordinat olsa bile harita / konum üretilmez. */
+    expect(d).not.toHaveProperty("map");
+    expect(d).not.toHaveProperty("distances");
     expect(h.villaRepo.findById).not.toHaveBeenCalled();
   });
 
@@ -538,13 +552,14 @@ describe("4/7) çeviriler ve önizleme yükleyicisi (iki kaynak)", () => {
     expect(h.trRepo.findOne).toHaveBeenCalledWith("villa_sale_listing", LS, "tr");
   });
 
-  it("villa kaynaklı: villa başlığı/galerisi/mesafeleri; ilan yatak odası boşsa villa değeri", async () => {
+  it("villa kaynaklı: villa başlığı/galerisi; harita/mesafe okunmaz; ilan yatak odası boşsa villa değeri", async () => {
     h.repo.findById.mockResolvedValue({ data: villaListing(), error: null });
     const d = await loadSaleVillaDetail(LV, { locale: "en", mode: "public" });
     expect(d).toMatchObject({ listingId: LV, source: "villa", title: "Villa Azure", slug: "villa-azure" });
     expect(d?.listing.bedrooms).toBe(4);
     expect(d?.imageUrls).toEqual(["https://cdn.test/villas/v.webp"]);
-    expect(d?.distances).toHaveLength(1);
+    expect(d).not.toHaveProperty("distances");
+    expect(d).not.toHaveProperty("map");
     h.repo.findById.mockResolvedValue({ data: villaListing({ bedrooms: 6 }), error: null });
     expect((await loadSaleVillaDetail(LV, { locale: "en", mode: "public" }))?.listing.bedrooms).toBe(6);
   });

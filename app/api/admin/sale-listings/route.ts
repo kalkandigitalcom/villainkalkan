@@ -23,7 +23,7 @@ import {
    POST → { ok, listing, translation_tr, feature_ids }
           body (mevcut villadan):  { source?: "villa", villa_id, listing, translation_tr? }
           body (bağımsız, 108):    { source: "standalone", property: { title, slug?,
-                                     location_id?, latitude?, longitude?, feature_ids? },
+                                     location_id?, feature_ids? },
                                      listing, translation_tr? }
    Yetki: authorizeAdminCaller + callerHasPermission("sale_listings").
    Audit: başarılı oluşturma server-side insertAdminActivityLog.

@@ -334,8 +334,6 @@ export type StandalonePropertyValues = {
   title: string;
   slug: string;
   location_id: string | null;
-  latitude: number | null;
-  longitude: number | null;
   feature_ids: string[];
 };
 
@@ -377,13 +375,8 @@ export function validateStandalonePropertyInput(
   const loc = text(r.location_id);
   if (loc && !isUuid(loc)) return { ok: false, error: "Geçersiz bölge" };
 
-  const lat = optionalNumber(r.latitude, "Enlem", { min: -90, max: 90 });
-  if (!lat.ok) return lat;
-  const lng = optionalNumber(r.longitude, "Boylam", { min: -180, max: 180 });
-  if (!lng.ok) return lng;
-  if ((lat.value === null) !== (lng.value === null)) {
-    return { ok: false, error: "Enlem ve boylam birlikte girilmeli" };
-  }
+  /* Enlem / boylam artık formda yok (satılık detayda harita yok).
+     Gönderilse bile yok sayılır; DB kolonlarına yazılmaz. */
 
   const rawFeatures = r.feature_ids === undefined || r.feature_ids === null ? [] : r.feature_ids;
   if (!Array.isArray(rawFeatures)) return { ok: false, error: "Geçersiz özellik listesi" };
@@ -399,8 +392,6 @@ export function validateStandalonePropertyInput(
       title,
       slug,
       location_id: loc,
-      latitude: lat.value,
-      longitude: lng.value,
       feature_ids: featureIds,
     },
   };

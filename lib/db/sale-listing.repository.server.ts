@@ -25,7 +25,7 @@ import { dbAdminNative as dbAdmin } from "./native";
 
 /** Liste + detay için kolon kümesi (tek kaynak). */
 export const SALE_LISTING_COLUMNS = `
-  id, villa_id, source, title, slug, location_id, bedrooms, latitude, longitude,
+  id, villa_id, source, title, slug, location_id, bedrooms,
   sale_price, sale_currency, price_on_request,
   sale_status, property_type, plot_area_m2, built_area_m2, room_layout,
   bathrooms, floors, year_built, title_deed_type, has_garden,
